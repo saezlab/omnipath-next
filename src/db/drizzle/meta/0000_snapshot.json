@@ -1,0 +1,622 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.annotations": {
+      "name": "annotations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uniprot": {
+          "name": "uniprot",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "genesymbol": {
+          "name": "genesymbol",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "label": {
+          "name": "label",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "value": {
+          "name": "value",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "record_id": {
+          "name": "record_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.complexes": {
+      "name": "complexes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "components": {
+          "name": "components",
+          "type": "varchar[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "components_genesymbols": {
+          "name": "components_genesymbols",
+          "type": "varchar[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stoichiometry": {
+          "name": "stoichiometry",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sources": {
+          "name": "sources",
+          "type": "varchar[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "references": {
+          "name": "references",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "identifiers": {
+          "name": "identifiers",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.enzsub": {
+      "name": "enzsub",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "enzyme": {
+          "name": "enzyme",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enzyme_genesymbol": {
+          "name": "enzyme_genesymbol",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "substrate": {
+          "name": "substrate",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "substrate_genesymbol": {
+          "name": "substrate_genesymbol",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isoforms": {
+          "name": "isoforms",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residue_type": {
+          "name": "residue_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "residue_offset": {
+          "name": "residue_offset",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "modification": {
+          "name": "modification",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sources": {
+          "name": "sources",
+          "type": "varchar[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "references": {
+          "name": "references",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "curation_effort": {
+          "name": "curation_effort",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ncbi_tax_id": {
+          "name": "ncbi_tax_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.interactions": {
+      "name": "interactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "target": {
+          "name": "target",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_genesymbol": {
+          "name": "source_genesymbol",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "target_genesymbol": {
+          "name": "target_genesymbol",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_directed": {
+          "name": "is_directed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_stimulation": {
+          "name": "is_stimulation",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_inhibition": {
+          "name": "is_inhibition",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consensus_direction": {
+          "name": "consensus_direction",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consensus_stimulation": {
+          "name": "consensus_stimulation",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consensus_inhibition": {
+          "name": "consensus_inhibition",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sources": {
+          "name": "sources",
+          "type": "varchar[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "references": {
+          "name": "references",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "omnipath": {
+          "name": "omnipath",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kinaseextra": {
+          "name": "kinaseextra",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ligrecextra": {
+          "name": "ligrecextra",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pathwayextra": {
+          "name": "pathwayextra",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mirnatarget": {
+          "name": "mirnatarget",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dorothea": {
+          "name": "dorothea",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collectri": {
+          "name": "collectri",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tf_target": {
+          "name": "tf_target",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lncrna_mrna": {
+          "name": "lncrna_mrna",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tf_mirna": {
+          "name": "tf_mirna",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "small_molecule": {
+          "name": "small_molecule",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dorothea_curated": {
+          "name": "dorothea_curated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dorothea_chipseq": {
+          "name": "dorothea_chipseq",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dorothea_tfbs": {
+          "name": "dorothea_tfbs",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dorothea_coexp": {
+          "name": "dorothea_coexp",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dorothea_level": {
+          "name": "dorothea_level",
+          "type": "varchar[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "curation_effort": {
+          "name": "curation_effort",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extra_attrs": {
+          "name": "extra_attrs",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "evidences": {
+          "name": "evidences",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ncbi_tax_id_source": {
+          "name": "ncbi_tax_id_source",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entity_type_source": {
+          "name": "entity_type_source",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ncbi_tax_id_target": {
+          "name": "ncbi_tax_id_target",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entity_type_target": {
+          "name": "entity_type_target",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    },
+    "public.intercell": {
+      "name": "intercell",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent": {
+          "name": "parent",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "database": {
+          "name": "database",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aspect": {
+          "name": "aspect",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source": {
+          "name": "source",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uniprot": {
+          "name": "uniprot",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "genesymbol": {
+          "name": "genesymbol",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consensus_score": {
+          "name": "consensus_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transmitter": {
+          "name": "transmitter",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "receiver": {
+          "name": "receiver",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secreted": {
+          "name": "secreted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plasma_membrane_transmembrane": {
+          "name": "plasma_membrane_transmembrane",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "plasma_membrane_peripheral": {
+          "name": "plasma_membrane_peripheral",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {
+      "complexes": {
+        "columns": {
+          "components": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "character varying"
+          },
+          "components_genesymbols": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "character varying"
+          },
+          "sources": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "character varying"
+          }
+        }
+      },
+      "enzsub": {
+        "columns": {
+          "sources": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "character varying"
+          }
+        }
+      },
+      "interactions": {
+        "columns": {
+          "sources": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "character varying"
+          },
+          "dorothea_level": {
+            "isArray": true,
+            "dimensions": 1,
+            "rawType": "character varying"
+          }
+        }
+      }
+    }
+  }
+}
