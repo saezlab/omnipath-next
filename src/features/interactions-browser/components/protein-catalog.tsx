@@ -5,11 +5,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TableIcon, Network, BarChart3, Download, Search, SlidersHorizontal } from "lucide-react"
-import { FilterSidebar } from "@/components/interactions/filter-sidebar"
-import { InteractionDetails } from "@/components/interactions/interaction-details"
-import { ResultsTable } from "@/components/interactions/results-table"
-import { Pagination } from "@/components/interactions/pagination"
-import { VisualizationPlaceholder } from "@/components/interactions/visualization-placeholder"
+import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
+import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
+import { ResultsTable } from "@/features/interactions-browser/components/results-table"
+import { Pagination } from "@/features/interactions-browser/components/pagination"
+import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
+import { SearchBar } from "@/components/shared/search-bar"
 
 const RESULTS_PER_PAGE = 10
 
@@ -285,78 +286,120 @@ export function ProteinCatalog({
     setCurrentPage(1)
   }
 
-  return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col md:flex-row gap-4">
-        <FilterSidebar
-          filters={filters}
-          filterCounts={filterCounts}
-          onFilterChange={handleFilterChange}
-          showMobileFilters={showMobileFilters}
-          onClearFilters={clearFilters}
-        />
+  const handleSearch = () => {
+    if (!query.trim()) return
 
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === "table" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("table")}
-              >
-                <TableIcon className="w-4 h-4 mr-2" />
-                Table
+    if (onEntitySelect) {
+      onEntitySelect(query)
+    }
+  }
+
+  return (
+    <div className="w-full">
+      {/* Search Bar */}
+      <div className="w-full bg-background sticky top-0 z-10 border-b p-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col gap-4">
+            <div className="flex w-full items-center space-x-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search for proteins, genes, or other biological entities..."
+                  className="w-full pl-9"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+              </div>
+              <Button onClick={handleSearch} disabled={isLoading}>
+                {isLoading ? "Searching..." : "Search"}
               </Button>
               <Button
-                variant={viewMode === "network" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("network")}
+                variant="outline"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setShowMobileFilters(!showMobileFilters)}
               >
-                <Network className="w-4 h-4 mr-2" />
-                Network
-              </Button>
-              <Button
-                variant={viewMode === "chart" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("chart")}
-              >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Chart
+                <SlidersHorizontal className="h-4 w-4" />
               </Button>
             </div>
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
           </div>
+        </div>
+      </div>
 
-          {isLoading ? (
-            <div className="text-center py-8">Loading interactions...</div>
-          ) : viewMode === "table" ? (
-            <>
-              <ResultsTable
-                currentResults={paginatedInteractions}
-                onSelectInteraction={setSelectedInteraction}
-              />
-              {totalPages > 1 && (
-                <div className="mt-4">
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    startIndex={(currentPage - 1) * RESULTS_PER_PAGE}
-                    endIndex={currentPage * RESULTS_PER_PAGE}
-                    totalItems={filteredInteractions.length}
-                    onPageChange={setCurrentPage}
-                  />
-                </div>
-              )}
-                    {selectedInteraction && (
-        <InteractionDetails selectedInteraction={selectedInteraction} />
-      )}
-            </>
-          ) : (
-            <VisualizationPlaceholder type={viewMode} />
-          )}
+      <div className="max-w-7xl mx-auto p-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          <FilterSidebar
+            filters={filters}
+            filterCounts={filterCounts}
+            onFilterChange={handleFilterChange}
+            showMobileFilters={showMobileFilters}
+            onClearFilters={clearFilters}
+          />
+
+          <div className="flex-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={viewMode === "table" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                >
+                  <TableIcon className="w-4 h-4 mr-2" />
+                  Table
+                </Button>
+                <Button
+                  variant={viewMode === "network" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("network")}
+                >
+                  <Network className="w-4 h-4 mr-2" />
+                  Network
+                </Button>
+                <Button
+                  variant={viewMode === "chart" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("chart")}
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Chart
+                </Button>
+              </div>
+              <Button variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                Export
+              </Button>
+            </div>
+
+            {isLoading ? (
+              <div className="text-center py-8">Loading interactions...</div>
+            ) : viewMode === "table" ? (
+              <>
+                <ResultsTable
+                  currentResults={paginatedInteractions}
+                  onSelectInteraction={setSelectedInteraction}
+                />
+                {totalPages > 1 && (
+                  <div className="mt-4">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      startIndex={(currentPage - 1) * RESULTS_PER_PAGE}
+                      endIndex={currentPage * RESULTS_PER_PAGE}
+                      totalItems={filteredInteractions.length}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                )}
+                {selectedInteraction && (
+                  <InteractionDetails selectedInteraction={selectedInteraction} />
+                )}
+              </>
+            ) : (
+              <VisualizationPlaceholder type={viewMode} />
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { interactions } from "@/db/drizzle/schema";
-import { and, eq, ilike, or, inArray } from "drizzle-orm";
+import { and, ilike, inArray, or } from "drizzle-orm";
 
 export async function searchProteinNeighbors(query: string) {
   const results = await db

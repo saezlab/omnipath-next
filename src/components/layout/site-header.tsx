@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Database, History, Bookmark } from "lucide-react"
+import { Database, History } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { MainNav } from "@/components/layout/main-nav"
 import { Search } from "lucide-react"
 
-// Sample recent searches and bookmarks for demo
+// Sample recent searches
 const RECENT_SEARCHES = [
   { id: 1, query: "TP53", type: "protein" },
   { id: 2, query: "EGFR", type: "protein" },
@@ -19,16 +19,9 @@ const RECENT_SEARCHES = [
   { id: 4, query: "IL6", type: "protein" },
 ]
 
-const BOOKMARKS = [
-  { id: 1, name: "TP53", description: "Tumor protein p53", type: "protein" },
-  { id: 2, name: "EGFR-EGF", description: "EGFR-EGF interaction", type: "interaction" },
-  { id: 3, name: "mTORC1", description: "mTOR Complex 1", type: "complex" },
-]
-
 export function SiteHeader() {
   const pathname = usePathname()
   const [searchHistory, setSearchHistory] = useState(RECENT_SEARCHES)
-  const [bookmarks, setBookmarks] = useState(BOOKMARKS)
 
   // Get entity type color
   const getEntityTypeColor = (type: string) => {
@@ -90,44 +83,6 @@ export function SiteHeader() {
                 ) : (
                   <div className="px-3 py-6 text-center text-muted-foreground">
                     <p>No recent searches</p>
-                  </div>
-                )}
-              </ScrollArea>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Bookmark className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-60">
-              <div className="flex items-center justify-between px-3 py-2">
-                <h4 className="font-medium">Bookmarks</h4>
-              </div>
-              <ScrollArea className="h-[300px]">
-                {bookmarks.length > 0 ? (
-                  bookmarks.map((item) => (
-                    <DropdownMenuItem key={item.id} asChild>
-                      <Link
-                        href={
-                          item.type === "interaction" ? `/interactions?q=${item.name}` : `/annotations?q=${item.name}`
-                        }
-                        className="flex items-center gap-2 py-2"
-                      >
-                        <Bookmark className="h-4 w-4 text-muted-foreground" />
-                        <div className="flex-1">
-                          <p>{item.name}</p>
-                          <p className="text-xs text-muted-foreground">{item.description}</p>
-                        </div>
-                        <Badge className={`${getEntityTypeColor(item.type)} text-xs`}>{item.type}</Badge>
-                      </Link>
-                    </DropdownMenuItem>
-                  ))
-                ) : (
-                  <div className="px-3 py-6 text-center text-muted-foreground">
-                    <p>No bookmarks</p>
                   </div>
                 )}
               </ScrollArea>
