@@ -21,6 +21,7 @@ import { AnnotationsTable } from "@/features/annotations-browser/components/anno
 import { Pagination } from "@/features/interactions-browser/components/pagination"
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
+import { exportToCSV } from "@/lib/utils/export"
 
 const RESULTS_PER_PAGE = 10
 
@@ -91,35 +92,39 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
   const filteredAnnotations = useMemo(() => {
     return annotations.filter((annotation) => {
       // Filter by source
-      if (filters.sources.length > 0 && annotation.source && 
-          !filters.sources.some(source => source.toLowerCase() === annotation.source?.toLowerCase())) {
-        return false
+      if (filters.sources.length > 0 && annotation.source) {
+        const sourceMatch = filters.sources.some(filterSource => 
+          filterSource.toLowerCase() === annotation.source?.toLowerCase()
+        )
+        if (!sourceMatch) return false
       }
 
       // Filter by annotation type
-      if (filters.annotationTypes.length > 0 && annotation.label && 
-          !filters.annotationTypes.some(type => type.toLowerCase() === annotation.label?.toLowerCase())) {
-        return false
+      if (filters.annotationTypes.length > 0 && annotation.label) {
+        const typeMatch = filters.annotationTypes.some(filterType => 
+          filterType.toLowerCase() === annotation.label?.toLowerCase()
+        )
+        if (!typeMatch) return false
       }
 
       // Filter by value search
-      if (filters.valueSearch && annotation.value && 
-          !annotation.value.toLowerCase().includes(filters.valueSearch.toLowerCase())) {
-        return false
+      if (filters.valueSearch && annotation.value) {
+        const valueMatch = annotation.value.toLowerCase().includes(filters.valueSearch.toLowerCase())
+        if (!valueMatch) return false
       }
 
       return true
     })
   }, [annotations, filters])
 
-  // Calculate filter counts based on filtered annotations
+  // Calculate filter counts based on ALL annotations (not filtered)
   const filterCounts = useMemo(() => {
     const counts: FilterCounts = {
       sources: {},
       annotationTypes: {},
     }
 
-    filteredAnnotations.forEach((annotation) => {
+    annotations.forEach((annotation) => {
       // Count sources
       if (annotation.source) {
         const source = annotation.source.toLowerCase()
@@ -134,7 +139,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     })
 
     return counts
-  }, [filteredAnnotations])
+  }, [annotations])
 
   const totalPages = Math.ceil(filteredAnnotations.length / RESULTS_PER_PAGE)
   const startIndex = (currentPage - 1) * RESULTS_PER_PAGE
@@ -195,6 +200,12 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     return "bg-gray-100 text-gray-800 hover:bg-gray-200"
   }
 
+  const handleExport = () => {
+    if (filteredAnnotations.length === 0) return;
+    const filename = `annotations_${query || 'export'}_${new Date().toISOString().split('T')[0]}`;
+    exportToCSV(filteredAnnotations, filename);
+  };
+
   return (
     <div className="w-full">
       {/* Search Bar */}
@@ -244,36 +255,42 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
           <div className="flex-1">
             {annotations.length > 0 ? (
               <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={viewMode === "table" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("table")}
+                    >
+                      <TableIcon className="h-4 w-4 mr-2" />
+                      Table
+                    </Button>
+                    <Button
+                      variant={viewMode === "chart" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("chart")}
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Chart
+                    </Button>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExport}
+                    disabled={filteredAnnotations.length === 0}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export CSV
+                  </Button>
+                </div>
+
                 {/* Annotations Section */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium">
                       Annotations ({filteredAnnotations.length} total)
                     </h3>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant={viewMode === "table" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setViewMode("table")}
-                        className="flex items-center gap-1"
-                      >
-                        <TableIcon className="h-4 w-4" />
-                        <span className="hidden sm:inline">Table</span>
-                      </Button>
-                      <Button
-                        variant={viewMode === "chart" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setViewMode("chart")}
-                        className="flex items-center gap-1"
-                      >
-                        <BarChart3 className="h-4 w-4" />
-                        <span className="hidden sm:inline">Charts</span>
-                      </Button>
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Download className="h-4 w-4" />
-                        <span className="hidden sm:inline">Download</span>
-                      </Button>
-                    </div>
                   </div>
 
                   {/* Results display based on view mode */}

@@ -11,6 +11,7 @@ import { ResultsTable } from "@/features/interactions-browser/components/results
 import { Pagination } from "@/features/interactions-browser/components/pagination"
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
 import { SearchBar } from "@/components/shared/search-bar"
+import { exportToCSV } from "@/lib/utils/export"
 
 const RESULTS_PER_PAGE = 10
 
@@ -27,9 +28,8 @@ interface Filters {
   [key: string]: FilterValue
   interactionType: string[]
   curationEffort: string[]
-  ncbiTaxIdSource: string[]
+  ncbiTaxId: string[]
   entityTypeSource: string[]
-  ncbiTaxIdTarget: string[]
   entityTypeTarget: string[]
   isDirected: boolean | null
   isStimulation: boolean | null
@@ -43,9 +43,8 @@ interface Filters {
 interface FilterCounts {
   interactionType: Record<string, number>
   curationEffort: Record<string, number>
-  ncbiTaxIdSource: Record<string, number>
+  ncbiTaxId: Record<string, number>
   entityTypeSource: Record<string, number>
-  ncbiTaxIdTarget: Record<string, number>
   entityTypeTarget: Record<string, number>
   isDirected: { true: number; false: number }
   isStimulation: { true: number; false: number }
@@ -65,9 +64,8 @@ export function ProteinCatalog({
   const [filters, setFilters] = useState<Filters>({
     interactionType: [],
     curationEffort: [],
-    ncbiTaxIdSource: [],
+    ncbiTaxId: [],
     entityTypeSource: [],
-    ncbiTaxIdTarget: [],
     entityTypeTarget: [],
     isDirected: null,
     isStimulation: null,
@@ -100,9 +98,8 @@ export function ProteinCatalog({
     const counts: FilterCounts = {
       interactionType: {},
       curationEffort: {},
-      ncbiTaxIdSource: {},
+      ncbiTaxId: {},
       entityTypeSource: {},
-      ncbiTaxIdTarget: {},
       entityTypeTarget: {},
       isDirected: { true: 0, false: 0 },
       isStimulation: { true: 0, false: 0 },
@@ -112,7 +109,76 @@ export function ProteinCatalog({
       consensusInhibition: { true: 0, false: 0 },
     }
 
-    interactions.forEach((interaction) => {
+    // First, filter interactions based on all filters except the one being counted
+    const filteredInteractions = interactions.filter((interaction) => {
+      // Filter by interaction type (if not counting interaction types)
+      if (filters.interactionType.length > 0 && !filters.interactionType.includes(interaction.type)) {
+        return false
+      }
+
+      // Filter by curation effort (if not counting curation effort)
+      if (filters.curationEffort.length > 0 && !filters.curationEffort.includes(interaction.curationEffort)) {
+        return false
+      }
+
+      // Filter by taxonomy ID (if not counting taxonomy)
+      if (filters.ncbiTaxId.length > 0 && 
+          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
+          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
+        return false
+      }
+
+      // Filter by source entity type (if not counting source entity types)
+      if (filters.entityTypeSource.length > 0 && !filters.entityTypeSource.includes(interaction.entityTypeSource)) {
+        return false
+      }
+
+      // Filter by target entity type (if not counting target entity types)
+      if (filters.entityTypeTarget.length > 0 && !filters.entityTypeTarget.includes(interaction.entityTypeTarget)) {
+        return false
+      }
+
+      // Filter by direction (if not counting direction)
+      if (filters.isDirected !== null && interaction.isDirected !== filters.isDirected) {
+        return false
+      }
+
+      // Filter by stimulation (if not counting stimulation)
+      if (filters.isStimulation !== null && interaction.isStimulation !== filters.isStimulation) {
+        return false
+      }
+
+      // Filter by inhibition (if not counting inhibition)
+      if (filters.isInhibition !== null && interaction.isInhibition !== filters.isInhibition) {
+        return false
+      }
+
+      // Filter by consensus direction (if not counting consensus direction)
+      if (filters.consensusDirection !== null && interaction.consensusDirection !== filters.consensusDirection) {
+        return false
+      }
+
+      // Filter by consensus stimulation (if not counting consensus stimulation)
+      if (filters.consensusStimulation !== null && interaction.consensusStimulation !== filters.consensusStimulation) {
+        return false
+      }
+
+      // Filter by consensus inhibition (if not counting consensus inhibition)
+      if (filters.consensusInhibition !== null && interaction.consensusInhibition !== filters.consensusInhibition) {
+        return false
+      }
+
+      // Filter by minimum references
+      const referenceCount = interaction.references ? interaction.references.split(";").length : 0
+      if (referenceCount < filters.minReferences) {
+        return false
+      }
+
+      return true
+    })
+
+    // Then count the remaining interactions
+    filteredInteractions.forEach((interaction) => {
       // Count interaction types
       if (interaction.type) {
         counts.interactionType[interaction.type] = (counts.interactionType[interaction.type] || 0) + 1
@@ -123,19 +189,17 @@ export function ProteinCatalog({
         counts.curationEffort[interaction.curationEffort] = (counts.curationEffort[interaction.curationEffort] || 0) + 1
       }
 
-      // Count source taxonomy IDs
+      // Count taxonomy IDs
       if (interaction.ncbiTaxIdSource) {
-        counts.ncbiTaxIdSource[interaction.ncbiTaxIdSource] = (counts.ncbiTaxIdSource[interaction.ncbiTaxIdSource] || 0) + 1
+        counts.ncbiTaxId[interaction.ncbiTaxIdSource] = (counts.ncbiTaxId[interaction.ncbiTaxIdSource] || 0) + 1
+      }
+      if (interaction.ncbiTaxIdTarget) {
+        counts.ncbiTaxId[interaction.ncbiTaxIdTarget] = (counts.ncbiTaxId[interaction.ncbiTaxIdTarget] || 0) + 1
       }
 
       // Count source entity types
       if (interaction.entityTypeSource) {
         counts.entityTypeSource[interaction.entityTypeSource] = (counts.entityTypeSource[interaction.entityTypeSource] || 0) + 1
-      }
-
-      // Count target taxonomy IDs
-      if (interaction.ncbiTaxIdTarget) {
-        counts.ncbiTaxIdTarget[interaction.ncbiTaxIdTarget] = (counts.ncbiTaxIdTarget[interaction.ncbiTaxIdTarget] || 0) + 1
       }
 
       // Count target entity types
@@ -165,7 +229,7 @@ export function ProteinCatalog({
     })
 
     return counts
-  }, [interactions])
+  }, [interactions, filters])
 
   // Filter interactions based on selected filters
   const filteredInteractions = useMemo(() => {
@@ -180,18 +244,15 @@ export function ProteinCatalog({
         return false
       }
 
-      // Filter by source taxonomy ID
-      if (filters.ncbiTaxIdSource.length > 0 && !filters.ncbiTaxIdSource.includes(interaction.ncbiTaxIdSource)) {
+      // Filter by taxonomy ID
+      if (filters.ncbiTaxId.length > 0 && 
+          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
+          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
         return false
       }
 
       // Filter by source entity type
       if (filters.entityTypeSource.length > 0 && !filters.entityTypeSource.includes(interaction.entityTypeSource)) {
-        return false
-      }
-
-      // Filter by target taxonomy ID
-      if (filters.ncbiTaxIdTarget.length > 0 && !filters.ncbiTaxIdTarget.includes(interaction.ncbiTaxIdTarget)) {
         return false
       }
 
@@ -231,11 +292,9 @@ export function ProteinCatalog({
       }
 
       // Filter by minimum references
-      if (interaction.references) {
-        const referenceCount = interaction.references.split(";").length
-        if (referenceCount < filters.minReferences) {
-          return false
-        }
+      const referenceCount = interaction.references ? interaction.references.split(";").length : 0
+      if (referenceCount < filters.minReferences) {
+        return false
       }
 
       return true
@@ -271,9 +330,8 @@ export function ProteinCatalog({
     setFilters({
       interactionType: [],
       curationEffort: [],
-      ncbiTaxIdSource: [],
+      ncbiTaxId: [],
       entityTypeSource: [],
-      ncbiTaxIdTarget: [],
       entityTypeTarget: [],
       isDirected: null,
       isStimulation: null,
@@ -293,6 +351,12 @@ export function ProteinCatalog({
       onEntitySelect(query)
     }
   }
+
+  const handleExport = () => {
+    if (filteredInteractions.length === 0) return;
+    const filename = `interactions_${query || 'export'}_${new Date().toISOString().split('T')[0]}`;
+    exportToCSV(filteredInteractions, filename);
+  };
 
   return (
     <div className="w-full">
@@ -361,14 +425,20 @@ export function ProteinCatalog({
                   variant={viewMode === "chart" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setViewMode("chart")}
+                  disabled
                 >
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Chart
                 </Button>
               </div>
-              <Button variant="outline" size="sm">
-                <Download className="w-4 h-4 mr-2" />
-                Export
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                disabled={filteredInteractions.length === 0}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
               </Button>
             </div>
 

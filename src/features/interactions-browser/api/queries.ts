@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { interactions } from "@/db/drizzle/schema";
-import { and, ilike, inArray, or } from "drizzle-orm";
+import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
 export async function searchProteinNeighbors(query: string) {
   const results = await db
@@ -10,14 +10,12 @@ export async function searchProteinNeighbors(query: string) {
     .from(interactions)
     .where(
       or(
-        ilike(interactions.source, `%${query}%`),
-        ilike(interactions.target, `%${query}%`),
-        ilike(interactions.sourceGenesymbol, `%${query}%`),
-        ilike(interactions.targetGenesymbol, `%${query}%`)
+        eq(sql`lower(${interactions.sourceGenesymbol})`, query.toLowerCase()),
+        eq(sql`lower(${interactions.source})`, query.toLowerCase()),
+        eq(sql`lower(${interactions.targetGenesymbol})`, query.toLowerCase()),
+        eq(sql`lower(${interactions.target})`, query.toLowerCase())
       )
     )
-    .limit(1000);
-
   return {
     interactions: results,
   };

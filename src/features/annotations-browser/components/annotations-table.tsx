@@ -84,7 +84,7 @@ export function AnnotationsTable({
       <TableBody>
         {currentResults.map((annotation) => (
           <TableRow
-            key={annotation.recordId}
+            key={`${annotation.recordId}-${annotation.source}-${annotation.label}-${annotation.value}`}
             className="cursor-pointer hover:bg-muted/50"
             onClick={() => onSelectAnnotation(annotation)}
           >

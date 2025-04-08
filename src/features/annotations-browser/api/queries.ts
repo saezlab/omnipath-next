@@ -2,7 +2,8 @@
 
 import { db } from "@/db";
 import { annotations } from "@/db/drizzle/schema";
-import { ilike, or } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 
 export async function getProteinAnnotations(query: string) {
@@ -19,12 +20,10 @@ export async function getProteinAnnotations(query: string) {
       .from(annotations)
       .where(
         or(
-          ilike(annotations.genesymbol, `%${query}%`),
-          ilike(annotations.uniprot, `%${query}%`)
+          eq(sql`lower(${annotations.genesymbol})`, query.toLowerCase()),
+          eq(sql`lower(${annotations.uniprot})`, query.toLowerCase())
         )
-      )
-      .limit(1000);
-  
+      )  
     return {
       annotations: results,
     };

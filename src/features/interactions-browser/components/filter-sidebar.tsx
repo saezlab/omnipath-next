@@ -13,10 +13,8 @@ interface FilterSidebarProps {
   filters: any
   filterCounts: {
     interactionType: Record<string, number>
-    curationEffort: Record<string, number>
-    ncbiTaxIdSource: Record<string, number>
+    ncbiTaxId: Record<string, number>
     entityTypeSource: Record<string, number>
-    ncbiTaxIdTarget: Record<string, number>
     entityTypeTarget: Record<string, number>
     isDirected: { true: number; false: number }
     isStimulation: { true: number; false: number }
@@ -30,6 +28,12 @@ interface FilterSidebarProps {
   onClearFilters: () => void
 }
 
+const TAXONOMY_MAPPING: Record<string, string> = {
+  '9606': 'Human',
+  '10090': 'Mouse',
+  '10116': 'Rat'
+}
+
 export function FilterSidebar({
   filters,
   filterCounts,
@@ -37,17 +41,18 @@ export function FilterSidebar({
   showMobileFilters,
   onClearFilters,
 }: FilterSidebarProps) {
-  // Get unique values for each filter type
-  const interactionTypes = Object.keys(filterCounts.interactionType)
-  const curationEfforts = Object.keys(filterCounts.curationEffort)
-  const ncbiTaxIds = [...new Set([
-    ...Object.keys(filterCounts.ncbiTaxIdSource),
-    ...Object.keys(filterCounts.ncbiTaxIdTarget)
-  ])]
-  const entityTypes = [...new Set([
-    ...Object.keys(filterCounts.entityTypeSource),
-    ...Object.keys(filterCounts.entityTypeTarget)
-  ])]
+  // Get unique values for each filter type, filtering out those with zero counts
+  const interactionTypes = Object.entries(filterCounts.interactionType)
+    .filter(([_, count]) => count > 0)
+    .map(([type]) => type)
+  const entityTypesSource = Object.entries(filterCounts.entityTypeSource)
+    .filter(([_, count]) => count > 0)
+    .map(([type]) => type)
+  const entityTypesTarget = Object.entries(filterCounts.entityTypeTarget)
+    .filter(([_, count]) => count > 0)
+    .map(([type]) => type)
+  const taxonomyEntries = Object.entries(TAXONOMY_MAPPING)
+    .filter(([taxId]) => filterCounts.ncbiTaxId[taxId] > 0)
 
   return (
     <div className={`md:w-64 lg:w-72 shrink-0 space-y-4 ${showMobileFilters ? "block" : "hidden"} md:block`}>
@@ -86,25 +91,25 @@ export function FilterSidebar({
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="curation">
-            <AccordionTrigger>Curation Effort</AccordionTrigger>
+          <AccordionItem value="taxonomy">
+            <AccordionTrigger>Organism</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
-                {curationEfforts.map((effort) => (
-                  <div key={effort} className="flex items-center justify-between">
+                {taxonomyEntries.map(([taxId, label]) => (
+                  <div key={taxId} className="flex items-center justify-between">
                     <Label
-                      htmlFor={`effort-${effort}`}
+                      htmlFor={`tax-${taxId}`}
                       className="flex items-center gap-2 text-sm font-normal cursor-pointer"
                     >
                       <Checkbox
-                        id={`effort-${effort}`}
-                        checked={filters.curationEffort.includes(effort)}
-                        onCheckedChange={() => onFilterChange("curationEffort", effort)}
+                        id={`tax-${taxId}`}
+                        checked={filters.ncbiTaxId.includes(taxId)}
+                        onCheckedChange={() => onFilterChange("ncbiTaxId", taxId)}
                       />
-                      {effort}
+                      {label}
                     </Label>
                     <Badge variant="outline" className="ml-auto">
-                      {filterCounts.curationEffort[effort] || 0}
+                      {filterCounts.ncbiTaxId[taxId] || 0}
                     </Badge>
                   </div>
                 ))}
@@ -112,112 +117,54 @@ export function FilterSidebar({
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="source">
-            <AccordionTrigger>Source Entity</AccordionTrigger>
+          <AccordionItem value="sourceEntity">
+            <AccordionTrigger>Source Entity Type</AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium">Taxonomy ID</Label>
-                  <div className="space-y-2 mt-2">
-                    {ncbiTaxIds.map((tax) => (
-                      <div key={tax} className="flex items-center justify-between">
-                        <Label
-                          htmlFor={`source-tax-${tax}`}
-                          className="flex items-center gap-2 text-sm font-normal cursor-pointer"
-                        >
-                          <Checkbox
-                            id={`source-tax-${tax}`}
-                            checked={filters.ncbiTaxIdSource.includes(tax)}
-                            onCheckedChange={() => onFilterChange("ncbiTaxIdSource", tax)}
-                          />
-                          {tax}
-                        </Label>
-                        <Badge variant="outline" className="ml-auto">
-                          {filterCounts.ncbiTaxIdSource[tax] || 0}
-                        </Badge>
-                      </div>
-                    ))}
+              <div className="space-y-2">
+                {entityTypesSource.map((type) => (
+                  <div key={type} className="flex items-center justify-between">
+                    <Label
+                      htmlFor={`source-type-${type}`}
+                      className="flex items-center gap-2 text-sm font-normal cursor-pointer"
+                    >
+                      <Checkbox
+                        id={`source-type-${type}`}
+                        checked={filters.entityTypeSource.includes(type)}
+                        onCheckedChange={() => onFilterChange("entityTypeSource", type)}
+                      />
+                      {type}
+                    </Label>
+                    <Badge variant="outline" className="ml-auto">
+                      {filterCounts.entityTypeSource[type] || 0}
+                    </Badge>
                   </div>
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium">Entity Type</Label>
-                  <div className="space-y-2 mt-2">
-                    {entityTypes.map((type) => (
-                      <div key={type} className="flex items-center justify-between">
-                        <Label
-                          htmlFor={`source-type-${type}`}
-                          className="flex items-center gap-2 text-sm font-normal cursor-pointer"
-                        >
-                          <Checkbox
-                            id={`source-type-${type}`}
-                            checked={filters.entityTypeSource.includes(type)}
-                            onCheckedChange={() => onFilterChange("entityTypeSource", type)}
-                          />
-                          {type}
-                        </Label>
-                        <Badge variant="outline" className="ml-auto">
-                          {filterCounts.entityTypeSource[type] || 0}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="target">
-            <AccordionTrigger>Target Entity</AccordionTrigger>
+          <AccordionItem value="targetEntity">
+            <AccordionTrigger>Target Entity Type</AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium">Taxonomy ID</Label>
-                  <div className="space-y-2 mt-2">
-                    {ncbiTaxIds.map((tax) => (
-                      <div key={tax} className="flex items-center justify-between">
-                        <Label
-                          htmlFor={`target-tax-${tax}`}
-                          className="flex items-center gap-2 text-sm font-normal cursor-pointer"
-                        >
-                          <Checkbox
-                            id={`target-tax-${tax}`}
-                            checked={filters.ncbiTaxIdTarget.includes(tax)}
-                            onCheckedChange={() => onFilterChange("ncbiTaxIdTarget", tax)}
-                          />
-                          {tax}
-                        </Label>
-                        <Badge variant="outline" className="ml-auto">
-                          {filterCounts.ncbiTaxIdTarget[tax] || 0}
-                        </Badge>
-                      </div>
-                    ))}
+              <div className="space-y-2">
+                {entityTypesTarget.map((type) => (
+                  <div key={type} className="flex items-center justify-between">
+                    <Label
+                      htmlFor={`target-type-${type}`}
+                      className="flex items-center gap-2 text-sm font-normal cursor-pointer"
+                    >
+                      <Checkbox
+                        id={`target-type-${type}`}
+                        checked={filters.entityTypeTarget.includes(type)}
+                        onCheckedChange={() => onFilterChange("entityTypeTarget", type)}
+                      />
+                      {type}
+                    </Label>
+                    <Badge variant="outline" className="ml-auto">
+                      {filterCounts.entityTypeTarget[type] || 0}
+                    </Badge>
                   </div>
-                </div>
-
-                <div className="space-y-1">
-                  <Label className="text-sm font-medium">Entity Type</Label>
-                  <div className="space-y-2 mt-2">
-                    {entityTypes.map((type) => (
-                      <div key={type} className="flex items-center justify-between">
-                        <Label
-                          htmlFor={`target-type-${type}`}
-                          className="flex items-center gap-2 text-sm font-normal cursor-pointer"
-                        >
-                          <Checkbox
-                            id={`target-type-${type}`}
-                            checked={filters.entityTypeTarget.includes(type)}
-                            onCheckedChange={() => onFilterChange("entityTypeTarget", type)}
-                          />
-                          {type}
-                        </Label>
-                        <Badge variant="outline" className="ml-auto">
-                          {filterCounts.entityTypeTarget[type] || 0}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </AccordionContent>
           </AccordionItem>
