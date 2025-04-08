@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Check } from "lucide-react"
+import { InteractionsFilters } from "@/store/search-store"
 
 interface FilterSidebarProps {
-  filters: any
+  filters: InteractionsFilters
   filterCounts: {
     interactionType: Record<string, number>
     ncbiTaxId: Record<string, number>
@@ -23,7 +24,7 @@ interface FilterSidebarProps {
     consensusStimulation: { true: number; false: number }
     consensusInhibition: { true: number; false: number }
   }
-  onFilterChange: (type: string, value: any) => void
+  onFilterChange: (type: keyof InteractionsFilters, value: any) => void
   showMobileFilters: boolean
   onClearFilters: () => void
 }

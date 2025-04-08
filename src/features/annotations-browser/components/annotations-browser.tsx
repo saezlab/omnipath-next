@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useMemo, useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -22,18 +22,9 @@ import { Pagination } from "@/features/interactions-browser/components/paginatio
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { exportToCSV } from "@/lib/utils/export"
+import { useSearchStore } from "@/store/search-store"
 
 const RESULTS_PER_PAGE = 10
-
-interface Annotation {
-  uniprot: string | null
-  genesymbol: string | null
-  entityType: string | null
-  source: string | null
-  label: string | null
-  value: string | null
-  recordId: number | null
-}
 
 interface SearchFilters {
   sources: string[]
@@ -52,35 +43,41 @@ interface AnnotationsBrowserProps {
 }
 
 export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: AnnotationsBrowserProps) {
-  const [query, setQuery] = useState(initialQuery)
-  const [filters, setFilters] = useState<SearchFilters>({
-    sources: ["UniProt_keyword"],
-    annotationTypes: [],
-    valueSearch: "",
-  })
-  const [annotations, setAnnotations] = useState<Annotation[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [viewMode, setViewMode] = useState<"table" | "chart">("table")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+
+  // Get state and actions from the store
+  const {
+    annotationsQuery,
+    annotationsResults,
+    annotationsFilters,
+    annotationsViewMode,
+    annotationsCurrentPage,
+    selectedAnnotation,
+    setAnnotationsQuery,
+    setAnnotationsResults,
+    setAnnotationsFilters,
+    setAnnotationsViewMode,
+    setAnnotationsCurrentPage,
+    setSelectedAnnotation,
+  } = useSearchStore()
 
   useEffect(() => {
     if (initialQuery) {
-      setQuery(initialQuery)
-      handleSearch()
+      setAnnotationsQuery(initialQuery)
+      handleSearch(initialQuery)
     }
   }, [initialQuery])
 
-  const handleSearch = async () => {
-    if (!query.trim()) return
+  const handleSearch = async (searchQuery: string = annotationsQuery) => {
+    if (!searchQuery.trim()) return
 
     setIsLoading(true)
-    setCurrentPage(1)
+    setAnnotationsCurrentPage(1)
 
     try {
-      const response = await getProteinAnnotations(query)
-      setAnnotations(response.annotations)
+      const response = await getProteinAnnotations(searchQuery)
+      setAnnotationsResults(response.annotations)
     } catch (error) {
       console.error("Error fetching annotations:", error)
     } finally {
@@ -90,32 +87,54 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {
-    return annotations.filter((annotation) => {
+    // First, find all recordIds that match the value search in any field
+    const matchingRecordIds = new Set<number>()
+    
+    annotationsResults.forEach((annotation) => {
+      const searchTerm = annotationsFilters.valueSearch.toLowerCase()
+      if (searchTerm) {
+        // Check if any field contains the search term
+        const matches = 
+          (annotation.value?.toLowerCase().includes(searchTerm) || false) ||
+          (annotation.label?.toLowerCase().includes(searchTerm) || false) ||
+          (annotation.source?.toLowerCase().includes(searchTerm) || false) ||
+          (annotation.genesymbol?.toLowerCase().includes(searchTerm) || false) ||
+          (annotation.uniprot?.toLowerCase().includes(searchTerm) || false)
+        
+        if (matches && annotation.recordId) {
+          matchingRecordIds.add(annotation.recordId)
+        }
+      }
+    })
+
+    // Then filter annotations based on all criteria
+    return annotationsResults.filter((annotation) => {
       // Filter by source
-      if (filters.sources.length > 0 && annotation.source) {
-        const sourceMatch = filters.sources.some(filterSource => 
+      if (annotationsFilters.sources.length > 0 && annotation.source) {
+        const sourceMatch = annotationsFilters.sources.some(filterSource => 
           filterSource.toLowerCase() === annotation.source?.toLowerCase()
         )
         if (!sourceMatch) return false
       }
 
       // Filter by annotation type
-      if (filters.annotationTypes.length > 0 && annotation.label) {
-        const typeMatch = filters.annotationTypes.some(filterType => 
+      if (annotationsFilters.annotationTypes.length > 0 && annotation.label) {
+        const typeMatch = annotationsFilters.annotationTypes.some(filterType => 
           filterType.toLowerCase() === annotation.label?.toLowerCase()
         )
         if (!typeMatch) return false
       }
 
-      // Filter by value search
-      if (filters.valueSearch && annotation.value) {
-        const valueMatch = annotation.value.toLowerCase().includes(filters.valueSearch.toLowerCase())
-        if (!valueMatch) return false
+      // Filter by value search - include all annotations for matching records
+      if (annotationsFilters.valueSearch && matchingRecordIds.size > 0) {
+        if (!annotation.recordId || !matchingRecordIds.has(annotation.recordId)) {
+          return false
+        }
       }
 
       return true
     })
-  }, [annotations, filters])
+  }, [annotationsResults, annotationsFilters])
 
   // Calculate filter counts based on unique records
   const filterCounts = useMemo(() => {
@@ -125,11 +144,11 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     }
 
     // Get unique records first
-    const uniqueRecords = new Set(annotations.map(a => a.recordId))
+    const uniqueRecords = new Set(annotationsResults.map(a => a.recordId))
     
     // For each unique record, count its sources and types
     uniqueRecords.forEach(recordId => {
-      const recordAnnotations = annotations.filter(a => a.recordId === recordId)
+      const recordAnnotations = annotationsResults.filter(a => a.recordId === recordId)
       
       // Count unique sources for this record
       const uniqueSources = new Set(recordAnnotations.map(a => a.source?.toLowerCase()))
@@ -149,12 +168,12 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     })
 
     return counts
-  }, [annotations])
+  }, [annotationsResults])
 
   // Get unique record count for pagination and display
   const uniqueRecordCount = new Set(filteredAnnotations.map(a => a.recordId)).size
   const totalPages = Math.ceil(uniqueRecordCount / RESULTS_PER_PAGE)
-  const startIndex = (currentPage - 1) * RESULTS_PER_PAGE
+  const startIndex = (annotationsCurrentPage - 1) * RESULTS_PER_PAGE
   const endIndex = startIndex + RESULTS_PER_PAGE
 
   // Get unique recordIds for the current page
@@ -167,7 +186,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
 
   // Handle filter changes
   const handleFilterChange = (type: keyof SearchFilters, value: any) => {
-    setFilters((prev) => {
+    setAnnotationsFilters((prev: SearchFilters) => {
       if (type === "valueSearch") {
         return { ...prev, [type]: value }
       }
@@ -179,11 +198,11 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
 
       return { ...prev, [type]: newValues }
     })
-    setCurrentPage(1)
+    setAnnotationsCurrentPage(1)
   }
 
   const clearFilters = () => {
-    setFilters({
+    setAnnotationsFilters({
       sources: ["UniProt_keyword"],
       annotationTypes: [],
       valueSearch: "",
@@ -257,7 +276,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
       return { ...baseRecord, ...record.values };
     });
 
-    const filename = `annotations_${query || 'export'}_${new Date().toISOString().split('T')[0]}`;
+    const filename = `annotations_${annotationsQuery || 'export'}_${new Date().toISOString().split('T')[0]}`;
     exportToCSV(flattenedData, filename);
   };
 
@@ -274,12 +293,12 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
                   type="search"
                   placeholder="Search for proteins or genes..."
                   className="w-full pl-9"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  value={annotationsQuery}
+                  onChange={(e) => setAnnotationsQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
-              <Button onClick={handleSearch} disabled={isLoading}>
+              <Button onClick={() => handleSearch()} disabled={isLoading}>
                 {isLoading ? "Searching..." : "Search"}
               </Button>
               <Button
@@ -299,7 +318,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
         <div className="flex flex-col md:flex-row gap-6">
           {/* Filters Sidebar */}
           <AnnotationsFilterSidebar
-            filters={filters}
+            filters={annotationsFilters}
             onFilterChange={handleFilterChange}
             filterCounts={filterCounts}
             showMobileFilters={showMobileFilters}
@@ -308,22 +327,22 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
 
           {/* Main Content */}
           <div className="flex-1">
-            {annotations.length > 0 ? (
+            {annotationsResults.length > 0 ? (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2">
                     <Button
-                      variant={viewMode === "table" ? "default" : "outline"}
+                      variant={annotationsViewMode === "table" ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setViewMode("table")}
+                      onClick={() => setAnnotationsViewMode("table")}
                     >
                       <TableIcon className="h-4 w-4 mr-2" />
                       Table
                     </Button>
                     <Button
-                      variant={viewMode === "chart" ? "default" : "outline"}
+                      variant={annotationsViewMode === "chart" ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setViewMode("chart")}
+                      onClick={() => setAnnotationsViewMode("chart")}
                     >
                       <BarChart3 className="h-4 w-4 mr-2" />
                       Chart
@@ -349,7 +368,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
                   </div>
 
                   {/* Results display based on view mode */}
-                  {viewMode === "table" ? (
+                  {annotationsViewMode === "table" ? (
                     <Card>
                       <CardContent className="p-0">
                         <AnnotationsTable
@@ -359,12 +378,12 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
                           getCategoryColor={getCategoryColor}
                         />
                         <Pagination
-                          currentPage={currentPage}
+                          currentPage={annotationsCurrentPage}
                           totalPages={totalPages}
                           startIndex={startIndex}
                           endIndex={endIndex}
                           totalItems={uniqueRecordCount}
-                          onPageChange={setCurrentPage}
+                          onPageChange={setAnnotationsCurrentPage}
                         />
                       </CardContent>
                     </Card>

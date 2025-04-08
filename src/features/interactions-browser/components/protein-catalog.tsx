@@ -10,8 +10,8 @@ import { InteractionDetails } from "@/features/interactions-browser/components/i
 import { ResultsTable } from "@/features/interactions-browser/components/results-table"
 import { Pagination } from "@/features/interactions-browser/components/pagination"
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
-import { SearchBar } from "@/components/shared/search-bar"
 import { exportToCSV } from "@/lib/utils/export"
+import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
 
 const RESULTS_PER_PAGE = 10
 
@@ -60,21 +60,13 @@ export function ProteinCatalog({
   initialInteractions = [],
   isLoading = false
 }: ProteinCatalogProps) {
-  const [query, setQuery] = useState(initialQuery)
-  const [filters, setFilters] = useState<Filters>({
-    interactionType: [],
-    curationEffort: [],
-    ncbiTaxId: [],
-    entityTypeSource: [],
-    entityTypeTarget: [],
-    isDirected: null,
-    isStimulation: null,
-    isInhibition: null,
-    consensusDirection: null,
-    consensusStimulation: null,
-    consensusInhibition: null,
-    minReferences: 0,
-  })
+  const {
+    interactionsQuery,
+    setInteractionsQuery,
+    interactionsFilters,
+    setInteractionsFilters
+  } = useSearchStore()
+
   const [interactions, setInteractions] = useState<any[]>(initialInteractions)
   const [viewMode, setViewMode] = useState<"table" | "network" | "chart">("table")
   const [currentPage, setCurrentPage] = useState(1)
@@ -84,7 +76,7 @@ export function ProteinCatalog({
   // Load data when initialQuery changes
   useEffect(() => {
     if (initialQuery) {
-      setQuery(initialQuery)
+      setInteractionsQuery(initialQuery)
     }
   }, [initialQuery])
 
@@ -112,65 +104,65 @@ export function ProteinCatalog({
     // First, filter interactions based on all filters except the one being counted
     const filteredInteractions = interactions.filter((interaction) => {
       // Filter by interaction type (if not counting interaction types)
-      if (filters.interactionType.length > 0 && !filters.interactionType.includes(interaction.type)) {
+      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type)) {
         return false
       }
 
       // Filter by curation effort (if not counting curation effort)
-      if (filters.curationEffort.length > 0 && !filters.curationEffort.includes(interaction.curationEffort)) {
+      if (interactionsFilters.curationEffort.length > 0 && !interactionsFilters.curationEffort.includes(interaction.curationEffort)) {
         return false
       }
 
       // Filter by taxonomy ID (if not counting taxonomy)
-      if (filters.ncbiTaxId.length > 0 && 
-          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
-          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
+      if (interactionsFilters.ncbiTaxId.length > 0 && 
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
         return false
       }
 
       // Filter by source entity type (if not counting source entity types)
-      if (filters.entityTypeSource.length > 0 && !filters.entityTypeSource.includes(interaction.entityTypeSource)) {
+      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource)) {
         return false
       }
 
       // Filter by target entity type (if not counting target entity types)
-      if (filters.entityTypeTarget.length > 0 && !filters.entityTypeTarget.includes(interaction.entityTypeTarget)) {
+      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget)) {
         return false
       }
 
       // Filter by direction (if not counting direction)
-      if (filters.isDirected !== null && interaction.isDirected !== filters.isDirected) {
+      if (interactionsFilters.isDirected !== null && interaction.isDirected !== interactionsFilters.isDirected) {
         return false
       }
 
       // Filter by stimulation (if not counting stimulation)
-      if (filters.isStimulation !== null && interaction.isStimulation !== filters.isStimulation) {
+      if (interactionsFilters.isStimulation !== null && interaction.isStimulation !== interactionsFilters.isStimulation) {
         return false
       }
 
       // Filter by inhibition (if not counting inhibition)
-      if (filters.isInhibition !== null && interaction.isInhibition !== filters.isInhibition) {
+      if (interactionsFilters.isInhibition !== null && interaction.isInhibition !== interactionsFilters.isInhibition) {
         return false
       }
 
       // Filter by consensus direction (if not counting consensus direction)
-      if (filters.consensusDirection !== null && interaction.consensusDirection !== filters.consensusDirection) {
+      if (interactionsFilters.consensusDirection !== null && interaction.consensusDirection !== interactionsFilters.consensusDirection) {
         return false
       }
 
       // Filter by consensus stimulation (if not counting consensus stimulation)
-      if (filters.consensusStimulation !== null && interaction.consensusStimulation !== filters.consensusStimulation) {
+      if (interactionsFilters.consensusStimulation !== null && interaction.consensusStimulation !== interactionsFilters.consensusStimulation) {
         return false
       }
 
       // Filter by consensus inhibition (if not counting consensus inhibition)
-      if (filters.consensusInhibition !== null && interaction.consensusInhibition !== filters.consensusInhibition) {
+      if (interactionsFilters.consensusInhibition !== null && interaction.consensusInhibition !== interactionsFilters.consensusInhibition) {
         return false
       }
 
       // Filter by minimum references
       const referenceCount = interaction.references ? interaction.references.split(";").length : 0
-      if (referenceCount < filters.minReferences) {
+      if (referenceCount < interactionsFilters.minReferences) {
         return false
       }
 
@@ -229,77 +221,77 @@ export function ProteinCatalog({
     })
 
     return counts
-  }, [interactions, filters])
+  }, [interactions, interactionsFilters])
 
   // Filter interactions based on selected filters
   const filteredInteractions = useMemo(() => {
     return interactions.filter((interaction) => {
       // Filter by interaction type
-      if (filters.interactionType.length > 0 && !filters.interactionType.includes(interaction.type)) {
+      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type)) {
         return false
       }
 
       // Filter by curation effort
-      if (filters.curationEffort.length > 0 && !filters.curationEffort.includes(interaction.curationEffort)) {
+      if (interactionsFilters.curationEffort.length > 0 && !interactionsFilters.curationEffort.includes(interaction.curationEffort)) {
         return false
       }
 
       // Filter by taxonomy ID
-      if (filters.ncbiTaxId.length > 0 && 
-          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
-          !filters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
+      if (interactionsFilters.ncbiTaxId.length > 0 && 
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
         return false
       }
 
       // Filter by source entity type
-      if (filters.entityTypeSource.length > 0 && !filters.entityTypeSource.includes(interaction.entityTypeSource)) {
+      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource)) {
         return false
       }
 
       // Filter by target entity type
-      if (filters.entityTypeTarget.length > 0 && !filters.entityTypeTarget.includes(interaction.entityTypeTarget)) {
+      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget)) {
         return false
       }
 
       // Filter by direction
-      if (filters.isDirected !== null && interaction.isDirected !== filters.isDirected) {
+      if (interactionsFilters.isDirected !== null && interaction.isDirected !== interactionsFilters.isDirected) {
         return false
       }
 
       // Filter by stimulation
-      if (filters.isStimulation !== null && interaction.isStimulation !== filters.isStimulation) {
+      if (interactionsFilters.isStimulation !== null && interaction.isStimulation !== interactionsFilters.isStimulation) {
         return false
       }
 
       // Filter by inhibition
-      if (filters.isInhibition !== null && interaction.isInhibition !== filters.isInhibition) {
+      if (interactionsFilters.isInhibition !== null && interaction.isInhibition !== interactionsFilters.isInhibition) {
         return false
       }
 
       // Filter by consensus direction
-      if (filters.consensusDirection !== null && interaction.consensusDirection !== filters.consensusDirection) {
+      if (interactionsFilters.consensusDirection !== null && interaction.consensusDirection !== interactionsFilters.consensusDirection) {
         return false
       }
 
       // Filter by consensus stimulation
-      if (filters.consensusStimulation !== null && interaction.consensusStimulation !== filters.consensusStimulation) {
+      if (interactionsFilters.consensusStimulation !== null && interaction.consensusStimulation !== interactionsFilters.consensusStimulation) {
         return false
       }
 
       // Filter by consensus inhibition
-      if (filters.consensusInhibition !== null && interaction.consensusInhibition !== filters.consensusInhibition) {
+      if (interactionsFilters.consensusInhibition !== null && interaction.consensusInhibition !== interactionsFilters.consensusInhibition) {
         return false
       }
 
       // Filter by minimum references
       const referenceCount = interaction.references ? interaction.references.split(";").length : 0
-      if (referenceCount < filters.minReferences) {
+      if (referenceCount < interactionsFilters.minReferences) {
         return false
       }
 
       return true
     })
-  }, [interactions, filters])
+  }, [interactions, interactionsFilters])
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredInteractions.length / RESULTS_PER_PAGE)
@@ -308,8 +300,8 @@ export function ProteinCatalog({
     currentPage * RESULTS_PER_PAGE
   )
 
-  const handleFilterChange = (type: keyof Filters, value: any) => {
-    setFilters((prev) => {
+  const handleFilterChange = (type: keyof InteractionsFilters, value: any) => {
+    setInteractionsFilters((prev) => {
       if (type === "minReferences") {
         return { ...prev, [type]: value }
       }
@@ -336,7 +328,7 @@ export function ProteinCatalog({
   }
 
   const clearFilters = () => {
-    setFilters({
+    setInteractionsFilters({
       interactionType: [],
       curationEffort: [],
       ncbiTaxId: [],
@@ -354,16 +346,16 @@ export function ProteinCatalog({
   }
 
   const handleSearch = () => {
-    if (!query.trim()) return
+    if (!interactionsQuery.trim()) return
 
     if (onEntitySelect) {
-      onEntitySelect(query)
+      onEntitySelect(interactionsQuery)
     }
   }
 
   const handleExport = () => {
     if (filteredInteractions.length === 0) return;
-    const filename = `interactions_${query || 'export'}_${new Date().toISOString().split('T')[0]}`;
+    const filename = `interactions_${interactionsQuery || 'export'}_${new Date().toISOString().split('T')[0]}`;
     exportToCSV(filteredInteractions, filename);
   };
 
@@ -380,8 +372,8 @@ export function ProteinCatalog({
                   type="search"
                   placeholder="Search for proteins, genes, or other biological entities..."
                   className="w-full pl-9"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  value={interactionsQuery}
+                  onChange={(e) => setInteractionsQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
@@ -404,7 +396,7 @@ export function ProteinCatalog({
       <div className="max-w-7xl mx-auto p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <FilterSidebar
-            filters={filters}
+            filters={interactionsFilters}
             filterCounts={filterCounts}
             onFilterChange={handleFilterChange}
             showMobileFilters={showMobileFilters}
