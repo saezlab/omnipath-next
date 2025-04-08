@@ -308,20 +308,29 @@ export function ProteinCatalog({
     currentPage * RESULTS_PER_PAGE
   )
 
-  const handleFilterChange = (type: string, value: any) => {
+  const handleFilterChange = (type: keyof Filters, value: any) => {
     setFilters((prev) => {
-      const newFilters = { ...prev }
-      if (Array.isArray(prev[type])) {
-        const array = prev[type] as string[]
-        if (array.includes(value)) {
-          newFilters[type] = array.filter((v) => v !== value)
-        } else {
-          newFilters[type] = [...array, value]
-        }
-      } else {
-        newFilters[type] = value
+      if (type === "minReferences") {
+        return { ...prev, [type]: value }
       }
-      return newFilters
+
+      if (
+        type === "isDirected" ||
+        type === "isStimulation" ||
+        type === "isInhibition" ||
+        type === "consensusDirection" ||
+        type === "consensusStimulation" ||
+        type === "consensusInhibition"
+      ) {
+        return { ...prev, [type]: value }
+      }
+
+      const currentValues = prev[type] as string[]
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter((v) => v !== value)
+        : [...currentValues, value]
+
+      return { ...prev, [type]: newValues }
     })
     setCurrentPage(1)
   }

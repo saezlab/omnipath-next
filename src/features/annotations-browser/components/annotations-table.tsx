@@ -49,11 +49,42 @@ interface FilterCounts {
   annotationTypes: Record<string, number>
 }
 
+interface PivotedAnnotation {
+  recordId: number
+  source: string
+  geneSymbol: string | null
+  uniprotId: string | null
+  values: Record<string, string> // key: "source:label", value: annotation value
+}
+
 interface AnnotationsTableProps {
   currentResults: Annotation[]
   onSelectAnnotation: (annotation: Annotation) => void
   getCategoryIcon: (label: string | null) => React.ReactNode
   getCategoryColor: (label: string | null) => string
+}
+
+function pivotAnnotations(annotations: Annotation[]): PivotedAnnotation[] {
+  const pivoted: Record<number, PivotedAnnotation> = {};
+  
+  annotations.forEach(annotation => {
+    if (!annotation.recordId) return;
+    
+    if (!pivoted[annotation.recordId]) {
+      pivoted[annotation.recordId] = {
+        recordId: annotation.recordId,
+        source: annotation.source || '',
+        geneSymbol: annotation.genesymbol,
+        uniprotId: annotation.uniprot,
+        values: {}
+      };
+    }
+    
+    const key = `${annotation.source}:${annotation.label}`;
+    pivoted[annotation.recordId].values[key] = annotation.value || '';
+  });
+  
+  return Object.values(pivoted);
 }
 
 export function AnnotationsTable({
@@ -62,6 +93,19 @@ export function AnnotationsTable({
   getCategoryIcon,
   getCategoryColor,
 }: AnnotationsTableProps) {
+  const pivotedData = useMemo(() => pivotAnnotations(currentResults), [currentResults]);
+  
+  // Get unique column headers from the pivoted data
+  const columnHeaders = useMemo(() => {
+    const headers = new Set<string>();
+    pivotedData.forEach(row => {
+      Object.keys(row.values).forEach(key => {
+        headers.add(key);
+      });
+    });
+    return Array.from(headers).sort();
+  }, [pivotedData]);
+
   if (currentResults.length === 0) {
     return (
       <div className="p-8 text-center">
@@ -74,32 +118,31 @@ export function AnnotationsTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Type</TableHead>
+          <TableHead>Record ID</TableHead>
           <TableHead>Source</TableHead>
-          <TableHead>Value</TableHead>
           <TableHead>Gene Symbol</TableHead>
           <TableHead>UniProt ID</TableHead>
+          {columnHeaders.map(header => (
+            <TableHead key={header}>{header}</TableHead>
+          ))}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {currentResults.map((annotation) => (
+        {pivotedData.map((row) => (
           <TableRow
-            key={`${annotation.recordId}-${annotation.source}-${annotation.label}-${annotation.value}`}
+            key={row.recordId}
             className="cursor-pointer hover:bg-muted/50"
-            onClick={() => onSelectAnnotation(annotation)}
+            onClick={() => onSelectAnnotation(currentResults.find(a => a.recordId === row.recordId)!)}
           >
-            <TableCell>
-              <Badge className={getCategoryColor(annotation.label)}>
-                <div className="flex items-center gap-1">
-                  {getCategoryIcon(annotation.label)}
-                  {annotation.label || "Unknown"}
-                </div>
-              </Badge>
-            </TableCell>
-            <TableCell>{annotation.source || "Unknown"}</TableCell>
-            <TableCell>{annotation.value || "N/A"}</TableCell>
-            <TableCell>{annotation.genesymbol || "N/A"}</TableCell>
-            <TableCell>{annotation.uniprot || "N/A"}</TableCell>
+            <TableCell>{row.recordId}</TableCell>
+            <TableCell>{row.source}</TableCell>
+            <TableCell>{row.geneSymbol || "N/A"}</TableCell>
+            <TableCell>{row.uniprotId || "N/A"}</TableCell>
+            {columnHeaders.map(header => (
+              <TableCell key={`${row.recordId}-${header}`}>
+                {row.values[header] || "N/A"}
+              </TableCell>
+            ))}
           </TableRow>
         ))}
       </TableBody>
@@ -193,10 +236,14 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     return counts
   }, [annotations])
 
-  const totalPages = Math.ceil(filteredAnnotations.length / RESULTS_PER_PAGE)
+  const totalPages = Math.ceil(new Set(filteredAnnotations.map(a => a.recordId)).size / RESULTS_PER_PAGE)
   const startIndex = (currentPage - 1) * RESULTS_PER_PAGE
   const endIndex = startIndex + RESULTS_PER_PAGE
-  const currentResults = filteredAnnotations.slice(startIndex, endIndex)
+  const currentResults = filteredAnnotations.filter((_, index) => {
+    const recordId = filteredAnnotations[index].recordId
+    const firstOccurrence = filteredAnnotations.findIndex(a => a.recordId === recordId)
+    return index >= startIndex && index < endIndex && index === firstOccurrence
+  })
 
   // Handle filter changes
   const handleFilterChange = (type: keyof SearchFilters, value: any) => {

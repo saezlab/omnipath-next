@@ -54,7 +54,7 @@ interface AnnotationsBrowserProps {
 export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: AnnotationsBrowserProps) {
   const [query, setQuery] = useState(initialQuery)
   const [filters, setFilters] = useState<SearchFilters>({
-    sources: [],
+    sources: ["UniProt_keyword"],
     annotationTypes: [],
     valueSearch: "",
   })
@@ -117,34 +117,53 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     })
   }, [annotations, filters])
 
-  // Calculate filter counts based on ALL annotations (not filtered)
+  // Calculate filter counts based on unique records
   const filterCounts = useMemo(() => {
     const counts: FilterCounts = {
       sources: {},
       annotationTypes: {},
     }
 
-    annotations.forEach((annotation) => {
-      // Count sources
-      if (annotation.source) {
-        const source = annotation.source.toLowerCase()
-        counts.sources[source] = (counts.sources[source] || 0) + 1
-      }
+    // Get unique records first
+    const uniqueRecords = new Set(annotations.map(a => a.recordId))
+    
+    // For each unique record, count its sources and types
+    uniqueRecords.forEach(recordId => {
+      const recordAnnotations = annotations.filter(a => a.recordId === recordId)
+      
+      // Count unique sources for this record
+      const uniqueSources = new Set(recordAnnotations.map(a => a.source?.toLowerCase()))
+      uniqueSources.forEach(source => {
+        if (source) {
+          counts.sources[source] = (counts.sources[source] || 0) + 1
+        }
+      })
 
-      // Count annotation types
-      if (annotation.label) {
-        const label = annotation.label.toLowerCase()
-        counts.annotationTypes[label] = (counts.annotationTypes[label] || 0) + 1
-      }
+      // Count unique types for this record
+      const uniqueTypes = new Set(recordAnnotations.map(a => a.label?.toLowerCase()))
+      uniqueTypes.forEach(type => {
+        if (type) {
+          counts.annotationTypes[type] = (counts.annotationTypes[type] || 0) + 1
+        }
+      })
     })
 
     return counts
   }, [annotations])
 
-  const totalPages = Math.ceil(filteredAnnotations.length / RESULTS_PER_PAGE)
+  // Get unique record count for pagination and display
+  const uniqueRecordCount = new Set(filteredAnnotations.map(a => a.recordId)).size
+  const totalPages = Math.ceil(uniqueRecordCount / RESULTS_PER_PAGE)
   const startIndex = (currentPage - 1) * RESULTS_PER_PAGE
   const endIndex = startIndex + RESULTS_PER_PAGE
-  const currentResults = filteredAnnotations.slice(startIndex, endIndex)
+
+  // Get unique recordIds for the current page
+  const uniqueRecordIds = Array.from(new Set(filteredAnnotations.map(a => a.recordId))).slice(startIndex, endIndex)
+  
+  // Get all annotations for the records in the current page
+  const currentResults = filteredAnnotations.filter(annotation => 
+    uniqueRecordIds.includes(annotation.recordId)
+  )
 
   // Handle filter changes
   const handleFilterChange = (type: keyof SearchFilters, value: any) => {
@@ -160,11 +179,12 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
 
       return { ...prev, [type]: newValues }
     })
+    setCurrentPage(1)
   }
 
   const clearFilters = () => {
     setFilters({
-      sources: [],
+      sources: ["UniProt_keyword"],
       annotationTypes: [],
       valueSearch: "",
     })
@@ -202,8 +222,43 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
 
   const handleExport = () => {
     if (filteredAnnotations.length === 0) return;
+    
+    // Pivot all filtered annotations
+    const pivotedData = filteredAnnotations.reduce((acc: any[], annotation) => {
+      const existingRecord = acc.find(item => item.recordId === annotation.recordId);
+      
+      if (existingRecord) {
+        existingRecord.values[annotation.label || ''] = annotation.value;
+      } else {
+        acc.push({
+          recordId: annotation.recordId,
+          source: annotation.source,
+          geneSymbol: annotation.genesymbol,
+          uniprotId: annotation.uniprot,
+          values: {
+            [annotation.label || '']: annotation.value
+          }
+        });
+      }
+      
+      return acc;
+    }, []);
+
+    // Flatten the pivoted data for CSV export
+    const flattenedData = pivotedData.map(record => {
+      const baseRecord = {
+        'Record ID': record.recordId,
+        'Source': record.source,
+        'Gene Symbol': record.geneSymbol || 'N/A',
+        'UniProt ID': record.uniprotId || 'N/A'
+      };
+      
+      // Add all annotation values
+      return { ...baseRecord, ...record.values };
+    });
+
     const filename = `annotations_${query || 'export'}_${new Date().toISOString().split('T')[0]}`;
-    exportToCSV(filteredAnnotations, filename);
+    exportToCSV(flattenedData, filename);
   };
 
   return (
@@ -245,8 +300,8 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
           {/* Filters Sidebar */}
           <AnnotationsFilterSidebar
             filters={filters}
-            filterCounts={filterCounts}
             onFilterChange={handleFilterChange}
+            filterCounts={filterCounts}
             showMobileFilters={showMobileFilters}
             onClearFilters={clearFilters}
           />
@@ -289,7 +344,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium">
-                      Annotations ({filteredAnnotations.length} total)
+                      Annotations ({uniqueRecordCount} total)
                     </h3>
                   </div>
 
@@ -308,7 +363,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
                           totalPages={totalPages}
                           startIndex={startIndex}
                           endIndex={endIndex}
-                          totalItems={filteredAnnotations.length}
+                          totalItems={uniqueRecordCount}
                           onPageChange={setCurrentPage}
                         />
                       </CardContent>
