@@ -19,7 +19,7 @@ export function AnnotationsPage() {
 
   return (
     <SiteLayout>
-      <AnnotationsBrowser initialQuery={query} onEntitySelect={setEntityName} />
+      <AnnotationsBrowser initialQuery={query} />
       <QuickSwitchButton currentView="annotations" entityName={entityName || undefined} />
     </SiteLayout>
   )

@@ -24,7 +24,7 @@ interface FilterSidebarProps {
     consensusStimulation: { true: number; false: number }
     consensusInhibition: { true: number; false: number }
   }
-  onFilterChange: (type: keyof InteractionsFilters, value: any) => void
+  onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   showMobileFilters: boolean
   onClearFilters: () => void
 }
@@ -44,13 +44,13 @@ export function FilterSidebar({
 }: FilterSidebarProps) {
   // Get unique values for each filter type, filtering out those with zero counts
   const interactionTypes = Object.entries(filterCounts.interactionType)
-    .filter(([_, count]) => count > 0)
+    .filter(([, count]) => count > 0)
     .map(([type]) => type)
   const entityTypesSource = Object.entries(filterCounts.entityTypeSource)
-    .filter(([_, count]) => count > 0)
+    .filter(([, count]) => count > 0)
     .map(([type]) => type)
   const entityTypesTarget = Object.entries(filterCounts.entityTypeTarget)
-    .filter(([_, count]) => count > 0)
+    .filter(([, count]) => count > 0)
     .map(([type]) => type)
   const taxonomyEntries = Object.entries(TAXONOMY_MAPPING)
     .filter(([taxId]) => filterCounts.ncbiTaxId[taxId] > 0)

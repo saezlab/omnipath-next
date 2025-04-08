@@ -1,4 +1,4 @@
-export function exportToCSV(data: any[], filename: string) {
+export function exportToCSV<T extends Record<string, unknown>>(data: T[], filename: string) {
   if (!data.length) return;
 
   // Get headers from the first object

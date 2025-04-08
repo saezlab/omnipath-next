@@ -1,30 +1,29 @@
 "use client"
 
-import { useMemo, useEffect, useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import {
-  TableIcon,
-  BarChart3,
-  Download,
-  Search,
-  SlidersHorizontal,
-  Info,
-  Tag,
-  MapPin,
-  Activity,
-} from "lucide-react"
-import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
-import { AnnotationDetails } from "@/features/annotations-browser/components/annotation-details"
-import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
-import { Pagination } from "@/features/interactions-browser/components/pagination"
-import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
-import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
-import { exportToCSV } from "@/lib/utils/export"
-import { useSearchStore } from "@/store/search-store"
 import { FilterSkeleton } from "@/components/filter-skeleton"
 import { TableSkeleton } from "@/components/table-skeleton"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
+import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
+import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
+import { Pagination } from "@/features/interactions-browser/components/pagination"
+import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
+import { exportToCSV } from "@/lib/utils/export"
+import { useSearchStore } from "@/store/search-store"
+import {
+  Activity,
+  BarChart3,
+  Download,
+  Info,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  TableIcon,
+  Tag,
+} from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
 
 const RESULTS_PER_PAGE = 20
 
@@ -41,10 +40,17 @@ interface FilterCounts {
 
 interface AnnotationsBrowserProps {
   initialQuery?: string
-  onEntitySelect?: (entityName: string) => void
 }
 
-export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: AnnotationsBrowserProps) {
+interface PivotedAnnotationRecord {
+  recordId: number | null;
+  source: string | null;
+  geneSymbol: string | null;
+  uniprotId: string | null;
+  values: Record<string, string | null>;
+}
+
+export function AnnotationsBrowser({ initialQuery = "" }: AnnotationsBrowserProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
 
@@ -55,7 +61,6 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     annotationsFilters,
     annotationsViewMode,
     annotationsCurrentPage,
-    selectedAnnotation,
     setAnnotationsQuery,
     setAnnotationsResults,
     setAnnotationsFilters,
@@ -194,7 +199,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
   )
 
   // Handle filter changes
-  const handleFilterChange = (type: keyof SearchFilters, value: any) => {
+  const handleFilterChange = (type: keyof SearchFilters, value: string) => {
     setAnnotationsFilters((prev: SearchFilters) => {
       if (type === "valueSearch") {
         return { ...prev, [type]: value }
@@ -252,7 +257,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
     if (filteredAnnotations.length === 0) return;
     
     // Pivot all filtered annotations
-    const pivotedData = filteredAnnotations.reduce((acc: any[], annotation) => {
+    const pivotedData = filteredAnnotations.reduce((acc: PivotedAnnotationRecord[], annotation) => {
       const existingRecord = acc.find(item => item.recordId === annotation.recordId);
       
       if (existingRecord) {

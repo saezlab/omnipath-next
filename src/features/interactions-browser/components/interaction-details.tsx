@@ -1,9 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Search, FileText } from "lucide-react"
-
+import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 interface InteractionDetailsProps {
-  selectedInteraction: any | null
+  selectedInteraction: SearchProteinNeighborsResponse['interactions'][number] | null
 }
 
 export function InteractionDetails({ selectedInteraction }: InteractionDetailsProps) {

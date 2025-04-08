@@ -127,7 +127,7 @@ interface FilterCounts {
 
 interface AnnotationsFilterSidebarProps {
   filters: SearchFilters
-  onFilterChange: (type: keyof SearchFilters, value: any) => void
+  onFilterChange: (type: keyof SearchFilters, value: string) => void
   filterCounts: FilterCounts
   showMobileFilters: boolean
   onClearFilters: () => void

@@ -55,8 +55,6 @@ function pivotAnnotations(annotations: Annotation[]): PivotedAnnotation[] {
 export function AnnotationsTable({
   currentResults,
   onSelectAnnotation,
-  getCategoryIcon,
-  getCategoryColor,
 }: AnnotationsTableProps) {
   const pivotedData = useMemo(() => pivotAnnotations(currentResults), [currentResults]);
   

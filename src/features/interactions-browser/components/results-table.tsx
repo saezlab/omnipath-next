@@ -1,10 +1,10 @@
 "use client"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-
+import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 interface ResultsTableProps {
-  currentResults: any[]
-  onSelectInteraction: (interaction: any) => void
+  currentResults: SearchProteinNeighborsResponse['interactions']
+  onSelectInteraction: (interaction: SearchProteinNeighborsResponse['interactions'][number]) => void
 }
 
 export function ResultsTable({ currentResults, onSelectInteraction }: ResultsTableProps) {

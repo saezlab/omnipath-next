@@ -14,13 +14,13 @@ import { BarChart3, Download, Network, Search, SlidersHorizontal, TableIcon } fr
 import { useEffect, useMemo, useState } from "react"
 import { FilterSkeleton } from "@/components/filter-skeleton"
 import { TableSkeleton } from "@/components/table-skeleton"
-
+import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 const RESULTS_PER_PAGE = 15
 
 interface ProteinCatalogProps {
   initialQuery?: string
   onEntitySelect?: (entityName: string) => void
-  initialInteractions?: any[]
+  initialInteractions?: SearchProteinNeighborsResponse['interactions']
   isLoading?: boolean
 }
 
@@ -43,7 +43,6 @@ export function ProteinCatalog({
   initialQuery = "", 
   onEntitySelect,
   initialInteractions = [],
-  isLoading: externalIsLoading = false
 }: ProteinCatalogProps) {
   const {
     interactionsQuery,
@@ -54,10 +53,10 @@ export function ProteinCatalog({
     setInteractionsResults
   } = useSearchStore()
 
-  const [interactions, setInteractions] = useState<any[]>(initialInteractions)
+  const [interactions, setInteractions] = useState<SearchProteinNeighborsResponse['interactions']>(initialInteractions)
   const [viewMode, setViewMode] = useState<"table" | "network" | "chart">("table")
   const [currentPage, setCurrentPage] = useState(1)
-  const [selectedInteraction, setSelectedInteraction] = useState<any | null>(null)
+  const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -99,29 +98,24 @@ export function ProteinCatalog({
     // First, filter interactions based on all filters except the one being counted
     const filteredInteractions = interactions.filter((interaction) => {
       // Filter by interaction type (if not counting interaction types)
-      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type)) {
-        return false
-      }
-
-      // Filter by curation effort (if not counting curation effort)
-      if (interactionsFilters.curationEffort.length > 0 && !interactionsFilters.curationEffort.includes(interaction.curationEffort)) {
+      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type || '')) {
         return false
       }
 
       // Filter by taxonomy ID (if not counting taxonomy)
       if (interactionsFilters.ncbiTaxId.length > 0 && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
         return false
       }
 
       // Filter by source entity type (if not counting source entity types)
-      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource)) {
+      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
         return false
       }
 
       // Filter by target entity type (if not counting target entity types)
-      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget)) {
+      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
         return false
       }
 
@@ -196,22 +190,22 @@ export function ProteinCatalog({
 
       // Count boolean properties
       if (interaction.isDirected !== undefined) {
-        counts.isDirected[interaction.isDirected.toString() as 'true' | 'false']++
+        counts.isDirected[interaction.isDirected?.toString() as 'true' | 'false']++
       }
       if (interaction.isStimulation !== undefined) {
-        counts.isStimulation[interaction.isStimulation.toString() as 'true' | 'false']++
+        counts.isStimulation[interaction.isStimulation?.toString() as 'true' | 'false']++
       }
       if (interaction.isInhibition !== undefined) {
-        counts.isInhibition[interaction.isInhibition.toString() as 'true' | 'false']++
+        counts.isInhibition[interaction.isInhibition?.toString() as 'true' | 'false']++
       }
       if (interaction.consensusDirection !== undefined) {
-        counts.consensusDirection[interaction.consensusDirection.toString() as 'true' | 'false']++
+        counts.consensusDirection[interaction.consensusDirection?.toString() as 'true' | 'false']++
       }
       if (interaction.consensusStimulation !== undefined) {
-        counts.consensusStimulation[interaction.consensusStimulation.toString() as 'true' | 'false']++
+        counts.consensusStimulation[interaction.consensusStimulation?.toString() as 'true' | 'false']++
       }
       if (interaction.consensusInhibition !== undefined) {
-        counts.consensusInhibition[interaction.consensusInhibition.toString() as 'true' | 'false']++
+        counts.consensusInhibition[interaction.consensusInhibition?.toString() as 'true' | 'false']++
       }
     })
 
@@ -222,29 +216,24 @@ export function ProteinCatalog({
   const filteredInteractions = useMemo(() => {
     return interactions.filter((interaction) => {
       // Filter by interaction type
-      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type)) {
-        return false
-      }
-
-      // Filter by curation effort
-      if (interactionsFilters.curationEffort.length > 0 && !interactionsFilters.curationEffort.includes(interaction.curationEffort)) {
+      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type || '')) {
         return false
       }
 
       // Filter by taxonomy ID
       if (interactionsFilters.ncbiTaxId.length > 0 && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource) && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget)) {
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
+          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
         return false
       }
 
       // Filter by source entity type
-      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource)) {
+      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
         return false
       }
 
       // Filter by target entity type
-      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget)) {
+      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
         return false
       }
 
@@ -295,10 +284,10 @@ export function ProteinCatalog({
     currentPage * RESULTS_PER_PAGE
   )
 
-  const handleFilterChange = (type: keyof InteractionsFilters, value: any) => {
+  const handleFilterChange = (type: keyof InteractionsFilters, value: string | boolean | null | number) => {
     setInteractionsFilters((prev) => {
       if (type === "minReferences") {
-        return { ...prev, [type]: value }
+        return { ...prev, [type]: Number(value) || 0 }
       }
 
       if (
@@ -313,9 +302,9 @@ export function ProteinCatalog({
       }
 
       const currentValues = prev[type] as string[]
-      const newValues = currentValues.includes(value)
+      const newValues = currentValues.includes(value as string)
         ? currentValues.filter((v) => v !== value)
-        : [...currentValues, value]
+        : [...currentValues, value as string]
 
       return { ...prev, [type]: newValues }
     })

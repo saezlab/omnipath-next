@@ -1,15 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Database, History } from "lucide-react"
+import { MainNav } from "@/components/layout/main-nav"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MainNav } from "@/components/layout/main-nav"
-import { Search } from "lucide-react"
+import { Database, History, Search } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 // Sample recent searches
 const RECENT_SEARCHES = [
@@ -20,7 +18,6 @@ const RECENT_SEARCHES = [
 ]
 
 export function SiteHeader() {
-  const pathname = usePathname()
   const [searchHistory, setSearchHistory] = useState(RECENT_SEARCHES)
 
   // Get entity type color

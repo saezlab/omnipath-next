@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { StateCreator } from 'zustand'
-
+import { SearchProteinNeighborsResponse } from '@/features/interactions-browser/api/queries'
 interface Annotation {
   uniprot: string | null
   genesymbol: string | null
@@ -44,9 +44,9 @@ interface SearchState {
 
   // Interactions state
   interactionsQuery: string
-  interactionsResults: any[]
+  interactionsResults: SearchProteinNeighborsResponse['interactions']
   interactionsCurrentPage: number
-  selectedInteraction: any | null
+  selectedInteraction: SearchProteinNeighborsResponse['interactions'][number] | null
   interactionsFilters: InteractionsFilters
 
   // Actions
@@ -58,9 +58,9 @@ interface SearchState {
   setSelectedAnnotation: (annotation: Annotation | null) => void
 
   setInteractionsQuery: (query: string) => void
-  setInteractionsResults: (results: any[]) => void
+  setInteractionsResults: (results: SearchProteinNeighborsResponse['interactions']) => void
   setInteractionsCurrentPage: (page: number) => void
-  setSelectedInteraction: (interaction: any | null) => void
+  setSelectedInteraction: (interaction: SearchProteinNeighborsResponse['interactions'][number] | null) => void
   setInteractionsFilters: (filters: InteractionsFilters | ((prev: InteractionsFilters) => InteractionsFilters)) => void
 }
 
@@ -68,7 +68,7 @@ type SearchStateCreator = StateCreator<SearchState, [], []>
 
 export const useSearchStore = create<SearchState>()(
   persist(
-    ((set: any) => ({
+    ((set) => ({
       // Initial state
       annotationsQuery: '',
       annotationsResults: [],
@@ -112,9 +112,9 @@ export const useSearchStore = create<SearchState>()(
       setSelectedAnnotation: (annotation: Annotation | null) => set({ selectedAnnotation: annotation }),
 
       setInteractionsQuery: (query: string) => set({ interactionsQuery: query }),
-      setInteractionsResults: (results: any[]) => set({ interactionsResults: results }),
+      setInteractionsResults: (results: SearchProteinNeighborsResponse['interactions']) => set({ interactionsResults: results }),
       setInteractionsCurrentPage: (page: number) => set({ interactionsCurrentPage: page }),
-      setSelectedInteraction: (interaction: any | null) => set({ selectedInteraction: interaction }),
+      setSelectedInteraction: (interaction: SearchProteinNeighborsResponse['interactions'][number] | null) => set({ selectedInteraction: interaction }),
       setInteractionsFilters: (filters: InteractionsFilters | ((prev: InteractionsFilters) => InteractionsFilters)) => 
         set((state: SearchState) => ({ 
           interactionsFilters: typeof filters === 'function' ? filters(state.interactionsFilters) : filters 
