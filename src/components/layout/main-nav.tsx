@@ -10,7 +10,7 @@ export function MainNav() {
 
   return (
     <nav className="flex items-center space-x-4 lg:space-x-6">
-      <Link
+{/*       <Link
         href="/"
         className={cn(
           "flex items-center gap-1 text-sm font-medium transition-colors hover:text-primary",
@@ -19,7 +19,7 @@ export function MainNav() {
       >
         <Home className="h-4 w-4" />
         <span className="hidden sm:inline">Home</span>
-      </Link>
+      </Link> */}
       <Link
         href="/interactions"
         className={cn(
