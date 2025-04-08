@@ -124,14 +124,12 @@ export const useSearchStore = create<SearchState>()(
       name: 'search-store',
       partialize: (state) => ({
         annotationsQuery: state.annotationsQuery,
-        annotationsResults: state.annotationsResults,
         annotationsFilters: state.annotationsFilters,
         annotationsViewMode: state.annotationsViewMode,
         annotationsCurrentPage: state.annotationsCurrentPage,
         selectedAnnotation: state.selectedAnnotation,
 
         interactionsQuery: state.interactionsQuery,
-        interactionsResults: state.interactionsResults,
         interactionsCurrentPage: state.interactionsCurrentPage,
         selectedInteraction: state.selectedInteraction,
         interactionsFilters: state.interactionsFilters,

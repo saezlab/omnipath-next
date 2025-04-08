@@ -23,8 +23,10 @@ import { VisualizationPlaceholder } from "@/features/interactions-browser/compon
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore } from "@/store/search-store"
+import { FilterSkeleton } from "@/components/filter-skeleton"
+import { TableSkeleton } from "@/components/table-skeleton"
 
-const RESULTS_PER_PAGE = 10
+const RESULTS_PER_PAGE = 20
 
 interface SearchFilters {
   sources: string[]
@@ -68,6 +70,13 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
       handleSearch(initialQuery)
     }
   }, [initialQuery])
+
+  // Add effect to refetch when there's a query but no results
+  useEffect(() => {
+    if (annotationsQuery && annotationsResults.length === 0) {
+      handleSearch(annotationsQuery)
+    }
+  }, [annotationsQuery, annotationsResults.length])
 
   const handleSearch = async (searchQuery: string = annotationsQuery) => {
     if (!searchQuery.trim()) return
@@ -317,17 +326,23 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
       <div className="max-w-7xl mx-auto p-4">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Filters Sidebar */}
-          <AnnotationsFilterSidebar
-            filters={annotationsFilters}
-            onFilterChange={handleFilterChange}
-            filterCounts={filterCounts}
-            showMobileFilters={showMobileFilters}
-            onClearFilters={clearFilters}
-          />
+          {isLoading ? (
+            <FilterSkeleton />
+          ) : (
+            <AnnotationsFilterSidebar
+              filters={annotationsFilters}
+              onFilterChange={handleFilterChange}
+              filterCounts={filterCounts}
+              showMobileFilters={showMobileFilters}
+              onClearFilters={clearFilters}
+            />
+          )}
 
           {/* Main Content */}
           <div className="flex-1">
-            {annotationsResults.length > 0 ? (
+            {isLoading ? (
+              <TableSkeleton rows={5} />
+            ) : annotationsResults.length > 0 ? (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2">
@@ -343,6 +358,7 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
                       variant={annotationsViewMode === "chart" ? "default" : "outline"}
                       size="sm"
                       onClick={() => setAnnotationsViewMode("chart")}
+                      disabled
                     >
                       <BarChart3 className="h-4 w-4 mr-2" />
                       Chart
@@ -396,11 +412,11 @@ export function AnnotationsBrowser({ initialQuery = "", onEntitySelect }: Annota
                   )}
 
                   {/* Annotation Details */}
-                  <AnnotationDetails
+{/*                   <AnnotationDetails
                     selectedAnnotation={selectedAnnotation}
                     getCategoryIcon={getCategoryIcon}
                     getCategoryColor={getCategoryColor}
-                  />
+                  /> */}
                 </div>
               </div>
             ) : (

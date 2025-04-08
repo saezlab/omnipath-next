@@ -1,19 +1,21 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { TableIcon, Network, BarChart3, Download, Search, SlidersHorizontal } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
-import { ResultsTable } from "@/features/interactions-browser/components/results-table"
 import { Pagination } from "@/features/interactions-browser/components/pagination"
+import { ResultsTable } from "@/features/interactions-browser/components/results-table"
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
 import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
+import { BarChart3, Download, Network, Search, SlidersHorizontal, TableIcon } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { FilterSkeleton } from "@/components/filter-skeleton"
+import { TableSkeleton } from "@/components/table-skeleton"
 
-const RESULTS_PER_PAGE = 10
+const RESULTS_PER_PAGE = 15
 
 interface ProteinCatalogProps {
   initialQuery?: string
@@ -22,23 +24,6 @@ interface ProteinCatalogProps {
   isLoading?: boolean
 }
 
-type FilterValue = string[] | boolean | null | number
-
-interface Filters {
-  [key: string]: FilterValue
-  interactionType: string[]
-  curationEffort: string[]
-  ncbiTaxId: string[]
-  entityTypeSource: string[]
-  entityTypeTarget: string[]
-  isDirected: boolean | null
-  isStimulation: boolean | null
-  isInhibition: boolean | null
-  consensusDirection: boolean | null
-  consensusStimulation: boolean | null
-  consensusInhibition: boolean | null
-  minReferences: number
-}
 
 interface FilterCounts {
   interactionType: Record<string, number>
@@ -58,13 +43,15 @@ export function ProteinCatalog({
   initialQuery = "", 
   onEntitySelect,
   initialInteractions = [],
-  isLoading = false
+  isLoading: externalIsLoading = false
 }: ProteinCatalogProps) {
   const {
     interactionsQuery,
     setInteractionsQuery,
     interactionsFilters,
-    setInteractionsFilters
+    setInteractionsFilters,
+    interactionsResults,
+    setInteractionsResults
   } = useSearchStore()
 
   const [interactions, setInteractions] = useState<any[]>(initialInteractions)
@@ -72,6 +59,7 @@ export function ProteinCatalog({
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedInteraction, setSelectedInteraction] = useState<any | null>(null)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // Load data when initialQuery changes
   useEffect(() => {
@@ -79,6 +67,13 @@ export function ProteinCatalog({
       setInteractionsQuery(initialQuery)
     }
   }, [initialQuery])
+
+  // Add effect to refetch when there's a query but no results
+  useEffect(() => {
+    if (interactionsQuery && interactionsResults.length === 0) {
+      handleSearch()
+    }
+  }, [interactionsQuery, interactionsResults.length])
 
   // Update interactions when initialInteractions changes
   useEffect(() => {
@@ -345,11 +340,23 @@ export function ProteinCatalog({
     setCurrentPage(1)
   }
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!interactionsQuery.trim()) return
 
-    if (onEntitySelect) {
-      onEntitySelect(interactionsQuery)
+    setIsLoading(true)
+    setCurrentPage(1)
+
+    try {
+      const response = await searchProteinNeighbors(interactionsQuery)
+      setInteractionsResults(response.interactions)
+      setInteractions(response.interactions)
+      if (onEntitySelect) {
+        onEntitySelect(interactionsQuery)
+      }
+    } catch (error) {
+      console.error("Error fetching interactions:", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -395,13 +402,17 @@ export function ProteinCatalog({
 
       <div className="max-w-7xl mx-auto p-4">
         <div className="flex flex-col md:flex-row gap-4">
-          <FilterSidebar
-            filters={interactionsFilters}
-            filterCounts={filterCounts}
-            onFilterChange={handleFilterChange}
-            showMobileFilters={showMobileFilters}
-            onClearFilters={clearFilters}
-          />
+          {isLoading ? (
+            <FilterSkeleton />
+          ) : (
+            <FilterSidebar
+              filters={interactionsFilters}
+              filterCounts={filterCounts}
+              onFilterChange={handleFilterChange}
+              showMobileFilters={showMobileFilters}
+              onClearFilters={clearFilters}
+            />
+          )}
 
           <div className="flex-1">
             <div className="flex items-center justify-between mb-4">
@@ -418,6 +429,7 @@ export function ProteinCatalog({
                   variant={viewMode === "network" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setViewMode("network")}
+                  disabled
                 >
                   <Network className="w-4 h-4 mr-2" />
                   Network
@@ -444,7 +456,7 @@ export function ProteinCatalog({
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8">Loading interactions...</div>
+              <TableSkeleton rows={5} />
             ) : viewMode === "table" ? (
               <>
                 <ResultsTable

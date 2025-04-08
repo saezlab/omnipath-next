@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { SiteLayout } from "@/components/layout/site-layout"
 import { ProteinCatalog } from "@/features/interactions-browser/components/protein-catalog"
 import { QuickSwitchButton } from "@/components/shared/quick-switch-button"
@@ -12,6 +12,7 @@ export function InteractionsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const query = searchParams.get("q") || ""
+  const [isLoading, setIsLoading] = useState(false)
   
   const {
     interactionsQuery,
@@ -29,6 +30,7 @@ export function InteractionsPage() {
     if (lastSearchRef.current === searchQuery) return
     lastSearchRef.current = searchQuery
 
+    setIsLoading(true)
     try {
       const response = await searchProteinNeighbors(searchQuery)
       setInteractionsResults(response.interactions)
@@ -38,6 +40,8 @@ export function InteractionsPage() {
       }
     } catch (error) {
       console.error("Error fetching interactions:", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -53,7 +57,7 @@ export function InteractionsPage() {
         initialQuery={query} 
         onEntitySelect={(searchQuery) => handleSearch(searchQuery, false)}
         initialInteractions={interactionsResults}
-        isLoading={false}
+        isLoading={isLoading}
       />
       <QuickSwitchButton currentView="interactions" entityName={interactionsQuery || undefined} />
     </SiteLayout>
