@@ -1,25 +1,22 @@
 "use client"
 
+import { DataCard } from "@/components/data-card"
+import { FilterSkeleton } from "@/components/filter-skeleton"
+import { SearchBar } from "@/components/search-bar"
+import { TableSkeleton } from "@/components/table-skeleton"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { Pagination } from "@/features/interactions-browser/components/pagination"
 import { ResultsTable } from "@/features/interactions-browser/components/results-table"
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
+import { useSyncUrl } from '@/hooks/use-sync-url'
 import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
-import { BarChart3, Download, Network, Search, SlidersHorizontal, TableIcon } from "lucide-react"
+import { Search, SlidersHorizontal } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
-import { FilterSkeleton } from "@/components/filter-skeleton"
-import { TableSkeleton } from "@/components/table-skeleton"
-import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
-import { useSyncUrl } from '@/hooks/use-sync-url'
-import { Card, CardContent } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { SearchBar } from "@/components/search-bar"
-import { DataCard } from "@/components/data-card"
 const RESULTS_PER_PAGE = 15
 
 interface InteractionsBrowserProps {

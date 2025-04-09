@@ -1,5 +1,6 @@
 "use client"
 
+import { FilterCard } from "@/components/filter-card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -9,8 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { InteractionsFilters } from "@/store/search-store"
-import { Check, Filter, Info, X } from "lucide-react"
-import { FilterCard } from "@/components/filter-card"
+import { Check, Info } from "lucide-react"
 
 interface FilterSidebarProps {
   filters: InteractionsFilters
