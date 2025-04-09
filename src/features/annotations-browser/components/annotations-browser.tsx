@@ -209,7 +209,7 @@ export function AnnotationsBrowser() {
 
   const clearFilters = () => {
     setAnnotationsFilters({
-      sources: ["UniProt_keyword"],
+      sources: [],
       annotationTypes: [],
       valueSearch: "",
     })
@@ -274,8 +274,8 @@ export function AnnotationsBrowser() {
       const baseRecord = {
         'Record ID': record.recordId,
         'Source': record.source,
-        'Gene Symbol': record.geneSymbol || 'N/A',
-        'UniProt ID': record.uniprotId || 'N/A'
+        'Gene Symbol': record.geneSymbol,
+        'UniProt ID': record.uniprotId
       };
       
       // Add all annotation values
@@ -336,7 +336,7 @@ export function AnnotationsBrowser() {
           )}
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {isLoading ? (
               <TableSkeleton rows={5} />
             ) : annotationsResults.length > 0 ? (

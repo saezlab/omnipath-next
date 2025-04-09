@@ -1,12 +1,12 @@
 "use client"
 
 import { SiteLayout } from "@/components/layout/site-layout"
-import { ProteinCatalog } from "@/features/interactions-browser/components/protein-catalog"
+import { InteractionsBrowser } from "@/features/interactions-browser/components/interactions-browser"
 
 export function InteractionsPage() {
   return (
     <SiteLayout>
-      <ProteinCatalog 
+      <InteractionsBrowser 
       />
     </SiteLayout>
   )

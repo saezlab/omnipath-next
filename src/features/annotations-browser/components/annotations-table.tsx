@@ -99,11 +99,11 @@ export function AnnotationsTable({
           >
             <TableCell>{row.recordId}</TableCell>
             <TableCell>{row.source}</TableCell>
-            <TableCell>{row.geneSymbol || "N/A"}</TableCell>
-            <TableCell>{row.uniprotId || "N/A"}</TableCell>
+            <TableCell>{row.geneSymbol}</TableCell>
+            <TableCell>{row.uniprotId}</TableCell>
             {columnHeaders.map(header => (
               <TableCell key={`${row.recordId}-${header}`}>
-                {row.values[header] || "N/A"}
+                {row.values[header] || "-"}
               </TableCell>
             ))}
           </TableRow>

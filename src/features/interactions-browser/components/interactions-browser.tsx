@@ -16,9 +16,11 @@ import { FilterSkeleton } from "@/components/filter-skeleton"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { useSyncUrl } from '@/hooks/use-sync-url'
+import { Card, CardContent } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 const RESULTS_PER_PAGE = 15
 
-interface ProteinCatalogProps {
+interface InteractionsBrowserProps {
   onEntitySelect?: (entityName: string) => void
   isLoading?: boolean
 }
@@ -38,9 +40,9 @@ interface FilterCounts {
   consensusInhibition: { true: number; false: number }
 }
 
-export function ProteinCatalog({ 
+export function InteractionsBrowser({ 
   onEntitySelect,
-}: ProteinCatalogProps) {
+}: InteractionsBrowserProps) {
   // Use the URL sync hook
   useSyncUrl()
 
@@ -59,6 +61,7 @@ export function ProteinCatalog({
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
   // Sync local interactions state with store
   useEffect(() => {
@@ -347,6 +350,11 @@ export function ProteinCatalog({
     exportToCSV(filteredInteractions, filename);
   };
 
+  const handleSelectInteraction = (interaction: SearchProteinNeighborsResponse['interactions'][number]) => {
+    setSelectedInteraction(interaction)
+    setIsDetailsOpen(true)
+  }
+
   return (
     <div className="w-full">
       {/* Search Bar */}
@@ -382,7 +390,8 @@ export function ProteinCatalog({
       </div>
 
       <div className="max-w-7xl mx-auto p-4">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Filters Sidebar */}
           {isLoading ? (
             <FilterSkeleton />
           ) : (
@@ -395,77 +404,113 @@ export function ProteinCatalog({
             />
           )}
 
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={viewMode === "table" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("table")}
-                >
-                  <TableIcon className="w-4 h-4 mr-2" />
-                  Table
-                </Button>
-                <Button
-                  variant={viewMode === "network" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("network")}
-                  disabled
-                >
-                  <Network className="w-4 h-4 mr-2" />
-                  Network
-                </Button>
-                <Button
-                  variant={viewMode === "chart" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setViewMode("chart")}
-                  disabled
-                >
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  Chart
-                </Button>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExport}
-                disabled={filteredInteractions.length === 0}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Export CSV
-              </Button>
-            </div>
-
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
             {isLoading ? (
               <TableSkeleton rows={5} />
-            ) : viewMode === "table" ? (
-              <>
-                <ResultsTable
-                  currentResults={paginatedInteractions}
-                  onSelectInteraction={setSelectedInteraction}
-                />
-                {totalPages > 1 && (
-                  <div className="mt-4">
-                    <Pagination
-                      currentPage={currentPage}
-                      totalPages={totalPages}
-                      startIndex={(currentPage - 1) * RESULTS_PER_PAGE}
-                      endIndex={currentPage * RESULTS_PER_PAGE}
-                      totalItems={filteredInteractions.length}
-                      onPageChange={setCurrentPage}
-                    />
+            ) : interactionsResults.length > 0 ? (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div className="flex gap-2">
+                    <Button
+                      variant={viewMode === "table" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("table")}
+                    >
+                      <TableIcon className="h-4 w-4 mr-2" />
+                      Table
+                    </Button>
+                    <Button
+                      variant={viewMode === "network" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("network")}
+                      disabled
+                    >
+                      <Network className="h-4 w-4 mr-2" />
+                      Network
+                    </Button>
+                    <Button
+                      variant={viewMode === "chart" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("chart")}
+                      disabled
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Chart
+                    </Button>
                   </div>
-                )}
-                {selectedInteraction && (
-                  <InteractionDetails selectedInteraction={selectedInteraction} />
-                )}
-              </>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExport}
+                    disabled={filteredInteractions.length === 0}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export CSV
+                  </Button>
+                </div>
+
+                {/* Interactions Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium">
+                      Interactions ({filteredInteractions.length} total)
+                    </h3>
+                  </div>
+
+                  {/* Results display based on view mode */}
+                  {viewMode === "table" ? (
+                    <Card>
+                      <CardContent className="p-0">
+                        <ResultsTable
+                          currentResults={paginatedInteractions}
+                          onSelectInteraction={handleSelectInteraction}
+                        />
+                        {totalPages > 1 && (
+                          <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            startIndex={(currentPage - 1) * RESULTS_PER_PAGE}
+                            endIndex={currentPage * RESULTS_PER_PAGE}
+                            totalItems={filteredInteractions.length}
+                            onPageChange={setCurrentPage}
+                          />
+                        )}
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card>
+                      <CardContent className="p-4">
+                        <VisualizationPlaceholder type={viewMode} />
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              </div>
             ) : (
-              <VisualizationPlaceholder type={viewMode} />
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No interactions found</h3>
+                <p className="text-muted-foreground max-w-md">
+                  Search for proteins or genes to explore their interactions.
+                </p>
+              </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Interaction Details Dialog */}
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle>
+            Interaction Details: {selectedInteraction?.sourceGenesymbol || selectedInteraction?.source} → {selectedInteraction?.targetGenesymbol || selectedInteraction?.target}
+          </DialogTitle>
+          {selectedInteraction && (
+            <InteractionDetails selectedInteraction={selectedInteraction} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
