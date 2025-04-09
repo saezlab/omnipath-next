@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { SearchBar } from "@/components/search-bar"
+import { DataCard } from "@/components/data-card"
 
 const RESULTS_PER_PAGE = 20
 
@@ -48,9 +49,12 @@ interface PivotedAnnotationRecord {
   values: Record<string, string | null>;
 }
 
+type ViewMode = "table" | "network" | "chart"
+
 export function AnnotationsBrowser() {
   const [isLoading, setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [viewMode, setViewMode] = useState<ViewMode>("table")
 
   // Use the URL sync hook
   useSyncUrl()
@@ -317,80 +321,41 @@ export function AnnotationsBrowser() {
               <TableSkeleton rows={5} />
             ) : annotationsResults.length > 0 ? (
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-2">
-                    <Button
-                      variant={annotationsViewMode === "table" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setAnnotationsViewMode("table")}
-                    >
-                      <TableIcon className="h-4 w-4 mr-2" />
-                      Table
-                    </Button>
-                    <Button
-                      variant={annotationsViewMode === "chart" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setAnnotationsViewMode("chart")}
-                      disabled
-                    >
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Chart
-                    </Button>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleExport}
-                    disabled={filteredAnnotations.length === 0}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export CSV
-                  </Button>
-                </div>
 
                 {/* Annotations Section */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium">
-                      Annotations ({uniqueRecordCount} total)
-                    </h3>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="md:hidden"
-                      onClick={() => setShowMobileFilters(!showMobileFilters)}
-                    >
-                      <SlidersHorizontal className="h-4 w-4" />
-                    </Button>
-                  </div>
 
                   {/* Results display based on view mode */}
-                  {annotationsViewMode === "table" ? (
-                    <Card>
-                      <CardContent className="p-0">
-                        <AnnotationsTable
-                          currentResults={currentResults}
-                          onSelectAnnotation={(annotation) => setSelectedAnnotation(annotation)}
-                          getCategoryIcon={getCategoryIcon}
-                          getCategoryColor={getCategoryColor}
-                        />
-                        <Pagination
-                          currentPage={annotationsCurrentPage}
-                          totalPages={totalPages}
-                          startIndex={startIndex}
-                          endIndex={endIndex}
-                          totalItems={uniqueRecordCount}
-                          onPageChange={setAnnotationsCurrentPage}
-                        />
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card>
-                      <CardContent className="p-4">
-                        <VisualizationPlaceholder type="chart" />
-                      </CardContent>
-                    </Card>
-                  )}
+                  <DataCard<ViewMode>
+                    title="Annotations"
+                    totalItems={uniqueRecordCount}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    onExport={handleExport}
+                    headerActions={
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="md:hidden"
+                        onClick={() => setShowMobileFilters(!showMobileFilters)}
+                      >
+                        <SlidersHorizontal className="h-4 w-4" />
+                      </Button>
+                    }
+                  >
+                    {viewMode === "table" ? (
+                      <AnnotationsTable
+                        currentResults={currentResults}
+                        onSelectAnnotation={(annotation) => setSelectedAnnotation(annotation)}
+                        getCategoryIcon={getCategoryIcon}
+                        getCategoryColor={getCategoryColor}
+                      />
+                    ) : viewMode === "chart" ? (
+                      <VisualizationPlaceholder type="chart" />
+                    ) : (
+                      <VisualizationPlaceholder type="network" />
+                    )}
+                  </DataCard>
 
                   {/* Annotation Details */}
 {/*                   <AnnotationDetails

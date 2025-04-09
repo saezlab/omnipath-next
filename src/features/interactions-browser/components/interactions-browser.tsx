@@ -19,6 +19,7 @@ import { useSyncUrl } from '@/hooks/use-sync-url'
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { SearchBar } from "@/components/search-bar"
+import { DataCard } from "@/components/data-card"
 const RESULTS_PER_PAGE = 15
 
 interface InteractionsBrowserProps {
@@ -38,6 +39,8 @@ interface FilterCounts {
   isInhibition: { true: number; false: number }
 }
 
+type ViewMode = "table" | "network" | "chart"
+
 export function InteractionsBrowser({ 
   onEntitySelect,
 }: InteractionsBrowserProps) {
@@ -54,7 +57,7 @@ export function InteractionsBrowser({
   } = useSearchStore()
 
   const [interactions, setInteractions] = useState<SearchProteinNeighborsResponse['interactions']>([])
-  const [viewMode, setViewMode] = useState<"table" | "network" | "chart">("table")
+  const [viewMode, setViewMode] = useState<ViewMode>("table")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
@@ -274,18 +277,19 @@ export function InteractionsBrowser({
     setCurrentPage(1)
   }
 
-  const handleSearch = async () => {
-    if (!interactionsQuery.trim()) return
+  const handleSearch = async (searchQuery: string = interactionsQuery) => {
+    if (!searchQuery.trim()) return
 
     setIsLoading(true)
     setCurrentPage(1)
+    setInteractionsQuery(searchQuery)
 
     try {
-      const response = await searchProteinNeighbors(interactionsQuery)
+      const response = await searchProteinNeighbors(searchQuery)
       setInteractionsResults(response.interactions)
       setInteractions(response.interactions)
       if (onEntitySelect) {
-        onEntitySelect(interactionsQuery)
+        onEntitySelect(searchQuery)
       }
     } catch (error) {
       console.error("Error fetching interactions:", error)
@@ -309,7 +313,7 @@ export function InteractionsBrowser({
     <div className="w-full">
       <SearchBar
         placeholder="Search for proteins, genes, or other biological entities..."
-        onSearch={handleSearch}
+        onSearch={(query) => handleSearch(query)}
         isLoading={isLoading}
         initialQuery={interactionsQuery}
       />
@@ -334,67 +338,30 @@ export function InteractionsBrowser({
             {isLoading ? (
               <TableSkeleton rows={5} />
             ) : interactionsResults.length > 0 ? (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-2">
-                    <Button
-                      variant={viewMode === "table" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setViewMode("table")}
-                    >
-                      <TableIcon className="h-4 w-4 mr-2" />
-                      Table
-                    </Button>
-                    <Button
-                      variant={viewMode === "network" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setViewMode("network")}
-                      disabled
-                    >
-                      <Network className="h-4 w-4 mr-2" />
-                      Network
-                    </Button>
-                    <Button
-                      variant={viewMode === "chart" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setViewMode("chart")}
-                      disabled
-                    >
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Chart
-                    </Button>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleExport}
-                    disabled={filteredInteractions.length === 0}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Export CSV
-                  </Button>
-                </div>
+              <div className="space-y-6"> 
 
                 {/* Interactions Section */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium">
-                      Interactions ({filteredInteractions.length} total)
-                    </h3>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="md:hidden"
-                      onClick={() => setShowMobileFilters(!showMobileFilters)}
-                    >
-                      <SlidersHorizontal className="h-4 w-4" />
-                    </Button>
-                  </div>
-
                   {/* Results display based on view mode */}
-                  {viewMode === "table" ? (
-                    <Card>
-                      <CardContent className="p-0">
+                  <DataCard<ViewMode>
+                    title="Interactions"
+                    totalItems={filteredInteractions.length}
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                    onExport={handleExport}
+                    headerActions={
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="md:hidden"
+                        onClick={() => setShowMobileFilters(!showMobileFilters)}
+                      >
+                        <SlidersHorizontal className="h-4 w-4" />
+                      </Button>
+                    }
+                  >
+                    {viewMode === "table" ? (
+                      <>
                         <ResultsTable
                           currentResults={paginatedInteractions}
                           onSelectInteraction={handleSelectInteraction}
@@ -409,15 +376,11 @@ export function InteractionsBrowser({
                             onPageChange={setCurrentPage}
                           />
                         )}
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card>
-                      <CardContent className="p-4">
-                        <VisualizationPlaceholder type={viewMode} />
-                      </CardContent>
-                    </Card>
-                  )}
+                      </>
+                    ) : (
+                      <VisualizationPlaceholder type={viewMode} />
+                    )}
+                  </DataCard>
                 </div>
               </div>
             ) : (

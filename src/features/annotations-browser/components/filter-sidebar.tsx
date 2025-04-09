@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Filter, X } from "lucide-react"
+import { FilterCard } from "@/components/filter-card"
 
 // Filter options
 const SOURCE_GROUPS = {
@@ -149,89 +149,74 @@ export function AnnotationsFilterSidebar({
   }, 0)
 
   return (
-    <div className={`md:w-64 lg:w-72 shrink-0 space-y-4 ${showMobileFilters ? "block" : "hidden"} md:block`}>
-      <div className="sticky top-24">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            <h3 className="font-semibold text-lg">Filters</h3>
+    <FilterCard
+      title="Filters"
+      activeFilterCount={activeFilterCount}
+      onClearFilters={onClearFilters}
+      showMobileFilters={showMobileFilters}
+    >
+      {Object.entries(SOURCE_GROUPS).map(([groupName, sources]) => {
+        // Filter sources with non-zero counts and sort by count
+        const filteredSources = sources
+          .filter(source => (filterCounts.sources[source.value.toLowerCase()] || 0) > 0)
+          .sort((a, b) => {
+            const countA = filterCounts.sources[a.value.toLowerCase()] || 0;
+            const countB = filterCounts.sources[b.value.toLowerCase()] || 0;
+            return countB - countA;
+          });
+
+        // Only render the group if it has sources with non-zero counts
+        if (filteredSources.length === 0) return null;
+
+        return (
+          <div key={groupName} className="mb-4">
+            <h4 className="text-sm font-medium mb-2">{groupName}</h4>
+            <div className="space-y-2">
+              {filteredSources.map((source) => (
+                <div key={source.value} className="flex items-center justify-between group">
+                  <Label
+                    htmlFor={`source-${source.value}`}
+                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer group-hover:text-primary transition-colors ${
+                      filters.sources.includes(source.value) ? "text-primary font-medium" : ""
+                    }`}
+                  >
+                    <Checkbox
+                      id={`source-${source.value}`}
+                      checked={filters.sources.includes(source.value)}
+                      onCheckedChange={() => onFilterChange("sources", source.value)}
+                      className={filters.sources.includes(source.value) ? "border-primary" : ""}
+                    />
+                    {source.label}
+                  </Label>
+                  <Badge 
+                    variant={filters.sources.includes(source.value) ? "default" : "outline"} 
+                    className={`ml-auto group-hover:bg-primary/10 transition-colors ${
+                      filters.sources.includes(source.value) ? "bg-primary text-primary-foreground" : ""
+                    }`}
+                  >
+                    {filterCounts.sources[source.value.toLowerCase()] || 0}
+                  </Badge>
+                </div>
+              ))}
+            </div>
           </div>
-          {activeFilterCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={onClearFilters} 
-              className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-              Clear all ({activeFilterCount})
-            </Button>
-          )}
-        </div>
-
-              {Object.entries(SOURCE_GROUPS).map(([groupName, sources]) => {
-                // Filter sources with non-zero counts and sort by count
-                const filteredSources = sources
-                  .filter(source => (filterCounts.sources[source.value.toLowerCase()] || 0) > 0)
-                  .sort((a, b) => {
-                    const countA = filterCounts.sources[a.value.toLowerCase()] || 0;
-                    const countB = filterCounts.sources[b.value.toLowerCase()] || 0;
-                    return countB - countA;
-                  });
-
-                // Only render the group if it has sources with non-zero counts
-                if (filteredSources.length === 0) return null;
-
-                return (
-                  <div key={groupName} className="mb-4">
-                    <h4 className="text-sm font-medium mb-2">{groupName}</h4>
-                    <div className="space-y-2">
-                      {filteredSources.map((source) => (
-                        <div key={source.value} className="flex items-center justify-between group">
-                          <Label
-                            htmlFor={`source-${source.value}`}
-                            className={`flex items-center gap-2 text-sm font-normal cursor-pointer group-hover:text-primary transition-colors ${
-                              filters.sources.includes(source.value) ? "text-primary font-medium" : ""
-                            }`}
-                          >
-                            <Checkbox
-                              id={`source-${source.value}`}
-                              checked={filters.sources.includes(source.value)}
-                              onCheckedChange={() => onFilterChange("sources", source.value)}
-                              className={filters.sources.includes(source.value) ? "border-primary" : ""}
-                            />
-                            {source.label}
-                          </Label>
-                          <Badge 
-                            variant={filters.sources.includes(source.value) ? "default" : "outline"} 
-                            className={`ml-auto group-hover:bg-primary/10 transition-colors ${
-                              filters.sources.includes(source.value) ? "bg-primary text-primary-foreground" : ""
-                            }`}
-                          >
-                            {filterCounts.sources[source.value.toLowerCase()] || 0}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-        <Accordion type="single"  className="w-full">
-          <AccordionItem value="valueSearch">
-            <AccordionTrigger>Value Search</AccordionTrigger>
-            <AccordionContent>
-              <Input
-                type="text"
-                placeholder="Search annotation values..."
-                value={filters.valueSearch}
-                onChange={(e) => onFilterChange("valueSearch", e.target.value)}
-                className={`w-full ${filters.valueSearch ? "border-primary" : ""}`}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </div>
+        );
+      })}
+      <Accordion type="single" className="w-full">
+        <AccordionItem value="valueSearch">
+          <AccordionTrigger>Value Search</AccordionTrigger>
+          <AccordionContent>
+            <Input
+              type="text"
+              placeholder="Search annotation values..."
+              value={filters.valueSearch}
+              onChange={(e) => onFilterChange("valueSearch", e.target.value)}
+              className={`w-full ${filters.valueSearch ? "border-primary" : ""}`}
+            />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </FilterCard>
   )
 }
 

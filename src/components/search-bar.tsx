@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 interface SearchBarProps {
   placeholder?: string
@@ -20,12 +20,18 @@ export function SearchBar({
 }: SearchBarProps) {
   const [query, setQuery] = useState(initialQuery)
 
+  useEffect(() => {
+    setQuery(initialQuery)
+  }, [initialQuery])
+
   const handleSearch = () => {
-    onSearch(query)
+    if (query.trim()) {
+      onSearch(query)
+    }
   }
 
   return (
-    <div className="w-full bg-background sticky top-0 z-10 border-b p-6">
+    <div className="w-full bg-background sticky top-0 z-10 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center gap-4">
           <div className="w-full max-w-2xl">

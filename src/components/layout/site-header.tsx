@@ -5,9 +5,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Database, History, Search } from "lucide-react"
+import { Database, History, Search, Moon, Sun } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
+import { useTheme } from "next-themes"
 
 // Sample recent searches
 const RECENT_SEARCHES = [
@@ -19,6 +20,7 @@ const RECENT_SEARCHES = [
 
 export function SiteHeader() {
   const [searchHistory, setSearchHistory] = useState(RECENT_SEARCHES)
+  const { theme, setTheme } = useTheme()
 
   // Get entity type color
   const getEntityTypeColor = (type: string) => {
@@ -37,7 +39,7 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-20 w-full border-b bg-background">
+    <header className="sticky top-0 z-20 w-full bg-background">
       <div className="container flex h-16 items-center px-4 mx-auto">
         <div className="flex items-center gap-2 mr-4">
           <Database className="h-6 w-6" />
@@ -51,6 +53,15 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" disabled>
