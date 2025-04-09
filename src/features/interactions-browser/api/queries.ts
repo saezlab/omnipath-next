@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { interactions } from "@/db/drizzle/schema";
-import { and, eq, inArray, or, sql } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 
 export async function searchProteinNeighbors(query: string) {
   query = query.trim().toUpperCase();

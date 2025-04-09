@@ -1,12 +1,11 @@
 "use client"
 
-import { Network, Tag, Filter, FileText, Download, MapPin, Users, BarChart3 } from "lucide-react"
-import { SiteLayout } from "@/components/layout/site-layout"
-import { HeroSection } from "@/components/home/hero-section"
-import { SearchBar } from "@/components/shared/search-bar"
-import { FeatureCard } from "@/components/home/feature-card"
-import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { AboutSection } from "@/components/home/about-section"
+import { AIAssistantCard } from "@/components/home/ai-assistant-card"
+import { FeatureCard } from "@/components/home/feature-card"
+import { HeroSection } from "@/components/home/hero-section"
+import { SiteLayout } from "@/components/layout/site-layout"
+import { BarChart3, Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
 
 export function HomePage() {
   return (

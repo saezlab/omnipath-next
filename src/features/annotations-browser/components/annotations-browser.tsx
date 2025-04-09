@@ -10,6 +10,7 @@ import { AnnotationsTable } from "@/features/annotations-browser/components/anno
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
 import { Pagination } from "@/features/interactions-browser/components/pagination"
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
+import { useSyncUrl } from '@/hooks/use-sync-url'
 import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore } from "@/store/search-store"
 import {
@@ -23,8 +24,7 @@ import {
   TableIcon,
   Tag,
 } from "lucide-react"
-import { useEffect, useMemo, useState, useCallback } from "react"
-import { useSyncUrl } from '@/hooks/use-sync-url'
+import { useEffect, useMemo, useState } from "react"
 
 const RESULTS_PER_PAGE = 20
 

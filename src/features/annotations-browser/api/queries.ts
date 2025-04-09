@@ -3,7 +3,6 @@
 import { db } from "@/db";
 import { annotations } from "@/db/drizzle/schema";
 import { eq, or } from "drizzle-orm";
-import { sql } from "drizzle-orm";
 
 
 export async function getProteinAnnotations(query: string) {
