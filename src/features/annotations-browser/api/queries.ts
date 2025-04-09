@@ -7,6 +7,7 @@ import { sql } from "drizzle-orm";
 
 
 export async function getProteinAnnotations(query: string) {
+  query = query.trim().toUpperCase();
     const results = await db
       .select({
         uniprot: annotations.uniprot,
@@ -20,8 +21,8 @@ export async function getProteinAnnotations(query: string) {
       .from(annotations)
       .where(
         or(
-          eq(sql`lower(${annotations.genesymbol})`, query.toLowerCase()),
-          eq(sql`lower(${annotations.uniprot})`, query.toLowerCase())
+          eq(annotations.genesymbol, query),
+          eq(annotations.uniprot, query)
         )
       )  
     return {

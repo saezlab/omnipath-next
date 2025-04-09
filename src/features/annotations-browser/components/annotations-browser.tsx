@@ -24,6 +24,7 @@ import {
   Tag,
 } from "lucide-react"
 import { useEffect, useMemo, useState, useCallback } from "react"
+import { useSyncUrl } from '@/hooks/use-sync-url'
 
 const RESULTS_PER_PAGE = 20
 
@@ -38,10 +39,6 @@ interface FilterCounts {
   annotationTypes: Record<string, number>
 }
 
-interface AnnotationsBrowserProps {
-  initialQuery?: string
-}
-
 interface PivotedAnnotationRecord {
   recordId: number | null;
   source: string | null;
@@ -50,9 +47,12 @@ interface PivotedAnnotationRecord {
   values: Record<string, string | null>;
 }
 
-export function AnnotationsBrowser({ initialQuery = "" }: AnnotationsBrowserProps) {
+export function AnnotationsBrowser() {
   const [isLoading, setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+
+  // Use the URL sync hook
+  useSyncUrl()
 
   // Get state and actions from the store
   const {
@@ -70,11 +70,10 @@ export function AnnotationsBrowser({ initialQuery = "" }: AnnotationsBrowserProp
   } = useSearchStore()
 
   useEffect(() => {
-    if (initialQuery) {
-      setAnnotationsQuery(initialQuery)
-      handleSearch(initialQuery)
+    if (annotationsQuery && annotationsResults.length === 0) {
+      handleSearch()
     }
-  }, [initialQuery])
+  }, [])
 
   const handleSearch = async (searchQuery: string = annotationsQuery) => {
     if (!searchQuery.trim()) return

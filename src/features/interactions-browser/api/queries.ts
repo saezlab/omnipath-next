@@ -5,15 +5,16 @@ import { interactions } from "@/db/drizzle/schema";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
 
 export async function searchProteinNeighbors(query: string) {
+  query = query.trim().toUpperCase();
   const results = await db
     .select()
     .from(interactions)
     .where(
       or(
-        eq(sql`lower(${interactions.sourceGenesymbol})`, query.toLowerCase()),
-        eq(sql`lower(${interactions.source})`, query.toLowerCase()),
-        eq(sql`lower(${interactions.targetGenesymbol})`, query.toLowerCase()),
-        eq(sql`lower(${interactions.target})`, query.toLowerCase())
+        eq(interactions.sourceGenesymbol, query),
+        eq(interactions.source, query),
+        eq(interactions.targetGenesymbol, query),
+        eq(interactions.target, query)
       )
     )
   return {

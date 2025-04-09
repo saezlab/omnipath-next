@@ -13,12 +13,6 @@ export function HomePage() {
     <SiteLayout>
       <HeroSection />
 
-      <div className="border-b py-4 px-4 bg-background">
-        <div className="container max-w-2xl mx-auto">
-          <SearchBar redirectPath="/interactions" />
-        </div>
-      </div>
-
       <div className="container py-8 mx-auto">
         <div className="grid gap-6 md:grid-cols-2">
           <FeatureCard

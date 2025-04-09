@@ -15,12 +15,11 @@ import { useEffect, useMemo, useState } from "react"
 import { FilterSkeleton } from "@/components/filter-skeleton"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
+import { useSyncUrl } from '@/hooks/use-sync-url'
 const RESULTS_PER_PAGE = 15
 
 interface ProteinCatalogProps {
-  initialQuery?: string
   onEntitySelect?: (entityName: string) => void
-  initialInteractions?: SearchProteinNeighborsResponse['interactions']
   isLoading?: boolean
 }
 
@@ -40,10 +39,11 @@ interface FilterCounts {
 }
 
 export function ProteinCatalog({ 
-  initialQuery = "", 
   onEntitySelect,
-  initialInteractions = [],
 }: ProteinCatalogProps) {
+  // Use the URL sync hook
+  useSyncUrl()
+
   const {
     interactionsQuery,
     setInteractionsQuery,
@@ -53,31 +53,23 @@ export function ProteinCatalog({
     setInteractionsResults
   } = useSearchStore()
 
-  const [interactions, setInteractions] = useState<SearchProteinNeighborsResponse['interactions']>(initialInteractions)
+  const [interactions, setInteractions] = useState<SearchProteinNeighborsResponse['interactions']>([])
   const [viewMode, setViewMode] = useState<"table" | "network" | "chart">("table")
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  // Load data when initialQuery changes
+  // Sync local interactions state with store
   useEffect(() => {
-    if (initialQuery) {
-      setInteractionsQuery(initialQuery)
-    }
-  }, [initialQuery])
+    setInteractions(interactionsResults)
+  }, [interactionsResults])
 
-  // Add effect to refetch when there's a query but no results
   useEffect(() => {
     if (interactionsQuery && interactionsResults.length === 0) {
       handleSearch()
     }
-  }, [interactionsQuery, interactionsResults.length])
-
-  // Update interactions when initialInteractions changes
-  useEffect(() => {
-    setInteractions(initialInteractions)
-  }, [initialInteractions])
+  }, [])
 
   // Calculate filter counts from interactions
   const filterCounts = useMemo(() => {
