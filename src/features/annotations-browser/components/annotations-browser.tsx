@@ -23,7 +23,7 @@ import {
   TableIcon,
   Tag,
 } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, useCallback } from "react"
 
 const RESULTS_PER_PAGE = 20
 
@@ -75,13 +75,6 @@ export function AnnotationsBrowser({ initialQuery = "" }: AnnotationsBrowserProp
       handleSearch(initialQuery)
     }
   }, [initialQuery])
-
-  // Add effect to refetch when there's a query but no results
-  useEffect(() => {
-    if (annotationsQuery && annotationsResults.length === 0) {
-      handleSearch(annotationsQuery)
-    }
-  }, [annotationsQuery, annotationsResults.length])
 
   const handleSearch = async (searchQuery: string = annotationsQuery) => {
     if (!searchQuery.trim()) return
