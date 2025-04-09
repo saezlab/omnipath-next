@@ -35,9 +35,6 @@ interface FilterCounts {
   isDirected: { true: number; false: number }
   isStimulation: { true: number; false: number }
   isInhibition: { true: number; false: number }
-  consensusDirection: { true: number; false: number }
-  consensusStimulation: { true: number; false: number }
-  consensusInhibition: { true: number; false: number }
 }
 
 export function InteractionsBrowser({ 
@@ -85,9 +82,6 @@ export function InteractionsBrowser({
       isDirected: { true: 0, false: 0 },
       isStimulation: { true: 0, false: 0 },
       isInhibition: { true: 0, false: 0 },
-      consensusDirection: { true: 0, false: 0 },
-      consensusStimulation: { true: 0, false: 0 },
-      consensusInhibition: { true: 0, false: 0 },
     }
 
     // First, filter interactions based on all filters except the one being counted
@@ -129,24 +123,9 @@ export function InteractionsBrowser({
         return false
       }
 
-      // Filter by consensus direction (if not counting consensus direction)
-      if (interactionsFilters.consensusDirection !== null && interaction.consensusDirection !== interactionsFilters.consensusDirection) {
-        return false
-      }
-
-      // Filter by consensus stimulation (if not counting consensus stimulation)
-      if (interactionsFilters.consensusStimulation !== null && interaction.consensusStimulation !== interactionsFilters.consensusStimulation) {
-        return false
-      }
-
-      // Filter by consensus inhibition (if not counting consensus inhibition)
-      if (interactionsFilters.consensusInhibition !== null && interaction.consensusInhibition !== interactionsFilters.consensusInhibition) {
-        return false
-      }
-
       // Filter by minimum references
       const referenceCount = interaction.references ? interaction.references.split(";").length : 0
-      if (referenceCount < interactionsFilters.minReferences) {
+      if (interactionsFilters.minReferences !== null && referenceCount < interactionsFilters.minReferences) {
         return false
       }
 
@@ -193,15 +172,6 @@ export function InteractionsBrowser({
       if (interaction.isInhibition !== undefined) {
         counts.isInhibition[interaction.isInhibition?.toString() as 'true' | 'false']++
       }
-      if (interaction.consensusDirection !== undefined) {
-        counts.consensusDirection[interaction.consensusDirection?.toString() as 'true' | 'false']++
-      }
-      if (interaction.consensusStimulation !== undefined) {
-        counts.consensusStimulation[interaction.consensusStimulation?.toString() as 'true' | 'false']++
-      }
-      if (interaction.consensusInhibition !== undefined) {
-        counts.consensusInhibition[interaction.consensusInhibition?.toString() as 'true' | 'false']++
-      }
     })
 
     return counts
@@ -247,24 +217,9 @@ export function InteractionsBrowser({
         return false
       }
 
-      // Filter by consensus direction
-      if (interactionsFilters.consensusDirection !== null && interaction.consensusDirection !== interactionsFilters.consensusDirection) {
-        return false
-      }
-
-      // Filter by consensus stimulation
-      if (interactionsFilters.consensusStimulation !== null && interaction.consensusStimulation !== interactionsFilters.consensusStimulation) {
-        return false
-      }
-
-      // Filter by consensus inhibition
-      if (interactionsFilters.consensusInhibition !== null && interaction.consensusInhibition !== interactionsFilters.consensusInhibition) {
-        return false
-      }
-
       // Filter by minimum references
       const referenceCount = interaction.references ? interaction.references.split(";").length : 0
-      if (referenceCount < interactionsFilters.minReferences) {
+      if (interactionsFilters.minReferences !== null && referenceCount < interactionsFilters.minReferences) {
         return false
       }
 
@@ -288,10 +243,7 @@ export function InteractionsBrowser({
       if (
         type === "isDirected" ||
         type === "isStimulation" ||
-        type === "isInhibition" ||
-        type === "consensusDirection" ||
-        type === "consensusStimulation" ||
-        type === "consensusInhibition"
+        type === "isInhibition"
       ) {
         return { ...prev, [type]: value }
       }
@@ -316,10 +268,7 @@ export function InteractionsBrowser({
       isDirected: null,
       isStimulation: null,
       isInhibition: null,
-      consensusDirection: null,
-      consensusStimulation: null,
-      consensusInhibition: null,
-      minReferences: 0,
+      minReferences: null,
     })
     setCurrentPage(1)
   }

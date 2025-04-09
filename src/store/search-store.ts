@@ -27,10 +27,7 @@ export interface InteractionsFilters {
   isDirected: boolean | null
   isStimulation: boolean | null
   isInhibition: boolean | null
-  consensusDirection: boolean | null
-  consensusStimulation: boolean | null
-  consensusInhibition: boolean | null
-  minReferences: number
+  minReferences: number | null
 }
 
 interface SearchState {
@@ -94,9 +91,6 @@ export const useSearchStore = create<SearchState>()(
         isDirected: null,
         isStimulation: null,
         isInhibition: null,
-        consensusDirection: null,
-        consensusStimulation: null,
-        consensusInhibition: null,
         minReferences: 0,
       },
 

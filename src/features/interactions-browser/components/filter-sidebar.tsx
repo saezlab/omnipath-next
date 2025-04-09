@@ -7,8 +7,11 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Check } from "lucide-react"
+import { Check, Filter, X, Search, Save, ArrowLeft, ArrowRight, Info } from "lucide-react"
 import { InteractionsFilters } from "@/store/search-store"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
 
 interface FilterSidebarProps {
   filters: InteractionsFilters
@@ -20,9 +23,6 @@ interface FilterSidebarProps {
     isDirected: { true: number; false: number }
     isStimulation: { true: number; false: number }
     isInhibition: { true: number; false: number }
-    consensusDirection: { true: number; false: number }
-    consensusStimulation: { true: number; false: number }
-    consensusInhibition: { true: number; false: number }
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   showMobileFilters: boolean
@@ -55,35 +55,105 @@ export function FilterSidebar({
   const taxonomyEntries = Object.entries(TAXONOMY_MAPPING)
     .filter(([taxId]) => filterCounts.ncbiTaxId[taxId] > 0)
 
+  // Calculate active filter count
+  const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
+    if (key === 'minReferences' && value === 0) return count
+    if (Array.isArray(value)) return count + value.length
+    if (value !== null) return count + 1
+    return count
+  }, 0)
+
   return (
     <div className={`md:w-64 lg:w-72 shrink-0 space-y-4 ${showMobileFilters ? "block" : "hidden"} md:block`}>
       <div className="sticky top-24">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-lg">Filters</h3>
-          <Button variant="ghost" size="sm" onClick={onClearFilters}>
-            Clear all
-          </Button>
+          <div className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            <h3 className="font-semibold text-lg">Filters</h3>
+          </div>
+          {activeFilterCount > 0 && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onClearFilters} 
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+              Clear all ({activeFilterCount})
+            </Button>
+          )}
+        </div>
+
+        {/* Quick Filters */}
+        <div className="mb-4 space-y-2">
+          <Label className="text-sm font-medium">Quick Filters</Label>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={filters.isDirected === true ? "default" : "outline"}
+              size="sm"
+              onClick={() => onFilterChange("isDirected", filters.isDirected === true ? null : true)}
+              className={filters.isDirected === true ? "bg-primary text-primary-foreground" : ""}
+            >
+              Directed ({filterCounts.isDirected.true})
+            </Button>
+            <Button
+              variant={filters.isStimulation === true ? "default" : "outline"}
+              size="sm"
+              onClick={() => onFilterChange("isStimulation", filters.isStimulation === true ? null : true)}
+              className={filters.isStimulation === true ? "bg-primary text-primary-foreground" : ""}
+            >
+              Stimulation ({filterCounts.isStimulation.true})
+            </Button>
+            <Button
+              variant={filters.isInhibition === true ? "default" : "outline"}
+              size="sm"
+              onClick={() => onFilterChange("isInhibition", filters.isInhibition === true ? null : true)}
+              className={filters.isInhibition === true ? "bg-primary text-primary-foreground" : ""}
+            >
+              Inhibition ({filterCounts.isInhibition.true})
+            </Button>
+          </div>
         </div>
 
         <Accordion type="multiple" defaultValue={["interactionType", "properties"]} className="w-full">
           <AccordionItem value="interactionType">
-            <AccordionTrigger>Interaction Type</AccordionTrigger>
+            <AccordionTrigger className="flex items-center gap-2">
+              <span>Interaction Type</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Filter by the type of interaction between entities</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-2">
                 {interactionTypes.map((type) => (
-                  <div key={type} className="flex items-center justify-between">
+                  <div key={type} className="flex items-center justify-between group">
                     <Label
                       htmlFor={`type-${type}`}
-                      className="flex items-center gap-2 text-sm font-normal cursor-pointer"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer group-hover:text-primary transition-colors ${
+                        filters.interactionType.includes(type) ? "text-primary font-medium" : ""
+                      }`}
                     >
                       <Checkbox
                         id={`type-${type}`}
                         checked={filters.interactionType.includes(type)}
                         onCheckedChange={() => onFilterChange("interactionType", type)}
+                        className={filters.interactionType.includes(type) ? "border-primary" : ""}
                       />
                       {type}
                     </Label>
-                    <Badge variant="outline" className="ml-auto">
+                    <Badge 
+                      variant={filters.interactionType.includes(type) ? "default" : "outline"} 
+                      className={`ml-auto group-hover:bg-primary/10 transition-colors ${
+                        filters.interactionType.includes(type) ? "bg-primary text-primary-foreground" : ""
+                      }`}
+                    >
                       {filterCounts.interactionType[type] || 0}
                     </Badge>
                   </div>
@@ -100,16 +170,22 @@ export function FilterSidebar({
                   <div key={taxId} className="flex items-center justify-between">
                     <Label
                       htmlFor={`tax-${taxId}`}
-                      className="flex items-center gap-2 text-sm font-normal cursor-pointer"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                        filters.ncbiTaxId.includes(taxId) ? "text-primary font-medium" : ""
+                      }`}
                     >
                       <Checkbox
                         id={`tax-${taxId}`}
                         checked={filters.ncbiTaxId.includes(taxId)}
                         onCheckedChange={() => onFilterChange("ncbiTaxId", taxId)}
+                        className={filters.ncbiTaxId.includes(taxId) ? "border-primary" : ""}
                       />
                       {label}
                     </Label>
-                    <Badge variant="outline" className="ml-auto">
+                    <Badge 
+                      variant={filters.ncbiTaxId.includes(taxId) ? "default" : "outline"}
+                      className={filters.ncbiTaxId.includes(taxId) ? "bg-primary text-primary-foreground" : ""}
+                    >
                       {filterCounts.ncbiTaxId[taxId] || 0}
                     </Badge>
                   </div>
@@ -126,16 +202,22 @@ export function FilterSidebar({
                   <div key={type} className="flex items-center justify-between">
                     <Label
                       htmlFor={`source-type-${type}`}
-                      className="flex items-center gap-2 text-sm font-normal cursor-pointer"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                        filters.entityTypeSource.includes(type) ? "text-primary font-medium" : ""
+                      }`}
                     >
                       <Checkbox
                         id={`source-type-${type}`}
                         checked={filters.entityTypeSource.includes(type)}
                         onCheckedChange={() => onFilterChange("entityTypeSource", type)}
+                        className={filters.entityTypeSource.includes(type) ? "border-primary" : ""}
                       />
                       {type}
                     </Label>
-                    <Badge variant="outline" className="ml-auto">
+                    <Badge 
+                      variant={filters.entityTypeSource.includes(type) ? "default" : "outline"}
+                      className={filters.entityTypeSource.includes(type) ? "bg-primary text-primary-foreground" : ""}
+                    >
                       {filterCounts.entityTypeSource[type] || 0}
                     </Badge>
                   </div>
@@ -152,16 +234,22 @@ export function FilterSidebar({
                   <div key={type} className="flex items-center justify-between">
                     <Label
                       htmlFor={`target-type-${type}`}
-                      className="flex items-center gap-2 text-sm font-normal cursor-pointer"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                        filters.entityTypeTarget.includes(type) ? "text-primary font-medium" : ""
+                      }`}
                     >
                       <Checkbox
                         id={`target-type-${type}`}
                         checked={filters.entityTypeTarget.includes(type)}
                         onCheckedChange={() => onFilterChange("entityTypeTarget", type)}
+                        className={filters.entityTypeTarget.includes(type) ? "border-primary" : ""}
                       />
                       {type}
                     </Label>
-                    <Badge variant="outline" className="ml-auto">
+                    <Badge 
+                      variant={filters.entityTypeTarget.includes(type) ? "default" : "outline"}
+                      className={filters.entityTypeTarget.includes(type) ? "bg-primary text-primary-foreground" : ""}
+                    >
                       {filterCounts.entityTypeTarget[type] || 0}
                     </Badge>
                   </div>
@@ -171,7 +259,19 @@ export function FilterSidebar({
           </AccordionItem>
 
           <AccordionItem value="properties">
-            <AccordionTrigger>Interaction Properties</AccordionTrigger>
+            <AccordionTrigger className="flex items-center gap-2">
+              <span>Interaction Properties</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Filter by specific properties of the interactions</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -180,7 +280,11 @@ export function FilterSidebar({
                   </Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant={filters.isDirected !== null ? "default" : "outline"} 
+                        size="sm"
+                        className={filters.isDirected !== null ? "bg-primary text-primary-foreground" : ""}
+                      >
                         {filters.isDirected === null ? "Any" : filters.isDirected ? "Yes" : "No"}
                       </Button>
                     </DropdownMenuTrigger>
@@ -207,7 +311,11 @@ export function FilterSidebar({
                   </Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant={filters.isStimulation !== null ? "default" : "outline"} 
+                        size="sm"
+                        className={filters.isStimulation !== null ? "bg-primary text-primary-foreground" : ""}
+                      >
                         {filters.isStimulation === null ? "Any" : filters.isStimulation ? "Yes" : "No"}
                       </Button>
                     </DropdownMenuTrigger>
@@ -234,7 +342,11 @@ export function FilterSidebar({
                   </Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant={filters.isInhibition !== null ? "default" : "outline"} 
+                        size="sm"
+                        className={filters.isInhibition !== null ? "bg-primary text-primary-foreground" : ""}
+                      >
                         {filters.isInhibition === null ? "Any" : filters.isInhibition ? "Yes" : "No"}
                       </Button>
                     </DropdownMenuTrigger>
@@ -255,92 +367,11 @@ export function FilterSidebar({
                   </DropdownMenu>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="consensus-direction" className="text-sm">
-                    Consensus Direction
-                  </Label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        {filters.consensusDirection === null ? "Any" : filters.consensusDirection ? "Yes" : "No"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusDirection", null)}>
-                        Any
-                        {filters.consensusDirection === null && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusDirection", true)}>
-                        Yes ({filterCounts.consensusDirection.true})
-                        {filters.consensusDirection === true && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusDirection", false)}>
-                        No ({filterCounts.consensusDirection.false})
-                        {filters.consensusDirection === false && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="consensus-stimulation" className="text-sm">
-                    Consensus Stimulation
-                  </Label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        {filters.consensusStimulation === null ? "Any" : filters.consensusStimulation ? "Yes" : "No"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusStimulation", null)}>
-                        Any
-                        {filters.consensusStimulation === null && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusStimulation", true)}>
-                        Yes ({filterCounts.consensusStimulation.true})
-                        {filters.consensusStimulation === true && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusStimulation", false)}>
-                        No ({filterCounts.consensusStimulation.false})
-                        {filters.consensusStimulation === false && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="consensus-inhibition" className="text-sm">
-                    Consensus Inhibition
-                  </Label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        {filters.consensusInhibition === null ? "Any" : filters.consensusInhibition ? "Yes" : "No"}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusInhibition", null)}>
-                        Any
-                        {filters.consensusInhibition === null && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusInhibition", true)}>
-                        Yes ({filterCounts.consensusInhibition.true})
-                        {filters.consensusInhibition === true && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onFilterChange("consensusInhibition", false)}>
-                        No ({filterCounts.consensusInhibition.false})
-                        {filters.consensusInhibition === false && <Check className="ml-2 h-4 w-4" />}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Minimum References</Label>
                   <div className="flex items-center gap-2">
                     <Slider
-                      value={[filters.minReferences]}
+                      value={[filters.minReferences || 0]}
                       onValueChange={(value) => onFilterChange("minReferences", value[0])}
                       min={0}
                       max={10}
