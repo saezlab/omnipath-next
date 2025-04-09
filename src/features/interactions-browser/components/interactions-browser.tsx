@@ -18,6 +18,7 @@ import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/
 import { useSyncUrl } from '@/hooks/use-sync-url'
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { SearchBar } from "@/components/search-bar"
 const RESULTS_PER_PAGE = 15
 
 interface InteractionsBrowserProps {
@@ -306,37 +307,12 @@ export function InteractionsBrowser({
 
   return (
     <div className="w-full">
-      {/* Search Bar */}
-      <div className="w-full bg-background sticky top-0 z-10 border-b p-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col gap-4">
-            <div className="flex w-full items-center space-x-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search for proteins, genes, or other biological entities..."
-                  className="w-full pl-9"
-                  value={interactionsQuery}
-                  onChange={(e) => setInteractionsQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                />
-              </div>
-              <Button onClick={handleSearch} disabled={isLoading}>
-                {isLoading ? "Searching..." : "Search"}
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="md:hidden"
-                onClick={() => setShowMobileFilters(!showMobileFilters)}
-              >
-                <SlidersHorizontal className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SearchBar
+        placeholder="Search for proteins, genes, or other biological entities..."
+        onSearch={handleSearch}
+        isLoading={isLoading}
+        initialQuery={interactionsQuery}
+      />
 
       <div className="max-w-7xl mx-auto p-4">
         <div className="flex flex-col md:flex-row gap-6">
@@ -405,6 +381,14 @@ export function InteractionsBrowser({
                     <h3 className="text-lg font-medium">
                       Interactions ({filteredInteractions.length} total)
                     </h3>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="md:hidden"
+                      onClick={() => setShowMobileFilters(!showMobileFilters)}
+                    >
+                      <SlidersHorizontal className="h-4 w-4" />
+                    </Button>
                   </div>
 
                   {/* Results display based on view mode */}
