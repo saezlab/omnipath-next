@@ -116,7 +116,6 @@ export function AnnotationsTable({
     <div className="space-y-8">
       {Object.entries(pivotedData).map(([source, rows]) => {
         const headers = columnHeadersBySource[source];
-        const firstRow = rows[0];
         const totalItems = rows.length;
         
         return (
