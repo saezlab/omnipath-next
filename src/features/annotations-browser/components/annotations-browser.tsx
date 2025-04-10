@@ -1,14 +1,11 @@
 "use client"
 
-import { DataCard } from "@/components/data-card"
-import { FilterSkeleton } from "@/components/filter-skeleton"
 import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { Button } from "@/components/ui/button"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
-import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
 import { useSyncUrl } from '@/hooks/use-sync-url'
 import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore } from "@/store/search-store"
@@ -16,7 +13,6 @@ import {
   Activity,
   Info,
   MapPin,
-  Search,
   SlidersHorizontal,
   Tag
 } from "lucide-react"
@@ -43,12 +39,9 @@ interface PivotedAnnotationRecord {
   values: Record<string, string | null>;
 }
 
-type ViewMode = "table" | "network" | "chart"
-
 export function AnnotationsBrowser() {
   const [isLoading, setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
-  const [viewMode, setViewMode] = useState<ViewMode>("table")
 
   // Use the URL sync hook
   useSyncUrl()
@@ -76,6 +69,7 @@ export function AnnotationsBrowser() {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
+    setAnnotationsQuery(searchQuery)
     setAnnotationsCurrentPage(1)
 
     try {

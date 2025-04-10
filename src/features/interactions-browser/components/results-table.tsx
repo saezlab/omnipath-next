@@ -1,12 +1,11 @@
 "use client"
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
-import { ArrowRight, Minus, Dna, Mic, FlaskConical, Atom, ArrowUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
+import { cn } from "@/lib/utils"
+import { ArrowRight, ArrowUpDown, Atom, Dna, FlaskConical, Mic, Minus } from "lucide-react"
 import { useState } from "react"
 
 interface ResultsTableProps {

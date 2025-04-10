@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { InteractionsFilters } from "@/store/search-store"
-import { Check, Info, ArrowRight, Minus, Atom, Dna, Mic, FlaskConical } from "lucide-react"
+import { ArrowRight, Atom, Check, Dna, FlaskConical, Info, Mic } from "lucide-react"
 
 interface FilterSidebarProps {
   filters: InteractionsFilters
