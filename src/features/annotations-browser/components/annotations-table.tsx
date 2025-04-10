@@ -3,6 +3,9 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type React from "react"
 import { useMemo } from "react"
+import { Button } from "@/components/ui/button"
+import { Download } from "lucide-react"
+import { exportToCSV } from "@/lib/utils/export"
 
 interface Annotation {
   uniprot: string | null
@@ -27,47 +30,79 @@ interface AnnotationsTableProps {
   onSelectAnnotation: (annotation: Annotation) => void
   getCategoryIcon: (label: string | null) => React.ReactNode
   getCategoryColor: (label: string | null) => string
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
 }
 
-function pivotAnnotations(annotations: Annotation[]): PivotedAnnotation[] {
-  const pivoted: Record<number, PivotedAnnotation> = {};
+function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnnotation[]> {
+  const pivotedBySource: Record<string, Record<number, PivotedAnnotation>> = {};
   
   annotations.forEach(annotation => {
-    if (!annotation.recordId) return;
+    if (!annotation.recordId || !annotation.source) return;
     
-    if (!pivoted[annotation.recordId]) {
-      pivoted[annotation.recordId] = {
+    const source = annotation.source;
+    if (!pivotedBySource[source]) {
+      pivotedBySource[source] = {};
+    }
+    
+    if (!pivotedBySource[source][annotation.recordId]) {
+      pivotedBySource[source][annotation.recordId] = {
         recordId: annotation.recordId,
-        source: annotation.source || '',
+        source: source,
         geneSymbol: annotation.genesymbol,
         uniprotId: annotation.uniprot,
         values: {}
       };
     }
     
-    const key = `${annotation.source}:${annotation.label}`;
-    pivoted[annotation.recordId].values[key] = annotation.value || '';
+    const key = annotation.label || '';
+    pivotedBySource[source][annotation.recordId].values[key] = annotation.value || '';
   });
   
-  return Object.values(pivoted);
+  const result: Record<string, PivotedAnnotation[]> = {};
+  Object.keys(pivotedBySource).forEach(source => {
+    result[source] = Object.values(pivotedBySource[source]);
+  });
+  
+  return result;
 }
 
 export function AnnotationsTable({
   currentResults,
   onSelectAnnotation,
+  currentPage,
+  totalPages,
+  onPageChange,
 }: AnnotationsTableProps) {
   const pivotedData = useMemo(() => pivotAnnotations(currentResults), [currentResults]);
   
-  // Get unique column headers from the pivoted data
-  const columnHeaders = useMemo(() => {
-    const headers = new Set<string>();
-    pivotedData.forEach(row => {
-      Object.keys(row.values).forEach(key => {
-        headers.add(key);
+  // Get unique column headers for each source
+  const columnHeadersBySource = useMemo(() => {
+    const headers: Record<string, string[]> = {};
+    Object.entries(pivotedData).forEach(([source, rows]) => {
+      const sourceHeaders = new Set<string>();
+      rows.forEach(row => {
+        Object.keys(row.values).forEach(key => {
+          sourceHeaders.add(key);
+        });
       });
+      headers[source] = Array.from(sourceHeaders).sort();
     });
-    return Array.from(headers).sort();
+    return headers;
   }, [pivotedData]);
+
+  const handleExport = (source: string, rows: PivotedAnnotation[]) => {
+    const data = rows.map(row => {
+      const rowData: Record<string, string> = {
+        'Gene Symbol': row.geneSymbol || '',
+        'UniProt ID': row.uniprotId || '',
+        ...row.values
+      };
+      return rowData;
+    });
+    exportToCSV(data, `${source}_annotations`);
+  };
 
   if (currentResults.length === 0) {
     return (
@@ -78,37 +113,86 @@ export function AnnotationsTable({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Record ID</TableHead>
-          <TableHead>Source</TableHead>
-          <TableHead>Gene Symbol</TableHead>
-          <TableHead>UniProt ID</TableHead>
-          {columnHeaders.map(header => (
-            <TableHead key={header}>{header}</TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {pivotedData.map((row) => (
-          <TableRow
-            key={row.recordId}
-            className="cursor-pointer hover:bg-muted/50"
-            onClick={() => onSelectAnnotation(currentResults.find(a => a.recordId === row.recordId)!)}
+    <div className="space-y-8">
+      {Object.entries(pivotedData).map(([source, rows]) => {
+        const headers = columnHeadersBySource[source];
+        const firstRow = rows[0];
+        const totalItems = rows.length;
+        
+        return (
+          <div 
+            key={source} 
+            className="overflow-hidden border-2 border-muted shadow-sm hover:shadow-md bg-background rounded-lg"
           >
-            <TableCell>{row.recordId}</TableCell>
-            <TableCell>{row.source}</TableCell>
-            <TableCell>{row.geneSymbol}</TableCell>
-            <TableCell>{row.uniprotId}</TableCell>
-            {columnHeaders.map(header => (
-              <TableCell key={`${row.recordId}-${header}`}>
-                {row.values[header] || "-"}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+            <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background">
+              <div className="flex items-center space-x-2">
+                <h2 className="text-lg font-semibold">
+                  {source} - {firstRow.geneSymbol} ({firstRow.uniprotId})
+                </h2>
+                <span className="text-sm text-muted-foreground">
+                  ({totalItems.toLocaleString()})
+                </span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={() => handleExport(source, rows)}
+                className="h-8 w-8"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {headers.map(header => (
+                      <TableHead key={header}>{header}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow
+                      key={row.recordId}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => onSelectAnnotation(currentResults.find(a => a.recordId === row.recordId)!)}
+                    >
+                      {headers.map(header => (
+                        <TableCell key={`${row.recordId}-${header}`}>
+                          {row.values[header] || "-"}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        );
+      })}
+      
+      {totalPages > 1 && (
+        <div className="flex justify-center space-x-2 mt-4">
+          <Button
+            variant="outline"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <span className="flex items-center">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
+    </div>
   )
 }

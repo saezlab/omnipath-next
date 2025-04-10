@@ -63,6 +63,7 @@ export function AnnotationsBrowser() {
     setAnnotationsFilters,
     setAnnotationsCurrentPage,
     setSelectedAnnotation,
+    setAnnotationsQuery,
   } = useSearchStore()
 
   useEffect(() => {
@@ -174,6 +175,7 @@ export function AnnotationsBrowser() {
 
   // Get unique record count for pagination and display
   const uniqueRecordCount = new Set(filteredAnnotations.map(a => a.recordId)).size
+  const totalPages = Math.ceil(uniqueRecordCount / RESULTS_PER_PAGE)
   const startIndex = (annotationsCurrentPage - 1) * RESULTS_PER_PAGE
   const endIndex = startIndex + RESULTS_PER_PAGE
 
@@ -282,87 +284,55 @@ export function AnnotationsBrowser() {
   };
 
   return (
-    <div className="w-full">
-      <SearchBar
-        placeholder="Search for proteins or genes..."
-        onSearch={handleSearch}
-        isLoading={isLoading}
-        initialQuery={annotationsQuery}
-      />
+    <div className="container mx-auto p-4">
+      <div className="flex flex-col space-y-4">
+        <div className="flex items-center justify-between">
+          <SearchBar
+            initialQuery={annotationsQuery}
+            onSearch={handleSearch}
+            isLoading={isLoading}
+            placeholder="Search for a protein..."
+          />
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className="md:hidden"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={filteredAnnotations.length === 0}
+            >
+              Export
+            </Button>
+          </div>
+        </div>
 
-      <div className="max-w-7xl mx-auto p-4">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Filters Sidebar */}
-          {isLoading ? (
-            <FilterSkeleton />
-          ) : (
-            <AnnotationsFilterSidebar
-              filters={annotationsFilters}
-              onFilterChange={handleFilterChange}
-              filterCounts={filterCounts}
-              showMobileFilters={showMobileFilters}
-              onClearFilters={clearFilters}
-            />
-          )}
+        <div className="flex flex-col md:flex-row gap-4">
+          <AnnotationsFilterSidebar
+            filters={annotationsFilters}
+            onFilterChange={handleFilterChange}
+            filterCounts={filterCounts}
+            showMobileFilters={showMobileFilters}
+            onClearFilters={clearFilters}
+          />
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1">
             {isLoading ? (
-              <TableSkeleton rows={5} />
-            ) : annotationsResults.length > 0 ? (
-              <div className="space-y-6">
-
-                {/* Annotations Section */}
-                <div className="space-y-4">
-
-                  {/* Results display based on view mode */}
-                  <DataCard<ViewMode>
-                    title="Annotations"
-                    totalItems={uniqueRecordCount}
-                    viewMode={viewMode}
-                    onViewModeChange={setViewMode}
-                    onExport={handleExport}
-                    headerActions={
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="md:hidden"
-                        onClick={() => setShowMobileFilters(!showMobileFilters)}
-                      >
-                        <SlidersHorizontal className="h-4 w-4" />
-                      </Button>
-                    }
-                  >
-                    {viewMode === "table" ? (
-                      <AnnotationsTable
-                        currentResults={currentResults}
-                        onSelectAnnotation={(annotation) => setSelectedAnnotation(annotation)}
-                        getCategoryIcon={getCategoryIcon}
-                        getCategoryColor={getCategoryColor}
-                      />
-                    ) : viewMode === "chart" ? (
-                      <VisualizationPlaceholder type="chart" />
-                    ) : (
-                      <VisualizationPlaceholder type="network" />
-                    )}
-                  </DataCard>
-
-                  {/* Annotation Details */}
-{/*                   <AnnotationDetails
-                    selectedAnnotation={selectedAnnotation}
-                    getCategoryIcon={getCategoryIcon}
-                    getCategoryColor={getCategoryColor}
-                  /> */}
-                </div>
-              </div>
+              <TableSkeleton />
             ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Search className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No annotations found</h3>
-                <p className="text-muted-foreground max-w-md">
-                  Search for proteins or genes to explore their annotations.
-                </p>
-              </div>
+              <AnnotationsTable
+                currentResults={currentResults}
+                onSelectAnnotation={setSelectedAnnotation}
+                getCategoryIcon={getCategoryIcon}
+                getCategoryColor={getCategoryColor}
+                currentPage={annotationsCurrentPage}
+                totalPages={totalPages}
+                onPageChange={setAnnotationsCurrentPage}
+              />
             )}
           </div>
         </div>
