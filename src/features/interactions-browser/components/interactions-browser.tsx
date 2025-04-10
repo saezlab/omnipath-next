@@ -6,8 +6,8 @@ import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
-import { EntityBadge } from "@/components/EntityBadge"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { Pagination } from "@/features/interactions-browser/components/pagination"
@@ -18,7 +18,6 @@ import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
 import { Search, SlidersHorizontal } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
-import { Input } from "@/components/ui/input"
 
 const RESULTS_PER_PAGE = 15
 
