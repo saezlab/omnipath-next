@@ -9,11 +9,7 @@ import { Label } from "@/components/ui/label"
 // Filter options
 const SOURCE_GROUPS = {
   "UniProt": [
-    { value: "UniProt_family", label: "Protein Family" },
     { value: "UniProt_keyword", label: "Keywords" },
-    { value: "UniProt_location", label: "Location" },
-    { value: "UniProt_tissue", label: "Tissue" },
-    { value: "UniProt_topology", label: "Topology" },
   ],
   "Cell Communication": [
     { value: "CellPhoneDB", label: "CellPhoneDB" },
@@ -35,6 +31,7 @@ const SOURCE_GROUPS = {
     { value: "connectomeDB2020", label: "ConnectomeDB" },
   ],
   "Localization/Subcellular": [
+    { value: "UniProt_location", label: "UniProt Location" },
     { value: "HPA_subcellular", label: "HPA Subcellular" },
     { value: "HPA_secretome", label: "HPA Secretome" },
     { value: "ComPPI", label: "ComPPI" },
@@ -70,6 +67,8 @@ const SOURCE_GROUPS = {
     { value: "CPAD", label: "CPAD" },
   ],
   "Protein Classification": [
+    { value: "UniProt_family", label: "Protein Family" },
+    { value: "UniProt_topology", label: "Topology" },
     { value: "GPCRdb", label: "GPCRdb" },
     { value: "kinase.com", label: "Kinase.com" },
     { value: "Phosphatome", label: "Phosphatome" },
@@ -96,6 +95,7 @@ const SOURCE_GROUPS = {
     { value: "CellTypist", label: "CellTypist" },
     { value: "PanglaoDB", label: "PanglaoDB" },
     { value: "HumanCellMap", label: "Human Cell Map" },
+    { value: "UniProt_tissue", label: "UniProt Tissue" },
   ],
   "Literature/Reviews": [
     { value: "Almen2009", label: "Almen 2009" },
