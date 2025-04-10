@@ -8,7 +8,6 @@ import { AnnotationsTable } from "@/features/annotations-browser/components/anno
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { useSyncUrl } from '@/hooks/use-sync-url'
-import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore } from "@/store/search-store"
 import {
   Activity,
@@ -30,14 +29,6 @@ interface SearchFilters {
 interface FilterCounts {
   sources: Record<string, number>
   annotationTypes: Record<string, number>
-}
-
-interface PivotedAnnotationRecord {
-  recordId: number | null;
-  source: string | null;
-  geneSymbol: string | null;
-  uniprotId: string | null;
-  values: Record<string, string | null>;
 }
 
 export function AnnotationsBrowser() {
@@ -237,47 +228,6 @@ export function AnnotationsBrowser() {
     return "bg-gray-100 text-gray-800 hover:bg-gray-200"
   }
 
-  const handleExport = () => {
-    if (filteredAnnotations.length === 0) return;
-    
-    // Pivot all filtered annotations
-    const pivotedData = filteredAnnotations.reduce((acc: PivotedAnnotationRecord[], annotation) => {
-      const existingRecord = acc.find(item => item.recordId === annotation.recordId);
-      
-      if (existingRecord) {
-        existingRecord.values[annotation.label || ''] = annotation.value;
-      } else {
-        acc.push({
-          recordId: annotation.recordId,
-          source: annotation.source,
-          geneSymbol: annotation.genesymbol,
-          uniprotId: annotation.uniprot,
-          values: {
-            [annotation.label || '']: annotation.value
-          }
-        });
-      }
-      
-      return acc;
-    }, []);
-
-    // Flatten the pivoted data for CSV export
-    const flattenedData = pivotedData.map(record => {
-      const baseRecord = {
-        'Record ID': record.recordId,
-        'Source': record.source,
-        'Gene Symbol': record.geneSymbol,
-        'UniProt ID': record.uniprotId
-      };
-      
-      // Add all annotation values
-      return { ...baseRecord, ...record.values };
-    });
-
-    const filename = `annotations_${annotationsQuery || 'export'}_${new Date().toISOString().split('T')[0]}`;
-    exportToCSV(flattenedData, filename);
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-6">
@@ -307,14 +257,6 @@ export function AnnotationsBrowser() {
                     {uniqueRecordCount} results
                   </span>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleExport}
-                  disabled={filteredAnnotations.length === 0}
-                >
-                  Export CSV
-                </Button>
               </div>
 
               <div className="flex gap-6">
