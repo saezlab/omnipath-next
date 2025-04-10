@@ -34,6 +34,8 @@ interface FilterCounts {
   isDirected: { true: number; false: number }
   isStimulation: { true: number; false: number }
   isInhibition: { true: number; false: number }
+  isUpstream: { true: number; false: number }
+  isDownstream: { true: number; false: number }
 }
 
 type ViewMode = "table" | "network" | "chart"
@@ -83,6 +85,8 @@ export function InteractionsBrowser({
       isDirected: { true: 0, false: 0 },
       isStimulation: { true: 0, false: 0 },
       isInhibition: { true: 0, false: 0 },
+      isUpstream: { true: 0, false: 0 },
+      isDownstream: { true: 0, false: 0 },
     }
 
     // First, filter interactions based on all filters except the one being counted
@@ -173,10 +177,16 @@ export function InteractionsBrowser({
       if (interaction.isInhibition !== undefined) {
         counts.isInhibition[interaction.isInhibition?.toString() as 'true' | 'false']++
       }
+
+      // Calculate and count upstream/downstream based on query protein position
+      const isUpstream = interaction.isDirected === true && (interaction.target === interactionsQuery || interaction.targetGenesymbol === interactionsQuery)
+      const isDownstream = interaction.isDirected === true && (interaction.source === interactionsQuery || interaction.sourceGenesymbol === interactionsQuery)
+      counts.isUpstream[isUpstream.toString() as 'true' | 'false']++
+      counts.isDownstream[isDownstream.toString() as 'true' | 'false']++
     })
 
     return counts
-  }, [interactions, interactionsFilters])
+  }, [interactions, interactionsFilters, interactionsQuery])
 
   // Filter interactions based on selected filters
   const filteredInteractions = useMemo(() => {
@@ -218,6 +228,17 @@ export function InteractionsBrowser({
         return false
       }
 
+      // Filter by upstream/downstream based on query protein position
+      const isUpstream = interaction.isDirected === true && (interaction.target === interactionsQuery || interaction.targetGenesymbol === interactionsQuery)
+      const isDownstream = interaction.isDirected === true && (interaction.source === interactionsQuery || interaction.sourceGenesymbol === interactionsQuery)
+      
+      if (interactionsFilters.isUpstream !== null && isUpstream !== interactionsFilters.isUpstream) {
+        return false
+      }
+      if (interactionsFilters.isDownstream !== null && isDownstream !== interactionsFilters.isDownstream) {
+        return false
+      }
+
       // Filter by minimum references
       const referenceCount = interaction.references ? interaction.references.split(";").length : 0
       if (interactionsFilters.minReferences !== null && referenceCount < interactionsFilters.minReferences) {
@@ -226,7 +247,7 @@ export function InteractionsBrowser({
 
       return true
     })
-  }, [interactions, interactionsFilters])
+  }, [interactions, interactionsFilters, interactionsQuery])
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredInteractions.length / RESULTS_PER_PAGE)
@@ -244,7 +265,9 @@ export function InteractionsBrowser({
       if (
         type === "isDirected" ||
         type === "isStimulation" ||
-        type === "isInhibition"
+        type === "isInhibition" ||
+        type === "isUpstream" ||
+        type === "isDownstream"
       ) {
         return { ...prev, [type]: value }
       }
@@ -269,6 +292,8 @@ export function InteractionsBrowser({
       isDirected: null,
       isStimulation: null,
       isInhibition: null,
+      isUpstream: null,
+      isDownstream: null,
       minReferences: null,
     })
     setCurrentPage(1)

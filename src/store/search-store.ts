@@ -27,6 +27,8 @@ export interface InteractionsFilters {
   isDirected: boolean | null
   isStimulation: boolean | null
   isInhibition: boolean | null
+  isUpstream: boolean | null
+  isDownstream: boolean | null
   minReferences: number | null
 }
 
@@ -91,6 +93,8 @@ export const useSearchStore = create<SearchState>()(
         isDirected: null,
         isStimulation: null,
         isInhibition: null,
+        isUpstream: null,
+        isDownstream: null,
         minReferences: 0,
       },
 

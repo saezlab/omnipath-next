@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { InteractionsFilters } from "@/store/search-store"
-import { Check, Info } from "lucide-react"
+import { Check, Info, ArrowRight, Minus, Atom, Dna, Mic, FlaskConical } from "lucide-react"
 
 interface FilterSidebarProps {
   filters: InteractionsFilters
@@ -22,6 +22,8 @@ interface FilterSidebarProps {
     isDirected: { true: number; false: number }
     isStimulation: { true: number; false: number }
     isInhibition: { true: number; false: number }
+    isUpstream: { true: number; false: number }
+    isDownstream: { true: number; false: number }
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   showMobileFilters: boolean
@@ -32,6 +34,14 @@ const TAXONOMY_MAPPING: Record<string, string> = {
   '9606': 'Human',
   '10090': 'Mouse',
   '10116': 'Rat'
+}
+
+const INTERACTION_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: string }> = {
+  post_translational: { icon: <Atom className="h-4 w-4" />, label: "Post-translational" },
+  transcriptional: { icon: <Dna className="h-4 w-4" />, label: "Transcriptional" },
+  post_transcriptional: { icon: <Dna className="h-4 w-4" />, label: "Post-transcriptional" },
+  mirna_transcriptional: { icon: <Mic className="h-4 w-4" />, label: "miRNA Transcriptional" },
+  small_molecule_protein: { icon: <FlaskConical className="h-4 w-4" />, label: "Small Molecule-Protein" },
 }
 
 export function FilterSidebar({
@@ -79,6 +89,7 @@ export function FilterSidebar({
             onClick={() => onFilterChange("isDirected", filters.isDirected === true ? null : true)}
             className={filters.isDirected === true ? "bg-primary text-primary-foreground" : ""}
           >
+            <ArrowRight className="h-4 w-4 mr-1" />
             Directed ({filterCounts.isDirected.true})
           </Button>
           <Button
@@ -87,6 +98,7 @@ export function FilterSidebar({
             onClick={() => onFilterChange("isStimulation", filters.isStimulation === true ? null : true)}
             className={filters.isStimulation === true ? "bg-primary text-primary-foreground" : ""}
           >
+            <span className="text-green-500 mr-1">→</span>
             Stimulation ({filterCounts.isStimulation.true})
           </Button>
           <Button
@@ -95,7 +107,26 @@ export function FilterSidebar({
             onClick={() => onFilterChange("isInhibition", filters.isInhibition === true ? null : true)}
             className={filters.isInhibition === true ? "bg-primary text-primary-foreground" : ""}
           >
+            <span className="text-red-500 mr-1">→</span>
             Inhibition ({filterCounts.isInhibition.true})
+          </Button>
+          <Button
+            variant={filters.isUpstream === true ? "default" : "outline"}
+            size="sm"
+            onClick={() => onFilterChange("isUpstream", filters.isUpstream === true ? null : true)}
+            className={filters.isUpstream === true ? "bg-primary text-primary-foreground" : ""}
+          >
+            <span className="text-blue-500 mr-1">↑</span>
+            Upstream ({filterCounts.isUpstream.true})
+          </Button>
+          <Button
+            variant={filters.isDownstream === true ? "default" : "outline"}
+            size="sm"
+            onClick={() => onFilterChange("isDownstream", filters.isDownstream === true ? null : true)}
+            className={filters.isDownstream === true ? "bg-primary text-primary-foreground" : ""}
+          >
+            <span className="text-blue-500 mr-1">↓</span>
+            Downstream ({filterCounts.isDownstream.true})
           </Button>
         </div>
       </div>
@@ -117,32 +148,40 @@ export function FilterSidebar({
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
-              {interactionTypes.map((type) => (
-                <div key={type} className="flex items-center justify-between group">
-                  <Label
-                    htmlFor={`type-${type}`}
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer group-hover:text-primary transition-colors ${
-                      filters.interactionType.includes(type) ? "text-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id={`type-${type}`}
-                      checked={filters.interactionType.includes(type)}
-                      onCheckedChange={() => onFilterChange("interactionType", type)}
-                      className={filters.interactionType.includes(type) ? "border-primary" : ""}
-                    />
-                    {type}
-                  </Label>
-                  <Badge 
-                    variant={filters.interactionType.includes(type) ? "default" : "outline"} 
-                    className={`ml-auto group-hover:bg-primary/10 transition-colors ${
-                      filters.interactionType.includes(type) ? "bg-primary text-primary-foreground" : ""
-                    }`}
-                  >
-                    {filterCounts.interactionType[type] || 0}
-                  </Badge>
-                </div>
-              ))}
+              {interactionTypes.map((type) => {
+                const typeIcon = INTERACTION_TYPE_ICONS[type] || { icon: <Atom className="h-4 w-4" />, label: type }
+                return (
+                  <div key={type} className="flex items-center justify-between group">
+                    <Label
+                      htmlFor={`type-${type}`}
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer group-hover:text-primary transition-colors ${
+                        filters.interactionType.includes(type) ? "text-primary font-medium" : ""
+                      }`}
+                    >
+                      <Checkbox
+                        id={`type-${type}`}
+                        checked={filters.interactionType.includes(type)}
+                        onCheckedChange={() => onFilterChange("interactionType", type)}
+                        className={filters.interactionType.includes(type) ? "border-primary" : ""}
+                      />
+                      <div className="flex items-center gap-2">
+                        <div className="text-muted-foreground">
+                          {typeIcon.icon}
+                        </div>
+                        <span>{typeIcon.label}</span>
+                      </div>
+                    </Label>
+                    <Badge 
+                      variant={filters.interactionType.includes(type) ? "default" : "outline"} 
+                      className={`ml-auto group-hover:bg-primary/10 transition-colors ${
+                        filters.interactionType.includes(type) ? "bg-primary text-primary-foreground" : ""
+                      }`}
+                    >
+                      {filterCounts.interactionType[type] || 0}
+                    </Badge>
+                  </div>
+                )
+              })}
             </div>
           </AccordionContent>
         </AccordionItem>
