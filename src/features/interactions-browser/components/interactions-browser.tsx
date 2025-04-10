@@ -17,6 +17,8 @@ import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
 import { Search, SlidersHorizontal } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
+import { Input } from "@/components/ui/input"
+
 const RESULTS_PER_PAGE = 15
 
 interface InteractionsBrowserProps {
@@ -62,6 +64,7 @@ export function InteractionsBrowser({
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
 
   // Sync local interactions state with store
   useEffect(() => {
@@ -372,14 +375,22 @@ export function InteractionsBrowser({
                     onViewModeChange={setViewMode}
                     onExport={handleExport}
                     headerActions={
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="md:hidden"
-                        onClick={() => setShowMobileFilters(!showMobileFilters)}
-                      >
-                        <SlidersHorizontal className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="Search within table..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="max-w-xs"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="md:hidden"
+                          onClick={() => setShowMobileFilters(!showMobileFilters)}
+                        >
+                          <SlidersHorizontal className="h-4 w-4" />
+                        </Button>
+                      </div>
                     }
                   >
                     {viewMode === "table" ? (
@@ -387,6 +398,7 @@ export function InteractionsBrowser({
                         <ResultsTable
                           currentResults={paginatedInteractions}
                           onSelectInteraction={handleSelectInteraction}
+                          searchTerm={searchTerm}
                         />
                         {totalPages > 1 && (
                           <Pagination

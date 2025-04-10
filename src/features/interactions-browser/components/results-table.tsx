@@ -2,14 +2,17 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
-import { ArrowRight, Minus, Dna, Mic, FlaskConical, Atom } from "lucide-react"
+import { ArrowRight, Minus, Dna, Mic, FlaskConical, Atom, ArrowUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
 
 interface ResultsTableProps {
   currentResults: SearchProteinNeighborsResponse['interactions']
   onSelectInteraction: (interaction: SearchProteinNeighborsResponse['interactions'][number]) => void
+  searchTerm: string
 }
 
 const INTERACTION_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: string }> = {
@@ -20,7 +23,9 @@ const INTERACTION_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: str
   small_molecule_protein: { icon: <FlaskConical className="h-4 w-4" />, label: "Small Molecule-Protein" },
 }
 
-export function ResultsTable({ currentResults, onSelectInteraction }: ResultsTableProps) {
+export function ResultsTable({ currentResults, onSelectInteraction, searchTerm }: ResultsTableProps) {
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null)
+
   const getInteractionColor = (interaction: SearchProteinNeighborsResponse['interactions'][number]) => {
     if (interaction.isStimulation) return "text-green-500"
     if (interaction.isInhibition) return "text-red-500"
@@ -32,17 +37,60 @@ export function ResultsTable({ currentResults, onSelectInteraction }: ResultsTab
     return INTERACTION_TYPE_ICONS[type] || { icon: <Atom className="h-4 w-4" />, label: type }
   }
 
+  const getReferenceCount = (interaction: SearchProteinNeighborsResponse['interactions'][number]) => {
+    return interaction.references ? interaction.references.split(";").length : 0
+  }
+
+  const filteredAndSortedResults = currentResults
+    .filter(interaction => {
+      if (!searchTerm) return true
+      const searchLower = searchTerm.toLowerCase()
+      return (
+        interaction.sourceGenesymbol?.toLowerCase().includes(searchLower) ||
+        interaction.source?.toLowerCase().includes(searchLower) ||
+        interaction.targetGenesymbol?.toLowerCase().includes(searchLower) ||
+        interaction.target?.toLowerCase().includes(searchLower)
+      )
+    })
+    .sort((a, b) => {
+      if (!sortDirection) return 0
+      const countA = getReferenceCount(a)
+      const countB = getReferenceCount(b)
+      return sortDirection === 'asc' ? countA - countB : countB - countA
+    })
+
+  const toggleSort = () => {
+    setSortDirection(prev => {
+      if (prev === null) return 'asc'
+      if (prev === 'asc') return 'desc'
+      return null
+    })
+  }
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead className="text-center">Interaction</TableHead>
           <TableHead className="hidden lg:table-cell">Sources</TableHead>
-          <TableHead className="hidden lg:table-cell">References</TableHead>
+          <TableHead 
+            className="hidden lg:table-cell cursor-pointer"
+            onClick={toggleSort}
+          >
+            <div className="flex items-center gap-2">
+              References
+              <ArrowUpDown className="h-4 w-4" />
+              {sortDirection && (
+                <span className="text-xs text-muted-foreground">
+                  ({sortDirection === 'asc' ? 'asc' : 'desc'})
+                </span>
+              )}
+            </div>
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {currentResults.map((interaction, index) => {
+        {filteredAndSortedResults.map((interaction, index) => {
           const typeIcon = getInteractionTypeIcon(interaction.type)
           const sources = interaction.sources || []
           
@@ -122,7 +170,7 @@ export function ResultsTable({ currentResults, onSelectInteraction }: ResultsTab
                 </TooltipProvider>
               </TableCell>
               <TableCell className="hidden lg:table-cell">
-                {interaction.references ? interaction.references.split(";").length : 0}
+                {getReferenceCount(interaction)}
               </TableCell>
             </TableRow>
           )

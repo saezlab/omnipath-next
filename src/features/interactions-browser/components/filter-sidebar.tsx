@@ -131,7 +131,7 @@ export function FilterSidebar({
         </div>
       </div>
 
-      <Accordion type="multiple" defaultValue={["interactionType", "properties"]} className="w-full">
+      <Accordion type="multiple" defaultValue={["interactionType"]} className="w-full">
         <AccordionItem value="interactionType">
           <AccordionTrigger className="flex items-center gap-2">
             <span>Interaction Type</span>
@@ -185,6 +185,21 @@ export function FilterSidebar({
             </div>
           </AccordionContent>
         </AccordionItem>
+
+        <div className="px-4 py-2 space-y-2">
+          <Label className="text-sm font-medium">Minimum References</Label>
+          <div className="flex items-center gap-2">
+            <Slider
+              value={[filters.minReferences || 0]}
+              onValueChange={(value) => onFilterChange("minReferences", value[0])}
+              min={0}
+              max={10}
+              step={1}
+              className="flex-1"
+            />
+            <span className="text-sm w-8 text-right">{filters.minReferences}</span>
+          </div>
+        </div>
 
         <AccordionItem value="taxonomy">
           <AccordionTrigger>Organism</AccordionTrigger>
@@ -389,21 +404,6 @@ export function FilterSidebar({
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Minimum References</Label>
-                <div className="flex items-center gap-2">
-                  <Slider
-                    value={[filters.minReferences || 0]}
-                    onValueChange={(value) => onFilterChange("minReferences", value[0])}
-                    min={0}
-                    max={10}
-                    step={1}
-                    className="flex-1"
-                  />
-                  <span className="text-sm w-8 text-right">{filters.minReferences}</span>
-                </div>
               </div>
             </div>
           </AccordionContent>
