@@ -1,12 +1,11 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { exportToCSV } from "@/lib/utils/export"
+import { Download } from "lucide-react"
 import type React from "react"
 import { useMemo } from "react"
-import { Button } from "@/components/ui/button"
-import { Download } from "lucide-react"
-import { exportToCSV } from "@/lib/utils/export"
-import { EntityBadge } from "@/components/EntityBadge"
 
 interface Annotation {
   uniprot: string | null
@@ -126,21 +125,14 @@ export function AnnotationsTable({
             className="overflow-hidden border-2 border-muted shadow-sm hover:shadow-md bg-background rounded-lg"
           >
             <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background">
-              <div className="flex">
-                <EntityBadge 
-                  geneSymbol={firstRow.geneSymbol || ''} 
-                  uniprotId={firstRow.uniprotId || ''} 
-                />
-                </div>
-
-                <div className="space-x-2">
-                <span>
+              <div className="flex items-center space-x-2">
+                <h3 className="text-lg font-semibold">
                   {source}
-                </span>
-                <span>
+                </h3>
+                <span className="text-muted-foreground">
                   ({totalItems.toLocaleString()})
-                  </span>
-                </div>
+                </span>
+              </div>
               <Button 
                 variant="outline" 
                 size="icon" 

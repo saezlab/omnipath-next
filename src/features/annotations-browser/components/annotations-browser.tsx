@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
+import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { useSyncUrl } from '@/hooks/use-sync-url'
 import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore } from "@/store/search-store"
@@ -278,58 +279,72 @@ export function AnnotationsBrowser() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between">
-          <SearchBar
-            initialQuery={annotationsQuery}
-            onSearch={handleSearch}
-            isLoading={isLoading}
-            placeholder="Search for a protein..."
-          />
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className="md:hidden"
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleExport}
-              disabled={filteredAnnotations.length === 0}
-            >
-              Export
-            </Button>
-          </div>
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col gap-6">
+        <SearchBar
+          placeholder="Search for a protein..."
+          onSearch={handleSearch}
+          initialQuery={annotationsQuery}
+          isLoading={isLoading}
+        />
+        
+        {annotationsQuery && (
+          <>
+            <ProteinSummaryCard />
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowMobileFilters(!showMobileFilters)}
+                    className="lg:hidden"
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    Filters
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    {uniqueRecordCount} results
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExport}
+                  disabled={filteredAnnotations.length === 0}
+                >
+                  Export CSV
+                </Button>
+              </div>
 
-        <div className="flex flex-col md:flex-row gap-4">
-          <AnnotationsFilterSidebar
-            filters={annotationsFilters}
-            onFilterChange={handleFilterChange}
-            filterCounts={filterCounts}
-            showMobileFilters={showMobileFilters}
-            onClearFilters={clearFilters}
-          />
+              <div className="flex gap-6">
+                <AnnotationsFilterSidebar
+                  filterCounts={filterCounts}
+                  filters={annotationsFilters}
+                  onFilterChange={handleFilterChange}
+                  onClearFilters={clearFilters}
+                  showMobileFilters={showMobileFilters}
+                />
 
-          <div className="flex-1">
-            {isLoading ? (
-              <TableSkeleton />
-            ) : (
-              <AnnotationsTable
-                currentResults={currentResults}
-                onSelectAnnotation={setSelectedAnnotation}
-                getCategoryIcon={getCategoryIcon}
-                getCategoryColor={getCategoryColor}
-                currentPage={annotationsCurrentPage}
-                totalPages={totalPages}
-                onPageChange={setAnnotationsCurrentPage}
-              />
-            )}
-          </div>
-        </div>
+                <div className="flex-1">
+                  {isLoading ? (
+                    <TableSkeleton />
+                  ) : (
+                    <AnnotationsTable
+                      currentResults={currentResults}
+                      onSelectAnnotation={setSelectedAnnotation}
+                      getCategoryIcon={getCategoryIcon}
+                      getCategoryColor={getCategoryColor}
+                      currentPage={annotationsCurrentPage}
+                      totalPages={totalPages}
+                      onPageChange={setAnnotationsCurrentPage}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
