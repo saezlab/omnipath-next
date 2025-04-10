@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
+import { EntityBadge } from "@/components/EntityBadge"
 import { cn } from "@/lib/utils"
 import { ArrowRight, ArrowUpDown, Atom, Dna, FlaskConical, Mic, Minus } from "lucide-react"
 import { useState } from "react"
@@ -101,10 +102,10 @@ export function ResultsTable({ currentResults, onSelectInteraction, searchTerm }
             >
               <TableCell>
                 <div className="flex items-center justify-center gap-4">
-                  <div className="flex flex-col items-end">
-                    <span className="font-medium">{interaction.sourceGenesymbol || interaction.source}</span>
-                    <span className="text-xs text-muted-foreground">{interaction.source}</span>
-                  </div>
+                  <EntityBadge 
+                    geneSymbol={interaction.sourceGenesymbol || ''} 
+                    uniprotId={interaction.source || ''} 
+                  />
                   
                   <div className="flex items-center gap-2">
                     <TooltipProvider>
@@ -122,17 +123,17 @@ export function ResultsTable({ currentResults, onSelectInteraction, searchTerm }
 
                     <div className={cn("flex items-center", getInteractionColor(interaction))}>
                       {interaction.isDirected ? (
-                        <ArrowRight className="h-5 w-5" />
+                        <ArrowRight className="h-6 w-6" />
                       ) : (
-                        <Minus className="h-5 w-5" />
+                        <Minus className="h-6 w-6" />
                       )}
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-start">
-                    <span className="font-medium">{interaction.targetGenesymbol || interaction.target}</span>
-                    <span className="text-xs text-muted-foreground">{interaction.target}</span>
-                  </div>
+                  <EntityBadge 
+                    geneSymbol={interaction.targetGenesymbol || ''} 
+                    uniprotId={interaction.target || ''} 
+                  />
                 </div>
               </TableCell>
               <TableCell className="hidden lg:table-cell">

@@ -7,6 +7,7 @@ import { TableSkeleton } from "@/components/table-skeleton"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
+import { EntityBadge } from "@/components/EntityBadge"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { Pagination } from "@/features/interactions-browser/components/pagination"
@@ -434,7 +435,7 @@ export function InteractionsBrowser({
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogTitle>
-            Interaction Details: {selectedInteraction?.sourceGenesymbol || selectedInteraction?.source} → {selectedInteraction?.targetGenesymbol || selectedInteraction?.target}
+            Interaction Details
           </DialogTitle>
           {selectedInteraction && (
             <InteractionDetails selectedInteraction={selectedInteraction} />

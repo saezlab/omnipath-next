@@ -6,6 +6,7 @@ import { useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
 import { exportToCSV } from "@/lib/utils/export"
+import { EntityBadge } from "@/components/EntityBadge"
 
 interface Annotation {
   uniprot: string | null
@@ -125,14 +126,21 @@ export function AnnotationsTable({
             className="overflow-hidden border-2 border-muted shadow-sm hover:shadow-md bg-background rounded-lg"
           >
             <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background">
-              <div className="flex items-center space-x-2">
-                <h2 className="text-lg font-semibold">
-                  {source} - {firstRow.geneSymbol} ({firstRow.uniprotId})
-                </h2>
-                <span className="text-sm text-muted-foreground">
-                  ({totalItems.toLocaleString()})
+              <div className="flex">
+                <EntityBadge 
+                  geneSymbol={firstRow.geneSymbol || ''} 
+                  uniprotId={firstRow.uniprotId || ''} 
+                />
+                </div>
+
+                <div className="space-x-2">
+                <span>
+                  {source}
                 </span>
-              </div>
+                <span>
+                  ({totalItems.toLocaleString()})
+                  </span>
+                </div>
               <Button 
                 variant="outline" 
                 size="icon" 

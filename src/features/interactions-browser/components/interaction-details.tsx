@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { FileText, Search, ArrowRight, Minus } from "lucide-react"
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
+import { EntityBadge } from "@/components/EntityBadge"
 import { cn } from "@/lib/utils"
 
 interface InteractionDetailsProps {
@@ -21,12 +22,10 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
           <div className="space-y-4">
             {/* Interaction Type Indicator */}
             <div className="flex items-center justify-center gap-4 py-4">
-              <div className="flex flex-col items-center">
-                <Badge variant="outline" className="text-sm">
-                  {selectedInteraction.sourceGenesymbol || selectedInteraction.source}
-                </Badge>
-                <p className="text-xs text-muted-foreground mt-1">{selectedInteraction.source}</p>
-              </div>
+              <EntityBadge 
+                geneSymbol={selectedInteraction.sourceGenesymbol || ''} 
+                uniprotId={selectedInteraction.source || ''} 
+              />
               
               <div className={cn("flex items-center", getInteractionColor())}>
                 {selectedInteraction.isDirected ? (
@@ -36,12 +35,10 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
                 )}
               </div>
 
-              <div className="flex flex-col items-center">
-                <Badge variant="outline" className="text-sm">
-                  {selectedInteraction.targetGenesymbol || selectedInteraction.target}
-                </Badge>
-                <p className="text-xs text-muted-foreground mt-1">{selectedInteraction.target}</p>
-              </div>
+              <EntityBadge 
+                geneSymbol={selectedInteraction.targetGenesymbol || ''} 
+                uniprotId={selectedInteraction.target || ''} 
+              />
             </div>
 
             {/* Interaction Type Badge */}
