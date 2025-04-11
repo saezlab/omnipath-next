@@ -67,7 +67,7 @@ export function HomePage() {
               {
                 icon: <BarChart3 className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />,
                 title: "Data Visualization",
-                description: "Charts and statistical analysis",
+                description: "Charts and more",
               },
             ]}
             href="/annotations"
