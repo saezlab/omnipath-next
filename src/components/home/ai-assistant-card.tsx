@@ -6,12 +6,15 @@ import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-
+import Link from "next/link"
 export function AIAssistantCard() {
   const [chatMessage, setChatMessage] = useState("")
 
   return (
-    <Card className="md:w-1/2 relative overflow-hidden group">
+
+      <Card className="md:w-1/2 relative overflow-hidden group">
+    <Link href="/chat">
+
       <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-purple-500 to-pink-500 opacity-10 dark:opacity-20 group-hover:opacity-20 dark:group-hover:opacity-30 transition-opacity duration-300" />
       <div className="absolute top-3 right-3">
         <Badge
@@ -22,7 +25,7 @@ export function AIAssistantCard() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 dark:bg-amber-400"></span>
           </span>
-          Coming Soon
+          New (experimental)
         </Badge>
       </div>
       <CardHeader className="pb-3 relative">
@@ -65,6 +68,8 @@ export function AIAssistantCard() {
           </div>
         </div>
       </CardContent>
+      </Link>
+
     </Card>
   )
 }
