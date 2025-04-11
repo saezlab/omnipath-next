@@ -1,10 +1,9 @@
 "use client";
 
 import { Chat } from "@/components/ai/chat";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Message } from "ai";
 import { SiteLayout } from "@/components/layout/site-layout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Message } from "ai";
 
 export default function ChatPage() {
   const initialMessages: Message[] = [
