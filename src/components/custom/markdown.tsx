@@ -2,10 +2,17 @@ import Link from "next/link";
 import React, { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import type { Components } from "react-markdown";
+
+interface CodeProps extends React.HTMLAttributes<HTMLElement> {
+  inline?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
-  const components = {
-    code: ({ node, inline, className, children, ...props }: any) => {
+  const components: Components = {
+    code: ({ inline, className, children, ...props }: CodeProps) => {
       const match = /language-(\w+)/.exec(className || "");
       return !inline && match ? (
         <pre
@@ -23,37 +30,39 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
         </code>
       );
     },
-    ol: ({ node, children, ...props }: any) => {
+    ol: ({ children, ...props }) => {
       return (
         <ol className="list-decimal list-outside ml-4" {...props}>
           {children}
         </ol>
       );
     },
-    li: ({ node, children, ...props }: any) => {
+    li: ({ children, ...props }) => {
       return (
         <li className="py-1" {...props}>
           {children}
         </li>
       );
     },
-    ul: ({ node, children, ...props }: any) => {
+    ul: ({ children, ...props }) => {
       return (
         <ul className="list-decimal list-outside ml-4" {...props}>
           {children}
         </ul>
       );
     },
-    strong: ({ node, children, ...props }: any) => {
+    strong: ({ children, ...props }) => {
       return (
         <span className="font-semibold" {...props}>
           {children}
         </span>
       );
     },
-    a: ({ node, children, ...props }: any) => {
+    a: ({ children, href, ...props }) => {
+      if (!href) return <>{children}</>;
       return (
         <Link
+          href={href}
           className="text-blue-500 hover:underline"
           target="_blank"
           rel="noreferrer"

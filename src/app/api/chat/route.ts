@@ -1,8 +1,7 @@
-import { convertToCoreMessages, Message, streamText } from "ai";
 import { groq } from "@/ai";
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries";
 import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries";
-import { smoothStream } from "ai";
+import { convertToCoreMessages, smoothStream, streamText } from "ai";
 import { z } from "zod";
 
 // Define the message schema

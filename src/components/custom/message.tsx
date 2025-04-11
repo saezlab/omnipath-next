@@ -8,12 +8,10 @@ import { BotIcon, UserIcon } from "@/components/icons";
 import { Markdown } from "@/components/custom/markdown";
 
 export const Message = ({
-  chatId,
   role,
   content,
   toolInvocations,
 }: {
-  chatId: string;
   role: string;
   content: string | ReactNode;
   toolInvocations: Array<ToolInvocation> | undefined;

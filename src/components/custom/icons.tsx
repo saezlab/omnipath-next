@@ -1,4 +1,4 @@
-import { LucideIcon, ArrowUp, StopCircle, Paperclip } from "lucide-react";
+import { ArrowUp, Paperclip, StopCircle } from "lucide-react";
 
 interface IconProps {
   size?: number;

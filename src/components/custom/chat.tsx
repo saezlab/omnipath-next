@@ -2,15 +2,15 @@
 
 import { Message } from "ai";
 import { useChat } from "ai/react";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import { Message as PreviewMessage } from "@/components/custom/message";
 import { useScrollToBottom } from "@/components/custom/use-scroll-to-bottom";
-import { ArrowUpIcon, StopIcon } from "./icons";
-import { useWindowSize } from "./use-window-size";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { ArrowUpIcon, StopIcon } from "./icons";
+import { useWindowSize } from "./use-window-size";
 
 const suggestedActions = [
   {
@@ -41,7 +41,7 @@ export function Chat({
     });
 
   const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>();
+    useScrollToBottom<HTMLDivElement>()
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
@@ -80,7 +80,6 @@ export function Chat({
         {messages.map((message) => (
           <PreviewMessage
             key={message.id}
-            chatId={id}
             role={message.role}
             content={message.content}
             toolInvocations={message.toolInvocations}
