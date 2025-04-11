@@ -18,8 +18,10 @@ def main(
     ) -> None:
 
     args = locals()
-    path = pl.Path(__file__) / 'out' / 'protein_info.csv'
-    path.parent.mkdir(parents = True, exist_ok = True)
+    script_dir = pl.Path(__file__).parent
+    out_dir = script_dir / 'out'
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / 'protein_info.csv'
 
     pd.concat([load(organism, **args) for organism in ORGANISMS]).to_csv(path)
 
@@ -76,7 +78,7 @@ def load(
         ]
         gc_data = pd.DataFrame(gc_data)
 
-        result = pd.merge(result, gc_data, on = 'accession', how = 'left'
+        result = pd.merge(result, gc_data, on = 'accession', how = 'left')
 
     return result
 

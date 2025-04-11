@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
 import { BotIcon, UserIcon } from "@/components/icons";
-import { Markdown } from "@/components/custom/markdown";
+import { Markdown } from "@/components/ai/markdown";
 
 export const Message = ({
   role,

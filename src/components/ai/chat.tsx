@@ -5,8 +5,8 @@ import { useChat } from "ai/react";
 import { useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-import { Message as PreviewMessage } from "@/components/custom/message";
-import { useScrollToBottom } from "@/components/custom/use-scroll-to-bottom";
+import { Message as PreviewMessage } from "@/components/ai/message";
+import { useScrollToBottom } from "@/components/ai/use-scroll-to-bottom";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { ArrowUpIcon, StopIcon } from "./icons";
@@ -88,7 +88,7 @@ export function Chat({
         <div ref={messagesEndRef} className="h-4" />
       </div>
 
-      <div className="p-4 border-t">
+      <div className="p-4">
         <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto">
           {messages.length === 1 && (
             <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto md:max-w-[500px]">

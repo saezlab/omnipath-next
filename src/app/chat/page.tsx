@@ -1,6 +1,6 @@
 "use client";
 
-import { Chat } from "@/components/custom/chat";
+import { Chat } from "@/components/ai/chat";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Message } from "ai";
@@ -19,10 +19,6 @@ export default function ChatPage() {
     <SiteLayout>
       <div className="container mx-auto p-4">
         <Card className="h-[calc(100vh-12rem)]">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">OmniPath Chat</CardTitle>
-            <Separator />
-          </CardHeader>
           <CardContent className="h-[calc(100%-4rem)] p-0">
             <Chat id="main-chat" initialMessages={initialMessages} />
           </CardContent>
