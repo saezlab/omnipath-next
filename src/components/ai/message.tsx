@@ -7,11 +7,10 @@ import { ReactNode } from "react";
 import { Markdown } from "@/components/ai/markdown";
 import { ToolResponse } from "@/components/ai/tool-response";
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ChevronRightIcon } from "lucide-react";
 
 const ToolDetails = ({ toolInvocation }: { toolInvocation: ToolInvocation }) => {
@@ -19,28 +18,32 @@ const ToolDetails = ({ toolInvocation }: { toolInvocation: ToolInvocation }) => 
 
   return (
     <div className="flex flex-col gap-2">
-      <Dialog>
-        <DialogTrigger className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300">
+      <Popover>
+        <PopoverTrigger className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300">
           <ChevronRightIcon className="h-4 w-4" />
           <div className="font-mono font-medium bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
             {toolName}(<span className="text-zinc-600 dark:text-zinc-400">{args.query}</span>)
           </div>
-        </DialogTrigger>
-        <DialogContent className="max-w-2xl">
-          <DialogTitle>{toolName}(<span className="text-zinc-600 dark:text-zinc-400">{args.query}</span>)</DialogTitle>
-
-          {state === "result" && (
-            <div className="flex flex-col gap-2">
-              <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                Response:
-              </div>
-              <div className="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                <ToolResponse toolInvocation={toolInvocation} />
-              </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-[800px] p-4" align="start">
+          <div className="flex flex-col gap-2">
+            <div className="font-mono font-medium text-lg">
+              {toolName}(<span className="text-zinc-600 dark:text-zinc-400">{args.query}</span>)
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+
+            {state === "result" && (
+              <div className="flex flex-col gap-2">
+                <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Response:
+                </div>
+                <div className="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                  <ToolResponse toolInvocation={toolInvocation} />
+                </div>
+              </div>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
 
       {state === "call" && (
         <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">

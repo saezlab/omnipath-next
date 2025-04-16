@@ -40,8 +40,10 @@ export function Chat({
       maxSteps: 10,
     });
 
+  const lastMessageContent = messages.length > 0 ? messages[messages.length - 1].content : undefined;
+
   const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>()
+    useScrollToBottom<HTMLDivElement>(messages.length, lastMessageContent)
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
 
@@ -78,9 +80,7 @@ export function Chat({
           ref={messagesContainerRef}
           className="p-4 space-y-4 w-full overflow-auto h-full"
         >
-          <div className={`max-w-2xl mx-auto transition-all duration-500 ${
-            messages.length === 1 ? "translate-y-1/2" : ""
-          }`}>
+          <div className="max-w-2xl mx-auto">
             {messages.map((message, index) => (
               <PreviewMessage
                 key={message.id}
@@ -105,7 +105,7 @@ export function Chat({
               placeholder="Send a message..."
               value={input}
               onChange={handleInput}
-              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none pr-12"
+              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none pr-12 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
               rows={3}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {
@@ -122,7 +122,7 @@ export function Chat({
 
             {isLoading ? (
               <Button
-                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
                 onClick={(event) => {
                   event.preventDefault();
                   stop();
@@ -132,7 +132,7 @@ export function Chat({
               </Button>
             ) : (
               <Button
-                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
                 onClick={(event) => {
                   event.preventDefault();
                   submitForm();
