@@ -73,12 +73,12 @@ export function Chat({
 
   return (
     <div className="h-full">
-      <div className="h-[calc(100vh-185px)] w-full overflow-hidden">
+      <div className="h-[calc(100vh-130px)] w-full overflow-hidden">
         <div
           ref={messagesContainerRef}
           className="p-4 space-y-4 w-full overflow-auto h-full"
         >
-          <div className={`max-w-3xl mx-auto transition-all duration-500 ${
+          <div className={`max-w-2xl mx-auto transition-all duration-500 ${
             messages.length === 1 ? "translate-y-1/2" : ""
           }`}>
             {messages.map((message, index) => (
@@ -96,7 +96,7 @@ export function Chat({
       </div>
 
       <div className="fixed bottom-0 left-0 right-0">
-        <div className={`relative w-full flex flex-col gap-4 max-w-2xl mx-auto p-4 transition-all duration-500 ${
+        <div className={`relative w-full flex flex-col gap-4 max-w-2xl mx-auto transition-all duration-500 ${
           messages.length === 1 ? "translate-y-[-150%]" : "translate-y-[-20%]"
         }`}>
           <div className="relative">
