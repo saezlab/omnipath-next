@@ -4,15 +4,15 @@ import { ToolInvocation } from "ai";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
-import { BotIcon, UserIcon, ChevronRightIcon } from "lucide-react";
 import { Markdown } from "@/components/ai/markdown";
+import { ToolResponse } from "@/components/ai/tool-response";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ToolResponse } from "@/components/ai/tool-response";
+import { ChevronRightIcon } from "lucide-react";
 
 const ToolDetails = ({ toolInvocation }: { toolInvocation: ToolInvocation }) => {
   const { toolName, args, state } = toolInvocation;
@@ -56,22 +56,22 @@ export const Message = ({
   role,
   content,
   toolInvocations,
+  isInitialMessage,
 }: {
   role: string;
   content: string | ReactNode;
   toolInvocations: Array<ToolInvocation> | undefined;
+  isInitialMessage?: boolean;
 }) => {
   return (
     <motion.div
-      className={`flex flex-row gap-4 px-4 w-full md:w-[500px] md:px-0 first-of-type:pt-20`}
+      className={`flex flex-row gap-4 px-4 w-full md:px-0 first-of-type:pt-20 mb-8 ${
+        role === "user" ? "justify-end" : "justify-start"
+      } ${isInitialMessage ? "text-center" : ""}`}
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
     >
-      <div className="size-[24px] border rounded-sm p-1 flex flex-col justify-center items-center shrink-0 text-zinc-500">
-        {role === "assistant" ? <BotIcon /> : <UserIcon />}
-      </div>
-
-      <div className="flex flex-col gap-2 w-full">
+      <div className={`flex flex-col gap-2 ${role === "user" ? "w-[66%] items-end" : "w-full items-start"} ${isInitialMessage ? "items-center" : ""}`}>
         {toolInvocations && (
           <div className="flex flex-col gap-4">
             {toolInvocations.map((toolInvocation) => (
@@ -81,7 +81,13 @@ export const Message = ({
         )}
 
         {content && typeof content === "string" && (
-          <div className="text-zinc-800 dark:text-zinc-300 flex flex-col gap-4">
+          <div className={`text-zinc-800 dark:text-zinc-300 flex flex-col gap-4 ${
+            role === "user" 
+              ? "bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3" 
+              : isInitialMessage 
+                ? "text-lg font-medium" 
+                : ""
+          }`}>
             <Markdown>{content}</Markdown>
           </div>
         )}

@@ -72,26 +72,80 @@ export function Chat({
   }, [handleSubmit, width]);
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      <div
-        ref={messagesContainerRef}
-        className="flex-1 p-16 space-y-4 mx-auto overflow-x-hidden"
-      >
-        {messages.map((message) => (
-          <PreviewMessage
-            key={message.id}
-            role={message.role}
-            content={message.content}
-            toolInvocations={message.toolInvocations}
-          />
-        ))}
-        <div ref={messagesEndRef} className="h-4" />
+    <div className="h-full">
+      <div className="h-[calc(100vh-185px)] w-full overflow-hidden">
+        <div
+          ref={messagesContainerRef}
+          className="p-4 space-y-4 w-full overflow-auto h-full"
+        >
+          <div className={`max-w-3xl mx-auto transition-all duration-500 ${
+            messages.length === 1 ? "translate-y-1/2" : ""
+          }`}>
+            {messages.map((message, index) => (
+              <PreviewMessage
+                key={message.id}
+                role={message.role}
+                content={message.content}
+                toolInvocations={message.toolInvocations}
+                isInitialMessage={messages.length === 1 && index === 0}
+              />
+            ))}
+            <div ref={messagesEndRef} className="h-4" />
+          </div>
+        </div>
       </div>
 
-      <div className="p-4">
-        <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto">
+      <div className="fixed bottom-0 left-0 right-0">
+        <div className={`relative w-full flex flex-col gap-4 max-w-2xl mx-auto p-4 transition-all duration-500 ${
+          messages.length === 1 ? "translate-y-[-150%]" : "translate-y-[-20%]"
+        }`}>
+          <div className="relative">
+            <Textarea
+              ref={textareaRef}
+              placeholder="Send a message..."
+              value={input}
+              onChange={handleInput}
+              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none pr-12"
+              rows={3}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+
+                  if (isLoading) {
+                    toast.error("Please wait for the model to finish its response!");
+                  } else {
+                    submitForm();
+                  }
+                }
+              }}
+            />
+
+            {isLoading ? (
+              <Button
+                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+                onClick={(event) => {
+                  event.preventDefault();
+                  stop();
+                }}
+              >
+                <StopCircle size={14} />
+              </Button>
+            ) : (
+              <Button
+                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
+                onClick={(event) => {
+                  event.preventDefault();
+                  submitForm();
+                }}
+                disabled={input.length === 0}
+              >
+                <ArrowUp size={14} />
+              </Button>
+            )}
+          </div>
+
           {messages.length === 1 && (
-            <div className="grid sm:grid-cols-2 gap-4 w-full md:px-0 mx-auto md:max-w-[500px]">
+            <div className="grid sm:grid-cols-2 gap-4 w-full mt-4">
               {suggestedActions.map((suggestedAction, index) => (
                 <button
                   key={index}
@@ -110,49 +164,6 @@ export function Chat({
                 </button>
               ))}
             </div>
-          )}
-
-          <Textarea
-            ref={textareaRef}
-            placeholder="Send a message..."
-            value={input}
-            onChange={handleInput}
-            className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none"
-            rows={3}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-
-                if (isLoading) {
-                  toast.error("Please wait for the model to finish its response!");
-                } else {
-                  submitForm();
-                }
-              }
-            }}
-          />
-
-          {isLoading ? (
-            <Button
-              className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
-              onClick={(event) => {
-                event.preventDefault();
-                stop();
-              }}
-            >
-              <StopCircle size={14} />
-            </Button>
-          ) : (
-            <Button
-              className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-white"
-              onClick={(event) => {
-                event.preventDefault();
-                submitForm();
-              }}
-              disabled={input.length === 0}
-            >
-              <ArrowUp size={14} />
-            </Button>
           )}
         </div>
       </div>

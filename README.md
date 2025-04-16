@@ -13,6 +13,7 @@ pnpm dev
 # or
 bun dev
 ```
+git push alt main --force (reminder for myself)
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

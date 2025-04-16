@@ -1,6 +1,6 @@
 "use client"
 
-import { SiteLayout } from "@/components/layout/site-layout"
+import { SiteLayout } from "@/components/layout/main-layout"
 import { AnnotationsBrowser } from "@/features/annotations-browser/components/annotations-browser"
 
 export function AnnotationsPage() {

@@ -4,7 +4,7 @@ import { AboutSection } from "@/components/home/about-section"
 import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
-import { SiteLayout } from "@/components/layout/site-layout"
+import { SiteLayout } from "@/components/layout/main-layout"
 import { BarChart3, Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
 
 export function HomePage() {
