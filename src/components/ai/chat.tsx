@@ -9,7 +9,7 @@ import { Message as PreviewMessage } from "@/components/ai/message";
 import { useScrollToBottom } from "@/components/ai/use-scroll-to-bottom";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { ArrowUpIcon, StopIcon } from "./icons";
+import { ArrowUp, StopCircle } from "lucide-react";
 import { useWindowSize } from "./use-window-size";
 
 const suggestedActions = [
@@ -140,7 +140,7 @@ export function Chat({
                 stop();
               }}
             >
-              <StopIcon size={14} />
+              <StopCircle size={14} />
             </Button>
           ) : (
             <Button
@@ -151,7 +151,7 @@ export function Chat({
               }}
               disabled={input.length === 0}
             >
-              <ArrowUpIcon size={14} />
+              <ArrowUp size={14} />
             </Button>
           )}
         </div>

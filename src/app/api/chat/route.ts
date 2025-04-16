@@ -1,4 +1,4 @@
-import { groq } from "@/ai";
+import { google } from "@/ai";
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries";
 import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries";
 import { convertToCoreMessages, smoothStream, streamText } from "ai";
@@ -151,7 +151,7 @@ export async function POST(req: Request) {
     }
 
     const stream = streamText({
-      model: groq("llama-3.3-70b-versatile"),
+      model: google("gemini-2.0-flash"),
       messages: coreMessages,
       tools,
       toolChoice: "auto",
