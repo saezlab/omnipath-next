@@ -92,56 +92,105 @@ export function InteractionsBrowser({
       isDownstream: { true: 0, false: 0 },
     }
 
-    // First, filter interactions based on all filters except the one being counted
-    const filteredInteractions = interactions.filter((interaction) => {
-      // Filter by interaction type (if not counting interaction types)
-      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type || '')) {
-        return false
-      }
+    // Helper function to filter interactions based on all filters except specified ones
+    const filterInteractionsExcept = (excludedFilters: (keyof InteractionsFilters)[]) => {
+      return interactions.filter((interaction) => {
+        // Filter by interaction type
+        if (!excludedFilters.includes('interactionType') &&
+            interactionsFilters.interactionType.length > 0 && 
+            !interactionsFilters.interactionType.includes(interaction.type || '')) {
+          return false
+        }
 
-      // Filter by taxonomy ID (if not counting taxonomy)
-      if (interactionsFilters.ncbiTaxId.length > 0 && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
-        return false
-      }
+        // Filter by taxonomy ID
+        if (!excludedFilters.includes('ncbiTaxId') &&
+            interactionsFilters.ncbiTaxId.length > 0 && 
+            !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
+            !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
+          return false
+        }
 
-      // Filter by source entity type (if not counting source entity types)
-      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
-        return false
-      }
+        // Filter by source entity type
+        if (!excludedFilters.includes('entityTypeSource') &&
+            interactionsFilters.entityTypeSource.length > 0 && 
+            !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
+          return false
+        }
 
-      // Filter by target entity type (if not counting target entity types)
-      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
-        return false
-      }
+        // Filter by target entity type
+        if (!excludedFilters.includes('entityTypeTarget') &&
+            interactionsFilters.entityTypeTarget.length > 0 && 
+            !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
+          return false
+        }
 
-      // Filter by direction (if not counting direction)
-      if (interactionsFilters.isDirected !== null && interaction.isDirected !== interactionsFilters.isDirected) {
-        return false
-      }
+        // Filter by direction
+        if (!excludedFilters.includes('isDirected') &&
+            interactionsFilters.isDirected !== null && 
+            interaction.isDirected !== interactionsFilters.isDirected) {
+          return false
+        }
 
-      // Filter by stimulation (if not counting stimulation)
-      if (interactionsFilters.isStimulation !== null && interaction.isStimulation !== interactionsFilters.isStimulation) {
-        return false
-      }
+        // Filter by stimulation
+        if (!excludedFilters.includes('isStimulation') &&
+            interactionsFilters.isStimulation !== null && 
+            interaction.isStimulation !== interactionsFilters.isStimulation) {
+          return false
+        }
 
-      // Filter by inhibition (if not counting inhibition)
-      if (interactionsFilters.isInhibition !== null && interaction.isInhibition !== interactionsFilters.isInhibition) {
-        return false
-      }
+        // Filter by inhibition
+        if (!excludedFilters.includes('isInhibition') &&
+            interactionsFilters.isInhibition !== null && 
+            interaction.isInhibition !== interactionsFilters.isInhibition) {
+          return false
+        }
 
-      // Filter by minimum references
-      const referenceCount = interaction.references ? interaction.references.split(";").length : 0
-      if (interactionsFilters.minReferences !== null && referenceCount < interactionsFilters.minReferences) {
-        return false
-      }
+        // Filter by minimum references
+        const referenceCount = interaction.references ? interaction.references.split(";").length : 0
+        if (!excludedFilters.includes('minReferences') &&
+            interactionsFilters.minReferences !== null && 
+            referenceCount < interactionsFilters.minReferences) {
+          return false
+        }
 
-      return true
+        // Filter by upstream/downstream based on query protein position
+        const isUpstream = interaction.isDirected === true && (interaction.target === interactionsQuery || interaction.targetGenesymbol === interactionsQuery)
+        const isDownstream = interaction.isDirected === true && (interaction.source === interactionsQuery || interaction.sourceGenesymbol === interactionsQuery)
+        
+        if (!excludedFilters.includes('isUpstream') &&
+            interactionsFilters.isUpstream !== null && 
+            isUpstream !== interactionsFilters.isUpstream) {
+          return false
+        }
+        if (!excludedFilters.includes('isDownstream') &&
+            interactionsFilters.isDownstream !== null && 
+            isDownstream !== interactionsFilters.isDownstream) {
+          return false
+        }
+
+        return true
+      })
+    }
+
+    // Count source entity types excluding source entity type filter
+    const sourceEntityInteractions = filterInteractionsExcept(['entityTypeSource'])
+    sourceEntityInteractions.forEach((interaction) => {
+      if (interaction.entityTypeSource) {
+        counts.entityTypeSource[interaction.entityTypeSource] = (counts.entityTypeSource[interaction.entityTypeSource] || 0) + 1
+      }
     })
 
-    // Then count the remaining interactions
-    filteredInteractions.forEach((interaction) => {
+    // Count target entity types excluding target entity type filter
+    const targetEntityInteractions = filterInteractionsExcept(['entityTypeTarget'])
+    targetEntityInteractions.forEach((interaction) => {
+      if (interaction.entityTypeTarget) {
+        counts.entityTypeTarget[interaction.entityTypeTarget] = (counts.entityTypeTarget[interaction.entityTypeTarget] || 0) + 1
+      }
+    })
+
+    // Count all other properties using all filters
+    const allFilteredInteractions = filterInteractionsExcept([])
+    allFilteredInteractions.forEach((interaction) => {
       // Count interaction types
       if (interaction.type) {
         counts.interactionType[interaction.type] = (counts.interactionType[interaction.type] || 0) + 1
@@ -158,16 +207,6 @@ export function InteractionsBrowser({
       }
       if (interaction.ncbiTaxIdTarget) {
         counts.ncbiTaxId[interaction.ncbiTaxIdTarget] = (counts.ncbiTaxId[interaction.ncbiTaxIdTarget] || 0) + 1
-      }
-
-      // Count source entity types
-      if (interaction.entityTypeSource) {
-        counts.entityTypeSource[interaction.entityTypeSource] = (counts.entityTypeSource[interaction.entityTypeSource] || 0) + 1
-      }
-
-      // Count target entity types
-      if (interaction.entityTypeTarget) {
-        counts.entityTypeTarget[interaction.entityTypeTarget] = (counts.entityTypeTarget[interaction.entityTypeTarget] || 0) + 1
       }
 
       // Count boolean properties
