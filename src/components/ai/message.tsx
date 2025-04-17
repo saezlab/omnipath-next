@@ -25,7 +25,7 @@ const ToolDetails = ({ toolInvocation }: { toolInvocation: ToolInvocation }) => 
             {toolName}(<span className="text-zinc-600 dark:text-zinc-400">{args.query}</span>)
           </div>
         </PopoverTrigger>
-        <PopoverContent className="w-[800px] p-4" align="start">
+        <PopoverContent className="w-[90vw] md:w-full p-4" align="start">
           <div className="flex flex-col gap-2">
             <div className="font-mono font-medium text-lg">
               {toolName}(<span className="text-zinc-600 dark:text-zinc-400">{args.query}</span>)
