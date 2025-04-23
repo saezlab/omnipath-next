@@ -96,7 +96,7 @@ export function Chat({
       </div>
 
       <div className="fixed bottom-0 left-0 right-0">
-        <div className={`relative w-full flex flex-col gap-4 max-w-2xl mx-auto transition-all duration-500 px-4 md:px-0 ${
+        <div className={`relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 md:px-0 ${
           messages.length === 1 ? "md:translate-y-[-230%] translate-y-[-50%]" : "translate-y-[-20%]"
         }`}>
           <div className="relative">

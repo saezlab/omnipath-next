@@ -1,4 +1,6 @@
-import { pgTable, serial, varchar, integer, boolean, jsonb } from "drizzle-orm/pg-core"
+import { boolean, index, integer, jsonb, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+
+
 
 export const annotations = pgTable("annotations", {
 	id: serial().primaryKey().notNull(),
@@ -9,7 +11,10 @@ export const annotations = pgTable("annotations", {
 	label: varchar(),
 	value: varchar(),
 	recordId: integer("record_id"),
-});
+}, (table) => [
+	index("idx_annotations_genesymbol").using("btree", table.genesymbol.asc().nullsLast().op("text_ops")),
+	index("idx_annotations_uniprot").using("btree", table.uniprot.asc().nullsLast().op("text_ops")),
+]);
 
 export const complexes = pgTable("complexes", {
 	id: serial().primaryKey().notNull(),
@@ -76,7 +81,12 @@ export const interactions = pgTable("interactions", {
 	entityTypeSource: varchar("entity_type_source"),
 	ncbiTaxIdTarget: integer("ncbi_tax_id_target"),
 	entityTypeTarget: varchar("entity_type_target"),
-});
+}, (table) => [
+	index("idx_interactions_source").using("btree", table.source.asc().nullsLast().op("text_ops")),
+	index("idx_interactions_source_genesymbol").using("btree", table.sourceGenesymbol.asc().nullsLast().op("text_ops")),
+	index("idx_interactions_target").using("btree", table.target.asc().nullsLast().op("text_ops")),
+	index("idx_interactions_target_genesymbol").using("btree", table.targetGenesymbol.asc().nullsLast().op("text_ops")),
+]);
 
 export const intercell = pgTable("intercell", {
 	id: serial().primaryKey().notNull(),
@@ -96,3 +106,14 @@ export const intercell = pgTable("intercell", {
 	plasmaMembraneTransmembrane: boolean("plasma_membrane_transmembrane"),
 	plasmaMembranePeripheral: boolean("plasma_membrane_peripheral"),
 });
+
+export const uniprotIdentifiers = pgTable("uniprot_identifiers", {
+	id: serial().primaryKey().notNull(),
+	uniprotAccession: varchar("uniprot_accession", { length: 30 }).notNull(),
+	identifierType: varchar("identifier_type", { length: 50 }).notNull(),
+	identifierValue: text("identifier_value").notNull(),
+}, (table) => [
+	index("idx_uniprot_identifiers_accession").using("btree", table.uniprotAccession.asc().nullsLast().op("text_ops")),
+	index("idx_uniprot_identifiers_type").using("btree", table.identifierType.asc().nullsLast().op("text_ops")),
+	index("idx_uniprot_identifiers_value_prefix").using("btree", table.identifierValue.asc().nullsLast().op("text_pattern_ops")),
+]);
