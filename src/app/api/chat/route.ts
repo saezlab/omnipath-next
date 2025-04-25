@@ -111,13 +111,10 @@ Example query: "SELECT sourceGenesymbol, targetGenesymbol, type FROM interaction
         }
         const results = await executeReadOnlyQuery(sqlQuery);
         console.log(`SQL query returned ${results.length} results.`);
-        // Limit the number of results returned to the chat for brevity
-        const MAX_RESULTS = 50; 
-        const limitedResults = results.slice(0, MAX_RESULTS);
         return { 
-          results: limitedResults,
+          results: results,
           totalCount: results.length,
-          limited: results.length > MAX_RESULTS 
+          limited: false
         };
       } catch (error: unknown) {
         console.error("Error executing SQL query tool:", error);
@@ -198,7 +195,7 @@ After receiving a tool's response:
 2. Keep responses concise but informative
 3. Focus on the most relevant information
 4. Use appropriate context from the user's question
-5. Avoid simply repeating the raw data
+5. Avoid simply repeating the raw data: Make sure to only briefly summarize the data you got back in case it is above 100 entries. 
 `
       });
     }
