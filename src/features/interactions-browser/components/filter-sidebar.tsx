@@ -26,7 +26,7 @@ interface FilterSidebarProps {
     isDownstream: { true: number; false: number }
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
-  showMobileFilters: boolean
+  showMobileFilters?: boolean
   onClearFilters: () => void
 }
 

@@ -10,13 +10,12 @@ import { Input } from "@/components/ui/input"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
-import { Pagination } from "@/features/interactions-browser/components/pagination"
-import { ResultsTable } from "@/features/interactions-browser/components/results-table"
+import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
 import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
 import { useSyncUrl } from '@/hooks/use-sync-url'
 import { exportToCSV } from "@/lib/utils/export"
 import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
-import { Search, SlidersHorizontal } from "lucide-react"
+import { Search } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 const RESULTS_PER_PAGE = 15
@@ -59,12 +58,9 @@ export function InteractionsBrowser({
 
   const [interactions, setInteractions] = useState<SearchProteinNeighborsResponse['interactions']>([])
   const [viewMode, setViewMode] = useState<ViewMode>("table")
-  const [currentPage, setCurrentPage] = useState(1)
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
-  const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
 
   // Sync local interactions state with store
   useEffect(() => {
@@ -291,13 +287,6 @@ export function InteractionsBrowser({
     })
   }, [interactions, interactionsFilters, interactionsQuery])
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredInteractions.length / RESULTS_PER_PAGE)
-  const paginatedInteractions = filteredInteractions.slice(
-    (currentPage - 1) * RESULTS_PER_PAGE,
-    currentPage * RESULTS_PER_PAGE
-  )
-
   const handleFilterChange = (type: keyof InteractionsFilters, value: string | boolean | null | number) => {
     setInteractionsFilters((prev) => {
       if (type === "minReferences") {
@@ -321,7 +310,6 @@ export function InteractionsBrowser({
 
       return { ...prev, [type]: newValues }
     })
-    setCurrentPage(1)
   }
 
   const clearFilters = () => {
@@ -338,14 +326,12 @@ export function InteractionsBrowser({
       isDownstream: null,
       minReferences: null,
     })
-    setCurrentPage(1)
   }
 
   const handleSearch = async (searchQuery: string = interactionsQuery) => {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
-    setCurrentPage(1)
     setInteractionsQuery(searchQuery)
 
     try {
@@ -361,12 +347,6 @@ export function InteractionsBrowser({
       setIsLoading(false)
     }
   }
-
-  const handleExport = () => {
-    if (filteredInteractions.length === 0) return;
-    const filename = `interactions_${interactionsQuery || 'export'}_${new Date().toISOString().split('T')[0]}`;
-    exportToCSV(filteredInteractions, filename);
-  };
 
   const handleSelectInteraction = (interaction: SearchProteinNeighborsResponse['interactions'][number]) => {
     setSelectedInteraction(interaction)
@@ -392,7 +372,6 @@ export function InteractionsBrowser({
               filters={interactionsFilters}
               filterCounts={filterCounts}
               onFilterChange={handleFilterChange}
-              showMobileFilters={showMobileFilters}
               onClearFilters={clearFilters}
             />
           )}
@@ -412,43 +391,24 @@ export function InteractionsBrowser({
                     totalItems={filteredInteractions.length}
                     viewMode={viewMode}
                     onViewModeChange={setViewMode}
-                    onExport={handleExport}
-                    headerActions={
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="Search within table..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="max-w-xs"
-                        />
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="md:hidden"
-                          onClick={() => setShowMobileFilters(!showMobileFilters)}
-                        >
-                          <SlidersHorizontal className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    }
                   >
                     {viewMode === "table" ? (
                       <>
-                        <ResultsTable
-                          currentResults={paginatedInteractions}
+                        <InteractionResultsTable
+                          interactions={filteredInteractions}
                           onSelectInteraction={handleSelectInteraction}
-                          searchTerm={searchTerm}
+                          showSearch={true}
+                          searchKeys={[
+                              'sourceGenesymbol', 
+                              'source', 
+                              'targetGenesymbol', 
+                              'target', 
+                              'type', 
+                              'sources'
+                            ]}
+                          searchPlaceholder="Search interactions..."
+                          resultsPerPage={RESULTS_PER_PAGE}
                         />
-                        {totalPages > 1 && (
-                          <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            startIndex={(currentPage - 1) * RESULTS_PER_PAGE}
-                            endIndex={currentPage * RESULTS_PER_PAGE}
-                            totalItems={filteredInteractions.length}
-                            onPageChange={setCurrentPage}
-                          />
-                        )}
                       </>
                     ) : (
                       <VisualizationPlaceholder type={viewMode} />

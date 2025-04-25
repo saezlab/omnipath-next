@@ -3,6 +3,7 @@ import { getProteinAnnotations } from "@/features/annotations-browser/api/querie
 import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries";
 import { convertToCoreMessages, smoothStream, streamText } from "ai";
 import { z } from "zod";
+import { executeReadOnlyQuery } from '@/db/queries';
 
 // Define the message schema
 const messageSchema = z.object({
@@ -17,7 +18,7 @@ const requestSchema = z.object({
 
 // Define the tools as provided
 const tools = {
-  searchInteractions: {
+/*   searchInteractions: {
     description: "Search for interactions involving a specific protein or gene. Provide the gene symbol or UniProt ID.",
     parameters: z.object({
       query: z.string().describe("Gene symbol or UniProt ID (e.g., 'TP53', 'P04637')."),
@@ -90,6 +91,43 @@ const tools = {
       }
     },
   },
+ */  executeSql: {
+    description: `Execute a read-only SQL query (must start with SELECT) against the database.
+Available tables and their columns:
+- annotations: id, uniprot, genesymbol, entity_type, source, label, value, record_id
+- complexes: id, name, components (array), components_genesymbols (array), stoichiometry, sources (array), references, identifiers
+- enzsub: id, enzyme, enzyme_genesymbol, substrate, substrate_genesymbol, isoforms, residue_type, residue_offset, modification, sources (array), references, curation_effort, ncbi_tax_id
+- interactions: id, source, target, source_genesymbol, target_genesymbol, is_directed, is_stimulation, is_inhibition, consensus_direction, consensus_stimulation, consensus_inhibition, sources (array), references, omnipath, kinaseextra, ligrecextra, pathwayextra, mirnatarget, dorothea, collectri, tf_target, lncrna_mrna, tf_mirna, small_molecule, dorothea_curated, dorothea_chipseq, dorothea_tfbs, dorothea_coexp, dorothea_level (array), type, curation_effort, extra_attrs (jsonb), evidences (jsonb), ncbi_tax_id_source, entity_type_source, ncbi_tax_id_target, entity_type_target
+- intercell: id, category, parent, database, scope, aspect, source, uniprot, genesymbol, entity_type, consensus_score, transmitter, receiver, secreted, plasma_membrane_transmembrane, plasma_membrane_peripheral
+- uniprot_identifiers: id, uniprot_accession, identifier_type, identifier_value
+Example query: "SELECT sourceGenesymbol, targetGenesymbol, type FROM interactions WHERE sourceGenesymbol = 'EGFR' LIMIT 5"`,
+    parameters: z.object({
+      sqlQuery: z.string().describe("The read-only SQL query (starting with SELECT) to execute."),
+    }),
+    execute: async ({ sqlQuery }: { sqlQuery: string }) => {
+      console.log(`Executing SQL query: ${sqlQuery}`);
+      try {
+        // Ensure the query is read-only server-side as well, although the function already does this.
+        if (!sqlQuery.trim().toUpperCase().startsWith("SELECT")) {
+           return { error: "Invalid query. Only SELECT statements are allowed." };
+        }
+        const results = await executeReadOnlyQuery(sqlQuery);
+        console.log(`SQL query returned ${results.length} results.`);
+        // Limit the number of results returned to the chat for brevity
+        const MAX_RESULTS = 50; 
+        const limitedResults = results.slice(0, MAX_RESULTS);
+        return { 
+          results: limitedResults,
+          totalCount: results.length,
+          limited: results.length > MAX_RESULTS 
+        };
+      } catch (error: any) {
+        console.error("Error executing SQL query tool:", error);
+        // Return the specific error message directly
+        return { error: String(error?.message || error || 'Unknown database error') };
+      }
+    },
+  }
 /*   displayInteractionsTable: {
     description: "Display a table of protein interactions.",
     parameters: z.object({
@@ -160,7 +198,7 @@ After receiving a tool's response:
     }
 
     const stream = streamText({
-      model: google("gemini-2.0-flash"),
+      model: google("gemini-2.5-flash-preview-04-17"),
       messages: coreMessages,
       tools,
       toolChoice: "auto",

@@ -1,10 +1,10 @@
 "use client"
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Table, Network, BarChart, Download } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import { Download, Network, Table } from "lucide-react"
 
 interface DataCardProps<T extends string> {
   title: string
@@ -83,27 +83,6 @@ export function DataCard<T extends string>({
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Network view - Coming Soon?</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="relative">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Button
-                        variant={viewMode === "chart" ? "default" : "ghost"}
-                        size="icon"
-                        onClick={() => onViewModeChange("chart" as T)}  
-                        disabled={true}
-                      >
-                        <BarChart className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Charts - Coming Soon?</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

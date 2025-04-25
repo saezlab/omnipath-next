@@ -2,6 +2,9 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { StateCreator } from 'zustand'
 import { SearchProteinNeighborsResponse } from '@/features/interactions-browser/api/queries'
+import { nanoid } from 'nanoid'
+import { ToolInvocation } from 'ai'
+
 interface Annotation {
   uniprot: string | null
   genesymbol: string | null
@@ -32,6 +35,18 @@ export interface InteractionsFilters {
   minReferences: number | null
 }
 
+export interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant' | 'system' | 'function' | 'tool'
+  content: string
+  toolInvocations?: ToolInvocation[]
+}
+
+export interface ChatSession {
+  id: string
+  messages: ChatMessage[]
+}
+
 interface SearchState {
   // Annotations state
   annotationsQuery: string
@@ -48,6 +63,11 @@ interface SearchState {
   selectedInteraction: SearchProteinNeighborsResponse['interactions'][number] | null
   interactionsFilters: InteractionsFilters
 
+  // Chat state
+  chats: ChatSession[]
+  currentChatId: string | null
+  messages: ChatMessage[]
+
   // Actions
   setAnnotationsQuery: (query: string) => void
   setAnnotationsResults: (results: Annotation[]) => void
@@ -61,13 +81,22 @@ interface SearchState {
   setInteractionsCurrentPage: (page: number) => void
   setSelectedInteraction: (interaction: SearchProteinNeighborsResponse['interactions'][number] | null) => void
   setInteractionsFilters: (filters: InteractionsFilters | ((prev: InteractionsFilters) => InteractionsFilters)) => void
+
+  // Chat Actions
+  addMessage: (message: ChatMessage) => void
+  setMessages: (messages: ChatMessage[]) => void
+  startNewChat: () => void
+  switchChat: (chatId: string) => void
+  saveCurrentChat: () => void
 }
 
 type SearchStateCreator = StateCreator<SearchState, [], []>
 
+const initialChatId = nanoid()
+
 export const useSearchStore = create<SearchState>()(
   persist(
-    ((set) => ({
+    ((set, get) => ({
       // Initial state
       annotationsQuery: '',
       annotationsResults: [],
@@ -98,6 +127,11 @@ export const useSearchStore = create<SearchState>()(
         minReferences: 0,
       },
 
+      // Chat initial state
+      chats: [{ id: initialChatId, messages: [] }],
+      currentChatId: initialChatId,
+      messages: [],
+
       // Actions
       setAnnotationsQuery: (query: string) => set({ annotationsQuery: query }),
       setAnnotationsResults: (results: Annotation[]) => set({ annotationsResults: results }),
@@ -117,6 +151,47 @@ export const useSearchStore = create<SearchState>()(
         set((state: SearchState) => ({ 
           interactionsFilters: typeof filters === 'function' ? filters(state.interactionsFilters) : filters 
         })),
+
+      // Chat Actions
+      addMessage: (message: ChatMessage) => {
+        const currentMessages = get().messages
+        set({ messages: [...currentMessages, message] })
+        get().saveCurrentChat()
+      },
+      setMessages: (messages: ChatMessage[]) => {
+        set({ messages })
+        get().saveCurrentChat()
+      },
+      startNewChat: () => {
+        const newChatId = nanoid()
+        const newChat: ChatSession = { id: newChatId, messages: [] }
+        const currentChats = get().chats
+        set({
+          chats: [...currentChats, newChat],
+          currentChatId: newChatId,
+          messages: [],
+        })
+      },
+      switchChat: (chatId: string) => {
+        const targetChat = get().chats.find(chat => chat.id === chatId)
+        if (targetChat) {
+          set({
+            currentChatId: chatId,
+            messages: targetChat.messages,
+          })
+        } else {
+          console.warn(`Chat with id ${chatId} not found.`)
+        }
+      },
+      saveCurrentChat: () => {
+        const { currentChatId, messages, chats } = get()
+        if (!currentChatId) return
+
+        const updatedChats = chats.map(chat =>
+          chat.id === currentChatId ? { ...chat, messages: messages } : chat
+        )
+        set({ chats: updatedChats })
+      },
     })) as SearchStateCreator,
     {
       name: 'search-store',
@@ -131,6 +206,9 @@ export const useSearchStore = create<SearchState>()(
         interactionsCurrentPage: state.interactionsCurrentPage,
         selectedInteraction: state.selectedInteraction,
         interactionsFilters: state.interactionsFilters,
+
+        chats: state.chats,
+        currentChatId: state.currentChatId,
       }),
     }
   )
