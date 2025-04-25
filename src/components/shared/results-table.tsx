@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/tooltip";
 
 // Generic type for row data
-type DataRow = Record<string, any>;
+type DataRow = Record<string, unknown>;
 
 // Type for column definition
 export interface ColumnDef<TData extends DataRow> {
@@ -149,25 +149,6 @@ export function ResultsTable<TData extends DataRow>({
         return;
     }
     const filename = `${exportFilenamePrefix}_${new Date().toISOString().split('T')[0]}`;
-    // Extract headers from columns for CSV export
-    const headers = columns.map(col => 
-        typeof col.header === 'string' ? col.header : String(col.accessorKey)
-    );
-    // Map data to match headers order
-    const dataToExport = processedData.map(row => 
-        columns.map(col => {
-            const value = row[col.accessorKey];
-            // Simple handling for objects/arrays, might need refinement
-            if (typeof value === 'object' && value !== null) {
-                return JSON.stringify(value);
-            }
-            return value;
-        })
-    );
-
-    // Call the export utility (assuming it accepts headers and data separately)
-    // Adjust this call based on the actual signature of exportToCSV
-    // Assuming exportToCSV handles the conversion of array of arrays to CSV format
     exportToCSV(processedData, filename); // Use processedData directly if exportToCSV handles object arrays
   };
 

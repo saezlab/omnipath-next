@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'; // Assuming Button component ex
 import { AlertCircle, Pencil } from 'lucide-react'; // Icon for errors and Pencil icon
 
 // Type for a single row in the SQL results
-type SqlResultRow = Record<string, any>;
+type SqlResultRow = Record<string, unknown>;
 
 // Type for the result object returned by the executeSql tool
 interface SqlToolResult {

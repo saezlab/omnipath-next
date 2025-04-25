@@ -20,8 +20,7 @@ const ToolDetails = ({
   toolInvocation: ExtendedToolInvocation;
   onRerunQuery?: (newQuery: string) => void;
 }) => {
-  const { toolName, args, state, result } = toolInvocation;
-  const displayArgs = JSON.stringify(args, null, 2);
+  const { toolName, state, result } = toolInvocation;
   const hasError = result?.error != null;
 
   return (

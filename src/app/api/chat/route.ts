@@ -1,9 +1,7 @@
 import { google } from "@/ai";
-import { getProteinAnnotations } from "@/features/annotations-browser/api/queries";
-import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries";
+import { executeReadOnlyQuery } from '@/db/queries';
 import { convertToCoreMessages, smoothStream, streamText } from "ai";
 import { z } from "zod";
-import { executeReadOnlyQuery } from '@/db/queries';
 
 // Define the message schema
 const messageSchema = z.object({
@@ -121,10 +119,18 @@ Example query: "SELECT sourceGenesymbol, targetGenesymbol, type FROM interaction
           totalCount: results.length,
           limited: results.length > MAX_RESULTS 
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error executing SQL query tool:", error);
+        let errorMessage = 'Unknown database error';
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        }
         // Return the specific error message directly
-        return { error: String(error?.message || error || 'Unknown database error') };
+        return { error: errorMessage };
       }
     },
   }
@@ -222,7 +228,7 @@ After receiving a tool's response:
       },
     });
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error in chat endpoint:", error);
     return new Response("Failed to process chat request", { status: 500 });
   }
