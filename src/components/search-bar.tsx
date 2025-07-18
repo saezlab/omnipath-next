@@ -133,9 +133,17 @@ export function SearchBar({
                       >
                         <div className="flex flex-col">
                           <span>{suggestion.identifierValue}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {suggestion.uniprotAccession}
-                          </span>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>{suggestion.uniprotAccession}</span>
+                            <span>•</span>
+                            <span className="capitalize">{suggestion.identifierType?.replace('_', ' ')}</span>
+                            {suggestion.taxonId && (
+                              <>
+                                <span>•</span>
+                                <span>{suggestion.taxonId === '9606' ? 'Human' : suggestion.taxonId === '10090' ? 'Mouse' : suggestion.taxonId === '10116' ? 'Rat' : suggestion.taxonId}</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </CommandItem>
                     ))}

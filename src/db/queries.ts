@@ -2,20 +2,19 @@
 
 import { db } from ".";
 import { uniprotIdentifiers    } from "./drizzle/schema";
-import { sql, or } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 export async function searchIdentifiers(query: string, limit: number = 10) {
   const results = await db
     .select({
       uniprotAccession: uniprotIdentifiers.uniprotAccession,
       identifierValue: uniprotIdentifiers.identifierValue,
+      identifierType: uniprotIdentifiers.identifierType,
+      taxonId: uniprotIdentifiers.taxonId,
     })
     .from(uniprotIdentifiers)
     .where(
-      or(
-        sql`${uniprotIdentifiers.identifierValue} ILIKE ${query + '%'}`,
-        sql`${uniprotIdentifiers.uniprotAccession} ILIKE ${query + '%'}`
-      )
+            sql`${uniprotIdentifiers.identifierValue} ILIKE ${query + '%'}`,
     )
     .limit(limit);
 
@@ -23,6 +22,7 @@ export async function searchIdentifiers(query: string, limit: number = 10) {
 }
 
 export type SearchIdentifiersResponse = Awaited<ReturnType<typeof searchIdentifiers>>;
+
 
 export async function executeReadOnlyQuery(query: string): Promise<Record<string, unknown>[]> {
   const trimmedQuery = query.trim().toUpperCase();

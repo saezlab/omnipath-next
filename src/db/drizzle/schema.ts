@@ -112,6 +112,8 @@ export const uniprotIdentifiers = pgTable("uniprot_identifiers", {
 	proteinId: integer("protein_id"),
 	uniprotAccession: varchar("uniprot_accession", { length: 30 }).notNull(),
 	identifierValue: text("identifier_value").notNull(),
+	identifierType: varchar("identifier_type", { length: 50 }).notNull(),
+	taxonId: text("taxon_id"),
 }, (table) => [
 	foreignKey({
 			columns: [table.proteinId],
