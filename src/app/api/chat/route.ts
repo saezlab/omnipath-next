@@ -83,25 +83,22 @@ Key behaviors:
 
 Example queries:
 • Canonical pathways for <protein>:
-  SELECT * FROM annotations WHERE resource IN ('SignaLink_pathway', 'SIGNOR', 'NetPath', 'KEGG-PC') AND (uniprot = '<protein>' OR genesymbol = '<protein>')
+  SELECT * FROM annotations WHERE source IN ('SignaLink_pathway', 'SIGNOR', 'NetPath', 'KEGG-PC') AND (uniprot = '<uniprot_accession>' OR genesymbol = '<genesymbol>')
 
 • Is <protein> transmembrane:
-  SELECT * FROM annotations WHERE resource = 'OPM' AND (uniprot = '<protein>' OR genesymbol = '<protein>')
-
-• High-expression tissues:
-  SELECT * FROM annotations WHERE resource = 'UniProt_tissue' AND (uniprot = '<protein>' OR genesymbol = '<protein>') AND level = 'high'
+  SELECT * FROM annotations WHERE source = 'OPM' AND (uniprot = '<uniprot_accession>' OR genesymbol = '<genesymbol>')
 
 • Transcription factor regulators:
-  SELECT * FROM interactions WHERE collectri AND (target = '<protein>' OR target_genesymbol = '<protein>')
+  SELECT * FROM interactions WHERE collectri AND (target = '<uniprot_accession>' OR target_genesymbol = '<genesymbol>')
 
 • TF suppressors (inhibitors):
-  SELECT * FROM interactions WHERE collectri AND (target = '<protein>' OR target_genesymbol = '<protein>') AND is_inhibition = 1
+  SELECT * FROM interactions WHERE collectri AND (target = '<uniprot_accession>' OR target_genesymbol = '<genesymbol>') AND is_inhibition = TRUE
 
 • Is <protein> a TF:
-  SELECT * FROM annotations WHERE resource = 'TFcensus' AND tfcensus_class = 'a' AND (uniprot = '<protein>' OR genesymbol = '<protein>')
+  SELECT * FROM annotations WHERE source = 'TFcensus' AND value = 'a' AND (uniprot = '<uniprot_accession>' OR genesymbol = '<genesymbol>')
 
 • Ligands of receptor:
-  SELECT source_genesymbol FROM interactions WHERE ligrecextra AND (target = '<protein>' OR target_genesymbol = '<protein>')
+  SELECT source_genesymbol FROM interactions WHERE ligrecextra AND (target = '<uniprot_accession>' OR target_genesymbol = '<genesymbol>')
 
 Today: ${new Date().toLocaleDateString()}`
       });

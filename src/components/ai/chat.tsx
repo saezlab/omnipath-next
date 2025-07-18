@@ -14,14 +14,34 @@ import { useWindowSize } from "./use-window-size";
 
 const suggestedActions = [
   {
-    title: "What are interactions involving PLN?",
-    label: "Query interactions from OmniPath",
-    action: "What are interactions involving PLN?",
+    title: "Which pathways does EGFR belong to?",
+    label: "Find canonical pathways for a protein",
+    action: "Which canonical pathways does EGFR belong to?",
   },
   {
-    title: "What are the annotations of TP53?",
-    label: "Query annotations from OmniPath",
-    action: "What are the annotations of TP53?",
+    title: "Is EGFR a transmembrane protein?",
+    label: "Check membrane localization",
+    action: "Is EGFR a transmembrane protein?",
+  },
+  {
+    title: "Which TFs regulate MYC?",
+    label: "Find transcriptional regulators",
+    action: "Which transcription factors regulate the expression of MYC?",
+  },
+  {
+    title: "Which TFs suppress CDKN1A?",
+    label: "Find transcriptional suppressors",
+    action: "Which transcription factors suppress the expression of CDKN1A?",
+  },
+  {
+    title: "Is TP53 a transcription factor?",
+    label: "Check if protein has TF activity",
+    action: "Is TP53 a transcription factor?",
+  },
+  {
+    title: "What are the ligands of EGFR?",
+    label: "Find receptor-ligand interactions",
+    action: "What are the ligands of EGFR?",
   },
 ];
 
@@ -268,24 +288,26 @@ export function Chat({
           </div>
 
           {messages.length === 1 && (
-            <div className="grid sm:grid-cols-2 gap-4 w-full mt-4">
-              {suggestedActions.map((suggestedAction, index) => (
-                <button
-                  key={index}
-                  onClick={async () => {
-                    append({
-                      role: "user",
-                      content: suggestedAction.action,
-                    });
-                  }}
-                  className="border-none bg-muted/50 w-full text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
-                >
-                  <span className="font-medium">{suggestedAction.title}</span>
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    {suggestedAction.label}
-                  </span>
-                </button>
-              ))}
+            <div className="w-full mt-4 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-3 w-max pb-2">
+                {suggestedActions.map((suggestedAction, index) => (
+                  <button
+                    key={index}
+                    onClick={async () => {
+                      append({
+                        role: "user",
+                        content: suggestedAction.action,
+                      });
+                    }}
+                    className="border-none bg-muted/50 min-w-[280px] text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+                  >
+                    <span className="font-medium">{suggestedAction.title}</span>
+                    <span className="text-zinc-500 dark:text-zinc-400">
+                      {suggestedAction.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
