@@ -13,7 +13,7 @@ ORGANISMS = [9606, 10090, 10116]
 
 
 def main(
-        uniprot_desc: bool = False,
+        uniprot_desc: bool = True,
         genecards_desc: bool = False,
     ) -> None:
 
@@ -61,11 +61,12 @@ def load(
     )
 
     result = pd.DataFrame(result)
+    result['organism_id'] = organism
 
     if uniprot_desc:
 
         result.uniprot_desc = [
-            uniprot_utils.function(ac) for ac in result.accession
+            uniprot_datasheet.function(ac) for ac in result.accession
         ]
 
     if genecards_desc:

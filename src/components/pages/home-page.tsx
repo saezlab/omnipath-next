@@ -5,7 +5,7 @@ import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { SiteLayout } from "@/components/layout/main-layout"
-import { BarChart3, Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
+import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
 
 export function HomePage() {
   return (
@@ -17,17 +17,12 @@ export function HomePage() {
           <FeatureCard
             icon={<Network className="h-6 w-6 text-blue-700" />}
             title="Interactions Browser"
-            description="Explore protein-protein interactions, signaling pathways, and molecular networks"
+            description="Explore undirected, directed and causal molecular interactions"
             features={[
               {
                 icon: <Filter className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />,
                 title: "Advanced Filtering",
                 description: "Filter by interaction type, direction, and more",
-              },
-              {
-                icon: <Network className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />,
-                title: "Network Visualization",
-                description: "Visualize interaction networks graphically",
               },
               {
                 icon: <FileText className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />,
@@ -63,11 +58,6 @@ export function HomePage() {
                 icon: <Users className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />,
                 title: "Intercellular Roles",
                 description: "Ligands, receptors, and signaling",
-              },
-              {
-                icon: <BarChart3 className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />,
-                title: "Data Visualization",
-                description: "Charts and more",
               },
             ]}
             href="/annotations"
