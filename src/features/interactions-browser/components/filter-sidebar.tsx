@@ -16,7 +16,6 @@ interface FilterSidebarProps {
   filters: InteractionsFilters
   filterCounts: {
     interactionType: Record<string, number>
-    ncbiTaxId: Record<string, number>
     entityTypeSource: Record<string, number>
     entityTypeTarget: Record<string, number>
     isDirected: { true: number; false: number }
@@ -30,11 +29,6 @@ interface FilterSidebarProps {
   onClearFilters: () => void
 }
 
-const TAXONOMY_MAPPING: Record<string, string> = {
-  '9606': 'Human',
-  '10090': 'Mouse',
-  '10116': 'Rat'
-}
 
 const INTERACTION_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: string }> = {
   post_translational: { icon: <Atom className="h-4 w-4" />, label: "Post-translational" },
@@ -61,8 +55,6 @@ export function FilterSidebar({
   const entityTypesTarget = Object.entries(filterCounts.entityTypeTarget)
     .filter(([, count]) => count > 0)
     .map(([type]) => type)
-  const taxonomyEntries = Object.entries(TAXONOMY_MAPPING)
-    .filter(([taxId]) => filterCounts.ncbiTaxId[taxId] > 0)
 
   // Calculate active filter count
   const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
@@ -201,37 +193,6 @@ export function FilterSidebar({
           </div>
         </div>
 
-        <AccordionItem value="taxonomy">
-          <AccordionTrigger>Organism</AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-2">
-              {taxonomyEntries.map(([taxId, label]) => (
-                <div key={taxId} className="flex items-center justify-between">
-                  <Label
-                    htmlFor={`tax-${taxId}`}
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.ncbiTaxId?.includes(taxId) ? "text-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id={`tax-${taxId}`}
-                      checked={filters.ncbiTaxId?.includes(taxId) || false}
-                      onCheckedChange={() => onFilterChange("ncbiTaxId", taxId)}
-                      className={filters.ncbiTaxId?.includes(taxId) ? "border-primary" : ""}
-                    />
-                    {label}
-                  </Label>
-                  <Badge 
-                    variant={filters.ncbiTaxId?.includes(taxId) ? "default" : "outline"}
-                    className={filters.ncbiTaxId?.includes(taxId) ? "bg-primary text-primary-foreground" : ""}
-                  >
-                    {filterCounts.ncbiTaxId[taxId] || 0}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
 
         <AccordionItem value="sourceEntity">
           <AccordionTrigger>Source Entity Type</AccordionTrigger>

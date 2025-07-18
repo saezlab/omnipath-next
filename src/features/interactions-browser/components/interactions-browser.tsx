@@ -26,7 +26,6 @@ interface InteractionsBrowserProps {
 interface FilterCounts {
   interactionType: Record<string, number>
   curationEffort: Record<string, number>
-  ncbiTaxId: Record<string, number>
   entityTypeSource: Record<string, number>
   entityTypeTarget: Record<string, number>
   isDirected: { true: number; false: number }
@@ -75,7 +74,6 @@ export function InteractionsBrowser({
     const counts: FilterCounts = {
       interactionType: {},
       curationEffort: {},
-      ncbiTaxId: {},
       entityTypeSource: {},
       entityTypeTarget: {},
       isDirected: { true: 0, false: 0 },
@@ -96,14 +94,6 @@ export function InteractionsBrowser({
           return false
         }
 
-        // Filter by taxonomy ID
-        if (!excludedFilters.includes('ncbiTaxId') &&
-            interactionsFilters.ncbiTaxId && 
-            interactionsFilters.ncbiTaxId.length > 0 && 
-            !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
-            !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
-          return false
-        }
 
         // Filter by source entity type
         if (!excludedFilters.includes('entityTypeSource') &&
@@ -198,13 +188,6 @@ export function InteractionsBrowser({
         counts.curationEffort[interaction.curationEffort] = (counts.curationEffort[interaction.curationEffort] || 0) + 1
       }
 
-      // Count taxonomy IDs
-      if (interaction.ncbiTaxIdSource) {
-        counts.ncbiTaxId[interaction.ncbiTaxIdSource] = (counts.ncbiTaxId[interaction.ncbiTaxIdSource] || 0) + 1
-      }
-      if (interaction.ncbiTaxIdTarget) {
-        counts.ncbiTaxId[interaction.ncbiTaxIdTarget] = (counts.ncbiTaxId[interaction.ncbiTaxIdTarget] || 0) + 1
-      }
 
       // Count boolean properties
       if (interaction.isDirected !== undefined) {
@@ -235,13 +218,6 @@ export function InteractionsBrowser({
         return false
       }
 
-      // Filter by taxonomy ID
-      if (interactionsFilters.ncbiTaxId && 
-          interactionsFilters.ncbiTaxId.length > 0 && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
-          !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
-        return false
-      }
 
       // Filter by source entity type
       if (interactionsFilters.entityTypeSource && interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
@@ -318,7 +294,6 @@ export function InteractionsBrowser({
     setInteractionsFilters({
       interactionType: [],
       curationEffort: [],
-      ncbiTaxId: [],
       entityTypeSource: [],
       entityTypeTarget: [],
       isDirected: null,

@@ -24,7 +24,6 @@ interface SearchFilters {
 export interface InteractionsFilters {
   interactionType: string[]
   curationEffort: string[]
-  ncbiTaxId: string[]
   entityTypeSource: string[]
   entityTypeTarget: string[]
   isDirected: boolean | null
@@ -116,7 +115,6 @@ export const useSearchStore = create<SearchState>()(
       interactionsFilters: {
         interactionType: [],
         curationEffort: [],
-        ncbiTaxId: [],
         entityTypeSource: [],
         entityTypeTarget: [],
         isDirected: null,
