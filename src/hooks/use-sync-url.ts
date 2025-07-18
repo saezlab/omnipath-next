@@ -45,7 +45,7 @@ export function useSyncUrl() {
           .catch(error => console.error('Error fetching interactions:', error))
       }
     }
-  }, [searchParams])
+  }, [searchParams, annotationsQuery, annotationsResults.length, interactionsQuery, interactionsResults.length, setAnnotationsQuery, setAnnotationsResults, setInteractionsQuery, setInteractionsResults])
 
   // Update URL when store changes
   useEffect(() => {
@@ -67,5 +67,5 @@ export function useSyncUrl() {
     if (params.toString() !== searchParams.toString()) {
       router.push(`?${params.toString()}`, { scroll: false })
     }
-  }, [annotationsQuery, interactionsQuery])
+  }, [annotationsQuery, interactionsQuery, router, searchParams])
 } 

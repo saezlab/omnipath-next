@@ -4,29 +4,25 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { Download, Network, Table } from "lucide-react"
+import { Download } from "lucide-react"
 
-interface DataCardProps<T extends string> {
+interface DataCardProps {
   title: string
   children: React.ReactNode
   totalItems?: number
-  viewMode: T
-  onViewModeChange: (mode: T) => void
   onExport?: () => void
   className?: string
   headerActions?: React.ReactNode
 }
 
-export function DataCard<T extends string>({
+export function DataCard({
   title,
   children,
   totalItems,
-  viewMode,
-  onViewModeChange,
   onExport,
   className,
   headerActions,
-}: DataCardProps<T>) {
+}: DataCardProps) {
   return (
     <Card className={cn(
       "overflow-hidden",

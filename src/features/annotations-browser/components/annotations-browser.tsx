@@ -16,7 +16,7 @@ import {
   SlidersHorizontal,
   Tag
 } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 const RESULTS_PER_PAGE = 20
 
@@ -51,13 +51,7 @@ export function AnnotationsBrowser() {
     setAnnotationsQuery,
   } = useSearchStore()
 
-  useEffect(() => {
-    if (annotationsQuery && annotationsResults.length === 0) {
-      handleSearch()
-    }
-  }, [])
-
-  const handleSearch = async (searchQuery: string = annotationsQuery) => {
+  const handleSearch = useCallback(async (searchQuery: string = annotationsQuery) => {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
@@ -72,7 +66,13 @@ export function AnnotationsBrowser() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [annotationsQuery, setAnnotationsQuery, setAnnotationsCurrentPage, setAnnotationsResults])
+
+  useEffect(() => {
+    if (annotationsQuery && annotationsResults.length === 0) {
+      handleSearch()
+    }
+  }, [annotationsQuery, annotationsResults.length, handleSearch])
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {

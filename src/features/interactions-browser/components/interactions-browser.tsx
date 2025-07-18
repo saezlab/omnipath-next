@@ -9,11 +9,10 @@ import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/featur
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
-import { VisualizationPlaceholder } from "@/features/interactions-browser/components/visualization-placeholder"
 import { useSyncUrl } from '@/hooks/use-sync-url'
 import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
 import { Search } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 const RESULTS_PER_PAGE = 15
 
@@ -35,8 +34,6 @@ interface FilterCounts {
   isDownstream: { true: number; false: number }
 }
 
-type ViewMode = "table" | "network" | "chart"
-
 export function InteractionsBrowser({ 
   onEntitySelect,
 }: InteractionsBrowserProps) {
@@ -53,7 +50,6 @@ export function InteractionsBrowser({
   } = useSearchStore()
 
   const [interactions, setInteractions] = useState<SearchProteinNeighborsResponse['interactions']>([])
-  const [viewMode, setViewMode] = useState<ViewMode>("table")
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
@@ -63,11 +59,31 @@ export function InteractionsBrowser({
     setInteractions(interactionsResults)
   }, [interactionsResults])
 
+  const handleSearch = useCallback(async (searchQuery: string = interactionsQuery) => {
+    if (!searchQuery.trim()) return
+
+    setIsLoading(true)
+    setInteractionsQuery(searchQuery)
+
+    try {
+      const response = await searchProteinNeighbors(searchQuery)
+      setInteractionsResults(response.interactions)
+      setInteractions(response.interactions)
+      if (onEntitySelect) {
+        onEntitySelect(searchQuery)
+      }
+    } catch (error) {
+      console.error("Error fetching interactions:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [interactionsQuery, setInteractionsQuery, setInteractionsResults, onEntitySelect])
+
   useEffect(() => {
     if (interactionsQuery && interactionsResults.length === 0) {
       handleSearch()
     }
-  }, [])
+  }, [handleSearch, interactionsQuery, interactionsResults.length])
 
   // Calculate filter counts from interactions
   const filterCounts = useMemo(() => {
@@ -305,25 +321,6 @@ export function InteractionsBrowser({
     })
   }
 
-  const handleSearch = async (searchQuery: string = interactionsQuery) => {
-    if (!searchQuery.trim()) return
-
-    setIsLoading(true)
-    setInteractionsQuery(searchQuery)
-
-    try {
-      const response = await searchProteinNeighbors(searchQuery)
-      setInteractionsResults(response.interactions)
-      setInteractions(response.interactions)
-      if (onEntitySelect) {
-        onEntitySelect(searchQuery)
-      }
-    } catch (error) {
-      console.error("Error fetching interactions:", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleSelectInteraction = (interaction: SearchProteinNeighborsResponse['interactions'][number]) => {
     setSelectedInteraction(interaction)
@@ -363,14 +360,11 @@ export function InteractionsBrowser({
                 {/* Interactions Section */}
                 <div className="space-y-4">
                   {/* Results display based on view mode */}
-                  <DataCard<ViewMode>
+                  <DataCard
                     title="Interactions"
                     totalItems={filteredInteractions.length}
-                    viewMode={viewMode}
-                    onViewModeChange={setViewMode}
                   >
-                    {viewMode === "table" ? (
-                      <>
+
                         <InteractionResultsTable
                           interactions={filteredInteractions}
                           onSelectInteraction={handleSelectInteraction}
@@ -386,10 +380,7 @@ export function InteractionsBrowser({
                           searchPlaceholder="Search interactions..."
                           resultsPerPage={RESULTS_PER_PAGE}
                         />
-                      </>
-                    ) : (
-                      <VisualizationPlaceholder type={viewMode} />
-                    )}
+                
                   </DataCard>
                 </div>
               </div>

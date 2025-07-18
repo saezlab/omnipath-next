@@ -190,7 +190,7 @@ export function Chat({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-  }, [handleSubmit, width, editingMessageId, input, handleEditAndRerun, reload]);
+  }, [handleSubmit, width, editingMessageId, input, handleEditAndRerun]);
 
   const editingIndex = editingMessageId ? messages.findIndex(m => m.id === editingMessageId) : -1;
 
