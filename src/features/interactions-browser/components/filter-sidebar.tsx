@@ -155,14 +155,14 @@ export function FilterSidebar({
                     <Label
                       htmlFor={`type-${type}`}
                       className={`flex items-center gap-2 text-sm font-normal cursor-pointer group-hover:text-primary transition-colors ${
-                        filters.interactionType.includes(type) ? "text-primary font-medium" : ""
+                        filters.interactionType?.includes(type) ? "text-primary font-medium" : ""
                       }`}
                     >
                       <Checkbox
                         id={`type-${type}`}
-                        checked={filters.interactionType.includes(type)}
+                        checked={filters.interactionType?.includes(type) || false}
                         onCheckedChange={() => onFilterChange("interactionType", type)}
-                        className={filters.interactionType.includes(type) ? "border-primary" : ""}
+                        className={filters.interactionType?.includes(type) ? "border-primary" : ""}
                       />
                       <div className="flex items-center gap-2">
                         <div className="text-muted-foreground">
@@ -172,9 +172,9 @@ export function FilterSidebar({
                       </div>
                     </Label>
                     <Badge 
-                      variant={filters.interactionType.includes(type) ? "default" : "outline"} 
+                      variant={filters.interactionType?.includes(type) ? "default" : "outline"} 
                       className={`ml-auto group-hover:bg-primary/10 transition-colors ${
-                        filters.interactionType.includes(type) ? "bg-primary text-primary-foreground" : ""
+                        filters.interactionType?.includes(type) ? "bg-primary text-primary-foreground" : ""
                       }`}
                     >
                       {filterCounts.interactionType[type] || 0}
@@ -210,20 +210,20 @@ export function FilterSidebar({
                   <Label
                     htmlFor={`tax-${taxId}`}
                     className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.ncbiTaxId.includes(taxId) ? "text-primary font-medium" : ""
+                      filters.ncbiTaxId?.includes(taxId) ? "text-primary font-medium" : ""
                     }`}
                   >
                     <Checkbox
                       id={`tax-${taxId}`}
-                      checked={filters.ncbiTaxId.includes(taxId)}
+                      checked={filters.ncbiTaxId?.includes(taxId) || false}
                       onCheckedChange={() => onFilterChange("ncbiTaxId", taxId)}
-                      className={filters.ncbiTaxId.includes(taxId) ? "border-primary" : ""}
+                      className={filters.ncbiTaxId?.includes(taxId) ? "border-primary" : ""}
                     />
                     {label}
                   </Label>
                   <Badge 
-                    variant={filters.ncbiTaxId.includes(taxId) ? "default" : "outline"}
-                    className={filters.ncbiTaxId.includes(taxId) ? "bg-primary text-primary-foreground" : ""}
+                    variant={filters.ncbiTaxId?.includes(taxId) ? "default" : "outline"}
+                    className={filters.ncbiTaxId?.includes(taxId) ? "bg-primary text-primary-foreground" : ""}
                   >
                     {filterCounts.ncbiTaxId[taxId] || 0}
                   </Badge>
@@ -242,20 +242,20 @@ export function FilterSidebar({
                   <Label
                     htmlFor={`source-type-${type}`}
                     className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.entityTypeSource.includes(type) ? "text-primary font-medium" : ""
+                      filters.entityTypeSource?.includes(type) ? "text-primary font-medium" : ""
                     }`}
                   >
                     <Checkbox
                       id={`source-type-${type}`}
-                      checked={filters.entityTypeSource.includes(type)}
+                      checked={filters.entityTypeSource?.includes(type) || false}
                       onCheckedChange={() => onFilterChange("entityTypeSource", type)}
-                      className={filters.entityTypeSource.includes(type) ? "border-primary" : ""}
+                      className={filters.entityTypeSource?.includes(type) ? "border-primary" : ""}
                     />
                     {type}
                   </Label>
                   <Badge 
-                    variant={filters.entityTypeSource.includes(type) ? "default" : "outline"}
-                    className={filters.entityTypeSource.includes(type) ? "bg-primary text-primary-foreground" : ""}
+                    variant={filters.entityTypeSource?.includes(type) ? "default" : "outline"}
+                    className={filters.entityTypeSource?.includes(type) ? "bg-primary text-primary-foreground" : ""}
                   >
                     {filterCounts.entityTypeSource[type] || 0}
                   </Badge>
@@ -274,20 +274,20 @@ export function FilterSidebar({
                   <Label
                     htmlFor={`target-type-${type}`}
                     className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.entityTypeTarget.includes(type) ? "text-primary font-medium" : ""
+                      filters.entityTypeTarget?.includes(type) ? "text-primary font-medium" : ""
                     }`}
                   >
                     <Checkbox
                       id={`target-type-${type}`}
-                      checked={filters.entityTypeTarget.includes(type)}
+                      checked={filters.entityTypeTarget?.includes(type) || false}
                       onCheckedChange={() => onFilterChange("entityTypeTarget", type)}
-                      className={filters.entityTypeTarget.includes(type) ? "border-primary" : ""}
+                      className={filters.entityTypeTarget?.includes(type) ? "border-primary" : ""}
                     />
                     {type}
                   </Label>
                   <Badge 
-                    variant={filters.entityTypeTarget.includes(type) ? "default" : "outline"}
-                    className={filters.entityTypeTarget.includes(type) ? "bg-primary text-primary-foreground" : ""}
+                    variant={filters.entityTypeTarget?.includes(type) ? "default" : "outline"}
+                    className={filters.entityTypeTarget?.includes(type) ? "bg-primary text-primary-foreground" : ""}
                   >
                     {filterCounts.entityTypeTarget[type] || 0}
                   </Badge>

@@ -90,6 +90,7 @@ export function InteractionsBrowser({
       return interactions.filter((interaction) => {
         // Filter by interaction type
         if (!excludedFilters.includes('interactionType') &&
+            interactionsFilters.interactionType && 
             interactionsFilters.interactionType.length > 0 && 
             !interactionsFilters.interactionType.includes(interaction.type || '')) {
           return false
@@ -97,6 +98,7 @@ export function InteractionsBrowser({
 
         // Filter by taxonomy ID
         if (!excludedFilters.includes('ncbiTaxId') &&
+            interactionsFilters.ncbiTaxId && 
             interactionsFilters.ncbiTaxId.length > 0 && 
             !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
             !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
@@ -105,6 +107,7 @@ export function InteractionsBrowser({
 
         // Filter by source entity type
         if (!excludedFilters.includes('entityTypeSource') &&
+            interactionsFilters.entityTypeSource && 
             interactionsFilters.entityTypeSource.length > 0 && 
             !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
           return false
@@ -112,6 +115,7 @@ export function InteractionsBrowser({
 
         // Filter by target entity type
         if (!excludedFilters.includes('entityTypeTarget') &&
+            interactionsFilters.entityTypeTarget && 
             interactionsFilters.entityTypeTarget.length > 0 && 
             !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
           return false
@@ -227,24 +231,25 @@ export function InteractionsBrowser({
   const filteredInteractions = useMemo(() => {
     return interactions.filter((interaction) => {
       // Filter by interaction type
-      if (interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type || '')) {
+      if (interactionsFilters.interactionType && interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type || '')) {
         return false
       }
 
       // Filter by taxonomy ID
-      if (interactionsFilters.ncbiTaxId.length > 0 && 
+      if (interactionsFilters.ncbiTaxId && 
+          interactionsFilters.ncbiTaxId.length > 0 && 
           !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdSource?.toString() || '') && 
           !interactionsFilters.ncbiTaxId.includes(interaction.ncbiTaxIdTarget?.toString() || '')) {
         return false
       }
 
       // Filter by source entity type
-      if (interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
+      if (interactionsFilters.entityTypeSource && interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
         return false
       }
 
       // Filter by target entity type
-      if (interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
+      if (interactionsFilters.entityTypeTarget && interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
         return false
       }
 
