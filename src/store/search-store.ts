@@ -46,6 +46,13 @@ export interface ChatSession {
   messages: ChatMessage[]
 }
 
+export interface SearchHistoryItem {
+  id: string
+  query: string
+  type: 'annotation' | 'interaction'
+  timestamp: number
+}
+
 interface SearchState {
   // Annotations state
   annotationsQuery: string
@@ -67,6 +74,10 @@ interface SearchState {
   currentChatId: string | null
   messages: ChatMessage[]
 
+  // Search history
+  searchHistory: SearchHistoryItem[]
+  maxHistoryItems: number
+
   // Actions
   setAnnotationsQuery: (query: string) => void
   setAnnotationsResults: (results: Annotation[]) => void
@@ -87,6 +98,10 @@ interface SearchState {
   startNewChat: () => void
   switchChat: (chatId: string) => void
   saveCurrentChat: () => void
+
+  // Search History Actions
+  addToSearchHistory: (query: string, type: SearchHistoryItem['type']) => void
+  clearSearchHistory: () => void
 }
 
 type SearchStateCreator = StateCreator<SearchState, [], []>
@@ -130,8 +145,17 @@ export const useSearchStore = create<SearchState>()(
       currentChatId: initialChatId,
       messages: [],
 
+      // Search history initial state
+      searchHistory: [],
+      maxHistoryItems: 20,
+
       // Actions
-      setAnnotationsQuery: (query: string) => set({ annotationsQuery: query }),
+      setAnnotationsQuery: (query: string) => {
+        set({ annotationsQuery: query })
+        if (query.trim()) {
+          get().addToSearchHistory(query, 'annotation')
+        }
+      },
       setAnnotationsResults: (results: Annotation[]) => set({ annotationsResults: results }),
       setAnnotationsFilters: (filters: SearchFilters | ((prev: SearchFilters) => SearchFilters)) => 
         set((state: SearchState) => ({ 
@@ -141,7 +165,12 @@ export const useSearchStore = create<SearchState>()(
       setAnnotationsCurrentPage: (page: number) => set({ annotationsCurrentPage: page }),
       setSelectedAnnotation: (annotation: Annotation | null) => set({ selectedAnnotation: annotation }),
 
-      setInteractionsQuery: (query: string) => set({ interactionsQuery: query }),
+      setInteractionsQuery: (query: string) => {
+        set({ interactionsQuery: query })
+        if (query.trim()) {
+          get().addToSearchHistory(query, 'interaction')
+        }
+      },
       setInteractionsResults: (results: SearchProteinNeighborsResponse['interactions']) => set({ interactionsResults: results }),
       setInteractionsCurrentPage: (page: number) => set({ interactionsCurrentPage: page }),
       setSelectedInteraction: (interaction: SearchProteinNeighborsResponse['interactions'][number] | null) => set({ selectedInteraction: interaction }),
@@ -190,6 +219,27 @@ export const useSearchStore = create<SearchState>()(
         )
         set({ chats: updatedChats })
       },
+
+      // Search History Actions
+      addToSearchHistory: (query: string, type: SearchHistoryItem['type']) => {
+        if (!query.trim()) return
+        
+        const { searchHistory, maxHistoryItems } = get()
+        const newItem: SearchHistoryItem = {
+          id: nanoid(),
+          query: query.trim(),
+          type,
+          timestamp: Date.now()
+        }
+        
+        // Remove duplicates and add new item at the beginning
+        const filteredHistory = searchHistory.filter(item => item.query.toLowerCase() !== query.toLowerCase())
+        const updatedHistory = [newItem, ...filteredHistory].slice(0, maxHistoryItems)
+        
+        set({ searchHistory: updatedHistory })
+      },
+      
+      clearSearchHistory: () => set({ searchHistory: [] }),
     })) as SearchStateCreator,
     {
       name: 'search-store',
@@ -207,6 +257,8 @@ export const useSearchStore = create<SearchState>()(
 
         chats: state.chats,
         currentChatId: state.currentChatId,
+        
+        searchHistory: state.searchHistory,
       }),
     }
   )
