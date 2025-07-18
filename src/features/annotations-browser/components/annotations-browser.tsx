@@ -3,7 +3,7 @@
 import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { Button } from "@/components/ui/button"
-import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
+import { getProteinAnnotations, getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
@@ -34,6 +34,8 @@ interface FilterCounts {
 export function AnnotationsBrowser() {
   const [isLoading, setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
+  const [isLoadingProtein, setIsLoadingProtein] = useState(false)
 
   // Use the URL sync hook
   useSyncUrl()
@@ -55,16 +57,23 @@ export function AnnotationsBrowser() {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
+    setIsLoadingProtein(true)
     setAnnotationsQuery(searchQuery)
     setAnnotationsCurrentPage(1)
 
     try {
-      const response = await getProteinAnnotations(searchQuery)
-      setAnnotationsResults(response.annotations)
+      const [annotationsResponse, proteinResponse] = await Promise.all([
+        getProteinAnnotations(searchQuery),
+        getProteinInformation(searchQuery)
+      ])
+      
+      setAnnotationsResults(annotationsResponse.annotations)
+      setProteinData(proteinResponse)
     } catch (error) {
-      console.error("Error fetching annotations:", error)
+      console.error("Error fetching data:", error)
     } finally {
       setIsLoading(false)
+      setIsLoadingProtein(false)
     }
   }, [annotationsQuery, setAnnotationsQuery, setAnnotationsCurrentPage, setAnnotationsResults])
 
@@ -240,7 +249,10 @@ export function AnnotationsBrowser() {
         
         {annotationsQuery && (
           <>
-            <ProteinSummaryCard />
+            <ProteinSummaryCard 
+              proteinData={proteinData ?? undefined}
+              isLoading={isLoadingProtein}
+            />
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
