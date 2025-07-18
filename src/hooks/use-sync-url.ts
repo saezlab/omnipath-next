@@ -1,5 +1,5 @@
 import { useSearchParams, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSearchStore } from '@/store/search-store'
 import { getProteinAnnotations } from '@/features/annotations-browser/api/queries'
 import { searchProteinNeighbors } from '@/features/interactions-browser/api/queries'
@@ -18,6 +18,8 @@ export function useSyncUrl() {
     setInteractionsResults,
   } = useSearchStore()
 
+  const isUpdatingFromUrl = useRef(false)
+
   // Sync URL with store state and trigger search if needed
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -27,6 +29,7 @@ export function useSyncUrl() {
     const urlInteractionsQuery = params.get('interactions')
     
     if (urlAnnotationsQuery && urlAnnotationsQuery !== annotationsQuery) {
+      isUpdatingFromUrl.current = true
       setAnnotationsQuery(urlAnnotationsQuery)
       // Trigger search if there are no results
       if (annotationsResults.length === 0) {
@@ -34,9 +37,11 @@ export function useSyncUrl() {
           .then(response => setAnnotationsResults(response.annotations))
           .catch(error => console.error('Error fetching annotations:', error))
       }
+      setTimeout(() => { isUpdatingFromUrl.current = false }, 0)
     }
     
     if (urlInteractionsQuery && urlInteractionsQuery !== interactionsQuery) {
+      isUpdatingFromUrl.current = true
       setInteractionsQuery(urlInteractionsQuery)
       // Trigger search if there are no results
       if (interactionsResults.length === 0) {
@@ -44,11 +49,16 @@ export function useSyncUrl() {
           .then(response => setInteractionsResults(response.interactions))
           .catch(error => console.error('Error fetching interactions:', error))
       }
+      setTimeout(() => { isUpdatingFromUrl.current = false }, 0)
     }
   }, [searchParams, annotationsQuery, annotationsResults.length, interactionsQuery, interactionsResults.length, setAnnotationsQuery, setAnnotationsResults, setInteractionsQuery, setInteractionsResults])
 
   // Update URL when store changes
   useEffect(() => {
+    if (isUpdatingFromUrl.current) {
+      return
+    }
+    
     const params = new URLSearchParams(searchParams.toString())
     
     if (annotationsQuery) {

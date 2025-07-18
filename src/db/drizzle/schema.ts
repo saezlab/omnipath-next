@@ -1,4 +1,4 @@
-import { boolean, index, integer, jsonb, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, index, serial, varchar, integer, boolean, jsonb, foreignKey, text, unique } from "drizzle-orm/pg-core"
 
 
 
@@ -109,11 +109,53 @@ export const intercell = pgTable("intercell", {
 
 export const uniprotIdentifiers = pgTable("uniprot_identifiers", {
 	id: serial().primaryKey().notNull(),
+	proteinId: integer("protein_id"),
 	uniprotAccession: varchar("uniprot_accession", { length: 30 }).notNull(),
-	identifierType: varchar("identifier_type", { length: 50 }).notNull(),
 	identifierValue: text("identifier_value").notNull(),
 }, (table) => [
-	index("idx_uniprot_identifiers_accession").using("btree", table.uniprotAccession.asc().nullsLast().op("text_ops")),
-	index("idx_uniprot_identifiers_type").using("btree", table.identifierType.asc().nullsLast().op("text_ops")),
-	index("idx_uniprot_identifiers_value_prefix").using("btree", table.identifierValue.asc().nullsLast().op("text_pattern_ops")),
+	foreignKey({
+			columns: [table.proteinId],
+			foreignColumns: [uniprotProteins.id],
+			name: "uniprot_identifiers_protein_id_fkey"
+		}).onDelete("cascade"),
+]);
+
+export const uniprotProteins = pgTable("uniprot_proteins", {
+	id: serial().primaryKey().notNull(),
+	entry: varchar({ length: 30 }).notNull(),
+	entryName: text("entry_name"),
+	proteinNames: text("protein_names"),
+	length: integer(),
+	mass: integer(),
+	sequence: text(),
+	geneNamesPrimary: text("gene_names_primary"),
+	geneNamesSynonym: text("gene_names_synonym"),
+	organismId: text("organism_id"),
+	involvementInDisease: text("involvement_in_disease"),
+	mutagenesis: text(),
+	subcellularLocation: text("subcellular_location"),
+	postTranslationalModification: text("post_translational_modification"),
+	pubmedId: text("pubmed_id"),
+	functionCc: text("function_cc"),
+	ensembl: text(),
+	kegg: text(),
+	pathway: text(),
+	activityRegulation: text("activity_regulation"),
+	keywords: text(),
+	ecNumber: text("ec_number"),
+	geneOntology: text("gene_ontology"),
+	transmembrane: text(),
+	proteinFamilies: text("protein_families"),
+	refseq: text(),
+	alphafolddb: varchar({ length: 30 }),
+	pdb: text(),
+	chembl: text(),
+	phosphositeplus: text(),
+	signor: text(),
+	pathwaycommons: text(),
+	intact: text(),
+	biogrid: text(),
+	complexportal: text(),
+}, (table) => [
+	unique("uniprot_proteins_entry_key").on(table.entry),
 ]);

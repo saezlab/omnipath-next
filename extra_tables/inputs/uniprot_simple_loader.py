@@ -108,6 +108,7 @@ def setup_database(conn):
                 CREATE TABLE IF NOT EXISTS {} (
                     id SERIAL PRIMARY KEY,
                     protein_id INTEGER REFERENCES {} (id) ON DELETE CASCADE,
+                    uniprot_accession VARCHAR(30) NOT NULL,
                     identifier_value TEXT NOT NULL
                 );
             """).format(sql.Identifier(IDENTIFIERS_TABLE), sql.Identifier(PROTEINS_TABLE)))
@@ -130,8 +131,8 @@ def populate_identifiers(conn):
             # 1. UniProt IDs (entry column)
             print("  Adding UniProt IDs...")
             cur.execute(sql.SQL("""
-                INSERT INTO {} (protein_id, identifier_value)
-                SELECT id, entry FROM {}
+                INSERT INTO {} (protein_id, uniprot_accession, identifier_value)
+                SELECT id, entry, entry FROM {}
                 WHERE entry IS NOT NULL AND entry != ''
             """).format(sql.Identifier(IDENTIFIERS_TABLE), sql.Identifier(PROTEINS_TABLE)))
             uniprot_count = cur.rowcount
@@ -139,8 +140,8 @@ def populate_identifiers(conn):
             # 2. Primary gene names
             print("  Adding primary gene names...")
             cur.execute(sql.SQL("""
-                INSERT INTO {} (protein_id, identifier_value)
-                SELECT id, gene_names_primary FROM {}
+                INSERT INTO {} (protein_id, uniprot_accession, identifier_value)
+                SELECT id, entry, gene_names_primary FROM {}
                 WHERE gene_names_primary IS NOT NULL AND gene_names_primary != ''
             """).format(sql.Identifier(IDENTIFIERS_TABLE), sql.Identifier(PROTEINS_TABLE)))
             gene_primary_count = cur.rowcount
@@ -148,10 +149,10 @@ def populate_identifiers(conn):
             # 3. Gene synonyms (split space-separated)
             print("  Adding gene synonyms...")
             cur.execute(sql.SQL("""
-                INSERT INTO {} (protein_id, identifier_value)
-                SELECT id, trim(synonym)
+                INSERT INTO {} (protein_id, uniprot_accession, identifier_value)
+                SELECT id, entry, trim(synonym)
                 FROM (
-                    SELECT id, unnest(string_to_array(gene_names_synonym, ' ')) as synonym
+                    SELECT id, entry, unnest(string_to_array(gene_names_synonym, ' ')) as synonym
                     FROM {}
                     WHERE gene_names_synonym IS NOT NULL AND gene_names_synonym != ''
                 ) subq
@@ -163,8 +164,8 @@ def populate_identifiers(conn):
             print("  Adding protein names...")
             # First, add the primary protein name (everything before first parenthesis)
             cur.execute(sql.SQL("""
-                INSERT INTO {} (protein_id, identifier_value)
-                SELECT id, 
+                INSERT INTO {} (protein_id, uniprot_accession, identifier_value)
+                SELECT id, entry,
                        CASE 
                            WHEN position('(' in protein_names) > 0 THEN 
                                trim(substring(protein_names from 1 for position('(' in protein_names) - 1))
@@ -182,11 +183,11 @@ def populate_identifiers(conn):
             
             # Then, add parenthetical protein names
             cur.execute(sql.SQL("""
-                INSERT INTO {} (protein_id, identifier_value)
-                SELECT id, 
+                INSERT INTO {} (protein_id, uniprot_accession, identifier_value)
+                SELECT id, entry,
                        trim(regexp_replace(match[1], '^\\s*|\\s*$', '', 'g'))
                 FROM (
-                    SELECT id, regexp_split_to_array(protein_names, '\\([^)]+\\)') as parts,
+                    SELECT id, entry, regexp_split_to_array(protein_names, '\\([^)]+\\)') as parts,
                            regexp_matches(protein_names, '\\(([^)]+)\\)', 'g') as match
                     FROM {}
                     WHERE protein_names IS NOT NULL AND protein_names != ''
@@ -407,6 +408,7 @@ if __name__ == "__main__":
                             CREATE TABLE {} (
                                 id SERIAL PRIMARY KEY,
                                 protein_id INTEGER REFERENCES {} (id) ON DELETE CASCADE,
+                                uniprot_accession VARCHAR(30) NOT NULL,
                                 identifier_value TEXT NOT NULL
                             );
                         """).format(sql.Identifier(IDENTIFIERS_TABLE), sql.Identifier(PROTEINS_TABLE)))

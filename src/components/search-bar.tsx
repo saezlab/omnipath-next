@@ -29,9 +29,6 @@ export function SearchBar({
   const querySetBySelectionRef = useRef(false)
   const prevQueryRef = useRef(initialQuery)
 
-  useEffect(() => {
-    setQuery(initialQuery)
-  }, [initialQuery])
 
   useEffect(() => {
     if (query === prevQueryRef.current) {
@@ -137,7 +134,7 @@ export function SearchBar({
                         <div className="flex flex-col">
                           <span>{suggestion.identifierValue}</span>
                           <span className="text-xs text-muted-foreground">
-                            {suggestion.identifierType} - {suggestion.uniprotAccession}
+                            {suggestion.uniprotAccession}
                           </span>
                         </div>
                       </CommandItem>
