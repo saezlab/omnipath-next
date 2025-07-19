@@ -181,8 +181,8 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
         {/* Main Card Header - Always Visible */}
         <Card className="w-full border-0 shadow-none">
           <CardHeader>
-            <div className="flex items-start justify-between w-full">
-              <div className="space-y-1 flex-1">
+            <div className="flex items-start justify-between w-full gap-4">
+              <div className="space-y-1 flex-1 min-w-0">
                 <CardTitle className="text-2xl font-bold">
                   {proteinNames.main}
                 </CardTitle>
@@ -191,27 +191,38 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     <span className="font-medium">Also known as:</span> {proteinNames.alternatives.join(', ')}
                   </div>
                 )}
-                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <span className="font-medium">{proteinData.entry}</span>
-                  </div>
-                  {proteinData.entryName && (
-                    <span>• {proteinData.entryName}</span>
-                  )}
+              </div>
+              
+              {/* Metadata in top right */}
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                {/* Primary Identifiers Row */}
+                <div className="flex items-center gap-2 text-sm">
+                  <Badge variant="outline" className="font-mono text-xs">
+                    {proteinData.entry}
+                  </Badge>
                   {proteinData.geneNamesPrimary && (
                     <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100">
                       <Dna className="h-3 w-3 mr-1" />
                       {proteinData.geneNamesPrimary}
                     </Badge>
                   )}
+                </div>
+                
+                {/* Properties Row */}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   {proteinData.length && proteinData.mass && (
-                    <span>
-                      • {proteinData.length} aa • {formatMass(proteinData.mass)}
-                    </span>
+                    <>
+                      <span className="bg-muted/50 px-2 py-1 rounded">
+                        {proteinData.length} aa
+                      </span>
+                      <span className="bg-muted/50 px-2 py-1 rounded">
+                        {formatMass(proteinData.mass)}
+                      </span>
+                    </>
                   )}
                   {proteinData.organismId && (
-                    <span>
-                      • {parseOrganism(proteinData.organismId)}
+                    <span className="bg-muted/50 px-2 py-1 rounded">
+                      {parseOrganism(proteinData.organismId)}
                     </span>
                   )}
                 </div>
@@ -220,7 +231,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
           </CardHeader>
           {proteinData.functionCc && (
             <CardContent className="pt-0 pb-12">
-              <div className="bg-muted/30 rounded-lg p-4 max-h-64 overflow-y-auto">
+              <div className="max-h-64 overflow-y-auto">
                 <div className="text-sm leading-relaxed">
                   {formatUniprotText(proteinData.functionCc).map((statement) => (
                     <span key={statement.key}>
