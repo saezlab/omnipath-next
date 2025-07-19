@@ -99,7 +99,7 @@ export function AnnotationsBrowser() {
 
   // Fetch annotations when query changes
   useEffect(() => {
-    if (annotationsQuery && annotationsResults.length === 0) {
+    if (annotationsQuery) {
       handleSearch(annotationsQuery)
     }
   }, [annotationsQuery]) // eslint-disable-line react-hooks/exhaustive-deps

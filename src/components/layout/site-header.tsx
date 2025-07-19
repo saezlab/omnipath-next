@@ -7,13 +7,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Database, History, Search, Moon, Sun } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import { useSearchStore } from "@/store/search-store"
 
 export function SiteHeader() {
   const { theme, setTheme } = useTheme()
-  const router = useRouter()
   const { searchHistory, clearSearchHistory } = useSearchStore()
 
   // Get entity type color
@@ -28,17 +26,16 @@ export function SiteHeader() {
     }
   }
 
-  // Handle clicking on a history item
-  const handleHistoryItemClick = (item: typeof searchHistory[0]) => {
-    // Use the stored URL if available, otherwise fallback to basic query
+  // Get the URL for a history item
+  const getHistoryItemUrl = (item: typeof searchHistory[0]) => {
     if (item.url) {
-      window.location.href = item.url
+      return item.url
     } else {
       // Fallback for old history items that don't have URL
       if (item.type === 'annotation') {
-        window.location.href = `/annotations?q=${encodeURIComponent(item.query)}`
+        return `/annotations?q=${encodeURIComponent(item.query)}`
       } else {
-        window.location.href = `/interactions?q=${encodeURIComponent(item.query)}`
+        return `/interactions?q=${encodeURIComponent(item.query)}`
       }
     }
   }
@@ -83,16 +80,17 @@ export function SiteHeader() {
               <ScrollArea className="h-[300px]">
                 {searchHistory.length > 0 ? (
                   searchHistory.map((item) => (
-                    <DropdownMenuItem 
-                      key={item.id} 
-                      onClick={() => handleHistoryItemClick(item)}
-                      className="flex items-center gap-2 py-2 cursor-pointer"
-                    >
-                      <Search className="h-4 w-4 text-muted-foreground" />
-                      <div className="flex-1">
-                        <p>{item.query}</p>
-                      </div>
-                      <Badge className={`${getEntityTypeColor(item.type)} text-xs`}>{item.type}</Badge>
+                    <DropdownMenuItem key={item.id} asChild>
+                      <Link 
+                        href={getHistoryItemUrl(item)}
+                        className="flex items-center gap-2 py-2 cursor-pointer"
+                      >
+                        <Search className="h-4 w-4 text-muted-foreground" />
+                        <div className="flex-1">
+                          <p>{item.query}</p>
+                        </div>
+                        <Badge className={`${getEntityTypeColor(item.type)} text-xs`}>{item.type}</Badge>
+                      </Link>
                     </DropdownMenuItem>
                   ))
                 ) : (

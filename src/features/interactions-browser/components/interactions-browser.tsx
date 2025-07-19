@@ -114,7 +114,7 @@ export function InteractionsBrowser({
 
   // Fetch interactions when query changes
   useEffect(() => {
-    if (interactionsQuery && interactions.length === 0) {
+    if (interactionsQuery) {
       handleSearch(interactionsQuery)
     }
   }, [interactionsQuery]) // eslint-disable-line react-hooks/exhaustive-deps
