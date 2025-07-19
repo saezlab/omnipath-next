@@ -186,7 +186,7 @@ export function ResultsTable<TData extends DataRow>({
       )}
       <ScrollArea className={cn("relative", maxHeight, scrollAreaClassName, "overflow-auto")}>
         <TooltipProvider>
-          <Table className={cn("w-full table-fixed", tableClassName)}>
+          <Table className={cn("w-full min-w-max", tableClassName)}>
             <TableHeader>
               <TableRow className={headerRowClassName}>
                 {columns.map((column) => {
