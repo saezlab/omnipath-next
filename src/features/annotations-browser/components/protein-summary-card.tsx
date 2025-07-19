@@ -31,16 +31,19 @@ interface ProteinSummaryCardProps {
   defaultExpanded?: boolean
 }
 
-const formatFunctionText = (text: string) => {
-  // Remove ECO statements and similarity markers
+const formatUniprotText = (text: string) => {
+  // Remove ECO statements, similarity markers, and UniProt prefixes
   let cleanText = text
     .replace(/\{ECO:[^}]+\}/g, '')
     .replace(/\(By similarity\)/g, '')
     .replace(/^FUNCTION:\s*/i, '')
+    .replace(/^SUBCELLULAR:\s*/i, '')
+    .replace(/^PTM:\s*/i, '')
+    .replace(/DISEASE:\s*/gi, '')
   
   // Split into sentences and clean them up
   const sentences = cleanText
-    .split('.')
+    .split(/[.;]/)
     .map(s => s.trim())
     .filter(s => s.length > 0)
   
@@ -208,7 +211,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                 <CardContent className="pt-0">
                   <div className="bg-muted/30 rounded-lg p-4">
                     <div className="text-sm leading-relaxed">
-                      {formatFunctionText(proteinData.functionCc).map((statement) => (
+                      {formatUniprotText(proteinData.functionCc).map((statement) => (
                         <span key={statement.key}>
                           <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
                             {statement.text}
@@ -253,12 +256,30 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-1">
-                      {proteinData.subcellularLocation.split(';').map((location, index) => (
-                        <div key={index} className="text-sm flex items-start">
-                          <span className="text-green-600 dark:text-green-400 mr-2">•</span>
-                          {location.trim()}
-                        </div>
+                    <div className="text-sm leading-relaxed">
+                      {formatUniprotText(proteinData.subcellularLocation).map((statement) => (
+                        <span key={statement.key}>
+                          <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
+                            {statement.text}
+                            {statement.pubmedIds.map((pmid, pmidIndex) => (
+                              <TooltipProvider key={pmidIndex}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                    >
+                                      <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ))}
+                          </span>
+                        </span>
                       ))}
                     </div>
                   </CardContent>
@@ -275,11 +296,30 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2">
-                      {proteinData.involvementInDisease.split('DISEASE:').filter(Boolean).map((disease, index) => (
-                        <div key={index} className="p-3 bg-white/70 dark:bg-gray-900/30 rounded-lg text-sm border border-red-100 dark:border-red-900/30">
-                          {disease.trim()}
-                        </div>
+                    <div className="text-sm leading-relaxed">
+                      {formatUniprotText(proteinData.involvementInDisease).map((statement) => (
+                        <span key={statement.key}>
+                          <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
+                            {statement.text}
+                            {statement.pubmedIds.map((pmid, pmidIndex) => (
+                              <TooltipProvider key={pmidIndex}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                    >
+                                      <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ))}
+                          </span>
+                        </span>
                       ))}
                     </div>
                   </CardContent>
@@ -395,9 +435,32 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">
-                      {proteinData.postTranslationalModification}
-                    </p>
+                    <div className="text-sm leading-relaxed">
+                      {formatUniprotText(proteinData.postTranslationalModification).map((statement) => (
+                        <span key={statement.key}>
+                          <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
+                            {statement.text}
+                            {statement.pubmedIds.map((pmid, pmidIndex) => (
+                              <TooltipProvider key={pmidIndex}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                    >
+                                      <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ))}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
               )}
