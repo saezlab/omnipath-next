@@ -10,10 +10,19 @@ export function exportToTSV<T extends Record<string, unknown>>(data: T[], filena
     ...data.map(row => 
       headers.map(header => {
         const value = row[header];
-        // Convert value to string and replace any tabs with spaces
-        return value !== null && value !== undefined 
-          ? String(value).replace(/\t/g, ' ')
-          : '';
+        // Properly serialize different types of values
+        if (value === null || value === undefined) {
+          return '';
+        } else if (Array.isArray(value)) {
+          // Convert arrays to semicolon-separated strings
+          return value.map(item => String(item)).join('; ').replace(/\t/g, ' ');
+        } else if (typeof value === 'object') {
+          // Convert objects to JSON string
+          return JSON.stringify(value).replace(/\t/g, ' ');
+        } else {
+          // Convert primitives to string and replace tabs with spaces
+          return String(value).replace(/\t/g, ' ');
+        }
       }).join('\t')
     )
   ].join('\n');
