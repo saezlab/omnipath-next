@@ -36,7 +36,6 @@ export function AnnotationsBrowser() {
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
-  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null)
   
   // Get query from URL
   const annotationsQuery = searchParams.get('q') || ''
@@ -321,7 +320,6 @@ export function AnnotationsBrowser() {
                   ) : (
                     <AnnotationsTable
                       currentResults={currentResults}
-                      onSelectAnnotation={setSelectedAnnotation}
                       getCategoryIcon={getCategoryIcon}
                       getCategoryColor={getCategoryColor}
                       currentPage={annotationsCurrentPage}

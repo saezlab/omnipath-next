@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 interface EntityBadgeProps {
   geneSymbol?: string;  // Keep for backward compatibility

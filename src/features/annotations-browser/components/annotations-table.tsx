@@ -27,7 +27,6 @@ interface PivotedAnnotation {
 
 interface AnnotationsTableProps {
   currentResults: Annotation[]
-  onSelectAnnotation: (annotation: Annotation) => void
   getCategoryIcon: (label: string | null) => React.ReactNode
   getCategoryColor: (label: string | null) => string
   currentPage: number
@@ -70,7 +69,6 @@ function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnno
 
 export function AnnotationsTable({
   currentResults,
-  onSelectAnnotation,
   currentPage,
   totalPages,
   onPageChange,
@@ -155,7 +153,6 @@ export function AnnotationsTable({
                     <TableRow
                       key={row.recordId}
                       className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => onSelectAnnotation(currentResults.find(a => a.recordId === row.recordId)!)}
                     >
                       {headers.map(header => (
                         <TableCell key={`${row.recordId}-${header}`}>
