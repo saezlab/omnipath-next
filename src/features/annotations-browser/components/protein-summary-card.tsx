@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import { 
-  Copy, 
   ExternalLink,
   Dna,
   FlaskConical,
@@ -36,7 +35,7 @@ interface ProteinSummaryCardProps {
 
 const formatUniprotText = (text: string) => {
   // Remove ECO statements, similarity markers, and UniProt prefixes
-  let cleanText = text
+  const cleanText = text
     .replace(/\{ECO:[^}]+\}/g, '')
     .replace(/\(By similarity\)/g, '')
     .replace(/FUNCTION:\s*/gi, '')
@@ -55,7 +54,7 @@ const formatUniprotText = (text: string) => {
     const pubmedMatches = [...sentence.matchAll(/PubMed:(\d+)/g)]
     
     // Remove all PubMed references from the sentence
-    let cleanSentence = sentence
+    const cleanSentence = sentence
       .replace(/\(PubMed:[\d\s,]+\)/g, '')
       .replace(/\(PubMed:\d+(?:,\s*PubMed:\d+)*\)/g, '')
       .trim()
@@ -101,9 +100,6 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
     return match ? `Tax ID: ${match[0]}` : organismId
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-  }
 
   const renderExternalLink = (url: string, label: string) => (
     <a 
