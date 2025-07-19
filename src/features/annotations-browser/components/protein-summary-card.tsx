@@ -36,9 +36,9 @@ const formatUniprotText = (text: string) => {
   let cleanText = text
     .replace(/\{ECO:[^}]+\}/g, '')
     .replace(/\(By similarity\)/g, '')
-    .replace(/^FUNCTION:\s*/i, '')
-    .replace(/^SUBCELLULAR:\s*/i, '')
-    .replace(/^PTM:\s*/i, '')
+    .replace(/FUNCTION:\s*/gi, '')
+    .replace(/SUBCELLULAR LOCATION:\s*/gi, '')
+    .replace(/PTM:\s*/gi, '')
     .replace(/DISEASE:\s*/gi, '')
   
   // Split into sentences and clean them up
@@ -48,12 +48,13 @@ const formatUniprotText = (text: string) => {
     .filter(s => s.length > 0)
   
   return sentences.map((sentence, index) => {
-    // Extract PubMed IDs from this sentence
-    const pubmedMatches = [...sentence.matchAll(/\(PubMed:(\d+)\)/g)]
+    // Extract all PubMed IDs from this sentence (including comma-separated lists)
+    const pubmedMatches = [...sentence.matchAll(/PubMed:(\d+)/g)]
     
-    // Remove PubMed references from the sentence
+    // Remove all PubMed references from the sentence
     let cleanSentence = sentence
-      .replace(/\(PubMed:\d+\)/g, '')
+      .replace(/\(PubMed:[\d\s,]+\)/g, '')
+      .replace(/\(PubMed:\d+(?:,\s*PubMed:\d+)*\)/g, '')
       .trim()
     
     return {
@@ -209,29 +210,39 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               </CardHeader>
               {proteinData.functionCc && (
                 <CardContent className="pt-0">
-                  <div className="bg-muted/30 rounded-lg p-4">
+                  <div className="bg-muted/30 rounded-lg p-4 max-h-64 overflow-y-auto">
                     <div className="text-sm leading-relaxed">
                       {formatUniprotText(proteinData.functionCc).map((statement) => (
                         <span key={statement.key}>
                           <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
                             {statement.text}
-                            {statement.pubmedIds.map((pmid, pmidIndex) => (
-                              <TooltipProvider key={pmidIndex}>
+                            {statement.pubmedIds.length > 0 && (
+                              <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="sm"
                                       className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                      onClick={() => {
+                                        const pubmedUrl = statement.pubmedIds.length === 1 
+                                          ? `https://pubmed.ncbi.nlm.nih.gov/${statement.pubmedIds[0]}/`
+                                          : `https://pubmed.ncbi.nlm.nih.gov/?term=${statement.pubmedIds.join('%20OR%20')}`
+                                        window.open(pubmedUrl, '_blank')
+                                      }}
                                     >
                                       <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                  <TooltipContent>
+                                    {statement.pubmedIds.length === 1 
+                                      ? `PubMed: ${statement.pubmedIds[0]}`
+                                      : `PubMed: ${statement.pubmedIds.length} references`
+                                    }
+                                  </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
-                            ))}
+                            )}
                           </span>
                         </span>
                       ))}
@@ -256,28 +267,38 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-sm leading-relaxed">
+                    <div className="text-sm leading-relaxed max-h-64 overflow-y-auto">
                       {formatUniprotText(proteinData.subcellularLocation).map((statement) => (
                         <span key={statement.key}>
                           <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
                             {statement.text}
-                            {statement.pubmedIds.map((pmid, pmidIndex) => (
-                              <TooltipProvider key={pmidIndex}>
+                            {statement.pubmedIds.length > 0 && (
+                              <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="sm"
                                       className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                      onClick={() => {
+                                        const pubmedUrl = statement.pubmedIds.length === 1 
+                                          ? `https://pubmed.ncbi.nlm.nih.gov/${statement.pubmedIds[0]}/`
+                                          : `https://pubmed.ncbi.nlm.nih.gov/?term=${statement.pubmedIds.join('%20OR%20')}`
+                                        window.open(pubmedUrl, '_blank')
+                                      }}
                                     >
                                       <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                  <TooltipContent>
+                                    {statement.pubmedIds.length === 1 
+                                      ? `PubMed: ${statement.pubmedIds[0]}`
+                                      : `PubMed: ${statement.pubmedIds.length} references`
+                                    }
+                                  </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
-                            ))}
+                            )}
                           </span>
                         </span>
                       ))}
@@ -296,28 +317,38 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-sm leading-relaxed">
+                    <div className="text-sm leading-relaxed max-h-64 overflow-y-auto">
                       {formatUniprotText(proteinData.involvementInDisease).map((statement) => (
                         <span key={statement.key}>
                           <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
                             {statement.text}
-                            {statement.pubmedIds.map((pmid, pmidIndex) => (
-                              <TooltipProvider key={pmidIndex}>
+                            {statement.pubmedIds.length > 0 && (
+                              <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="sm"
                                       className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                      onClick={() => {
+                                        const pubmedUrl = statement.pubmedIds.length === 1 
+                                          ? `https://pubmed.ncbi.nlm.nih.gov/${statement.pubmedIds[0]}/`
+                                          : `https://pubmed.ncbi.nlm.nih.gov/?term=${statement.pubmedIds.join('%20OR%20')}`
+                                        window.open(pubmedUrl, '_blank')
+                                      }}
                                     >
                                       <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                  <TooltipContent>
+                                    {statement.pubmedIds.length === 1 
+                                      ? `PubMed: ${statement.pubmedIds[0]}`
+                                      : `PubMed: ${statement.pubmedIds.length} references`
+                                    }
+                                  </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
-                            ))}
+                            )}
                           </span>
                         </span>
                       ))}
@@ -335,7 +366,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                       Classification
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-3 max-h-64 overflow-y-auto">
                     {proteinData.proteinFamilies && (
                       <div>
                         <p className="text-xs font-medium text-muted-foreground mb-1">Protein Family</p>
@@ -364,7 +395,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 max-h-64 overflow-y-auto">
                       {proteinData.keywords.split(';').map((keyword, index) => (
                         <Badge 
                           key={index} 
@@ -393,30 +424,84 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                       {goTerms.process.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Biological Process</p>
-                          <div className="max-h-32 overflow-y-auto space-y-0.5 pr-2">
-                            {goTerms.process.map((term, index) => (
-                              <p key={index} className="text-xs text-muted-foreground">• {term}</p>
-                            ))}
+                          <div className="max-h-48 overflow-y-auto space-y-0.5 pr-2">
+                            {goTerms.process.map((term, index) => {
+                              const match = term.match(/(.+?)\s*\((GO:\d+)\)$/)
+                              if (match) {
+                                const [, name, goId] = match
+                                return (
+                                  <p key={index} className="text-xs text-muted-foreground">
+                                    • {name} (
+                                    <a 
+                                      href={`https://amigo.geneontology.org/amigo/term/${goId}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-cyan-600 dark:text-cyan-400 hover:underline"
+                                    >
+                                      {goId}
+                                    </a>
+                                    )
+                                  </p>
+                                )
+                              }
+                              return <p key={index} className="text-xs text-muted-foreground">• {term}</p>
+                            })}
                           </div>
                         </div>
                       )}
                       {goTerms.function.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Molecular Function</p>
-                          <div className="max-h-32 overflow-y-auto space-y-0.5 pr-2">
-                            {goTerms.function.map((term, index) => (
-                              <p key={index} className="text-xs text-muted-foreground">• {term}</p>
-                            ))}
+                          <div className="max-h-48 overflow-y-auto space-y-0.5 pr-2">
+                            {goTerms.function.map((term, index) => {
+                              const match = term.match(/(.+?)\s*\((GO:\d+)\)$/)
+                              if (match) {
+                                const [, name, goId] = match
+                                return (
+                                  <p key={index} className="text-xs text-muted-foreground">
+                                    • {name} (
+                                    <a 
+                                      href={`https://amigo.geneontology.org/amigo/term/${goId}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-cyan-600 dark:text-cyan-400 hover:underline"
+                                    >
+                                      {goId}
+                                    </a>
+                                    )
+                                  </p>
+                                )
+                              }
+                              return <p key={index} className="text-xs text-muted-foreground">• {term}</p>
+                            })}
                           </div>
                         </div>
                       )}
                       {goTerms.component.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Cellular Component</p>
-                          <div className="max-h-32 overflow-y-auto space-y-0.5 pr-2">
-                            {goTerms.component.map((term, index) => (
-                              <p key={index} className="text-xs text-muted-foreground">• {term}</p>
-                            ))}
+                          <div className="max-h-48 overflow-y-auto space-y-0.5 pr-2">
+                            {goTerms.component.map((term, index) => {
+                              const match = term.match(/(.+?)\s*\((GO:\d+)\)$/)
+                              if (match) {
+                                const [, name, goId] = match
+                                return (
+                                  <p key={index} className="text-xs text-muted-foreground">
+                                    • {name} (
+                                    <a 
+                                      href={`https://amigo.geneontology.org/amigo/term/${goId}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-cyan-600 dark:text-cyan-400 hover:underline"
+                                    >
+                                      {goId}
+                                    </a>
+                                    )
+                                  </p>
+                                )
+                              }
+                              return <p key={index} className="text-xs text-muted-foreground">• {term}</p>
+                            })}
                           </div>
                         </div>
                       )}
@@ -435,28 +520,38 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-sm leading-relaxed">
+                    <div className="text-sm leading-relaxed max-h-64 overflow-y-auto">
                       {formatUniprotText(proteinData.postTranslationalModification).map((statement) => (
                         <span key={statement.key}>
                           <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
                             {statement.text}
-                            {statement.pubmedIds.map((pmid, pmidIndex) => (
-                              <TooltipProvider key={pmidIndex}>
+                            {statement.pubmedIds.length > 0 && (
+                              <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="sm"
                                       className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                      onClick={() => {
+                                        const pubmedUrl = statement.pubmedIds.length === 1 
+                                          ? `https://pubmed.ncbi.nlm.nih.gov/${statement.pubmedIds[0]}/`
+                                          : `https://pubmed.ncbi.nlm.nih.gov/?term=${statement.pubmedIds.join('%20OR%20')}`
+                                        window.open(pubmedUrl, '_blank')
+                                      }}
                                     >
                                       <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                  <TooltipContent>
+                                    {statement.pubmedIds.length === 1 
+                                      ? `PubMed: ${statement.pubmedIds[0]}`
+                                      : `PubMed: ${statement.pubmedIds.length} references`
+                                    }
+                                  </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
-                            ))}
+                            )}
                           </span>
                         </span>
                       ))}
@@ -474,7 +569,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                     {proteinData.entry && (
                       <div>
                         {renderExternalLink(
@@ -545,7 +640,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="max-h-32 overflow-y-auto pr-2">
+                    <div className="max-h-64 overflow-y-auto pr-2">
                       <div className="flex flex-wrap gap-1.5">
                         {proteinData.pubmedId.split(';').map((pmid, index) => (
                           <a
