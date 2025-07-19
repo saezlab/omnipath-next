@@ -29,6 +29,11 @@ export function SearchBar({
   const querySetBySelectionRef = useRef(false)
   const prevQueryRef = useRef(initialQuery)
 
+  // Update local query state when initialQuery prop changes
+  useEffect(() => {
+    setQuery(initialQuery)
+  }, [initialQuery])
+
 
   useEffect(() => {
     if (query === prevQueryRef.current) {

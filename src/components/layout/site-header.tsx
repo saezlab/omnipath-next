@@ -14,7 +14,7 @@ import { useSearchStore } from "@/store/search-store"
 export function SiteHeader() {
   const { theme, setTheme } = useTheme()
   const router = useRouter()
-  const { searchHistory, clearSearchHistory, setAnnotationsQuery, setInteractionsQuery } = useSearchStore()
+  const { searchHistory, clearSearchHistory } = useSearchStore()
 
   // Get entity type color
   const getEntityTypeColor = (type: string) => {
@@ -31,11 +31,9 @@ export function SiteHeader() {
   // Handle clicking on a history item
   const handleHistoryItemClick = (item: typeof searchHistory[0]) => {
     if (item.type === 'annotation') {
-      setAnnotationsQuery(item.query)
-      router.push(`/annotations?annotations=${item.query}`)
+      router.push(`/annotations?q=${encodeURIComponent(item.query)}`)
     } else {
-      setInteractionsQuery(item.query)
-      router.push(`/interactions?interactions=${item.query}`)
+      router.push(`/interactions?q=${encodeURIComponent(item.query)}`)
     }
   }
 

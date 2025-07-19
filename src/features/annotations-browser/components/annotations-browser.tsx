@@ -7,8 +7,8 @@ import { getProteinAnnotations, getProteinInformation, GetProteinInformationResp
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
-import { useSyncUrl } from '@/hooks/use-sync-url'
 import { useSearchStore } from "@/store/search-store"
+import { Annotation, SearchFilters } from "@/features/annotations-browser/types"
 import {
   Activity,
   Info,
@@ -17,14 +17,9 @@ import {
   Tag
 } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { useSearchParams, useRouter } from 'next/navigation'
 
 const RESULTS_PER_PAGE = 20
-
-interface SearchFilters {
-  sources: string[]
-  annotationTypes: string[]
-  valueSearch: string
-}
 
 interface FilterCounts {
   sources: Record<string, number>
@@ -32,34 +27,58 @@ interface FilterCounts {
 }
 
 export function AnnotationsBrowser() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const { addToSearchHistory } = useSearchStore()
+  
   const [isLoading, setIsLoading] = useState(false)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
+  const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
+  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | null>(null)
+  
+  // Get query from URL
+  const annotationsQuery = searchParams.get('q') || ''
+  
+  // Get current page from URL
+  const annotationsCurrentPage = parseInt(searchParams.get('page') || '1', 10)
+  
+  // Parse filters from URL
+  const annotationsFilters = useMemo(() => {
+    const filtersParam = searchParams.get('filters')
+    if (!filtersParam) {
+      return {
+        sources: [],
+        annotationTypes: [],
+        valueSearch: '',
+      } as SearchFilters
+    }
+    try {
+      return JSON.parse(filtersParam) as SearchFilters
+    } catch {
+      return {
+        sources: [],
+        annotationTypes: [],
+        valueSearch: '',
+      } as SearchFilters
+    }
+  }, [searchParams])
 
-  // Use the URL sync hook
-  useSyncUrl()
-
-  // Get state and actions from the store
-  const {
-    annotationsQuery,
-    annotationsResults,
-    annotationsFilters,
-    annotationsCurrentPage,
-    setAnnotationsResults,
-    setAnnotationsFilters,
-    setAnnotationsCurrentPage,
-    setSelectedAnnotation,
-    setAnnotationsQuery,
-  } = useSearchStore()
-
-  const handleSearch = useCallback(async (searchQuery: string = annotationsQuery) => {
+  const handleSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
     setIsLoadingProtein(true)
-    setAnnotationsQuery(searchQuery)
-    setAnnotationsCurrentPage(1)
+    
+    // Update URL with new query
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('q', searchQuery)
+    params.set('page', '1')
+    router.push(`?${params.toString()}`, { scroll: false })
+    
+    // Add to search history
+    addToSearchHistory(searchQuery, 'annotation')
 
     try {
       const [annotationsResponse, proteinResponse] = await Promise.all([
@@ -75,13 +94,14 @@ export function AnnotationsBrowser() {
       setIsLoading(false)
       setIsLoadingProtein(false)
     }
-  }, [annotationsQuery, setAnnotationsQuery, setAnnotationsCurrentPage, setAnnotationsResults])
+  }, [searchParams, router, addToSearchHistory])
 
+  // Fetch annotations when query changes
   useEffect(() => {
     if (annotationsQuery && annotationsResults.length === 0) {
-      handleSearch()
+      handleSearch(annotationsQuery)
     }
-  }, [annotationsQuery, annotationsResults.length, handleSearch])
+  }, [annotationsQuery]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {
@@ -184,27 +204,41 @@ export function AnnotationsBrowser() {
 
   // Handle filter changes
   const handleFilterChange = (type: keyof SearchFilters, value: string) => {
-    setAnnotationsFilters((prev: SearchFilters) => {
-      if (type === "valueSearch") {
-        return { ...prev, [type]: value }
-      }
-
-      const currentValues = prev[type] as string[]
-      const newValues = currentValues.includes(value)
+    const params = new URLSearchParams(searchParams.toString())
+    
+    const newFilters = { ...annotationsFilters }
+    
+    if (type === "valueSearch") {
+      newFilters[type] = value
+    } else {
+      const currentValues = newFilters[type] as string[]
+      newFilters[type] = currentValues.includes(value)
         ? currentValues.filter((v) => v !== value)
         : [...currentValues, value]
-
-      return { ...prev, [type]: newValues }
-    })
-    setAnnotationsCurrentPage(1)
+    }
+    
+    // Update URL with new filters
+    if (Object.values(newFilters).some(v => (typeof v === 'string' ? v.length > 0 : v.length > 0))) {
+      params.set('filters', JSON.stringify(newFilters))
+    } else {
+      params.delete('filters')
+    }
+    params.set('page', '1')
+    
+    router.push(`?${params.toString()}`, { scroll: false })
   }
 
   const clearFilters = () => {
-    setAnnotationsFilters({
-      sources: [],
-      annotationTypes: [],
-      valueSearch: "",
-    })
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('filters')
+    params.set('page', '1')
+    router.push(`?${params.toString()}`, { scroll: false })
+  }
+  
+  const setAnnotationsCurrentPage = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('page', page.toString())
+    router.push(`?${params.toString()}`, { scroll: false })
   }
 
   // Get category icon

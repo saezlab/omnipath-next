@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { InteractionsFilters } from "@/store/search-store"
+import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { ArrowRight, Atom, Check, Dna, FlaskConical, Info, Mic } from "lucide-react"
 
 interface FilterSidebarProps {

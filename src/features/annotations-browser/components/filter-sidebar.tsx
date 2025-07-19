@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { SearchFilters } from "@/features/annotations-browser/types"
 
 // Filter options
 const SOURCE_GROUPS = {
@@ -115,14 +116,9 @@ const SOURCE_GROUPS = {
   ]
 }
 
-interface SearchFilters {
-  sources: string[]
-  annotationTypes: string[]
-  valueSearch: string
-}
-
 interface FilterCounts {
   sources: Record<string, number>
+  annotationTypes: Record<string, number>
 }
 
 interface AnnotationsFilterSidebarProps {

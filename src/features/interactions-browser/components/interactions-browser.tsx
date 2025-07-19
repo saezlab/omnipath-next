@@ -9,10 +9,11 @@ import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/featur
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
-import { useSyncUrl } from '@/hooks/use-sync-url'
-import { useSearchStore, type InteractionsFilters } from "@/store/search-store"
+import { useSearchStore } from "@/store/search-store"
+import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { Search } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
+import { useSearchParams, useRouter } from 'next/navigation'
 
 const RESULTS_PER_PAGE = 15
 
@@ -37,37 +38,68 @@ interface FilterCounts {
 export function InteractionsBrowser({ 
   onEntitySelect,
 }: InteractionsBrowserProps) {
-  // Use the URL sync hook
-  useSyncUrl()
-
-  const {
-    interactionsQuery,
-    setInteractionsQuery,
-    interactionsFilters,
-    setInteractionsFilters,
-    interactionsResults,
-    setInteractionsResults
-  } = useSearchStore()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const { addToSearchHistory } = useSearchStore()
+  
+  // Get query from URL
+  const interactionsQuery = searchParams.get('q') || ''
+  
+  // Parse filters from URL
+  const interactionsFilters = useMemo(() => {
+    const filtersParam = searchParams.get('filters')
+    if (!filtersParam) {
+      return {
+        interactionType: [],
+        curationEffort: [],
+        entityTypeSource: [],
+        entityTypeTarget: [],
+        isDirected: null,
+        isStimulation: null,
+        isInhibition: null,
+        isUpstream: null,
+        isDownstream: null,
+        minReferences: null,
+      } as InteractionsFilters
+    }
+    try {
+      return JSON.parse(filtersParam) as InteractionsFilters
+    } catch {
+      return {
+        interactionType: [],
+        curationEffort: [],
+        entityTypeSource: [],
+        entityTypeTarget: [],
+        isDirected: null,
+        isStimulation: null,
+        isInhibition: null,
+        isUpstream: null,
+        isDownstream: null,
+        minReferences: null,
+      } as InteractionsFilters
+    }
+  }, [searchParams])
 
   const [interactions, setInteractions] = useState<SearchProteinNeighborsResponse['interactions']>([])
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
-  // Sync local interactions state with store
-  useEffect(() => {
-    setInteractions(interactionsResults)
-  }, [interactionsResults])
-
-  const handleSearch = useCallback(async (searchQuery: string = interactionsQuery) => {
+  const handleSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
-    setInteractionsQuery(searchQuery)
+    
+    // Update URL with new query
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('q', searchQuery)
+    router.push(`?${params.toString()}`, { scroll: false })
+    
+    // Add to search history
+    addToSearchHistory(searchQuery, 'interaction')
 
     try {
       const response = await searchProteinNeighbors(searchQuery)
-      setInteractionsResults(response.interactions)
       setInteractions(response.interactions)
       if (onEntitySelect) {
         onEntitySelect(searchQuery)
@@ -77,13 +109,14 @@ export function InteractionsBrowser({
     } finally {
       setIsLoading(false)
     }
-  }, [interactionsQuery, setInteractionsQuery, setInteractionsResults, onEntitySelect])
+  }, [searchParams, router, addToSearchHistory, onEntitySelect])
 
+  // Fetch interactions when query changes
   useEffect(() => {
-    if (interactionsQuery && interactionsResults.length === 0) {
-      handleSearch()
+    if (interactionsQuery && interactions.length === 0) {
+      handleSearch(interactionsQuery)
     }
-  }, [handleSearch, interactionsQuery, interactionsResults.length])
+  }, [interactionsQuery]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Calculate filter counts from interactions
   const filterCounts = useMemo(() => {
@@ -137,14 +170,14 @@ export function InteractionsBrowser({
         // Filter by stimulation
         if (!excludedFilters.includes('isStimulation') &&
             interactionsFilters.isStimulation !== null && 
-            interaction.isStimulation !== interactionsFilters.isStimulation) {
+            interaction.consensusStimulation !== interactionsFilters.isStimulation) {
           return false
         }
 
         // Filter by inhibition
         if (!excludedFilters.includes('isInhibition') &&
             interactionsFilters.isInhibition !== null && 
-            interaction.isInhibition !== interactionsFilters.isInhibition) {
+            interaction.consensusInhibition !== interactionsFilters.isInhibition) {
           return false
         }
 
@@ -157,8 +190,9 @@ export function InteractionsBrowser({
         }
 
         // Filter by upstream/downstream based on query protein position
-        const isUpstream = interaction.isDirected === true && (interaction.target === interactionsQuery || interaction.targetGenesymbol === interactionsQuery)
-        const isDownstream = interaction.isDirected === true && (interaction.source === interactionsQuery || interaction.sourceGenesymbol === interactionsQuery)
+        const queryUpper = interactionsQuery.toUpperCase()
+        const isUpstream = interaction.isDirected === true && (interaction.target === queryUpper || interaction.targetGenesymbol === queryUpper)
+        const isDownstream = interaction.isDirected === true && (interaction.source === queryUpper || interaction.sourceGenesymbol === queryUpper)
         
         if (!excludedFilters.includes('isUpstream') &&
             interactionsFilters.isUpstream !== null && 
@@ -209,16 +243,17 @@ export function InteractionsBrowser({
       if (interaction.isDirected !== undefined) {
         counts.isDirected[interaction.isDirected?.toString() as 'true' | 'false']++
       }
-      if (interaction.isStimulation !== undefined) {
-        counts.isStimulation[interaction.isStimulation?.toString() as 'true' | 'false']++
+      if (interaction.consensusStimulation !== undefined) {
+        counts.isStimulation[interaction.consensusStimulation?.toString() as 'true' | 'false']++
       }
-      if (interaction.isInhibition !== undefined) {
-        counts.isInhibition[interaction.isInhibition?.toString() as 'true' | 'false']++
+      if (interaction.consensusInhibition !== undefined) {
+        counts.isInhibition[interaction.consensusInhibition?.toString() as 'true' | 'false']++
       }
 
       // Calculate and count upstream/downstream based on query protein position
-      const isUpstream = interaction.isDirected === true && (interaction.target === interactionsQuery || interaction.targetGenesymbol === interactionsQuery)
-      const isDownstream = interaction.isDirected === true && (interaction.source === interactionsQuery || interaction.sourceGenesymbol === interactionsQuery)
+      const queryUpper = interactionsQuery.toUpperCase()
+      const isUpstream = interaction.isDirected === true && (interaction.target === queryUpper || interaction.targetGenesymbol === queryUpper)
+      const isDownstream = interaction.isDirected === true && (interaction.source === queryUpper || interaction.sourceGenesymbol === queryUpper)
       counts.isUpstream[isUpstream.toString() as 'true' | 'false']++
       counts.isDownstream[isDownstream.toString() as 'true' | 'false']++
     })
@@ -251,18 +286,19 @@ export function InteractionsBrowser({
       }
 
       // Filter by stimulation
-      if (interactionsFilters.isStimulation !== null && interaction.isStimulation !== interactionsFilters.isStimulation) {
+      if (interactionsFilters.isStimulation !== null && interaction.consensusStimulation !== interactionsFilters.isStimulation) {
         return false
       }
 
       // Filter by inhibition
-      if (interactionsFilters.isInhibition !== null && interaction.isInhibition !== interactionsFilters.isInhibition) {
+      if (interactionsFilters.isInhibition !== null && interaction.consensusInhibition !== interactionsFilters.isInhibition) {
         return false
       }
 
       // Filter by upstream/downstream based on query protein position
-      const isUpstream = interaction.isDirected === true && (interaction.target === interactionsQuery || interaction.targetGenesymbol === interactionsQuery)
-      const isDownstream = interaction.isDirected === true && (interaction.source === interactionsQuery || interaction.sourceGenesymbol === interactionsQuery)
+      const queryUpper = interactionsQuery.toUpperCase()
+      const isUpstream = interaction.isDirected === true && (interaction.target === queryUpper || interaction.targetGenesymbol === queryUpper)
+      const isDownstream = interaction.isDirected === true && (interaction.source === queryUpper || interaction.sourceGenesymbol === queryUpper)
       
       if (interactionsFilters.isUpstream !== null && isUpstream !== interactionsFilters.isUpstream) {
         return false
@@ -282,43 +318,41 @@ export function InteractionsBrowser({
   }, [interactions, interactionsFilters, interactionsQuery])
 
   const handleFilterChange = (type: keyof InteractionsFilters, value: string | boolean | null | number) => {
-    setInteractionsFilters((prev) => {
-      if (type === "minReferences") {
-        return { ...prev, [type]: Number(value) || 0 }
-      }
-
-      if (
-        type === "isDirected" ||
-        type === "isStimulation" ||
-        type === "isInhibition" ||
-        type === "isUpstream" ||
-        type === "isDownstream"
-      ) {
-        return { ...prev, [type]: value }
-      }
-
-      const currentValues = prev[type] as string[]
-      const newValues = currentValues.includes(value as string)
+    const params = new URLSearchParams(searchParams.toString())
+    
+    const newFilters = { ...interactionsFilters }
+    
+    if (type === "minReferences") {
+      newFilters[type] = Number(value) || null
+    } else if (
+      type === "isDirected" ||
+      type === "isStimulation" ||
+      type === "isInhibition" ||
+      type === "isUpstream" ||
+      type === "isDownstream"
+    ) {
+      newFilters[type] = value as boolean | null
+    } else {
+      const currentValues = newFilters[type] as string[]
+      newFilters[type] = currentValues.includes(value as string)
         ? currentValues.filter((v) => v !== value)
         : [...currentValues, value as string]
-
-      return { ...prev, [type]: newValues }
-    })
+    }
+    
+    // Update URL with new filters
+    if (Object.values(newFilters).some(v => v !== null && (Array.isArray(v) ? v.length > 0 : true))) {
+      params.set('filters', JSON.stringify(newFilters))
+    } else {
+      params.delete('filters')
+    }
+    
+    router.push(`?${params.toString()}`, { scroll: false })
   }
 
   const clearFilters = () => {
-    setInteractionsFilters({
-      interactionType: [],
-      curationEffort: [],
-      entityTypeSource: [],
-      entityTypeTarget: [],
-      isDirected: null,
-      isStimulation: null,
-      isInhibition: null,
-      isUpstream: null,
-      isDownstream: null,
-      minReferences: null,
-    })
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('filters')
+    router.push(`?${params.toString()}`, { scroll: false })
   }
 
 
@@ -354,7 +388,7 @@ export function InteractionsBrowser({
           <div className="flex-1 min-w-0">
             {isLoading ? (
               <TableSkeleton rows={5} />
-            ) : interactionsResults.length > 0 ? (
+            ) : interactions.length > 0 ? (
               <div className="space-y-6"> 
 
                 {/* Interactions Section */}
