@@ -27,10 +27,12 @@ export function SearchBar({
   const [isOpen, setIsOpen] = useState(false)
   const debounceTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
   const querySetBySelectionRef = useRef(false)
+  const querySetFromPropsRef = useRef(false)
   const prevQueryRef = useRef(initialQuery)
 
   // Update local query state when initialQuery prop changes
   useEffect(() => {
+    querySetFromPropsRef.current = true
     setQuery(initialQuery)
   }, [initialQuery])
 
@@ -54,6 +56,11 @@ export function SearchBar({
 
     if (querySetBySelectionRef.current) {
       querySetBySelectionRef.current = false
+      return
+    }
+
+    if (querySetFromPropsRef.current) {
+      querySetFromPropsRef.current = false
       return
     }
 
