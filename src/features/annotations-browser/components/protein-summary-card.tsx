@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   Accordion,
   AccordionContent,
@@ -22,7 +23,9 @@ import {
   Microscope,
   BookOpen,
   Globe,
-  FileText
+  FileText,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react"
 
 interface ProteinSummaryCardProps {
@@ -66,6 +69,8 @@ const formatUniprotText = (text: string) => {
 }
 
 export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = false }: ProteinSummaryCardProps) {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+  
   const formatMass = (mass: number | null) => {
     if (!mass) return null
     return `${(mass / 1000).toFixed(1)} kDa`
@@ -152,109 +157,129 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
   return (
     <div className="w-full">
-      <Accordion className="border-2 rounded-lg"type="single" collapsible defaultValue={defaultExpanded ? "details" : undefined}>
-        <AccordionItem value="details">
-          {/* Main Card Header - Always Visible */}
-          <AccordionTrigger className="hover:no-underline p-2">
-            <Card className="w-full border-0 shadow-none">
-              <CardHeader>
-                <div className="flex items-start justify-between w-full pr-4">
-                  <div className="space-y-1 flex-1">
-                    <CardTitle className="text-2xl font-bold">
-                      {proteinData.proteinNames || 'Unknown Protein'}
-                    </CardTitle>
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">{proteinData.entry}</span>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-5 w-5 p-0"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  copyToClipboard(proteinData.entry)
-                                }}
-                              >
-                                <Copy className="h-3 w-3" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Copy UniProt ID</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                      {proteinData.entryName && (
-                        <span>• {proteinData.entryName}</span>
-                      )}
-                      {proteinData.geneNamesPrimary && (
-                        <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100">
-                          <Dna className="h-3 w-3 mr-1" />
-                          {proteinData.geneNamesPrimary}
-                        </Badge>
-                      )}
-                      {proteinData.length && proteinData.mass && (
-                        <span>
-                          • {proteinData.length} aa • {formatMass(proteinData.mass)}
-                        </span>
-                      )}
-                      {proteinData.organismId && (
-                        <span>
-                          • {parseOrganism(proteinData.organismId)}
-                        </span>
-                      )}
-                    </div>
+      <div className="border-2 rounded-lg relative">
+        {/* Main Card Header - Always Visible */}
+        <Card className="w-full border-0 shadow-none">
+          <CardHeader>
+            <div className="flex items-start justify-between w-full">
+              <div className="space-y-1 flex-1">
+                <CardTitle className="text-2xl font-bold">
+                  {proteinData.proteinNames || 'Unknown Protein'}
+                </CardTitle>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <span className="font-medium">{proteinData.entry}</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-5 w-5 p-0"
+                            onClick={() => copyToClipboard(proteinData.entry)}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Copy UniProt ID</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
+                  {proteinData.entryName && (
+                    <span>• {proteinData.entryName}</span>
+                  )}
+                  {proteinData.geneNamesPrimary && (
+                    <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100">
+                      <Dna className="h-3 w-3 mr-1" />
+                      {proteinData.geneNamesPrimary}
+                    </Badge>
+                  )}
+                  {proteinData.length && proteinData.mass && (
+                    <span>
+                      • {proteinData.length} aa • {formatMass(proteinData.mass)}
+                    </span>
+                  )}
+                  {proteinData.organismId && (
+                    <span>
+                      • {parseOrganism(proteinData.organismId)}
+                    </span>
+                  )}
                 </div>
-              </CardHeader>
-              {proteinData.functionCc && (
-                <CardContent className="pt-0">
-                  <div className="bg-muted/30 rounded-lg p-4 max-h-64 overflow-y-auto">
-                    <div className="text-sm leading-relaxed">
-                      {formatUniprotText(proteinData.functionCc).map((statement) => (
-                        <span key={statement.key}>
-                          <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
-                            {statement.text}
-                            {statement.pubmedIds.length > 0 && (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
-                                      onClick={() => {
-                                        const pubmedUrl = statement.pubmedIds.length === 1 
-                                          ? `https://pubmed.ncbi.nlm.nih.gov/${statement.pubmedIds[0]}/`
-                                          : `https://pubmed.ncbi.nlm.nih.gov/?term=${statement.pubmedIds.join('%20OR%20')}`
-                                        window.open(pubmedUrl, '_blank')
-                                      }}
-                                    >
-                                      <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    {statement.pubmedIds.length === 1 
-                                      ? `PubMed: ${statement.pubmedIds[0]}`
-                                      : `PubMed: ${statement.pubmedIds.length} references`
-                                    }
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            )}
-                          </span>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              )}
-            </Card>
-          </AccordionTrigger>
+              </div>
+            </div>
+          </CardHeader>
+          {proteinData.functionCc && (
+            <CardContent className="pt-0 pb-12">
+              <div className="bg-muted/30 rounded-lg p-4 max-h-64 overflow-y-auto">
+                <div className="text-sm leading-relaxed">
+                  {formatUniprotText(proteinData.functionCc).map((statement) => (
+                    <span key={statement.key}>
+                      <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
+                        {statement.text}
+                        {statement.pubmedIds.length > 0 && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                                  onClick={() => {
+                                    const pubmedUrl = statement.pubmedIds.length === 1 
+                                      ? `https://pubmed.ncbi.nlm.nih.gov/${statement.pubmedIds[0]}/`
+                                      : `https://pubmed.ncbi.nlm.nih.gov/?term=${statement.pubmedIds.join('%20OR%20')}`
+                                    window.open(pubmedUrl, '_blank')
+                                  }}
+                                >
+                                  <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                {statement.pubmedIds.length === 1 
+                                  ? `PubMed: ${statement.pubmedIds[0]}`
+                                  : `PubMed: ${statement.pubmedIds.length} references`
+                                }
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
+        
+        {/* Expand/Collapse Button */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 rounded-full bg-background border-2 shadow-sm hover:shadow-md transition-all"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isExpanded ? 'Hide details' : 'Show more details'}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
 
-          {/* Collapsible Details Section */}
-          <AccordionContent className="p-6 pt-2">
+        {/* Collapsible Details Section */}
+        {isExpanded && (
+          <div className="p-6 pt-8 border-t">
             <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4 [&>*]:break-inside-avoid">
               
               {/* Subcellular Location Card */}
@@ -697,9 +722,9 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                 </Card>
               )}
             </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
