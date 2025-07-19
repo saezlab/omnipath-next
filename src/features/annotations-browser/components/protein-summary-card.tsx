@@ -168,7 +168,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
     <div className="w-full">
       <div className="sm:border sm:border-2 rounded-lg relative">
         {/* Main Card Header - Always Visible */}
-        <Card className="w-full border-0 shadow-none">
+        <Card className="w-full border-0 shadow-none sm:py-6 py-3">
           <CardHeader className="p-2 sm:p-6">
             <div className="flex items-start justify-between w-full gap-2 sm:gap-4">
               <div className="space-y-1 flex-1 min-w-0">
