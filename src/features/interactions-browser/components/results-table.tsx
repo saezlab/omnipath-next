@@ -1,14 +1,13 @@
 "use client"
 
+import { EntityBadge } from "@/components/EntityBadge";
+import { ColumnDef, ResultsTable } from "@/components/shared/results-table";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries";
+import { cn } from "@/lib/utils";
+import { ArrowRight, Atom, Dna, FlaskConical, Mic, Minus } from "lucide-react";
 import React from 'react';
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
-import { EntityBadge } from "@/components/EntityBadge"
-import { cn } from "@/lib/utils"
-import { ArrowRight, Atom, Dna, FlaskConical, Mic, Minus } from "lucide-react"
-import { ResultsTable, ColumnDef } from "@/components/shared/results-table";
-import { is } from 'drizzle-orm';
 
 type InteractionData = SearchProteinNeighborsResponse['interactions'][number];
 type InteractionDataWithCount = InteractionData & { referenceCount: number };
