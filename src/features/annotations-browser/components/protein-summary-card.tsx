@@ -1,10 +1,4 @@
 import { useState } from "react"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,7 +12,6 @@ import {
   MapPin,
   Network,
   Tag,
-  TestTube,
   Microscope,
   BookOpen,
   Globe,
@@ -173,10 +166,10 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
   return (
     <div className="w-full">
-      <div className="border sm:border-2 rounded-lg relative">
+      <div className="sm:border sm:border-2 rounded-lg relative">
         {/* Main Card Header - Always Visible */}
         <Card className="w-full border-0 shadow-none">
-          <CardHeader className="p-3 sm:p-6">
+          <CardHeader className="p-2 sm:p-6">
             <div className="flex items-start justify-between w-full gap-2 sm:gap-4">
               <div className="space-y-1 flex-1 min-w-0">
                 <CardTitle className="text-lg sm:text-2xl font-bold">
@@ -184,13 +177,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                 </CardTitle>
                 {proteinNames.alternatives.length > 0 && (
                   <div className="text-sm text-muted-foreground">
-                    <span className="font-medium">Also known as:</span> {proteinNames.alternatives.join(', ')}
+        {proteinNames.alternatives.join(', ')}
                   </div>
                 )}
               </div>
               
               {/* Metadata in top right */}
-              <div className="flex flex-col items-end gap-1 sm:gap-2 flex-shrink-0">
+              <div className="flex flex-col items-end gap-3 flex-shrink-0">
                 {/* Primary Identifiers Row */}
                 <div className="flex items-center gap-1 sm:gap-2 text-sm">
                   <Badge variant="outline" className="font-mono text-[10px] sm:text-xs px-1.5 sm:px-2.5 h-5 sm:h-6">
@@ -296,19 +289,19 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
         {/* Collapsible Details Section */}
         {isExpanded && (
-          <div className="p-3 sm:p-6 pt-6 sm:pt-8 border-t">
+          <div className="p-0 sm:p-6 pt-6 sm:pt-8 border-t">
             <div className="columns-1 md:columns-2 lg:columns-3 gap-2 sm:gap-4 space-y-3 sm:space-y-4 [&>*]:break-inside-avoid">
               
               {/* Subcellular Location Card */}
               {proteinData.subcellularLocation && (
                 <Card className="border-green-200 dark:border-green-900/50 bg-green-50/50 dark:bg-green-950/20">
-                  <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                  <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-green-600 dark:text-green-400" />
                       Subcellular Location
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0">
+                  <CardContent className="p-2 sm:p-6 pt-0">
                     <div className="text-sm leading-relaxed max-h-64 overflow-y-auto">
                       {formatUniprotText(proteinData.subcellularLocation).map((statement) => (
                         <span key={statement.key}>
@@ -352,13 +345,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* Disease Involvement Card */}
               {proteinData.involvementInDisease && (
                 <Card className="border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20">
-                  <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                  <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                       <Heart className="h-4 w-4 text-red-600 dark:text-red-400" />
                       Disease Involvement
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0">
+                  <CardContent className="p-2 sm:p-6 pt-0">
                     <div className="text-sm leading-relaxed max-h-64 overflow-y-auto">
                       {formatUniprotText(proteinData.involvementInDisease).map((statement) => (
                         <span key={statement.key}>
@@ -402,13 +395,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* Protein Family & EC Number Card */}
               {(proteinData.proteinFamilies || proteinData.ecNumber) && (
                 <Card className="border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/20">
-                  <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                  <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                       <Network className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                       Classification
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0 space-y-3 max-h-64 overflow-y-auto">
+                  <CardContent className="p-2 sm:p-6 pt-0 space-y-3 max-h-64 overflow-y-auto">
                     {proteinData.proteinFamilies && (
                       <div>
                         <p className="text-xs font-medium text-muted-foreground mb-1">Protein Family</p>
@@ -430,13 +423,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* Keywords Card */}
               {proteinData.keywords && (
                 <Card className="border-orange-200 dark:border-orange-900/50 bg-orange-50/50 dark:bg-orange-950/20">
-                  <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                  <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                       <Tag className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                       Keywords
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0">
+                  <CardContent className="p-2 sm:p-6 pt-0">
                     <div className="flex flex-wrap gap-1.5 max-h-64 overflow-y-auto">
                       {proteinData.keywords.split(';').map((keyword, index) => (
                         <Badge 
@@ -455,13 +448,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* Gene Ontology Card */}
               {proteinData.geneOntology && (
                 <Card className="border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20">
-                  <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                  <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                       <Microscope className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
                       Gene Ontology
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0">
+                  <CardContent className="p-2 sm:p-6 pt-0">
                     <div className="grid grid-cols-1 gap-3">
                       {goTerms.process.length > 0 && (
                         <div>
@@ -555,13 +548,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* Post-translational Modifications Card */}
               {proteinData.postTranslationalModification && (
                 <Card className="border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/20">
-                  <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                  <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                       <FlaskConical className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                       Modifications
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0">
+                  <CardContent className="p-2 sm:p-6 pt-0">
                     <div className="text-sm leading-relaxed max-h-64 overflow-y-auto">
                       {formatUniprotText(proteinData.postTranslationalModification).map((statement) => (
                         <span key={statement.key}>
@@ -604,13 +597,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
               {/* External Resources Card */}
               <Card className="border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/20">
-                <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                   <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                     <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600 dark:text-gray-400" />
                     External Resources
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-3 sm:p-6 pt-0">
+                <CardContent className="p-2 sm:p-6 pt-0">
                   <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                     {proteinData.entry && (
                       <div>
@@ -684,7 +677,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* References Card */}
               {proteinData.pubmedId && (
                 <Card className="border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/50 dark:bg-yellow-950/20">
-                  <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+                  <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-yellow-700 dark:text-yellow-400" />
@@ -705,7 +698,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0">
+                  <CardContent className="p-2 sm:p-6 pt-0">
                     <div className="max-h-64 overflow-y-auto pr-2">
                       <div className="flex flex-wrap gap-1.5">
                         {proteinData.pubmedId.split(';').map((pmid, index) => (
@@ -722,44 +715,6 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                       </div>
                     </div>
                   </CardContent>
-                </Card>
-              )}
-
-              {/* Additional Information Accordion for remaining details */}
-              {(proteinData.transmembrane || proteinData.activityRegulation || proteinData.pathway) && (
-                <Card className="border-gray-300 dark:border-gray-700">
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="additional" className="border-none">
-                      <AccordionTrigger className="px-6 hover:no-underline">
-                        <div className="flex items-center gap-2">
-                          <TestTube className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-                          <span className="text-base font-semibold">Additional Details</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-6 pb-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {proteinData.transmembrane && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-1">Transmembrane Regions</h4>
-                              <p className="text-sm text-muted-foreground">{proteinData.transmembrane}</p>
-                            </div>
-                          )}
-                          {proteinData.activityRegulation && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-1">Activity Regulation</h4>
-                              <p className="text-sm text-muted-foreground">{proteinData.activityRegulation}</p>
-                            </div>
-                          )}
-                          {proteinData.pathway && (
-                            <div>
-                              <h4 className="font-medium text-sm mb-1">Pathways</h4>
-                              <p className="text-sm text-muted-foreground">{proteinData.pathway}</p>
-                            </div>
-                          )}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
                 </Card>
               )}
             </div>
