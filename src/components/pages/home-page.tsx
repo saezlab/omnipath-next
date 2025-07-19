@@ -12,8 +12,8 @@ export function HomePage() {
     <SiteLayout>
       <HeroSection />
 
-      <div className="container py-8 mx-auto">
-        <div className="grid gap-6 md:grid-cols-2">
+      <div className="container py-8 mx-auto px-2">
+        <div className="grid gap-6 lg:grid-cols-2">
           <FeatureCard
             icon={<Network className="h-6 w-6 text-blue-700" />}
             title="Interactions Browser"

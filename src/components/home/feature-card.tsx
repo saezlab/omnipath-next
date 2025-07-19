@@ -31,9 +31,9 @@ export function FeatureCard({ icon, title, description, features, href, buttonTe
           <CardDescription className="text-base">{description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 relative">
-          <div className="flex gap-4 overflow-x-auto pb-2">
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-4 sm:overflow-x-auto pb-2">
             {features.map((feature, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 dark:bg-muted/30 group-hover:bg-muted/70 dark:group-hover:bg-muted/50 transition-colors duration-300 min-w-[200px] flex-shrink-0">
+              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 dark:bg-muted/30 group-hover:bg-muted/70 dark:group-hover:bg-muted/50 transition-colors duration-300 sm:min-w-[200px] sm:flex-shrink-0">
                 <div className="w-8 h-8 rounded-lg bg-background dark:bg-background/80 flex items-center justify-center flex-shrink-0">
                   {feature.icon}
                 </div>
