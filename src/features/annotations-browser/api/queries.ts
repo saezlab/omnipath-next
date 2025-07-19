@@ -50,6 +50,19 @@ export async function getProteinInformation(query: string) {
       subcellularLocation: uniprotProteins.subcellularLocation,
       keywords: uniprotProteins.keywords,
       proteinFamilies: uniprotProteins.proteinFamilies,
+      involvementInDisease: uniprotProteins.involvementInDisease,
+      postTranslationalModification: uniprotProteins.postTranslationalModification,
+      ecNumber: uniprotProteins.ecNumber,
+      geneOntology: uniprotProteins.geneOntology,
+      transmembrane: uniprotProteins.transmembrane,
+      pathway: uniprotProteins.pathway,
+      activityRegulation: uniprotProteins.activityRegulation,
+      pubmedId: uniprotProteins.pubmedId,
+      ensembl: uniprotProteins.ensembl,
+      kegg: uniprotProteins.kegg,
+      pdb: uniprotProteins.pdb,
+      chembl: uniprotProteins.chembl,
+      alphafolddb: uniprotProteins.alphafolddb,
     })
     .from(uniprotProteins)
     .where(
