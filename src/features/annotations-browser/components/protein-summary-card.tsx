@@ -304,39 +304,30 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                       {goTerms.process.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Biological Process</p>
-                          <div className="space-y-0.5">
-                            {goTerms.process.slice(0, 3).map((term, index) => (
+                          <div className="max-h-32 overflow-y-auto space-y-0.5 pr-2">
+                            {goTerms.process.map((term, index) => (
                               <p key={index} className="text-xs text-muted-foreground">• {term}</p>
                             ))}
-                            {goTerms.process.length > 3 && (
-                              <p className="text-xs text-muted-foreground/70 italic">+{goTerms.process.length - 3} more</p>
-                            )}
                           </div>
                         </div>
                       )}
                       {goTerms.function.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Molecular Function</p>
-                          <div className="space-y-0.5">
-                            {goTerms.function.slice(0, 3).map((term, index) => (
+                          <div className="max-h-32 overflow-y-auto space-y-0.5 pr-2">
+                            {goTerms.function.map((term, index) => (
                               <p key={index} className="text-xs text-muted-foreground">• {term}</p>
                             ))}
-                            {goTerms.function.length > 3 && (
-                              <p className="text-xs text-muted-foreground/70 italic">+{goTerms.function.length - 3} more</p>
-                            )}
                           </div>
                         </div>
                       )}
                       {goTerms.component.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Cellular Component</p>
-                          <div className="space-y-0.5">
-                            {goTerms.component.slice(0, 3).map((term, index) => (
+                          <div className="max-h-32 overflow-y-auto space-y-0.5 pr-2">
+                            {goTerms.component.map((term, index) => (
                               <p key={index} className="text-xs text-muted-foreground">• {term}</p>
                             ))}
-                            {goTerms.component.length > 3 && (
-                              <p className="text-xs text-muted-foreground/70 italic">+{goTerms.component.length - 3} more</p>
-                            )}
                           </div>
                         </div>
                       )}
