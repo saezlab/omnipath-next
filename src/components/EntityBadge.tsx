@@ -1,72 +1,64 @@
+"use client"
 import React, { useRef, useState } from 'react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface EntityBadgeProps {
-  geneSymbol: string;
-  uniprotId: string;
+  displayName: string;
+  canonicalIdentifier: string;
+  geneSymbol?: string;  // Keep for backward compatibility
+  uniprotId?: string;   // Keep for backward compatibility
 }
 
-export const EntityBadge: React.FC<EntityBadgeProps> = ({ geneSymbol, uniprotId }) => {
-  const geneSymbolRef = useRef<HTMLSpanElement>(null);
-  const uniprotIdRef = useRef<HTMLSpanElement>(null);
-  const [isGeneTruncated, setIsGeneTruncated] = useState(false);
-  const [isUniprotTruncated, setIsUniprotTruncated] = useState(false);
+export const EntityBadge: React.FC<EntityBadgeProps> = ({ 
+  displayName, 
+  canonicalIdentifier, 
+  geneSymbol, 
+  uniprotId,
+}) => {
+  // Use new props if provided, fallback to old props for backward compatibility
+  const name = displayName || geneSymbol || '';
+  const identifier = canonicalIdentifier || uniprotId || '';
 
-  React.useEffect(() => {
-    const checkTruncation = () => {
-      if (geneSymbolRef.current) {
-        setIsGeneTruncated(geneSymbolRef.current.scrollWidth > geneSymbolRef.current.clientWidth);
-      }
-      if (uniprotIdRef.current) {
-        setIsUniprotTruncated(uniprotIdRef.current.scrollWidth > uniprotIdRef.current.clientWidth);
-      }
-    };
-
-    checkTruncation();
-    window.addEventListener('resize', checkTruncation);
-    return () => window.removeEventListener('resize', checkTruncation);
-  }, [geneSymbol, uniprotId]);
+  
+  const nameRef = useRef<HTMLSpanElement>(null);
+  const identifierRef = useRef<HTMLSpanElement>(null);
 
   const content = (
-    <div className="relative w-[130px] h-[65px] flex items-center justify-center">
-      <div 
-        className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 border border-blue-100 dark:border-blue-800/50 shadow-sm"
-        style={{
-          clipPath: 'ellipse(50% 30% at 50% 50%)'
-        }}
-      />
-      <div className="relative flex flex-col items-center justify-center w-full px-3 gap-0.5">
-        <span 
-          ref={geneSymbolRef}
-          className="text-sm font-semibold text-blue-900 dark:text-blue-100 truncate w-full text-center -mb-0.5"
-        >
-          {geneSymbol}
-        </span>
-        <span 
-          ref={uniprotIdRef}
-          className="text-[10px] text-blue-600/70 dark:text-blue-300/70 font-mono truncate w-full text-center leading-none"
-        >
-          {uniprotId}
-        </span>
+    <div className="relative">
+      {/* Modern glass-morphism card */}
+      <div className="relative bg-gradient-to-br from-slate-50/80 to-slate-100/80 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-md px-2 py-1 shadow-sm min-w-[80px] w-full">
+        
+        
+        {/* Content */}
+        <div className="flex flex-col items-center justify-center min-h-[32px]">
+          {/* Primary display - gene symbol or canonical identifier */}
+          <div className="h-[14px] flex items-center w-full">
+              <span 
+                ref={nameRef}
+                className="text-xs font-medium text-slate-900 dark:text-slate-100 truncate w-full text-center leading-tight"
+              >
+                {name || identifier}
+              </span>
+          </div>
+          
+          {/* Secondary line - canonical identifier only if we have a gene symbol */}
+          <div className="h-[14px] flex items-center w-full">
+            {name && (
+              <>
+
+                  <span 
+                    ref={identifierRef}
+                    className="text-[10px] font-mono text-slate-500 dark:text-slate-400 truncate w-full text-center leading-none"
+                  >
+                    {identifier}
+                  </span>
+              </>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );
 
-  if (isGeneTruncated || isUniprotTruncated) {
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {content}
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="text-sm font-semibold">{geneSymbol}</p>
-            <p className="text-xs text-muted-foreground font-mono">{uniprotId}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
   return content;
-}; 
+};

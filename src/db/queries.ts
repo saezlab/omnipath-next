@@ -4,7 +4,7 @@ import { db } from ".";
 import { uniprotIdentifiers    } from "./drizzle/schema";
 import { sql } from "drizzle-orm";
 
-export async function searchIdentifiers(query: string, limit: number = 10) {
+export async function searchIdentifiers(query: string, limit: number = 20) {
   const results = await db
     .select({
       uniprotAccession: uniprotIdentifiers.uniprotAccession,
