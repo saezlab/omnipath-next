@@ -151,14 +151,45 @@ export function AnnotationsFilterSidebar({
       showMobileFilters={showMobileFilters}
     >
       {Object.entries(SOURCE_GROUPS).map(([groupName, sources]) => {
-        // Filter sources with non-zero counts and sort by count
-        const filteredSources = sources
+        let filteredSources = sources
           .filter(source => (filterCounts.sources[source.value.toLowerCase()] || 0) > 0)
           .sort((a, b) => {
             const countA = filterCounts.sources[a.value.toLowerCase()] || 0;
             const countB = filterCounts.sources[b.value.toLowerCase()] || 0;
             return countB - countA;
           });
+
+        // For "Other" category, add any uncategorized sources
+        if (groupName === "Other") {
+          // Get all sources that exist in filterCounts
+          const allAvailableSources = Object.keys(filterCounts.sources);
+          
+          // Get all categorized sources (excluding "Other")
+          const categorizedSources = new Set();
+          Object.entries(SOURCE_GROUPS).forEach(([key, groupSources]) => {
+            if (key !== "Other") {
+              groupSources.forEach(source => {
+                categorizedSources.add(source.value.toLowerCase());
+              });
+            }
+          });
+          
+          // Find uncategorized sources
+          const uncategorizedSources = allAvailableSources
+            .filter(source => !categorizedSources.has(source) && (filterCounts.sources[source] || 0) > 0)
+            .map(source => ({
+              value: source,
+              label: source.charAt(0).toUpperCase() + source.slice(1).replace(/_/g, ' ')
+            }));
+          
+          // Add uncategorized sources to the "Other" category
+          filteredSources = [...filteredSources, ...uncategorizedSources]
+            .sort((a, b) => {
+              const countA = filterCounts.sources[a.value.toLowerCase()] || 0;
+              const countB = filterCounts.sources[b.value.toLowerCase()] || 0;
+              return countB - countA;
+            });
+        }
 
         // Only render the group if it has sources with non-zero counts
         if (filteredSources.length === 0) return null;
