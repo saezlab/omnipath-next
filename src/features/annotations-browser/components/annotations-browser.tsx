@@ -272,7 +272,6 @@ export function AnnotationsBrowser() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col gap-6">
         <SearchBar
           placeholder="Search for a protein..."
@@ -349,7 +348,6 @@ export function AnnotationsBrowser() {
           </div>
         )}
       </div>
-    </div>
   )
 }
 
