@@ -16,6 +16,13 @@ export async function searchIdentifiers(query: string, limit: number = 20) {
     .where(
             sql`${uniprotIdentifiers.identifierValue} ILIKE ${query + '%'}`,
     )
+    .orderBy(
+      sql`CASE 
+        WHEN ${uniprotIdentifiers.identifierValue} ILIKE ${query} THEN 1 
+        ELSE 2 
+      END`,
+      uniprotIdentifiers.identifierValue
+    )
     .limit(limit);
 
   return results;
