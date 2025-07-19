@@ -281,7 +281,7 @@ export function AnnotationsBrowser() {
           isLoading={isLoading}
         />
         
-        {annotationsQuery && (
+        {annotationsQuery ? (
           <>
             <ProteinSummaryCard 
               proteinData={proteinData ?? undefined}
@@ -317,7 +317,7 @@ export function AnnotationsBrowser() {
                 <div className="flex-1">
                   {isLoading ? (
                     <TableSkeleton />
-                  ) : (
+                  ) : uniqueRecordCount > 0 ? (
                     <AnnotationsTable
                       currentResults={currentResults}
                       getCategoryIcon={getCategoryIcon}
@@ -326,11 +326,27 @@ export function AnnotationsBrowser() {
                       totalPages={totalPages}
                       onPageChange={setAnnotationsCurrentPage}
                     />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <Info className="h-12 w-12 text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No annotations found</h3>
+                      <p className="text-muted-foreground max-w-md">
+                        No annotations found for "{annotationsQuery}". Try searching for a different protein.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
             </div>
           </>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <Info className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">Welcome to Annotations Browser</h3>
+            <p className="text-muted-foreground max-w-md">
+              Search for a protein to explore its annotations and functional information.
+            </p>
+          </div>
         )}
       </div>
     </div>

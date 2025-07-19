@@ -458,10 +458,18 @@ export function InteractionsBrowser({
                 </Card>
                 </div>
               </div>
-            ) : (
+            ) : interactionsQuery ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <Search className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium mb-2">No interactions found</h3>
+                <p className="text-muted-foreground max-w-md">
+                  No interactions found for "{interactionsQuery}". Try searching for a different protein or gene.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">Welcome to Interactions Browser</h3>
                 <p className="text-muted-foreground max-w-md">
                   Search for proteins or genes to explore their interactions.
                 </p>

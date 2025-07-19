@@ -109,7 +109,7 @@ export function SearchBar({
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center gap-4">
           <div className="w-full max-w-2xl">
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <Popover open={isOpen && suggestions.length > 0} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>
                 <div className="relative group">
                   <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
@@ -132,37 +132,39 @@ export function SearchBar({
                   </Button>
                 </div>
               </PopoverTrigger>
-              <PopoverContent 
-                className="w-[--radix-popover-trigger-width] p-0 max-h-80 overflow-y-auto" 
-                align="start"
-                onOpenAutoFocus={(e) => e.preventDefault()}
-              >
-                <Command>
-                  <CommandGroup>
-                    {suggestions.map((suggestion, index) => (
-                      <CommandItem
-                        key={`${suggestion.uniprotAccession}-${suggestion.identifierValue}-${index}`}
-                        onSelect={() => handleSelect(suggestion.uniprotAccession)}
-                      >
-                        <div className="flex flex-col">
-                          <span>{suggestion.identifierValue}</span>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>{suggestion.uniprotAccession}</span>
-                            <span>•</span>
-                            <span className="capitalize">{suggestion.identifierType?.replace('_', ' ')}</span>
-                            {suggestion.taxonId && (
-                              <>
-                                <span>•</span>
-                                <span>{suggestion.taxonId === '9606' ? 'Human' : suggestion.taxonId === '10090' ? 'Mouse' : suggestion.taxonId === '10116' ? 'Rat' : suggestion.taxonId}</span>
-                              </>
-                            )}
+              {suggestions.length > 0 && (
+                <PopoverContent 
+                  className="w-[--radix-popover-trigger-width] p-0 max-h-80 overflow-y-auto" 
+                  align="start"
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                >
+                  <Command>
+                    <CommandGroup>
+                      {suggestions.map((suggestion, index) => (
+                        <CommandItem
+                          key={`${suggestion.uniprotAccession}-${suggestion.identifierValue}-${index}`}
+                          onSelect={() => handleSelect(suggestion.uniprotAccession)}
+                        >
+                          <div className="flex flex-col">
+                            <span>{suggestion.identifierValue}</span>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <span>{suggestion.uniprotAccession}</span>
+                              <span>•</span>
+                              <span className="capitalize">{suggestion.identifierType?.replace('_', ' ')}</span>
+                              {suggestion.taxonId && (
+                                <>
+                                  <span>•</span>
+                                  <span>{suggestion.taxonId === '9606' ? 'Human' : suggestion.taxonId === '10090' ? 'Mouse' : suggestion.taxonId === '10116' ? 'Rat' : suggestion.taxonId}</span>
+                                </>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              )}
             </Popover>
           </div>
         </div>
