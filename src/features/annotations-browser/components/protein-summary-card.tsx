@@ -21,8 +21,7 @@ import {
   TestTube,
   Microscope,
   BookOpen,
-  Globe,
-  ChevronDown
+  Globe
 } from "lucide-react"
 
 interface ProteinSummaryCardProps {
@@ -193,7 +192,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
           {/* Collapsible Details Section */}
           <AccordionContent className="p-6 pt-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4 [&>*]:break-inside-avoid">
               
               {/* Subcellular Location Card */}
               {proteinData.subcellularLocation && (
@@ -219,7 +218,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
               {/* Disease Involvement Card */}
               {proteinData.involvementInDisease && (
-                <Card className="border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 md:col-span-2">
+                <Card className="border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
                       <Heart className="h-4 w-4 text-red-600 dark:text-red-400" />
@@ -293,7 +292,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
               {/* Gene Ontology Card */}
               {proteinData.geneOntology && (
-                <Card className="border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20 lg:col-span-2">
+                <Card className="border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
                       <Microscope className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
@@ -301,7 +300,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 gap-3">
                       {goTerms.process.length > 0 && (
                         <div>
                           <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Biological Process</p>
@@ -452,7 +451,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
               {/* Additional Information Accordion for remaining details */}
               {(proteinData.transmembrane || proteinData.activityRegulation || proteinData.pathway) && (
-                <Card className="border-gray-300 dark:border-gray-700 lg:col-span-3">
+                <Card className="border-gray-300 dark:border-gray-700">
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="additional" className="border-none">
                       <AccordionTrigger className="px-6 hover:no-underline">
@@ -462,7 +461,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="px-6 pb-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {proteinData.transmembrane && (
                             <div>
                               <h4 className="font-medium text-sm mb-1">Transmembrane Regions</h4>
