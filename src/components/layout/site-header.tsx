@@ -30,10 +30,16 @@ export function SiteHeader() {
 
   // Handle clicking on a history item
   const handleHistoryItemClick = (item: typeof searchHistory[0]) => {
-    if (item.type === 'annotation') {
-      router.push(`/annotations?q=${encodeURIComponent(item.query)}`)
+    // Use the stored URL if available, otherwise fallback to basic query
+    if (item.url) {
+      window.location.href = item.url
     } else {
-      router.push(`/interactions?q=${encodeURIComponent(item.query)}`)
+      // Fallback for old history items that don't have URL
+      if (item.type === 'annotation') {
+        window.location.href = `/annotations?q=${encodeURIComponent(item.query)}`
+      } else {
+        window.location.href = `/interactions?q=${encodeURIComponent(item.query)}`
+      }
     }
   }
 

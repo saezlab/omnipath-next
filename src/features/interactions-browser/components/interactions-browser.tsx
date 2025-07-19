@@ -93,10 +93,11 @@ export function InteractionsBrowser({
     // Update URL with new query
     const params = new URLSearchParams(searchParams.toString())
     params.set('q', searchQuery)
-    router.push(`?${params.toString()}`, { scroll: false })
+    const newUrl = `/interactions?${params.toString()}`
+    router.push(newUrl, { scroll: false })
     
-    // Add to search history
-    addToSearchHistory(searchQuery, 'interaction')
+    // Add to search history with full URL
+    addToSearchHistory(searchQuery, 'interaction', newUrl)
 
     try {
       const response = await searchProteinNeighbors(searchQuery)

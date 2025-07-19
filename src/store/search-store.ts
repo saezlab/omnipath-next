@@ -21,6 +21,7 @@ export interface SearchHistoryItem {
   query: string
   type: 'annotation' | 'interaction'
   timestamp: number
+  url: string
 }
 
 interface SearchState {
@@ -41,7 +42,7 @@ interface SearchState {
   saveCurrentChat: () => void
 
   // Search History Actions
-  addToSearchHistory: (query: string, type: SearchHistoryItem['type']) => void
+  addToSearchHistory: (query: string, type: SearchHistoryItem['type'], url: string) => void
   clearSearchHistory: () => void
 }
 
@@ -103,7 +104,7 @@ export const useSearchStore = create<SearchState>()(
       },
 
       // Search History Actions
-      addToSearchHistory: (query: string, type: SearchHistoryItem['type']) => {
+      addToSearchHistory: (query: string, type: SearchHistoryItem['type'], url: string) => {
         if (!query.trim()) return
         
         const { searchHistory, maxHistoryItems } = get()
@@ -111,11 +112,12 @@ export const useSearchStore = create<SearchState>()(
           id: nanoid(),
           query: query.trim(),
           type,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          url
         }
         
-        // Remove duplicates and add new item at the beginning
-        const filteredHistory = searchHistory.filter(item => item.query.toLowerCase() !== query.toLowerCase())
+        // Remove duplicates based on URL and add new item at the beginning
+        const filteredHistory = searchHistory.filter(item => item.url !== url)
         const updatedHistory = [newItem, ...filteredHistory].slice(0, maxHistoryItems)
         
         set({ searchHistory: updatedHistory })

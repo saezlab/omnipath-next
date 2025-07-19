@@ -75,10 +75,11 @@ export function AnnotationsBrowser() {
     const params = new URLSearchParams(searchParams.toString())
     params.set('q', searchQuery)
     params.set('page', '1')
-    router.push(`?${params.toString()}`, { scroll: false })
+    const newUrl = `/annotations?${params.toString()}`
+    router.push(newUrl, { scroll: false })
     
-    // Add to search history
-    addToSearchHistory(searchQuery, 'annotation')
+    // Add to search history with full URL
+    addToSearchHistory(searchQuery, 'annotation', newUrl)
 
     try {
       const [annotationsResponse, proteinResponse] = await Promise.all([
