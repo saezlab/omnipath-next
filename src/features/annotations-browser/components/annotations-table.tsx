@@ -111,7 +111,7 @@ export function AnnotationsTable({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 w-full">
       {Object.entries(pivotedData).map(([source, rows]) => {
         const headers = columnHeadersBySource[source];
         const totalItems = rows.length;
@@ -139,8 +139,8 @@ export function AnnotationsTable({
                 <Download className="h-4 w-4" />
               </Button>
             </div>
-            <div className="p-0">
-              <Table>
+            <div className="overflow-x-auto">
+              <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
                     {headers.map(header => (
