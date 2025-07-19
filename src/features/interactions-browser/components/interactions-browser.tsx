@@ -6,6 +6,8 @@ import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
+import { getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
+import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
@@ -84,11 +86,14 @@ export function InteractionsBrowser({
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
+  const [isLoadingProtein, setIsLoadingProtein] = useState(false)
 
   const handleSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
+    setIsLoadingProtein(true)
     
     // Update URL with new query
     const params = new URLSearchParams(searchParams.toString())
@@ -100,24 +105,53 @@ export function InteractionsBrowser({
     addToSearchHistory(searchQuery, 'interaction', newUrl)
 
     try {
-      const response = await searchProteinNeighbors(searchQuery)
-      setInteractions(response.interactions)
+      const [interactionsResponse, proteinResponse] = await Promise.all([
+        searchProteinNeighbors(searchQuery),
+        getProteinInformation(searchQuery)
+      ])
+      
+      setInteractions(interactionsResponse.interactions)
+      setProteinData(proteinResponse)
       if (onEntitySelect) {
         onEntitySelect(searchQuery)
       }
     } catch (error) {
-      console.error("Error fetching interactions:", error)
+      console.error("Error fetching data:", error)
     } finally {
       setIsLoading(false)
+      setIsLoadingProtein(false)
     }
   }, [searchParams, router, addToSearchHistory, onEntitySelect])
 
   // Fetch interactions when query changes
   useEffect(() => {
     if (interactionsQuery) {
-      handleSearch(interactionsQuery)
+      const fetchData = async () => {
+        setIsLoading(true)
+        setIsLoadingProtein(true)
+        
+        try {
+          const [interactionsResponse, proteinResponse] = await Promise.all([
+            searchProteinNeighbors(interactionsQuery),
+            getProteinInformation(interactionsQuery)
+          ])
+          
+          setInteractions(interactionsResponse.interactions)
+          setProteinData(proteinResponse)
+          if (onEntitySelect) {
+            onEntitySelect(interactionsQuery)
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error)
+        } finally {
+          setIsLoading(false)
+          setIsLoadingProtein(false)
+        }
+      }
+      
+      fetchData()
     }
-  }, [interactionsQuery]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [interactionsQuery, onEntitySelect])
 
   // Calculate filter counts from interactions
   const filterCounts = useMemo(() => {
@@ -370,6 +404,16 @@ export function InteractionsBrowser({
         isLoading={isLoading}
         initialQuery={interactionsQuery}
       />
+
+      {interactionsQuery && (
+        <div className="max-w-7xl mx-auto px-4">
+          <ProteinSummaryCard 
+            proteinData={proteinData ?? undefined}
+            isLoading={isLoadingProtein}
+            defaultExpanded={false}
+          />
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto p-4">
         <div className="flex flex-col md:flex-row gap-6">
