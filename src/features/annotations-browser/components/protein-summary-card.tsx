@@ -21,13 +21,44 @@ import {
   TestTube,
   Microscope,
   BookOpen,
-  Globe
+  Globe,
+  FileText
 } from "lucide-react"
 
 interface ProteinSummaryCardProps {
   proteinData?: GetProteinInformationResponse
   isLoading?: boolean
   defaultExpanded?: boolean
+}
+
+const formatFunctionText = (text: string) => {
+  // Remove ECO statements and similarity markers
+  let cleanText = text
+    .replace(/\{ECO:[^}]+\}/g, '')
+    .replace(/\(By similarity\)/g, '')
+    .replace(/^FUNCTION:\s*/i, '')
+  
+  // Split into sentences and clean them up
+  const sentences = cleanText
+    .split('.')
+    .map(s => s.trim())
+    .filter(s => s.length > 0)
+  
+  return sentences.map((sentence, index) => {
+    // Extract PubMed IDs from this sentence
+    const pubmedMatches = [...sentence.matchAll(/\(PubMed:(\d+)\)/g)]
+    
+    // Remove PubMed references from the sentence
+    let cleanSentence = sentence
+      .replace(/\(PubMed:\d+\)/g, '')
+      .trim()
+    
+    return {
+      text: cleanSentence + '.',
+      pubmedIds: pubmedMatches.map(match => match[1]),
+      key: index
+    }
+  }).filter(item => item.text.length > 0)
 }
 
 export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = false }: ProteinSummaryCardProps) {
@@ -176,9 +207,32 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {proteinData.functionCc && (
                 <CardContent className="pt-0">
                   <div className="bg-muted/30 rounded-lg p-4">
-                    <p className="text-sm leading-relaxed">
-                      {proteinData.functionCc}
-                    </p>
+                    <div className="text-sm leading-relaxed">
+                      {formatFunctionText(proteinData.functionCc).map((statement) => (
+                        <span key={statement.key}>
+                          <span className="inline-block bg-background/80 px-2 py-1 rounded border border-border/30 mr-1 mb-1">
+                            {statement.text}
+                            {statement.pubmedIds.map((pmid, pmidIndex) => (
+                              <TooltipProvider key={pmidIndex}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-4 w-4 p-0 ml-1 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                                      onClick={() => window.open(`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`, '_blank')}
+                                    >
+                                      <FileText className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>PubMed: {pmid}</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ))}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               )}
