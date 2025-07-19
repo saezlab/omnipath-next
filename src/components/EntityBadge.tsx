@@ -2,21 +2,17 @@
 import React, { useRef, useState } from 'react';
 
 interface EntityBadgeProps {
-  displayName: string;
-  canonicalIdentifier: string;
   geneSymbol?: string;  // Keep for backward compatibility
   uniprotId?: string;   // Keep for backward compatibility
 }
 
 export const EntityBadge: React.FC<EntityBadgeProps> = ({ 
-  displayName, 
-  canonicalIdentifier, 
   geneSymbol, 
   uniprotId,
 }) => {
   // Use new props if provided, fallback to old props for backward compatibility
-  const name = displayName || geneSymbol || '';
-  const identifier = canonicalIdentifier || uniprotId || '';
+  const name = geneSymbol || '';
+  const identifier = uniprotId || '';
 
   
   const nameRef = useRef<HTMLSpanElement>(null);

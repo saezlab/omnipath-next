@@ -8,6 +8,7 @@ import { EntityBadge } from "@/components/EntityBadge"
 import { cn } from "@/lib/utils"
 import { ArrowRight, Atom, Dna, FlaskConical, Mic, Minus } from "lucide-react"
 import { ResultsTable, ColumnDef } from "@/components/shared/results-table";
+import { is } from 'drizzle-orm';
 
 type InteractionData = SearchProteinNeighborsResponse['interactions'][number];
 type InteractionDataWithCount = InteractionData & { referenceCount: number };
@@ -32,9 +33,11 @@ const INTERACTION_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: str
 }
 
 const getInteractionColor = (interaction: InteractionData) => {
-  if (interaction.isStimulation) return "text-green-500"
-  if (interaction.isInhibition) return "text-red-500"
-  return "text-orange-500"
+  let color = "text-grey-500";
+  if (interaction.isInhibition || interaction.isStimulation) color = "text-orange-500";
+  if (interaction.consensusStimulation) color = "text-green-500";
+  if (interaction.consensusInhibition) color = "text-red-500";
+  return color;
 }
 
 const getInteractionTypeIcon = (type: string | null) => {
