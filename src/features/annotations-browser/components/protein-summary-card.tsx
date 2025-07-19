@@ -1,9 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
-import { ChevronDown, ChevronUp } from "lucide-react"
-import { useState } from "react"
 
 interface ProteinSummaryCardProps {
   proteinData?: GetProteinInformationResponse
@@ -12,14 +14,21 @@ interface ProteinSummaryCardProps {
 }
 
 export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = true }: ProteinSummaryCardProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
-
   const formatMass = (mass: number | null) => {
     if (!mass) return null
     return `${(mass / 1000).toFixed(1)} kDa`
   }
 
   const renderProteinHeader = () => {
+    if (isLoading) {
+      return (
+        <div className="animate-pulse space-y-1">
+          <div className="h-4 bg-gray-200 rounded w-48"></div>
+          <div className="h-3 bg-gray-200 rounded w-64"></div>
+        </div>
+      )
+    }
+
     if (!proteinData) {
       return (
         <div className="text-muted-foreground text-sm">
@@ -29,11 +38,11 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = t
     }
 
     return (
-      <div className="flex flex-col gap-1">
-        <div className="font-semibold text-base">
+      <div className="flex flex-col gap-0.5">
+        <div className="font-semibold text-sm">
           {proteinData.proteinNames || 'Unknown Protein'}
         </div>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span>UniProt: {proteinData.entry}</span>
           {proteinData.geneNamesPrimary && (
             <>
@@ -63,83 +72,28 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = t
       </div>
     )
   }
-  if (isLoading) {
-    return (
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="animate-pulse space-y-2">
-              <div className="h-5 bg-gray-200 rounded w-48"></div>
-              <div className="h-4 bg-gray-200 rounded w-64"></div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 h-6 w-6"
-            >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
-          </div>
-        </CardHeader>
-        {isExpanded && (
-          <CardContent>
-            <div className="animate-pulse space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-            </div>
-          </CardContent>
-        )}
-      </Card>
-    )
-  }
 
-  if (!proteinData) {
-    return (
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            {renderProteinHeader()}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 h-6 w-6"
-            >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
-          </div>
-        </CardHeader>
-        {isExpanded && (
-          <CardContent>
-            <div className="text-muted-foreground">
-              No additional protein information available for this query.
-            </div>
-          </CardContent>
-        )}
-      </Card>
-    )
-  }
-
-  return (
-    <Card className="mb-6">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          {renderProteinHeader()}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 h-6 w-6"
-          >
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </Button>
+  const renderAccordionContent = () => {
+    if (isLoading) {
+      return (
+        <div className="animate-pulse space-y-3">
+          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-4 bg-gray-200 rounded w-2/3"></div>
         </div>
-      </CardHeader>
-      {isExpanded && (
-        <CardContent className="space-y-4">
+      )
+    }
 
+    if (!proteinData) {
+      return (
+        <div className="text-muted-foreground">
+          No additional protein information available for this query.
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-4">
         {proteinData.functionCc && (
           <div>
             <h4 className="font-medium mb-2">Function</h4>
@@ -179,8 +133,25 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = t
             </div>
           </div>
         )}
-        </CardContent>
-      )}
-    </Card>
+      </div>
+    )
+  }
+
+  return (
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full border-2 rounded-lg"
+        defaultValue={defaultExpanded ? "protein-info" : undefined}
+      >
+        <AccordionItem value="protein-info" className="">
+          <AccordionTrigger className="px-3 py-2 hover:no-underline">
+            {renderProteinHeader()}
+          </AccordionTrigger>
+          <AccordionContent className="px-3 pb-3">
+            {renderAccordionContent()}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
   )
-} 
+}
