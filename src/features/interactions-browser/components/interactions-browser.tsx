@@ -1,6 +1,5 @@
 "use client"
 
-import { DataCard } from "@/components/data-card"
 import { FilterSkeleton } from "@/components/filter-skeleton"
 import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
@@ -16,6 +15,7 @@ import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { Search } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
+import { Card } from "@/components/ui/card"
 
 const RESULTS_PER_PAGE = 15
 
@@ -439,11 +439,7 @@ export function InteractionsBrowser({
                 {/* Interactions Section */}
                 <div className="space-y-4">
                   {/* Results display based on view mode */}
-                  <DataCard
-                    title="Interactions"
-                    totalItems={filteredInteractions.length}
-                  >
-
+                <Card className="py-0">
                         <InteractionResultsTable
                           interactions={filteredInteractions}
                           onSelectInteraction={handleSelectInteraction}
@@ -459,8 +455,7 @@ export function InteractionsBrowser({
                           searchPlaceholder="Search interactions..."
                           resultsPerPage={RESULTS_PER_PAGE}
                         />
-                
-                  </DataCard>
+                </Card>
                 </div>
               </div>
             ) : (

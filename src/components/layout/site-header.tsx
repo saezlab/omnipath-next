@@ -66,7 +66,7 @@ export function SiteHeader() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="default" size="icon">
                 <History className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>

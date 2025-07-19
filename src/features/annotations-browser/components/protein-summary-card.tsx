@@ -39,7 +39,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = t
 
     return (
       <div className="flex flex-col gap-0.5">
-        <div className="font-semibold text-sm">
+        <div className="font-semibold text-lg">
           {proteinData.proteinNames || 'Unknown Protein'}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

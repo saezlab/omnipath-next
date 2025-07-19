@@ -319,7 +319,6 @@ export function ResultsTable<TData extends DataRow>({
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
       {totalPages > 1 && (
-        <div className="border-t px-4 py-3">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -328,7 +327,6 @@ export function ResultsTable<TData extends DataRow>({
             totalItems={processedData.length}
             onPageChange={setCurrentPage}
           />
-        </div>
       )}
     </div>
   );
