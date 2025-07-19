@@ -416,67 +416,69 @@ export function InteractionsBrowser({
       )}
 
       <div className="max-w-7xl mx-auto p-4">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Filters Sidebar */}
-          {isLoading ? (
-            <FilterSkeleton />
-          ) : (
-            <FilterSidebar
-              filters={interactionsFilters}
-              filterCounts={filterCounts}
-              onFilterChange={handleFilterChange}
-              onClearFilters={clearFilters}
-            />
-          )}
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
+        {interactionsQuery ? (
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* Filters Sidebar */}
             {isLoading ? (
-              <TableSkeleton rows={5} />
-            ) : interactions.length > 0 ? (
-              <div className="space-y-6"> 
-
-                {/* Interactions Section */}
-                <div className="space-y-4">
-                  {/* Results display based on view mode */}
-                <Card className="py-0">
-                        <InteractionResultsTable
-                          interactions={filteredInteractions}
-                          onSelectInteraction={handleSelectInteraction}
-                          showSearch={true}
-                          searchKeys={[
-                              'sourceGenesymbol', 
-                              'source', 
-                              'targetGenesymbol', 
-                              'target', 
-                              'type', 
-                              'sources'
-                            ]}
-                          searchPlaceholder="Search interactions..."
-                          resultsPerPage={RESULTS_PER_PAGE}
-                        />
-                </Card>
-                </div>
-              </div>
-            ) : interactionsQuery ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Search className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No interactions found</h3>
-                <p className="text-muted-foreground max-w-md">
-                  No interactions found for "{interactionsQuery}". Try searching for a different protein or gene.
-                </p>
-              </div>
+              <FilterSkeleton />
             ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Search className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Welcome to Interactions Browser</h3>
-                <p className="text-muted-foreground max-w-md">
-                  Search for proteins or genes to explore their interactions.
-                </p>
-              </div>
+              <FilterSidebar
+                filters={interactionsFilters}
+                filterCounts={filterCounts}
+                onFilterChange={handleFilterChange}
+                onClearFilters={clearFilters}
+              />
             )}
+
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              {isLoading ? (
+                <TableSkeleton rows={5} />
+              ) : interactions.length > 0 ? (
+                <div className="space-y-6"> 
+
+                  {/* Interactions Section */}
+                  <div className="space-y-4">
+                    {/* Results display based on view mode */}
+                  <Card className="py-0">
+                          <InteractionResultsTable
+                            interactions={filteredInteractions}
+                            onSelectInteraction={handleSelectInteraction}
+                            showSearch={true}
+                            searchKeys={[
+                                'sourceGenesymbol', 
+                                'source', 
+                                'targetGenesymbol', 
+                                'target', 
+                                'type', 
+                                'sources'
+                              ]}
+                            searchPlaceholder="Search interactions..."
+                            resultsPerPage={RESULTS_PER_PAGE}
+                          />
+                  </Card>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <Search className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No interactions found</h3>
+                  <p className="text-muted-foreground max-w-md">
+                    No interactions found for "{interactionsQuery}". Try searching for a different protein or gene.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <Search className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">Welcome to Interactions Browser</h3>
+            <p className="text-muted-foreground max-w-md">
+              Search for proteins or genes to explore their interactions.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Interaction Details Dialog */}
