@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Download } from 'lucide-react';
-import { exportToCSV } from '@/lib/utils/export';
+import { exportToTSV } from '@/lib/utils/export';
 import { Pagination } from "@/features/interactions-browser/components/pagination";
 import {
   Tooltip,
@@ -149,7 +149,7 @@ export function ResultsTable<TData extends DataRow>({
         return;
     }
     const filename = `${exportFilenamePrefix}_${new Date().toISOString().split('T')[0]}`;
-    exportToCSV(processedData, filename); // Use processedData directly if exportToCSV handles object arrays
+    exportToTSV(processedData, filename); // Use processedData directly if exportToTSV handles object arrays
   };
 
   if (!data || data.length === 0) {

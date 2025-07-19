@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { exportToCSV } from "@/lib/utils/export"
+import { exportToTSV } from "@/lib/utils/export"
 import { Download } from "lucide-react"
 import type React from "react"
 import { useMemo } from "react"
@@ -99,7 +99,7 @@ export function AnnotationsTable({
       };
       return rowData;
     });
-    exportToCSV(data, `${source}_annotations`);
+    exportToTSV(data, `${source}_annotations`);
   };
 
   if (currentResults.length === 0) {
