@@ -464,7 +464,7 @@ export function InteractionsBrowser({
                   <Search className="h-12 w-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium mb-2">No interactions found</h3>
                   <p className="text-muted-foreground max-w-md">
-                    No interactions found for "{interactionsQuery}". Try searching for a different protein or gene.
+                    No interactions found for &ldquo;{interactionsQuery}&rdquo;. Try searching for a different protein or gene.
                   </p>
                 </div>
               )}
