@@ -170,11 +170,6 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                         </span>
                       )}
                     </div>
-                    {proteinData.geneNamesSynonym && (
-                      <p className="text-xs text-muted-foreground italic">
-                        Also known as: {proteinData.geneNamesSynonym}
-                      </p>
-                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -412,29 +407,41 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {proteinData.pubmedId && (
                 <Card className="border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/50 dark:bg-yellow-950/20">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <BookOpen className="h-4 w-4 text-yellow-700 dark:text-yellow-400" />
-                      References
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <BookOpen className="h-4 w-4 text-yellow-700 dark:text-yellow-400" />
+                        References
+                      </CardTitle>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const pmids = proteinData.pubmedId!.split(';').map(id => id.trim()).filter(Boolean)
+                          const pubmedUrl = `https://pubmed.ncbi.nlm.nih.gov/?term=${pmids.join('%20OR%20')}`
+                          window.open(pubmedUrl, '_blank')
+                        }}
+                        className="h-7 text-xs"
+                      >
+                        View all
+                        <ExternalLink className="ml-1 h-3 w-3" />
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex flex-wrap gap-1.5">
-                      {proteinData.pubmedId.split(';').slice(0, 8).map((pmid, index) => (
-                        <a
-                          key={index}
-                          href={`https://pubmed.ncbi.nlm.nih.gov/${pmid.trim()}/`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded"
-                        >
-                          {pmid.trim()}
-                        </a>
-                      ))}
-                      {proteinData.pubmedId.split(';').length > 8 && (
-                        <span className="text-xs text-muted-foreground px-2 py-1">
-                          +{proteinData.pubmedId.split(';').length - 8} more
-                        </span>
-                      )}
+                    <div className="max-h-32 overflow-y-auto pr-2">
+                      <div className="flex flex-wrap gap-1.5">
+                        {proteinData.pubmedId.split(';').map((pmid, index) => (
+                          <a
+                            key={index}
+                            href={`https://pubmed.ncbi.nlm.nih.gov/${pmid.trim()}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
+                          >
+                            {pmid.trim()}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
