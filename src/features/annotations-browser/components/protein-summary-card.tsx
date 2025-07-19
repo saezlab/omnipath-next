@@ -71,6 +71,25 @@ const formatUniprotText = (text: string) => {
 export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = false }: ProteinSummaryCardProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
   
+  const parseProteinNames = (proteinNames: string | null) => {
+    if (!proteinNames) return { main: 'Unknown Protein', alternatives: [] }
+    
+    // Extract main name (everything before the first parenthesis)
+    const mainNameMatch = proteinNames.match(/^([^(]+)/)
+    const mainName = mainNameMatch ? mainNameMatch[1].trim() : proteinNames
+    
+    // Extract all alternative names from parentheses
+    const parenthesesMatches = proteinNames.match(/\(([^)]+)\)/g)
+    const alternatives = parenthesesMatches 
+      ? parenthesesMatches.map(match => match.slice(1, -1).trim()).filter(Boolean)
+      : []
+    
+    return {
+      main: mainName || 'Unknown Protein',
+      alternatives
+    }
+  }
+  
   const formatMass = (mass: number | null) => {
     if (!mass) return null
     return `${(mass / 1000).toFixed(1)} kDa`
@@ -154,6 +173,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
   }
 
   const goTerms = parseGOTerms(proteinData.geneOntology)
+  const proteinNames = parseProteinNames(proteinData.proteinNames)
 
   return (
     <div className="w-full">
@@ -164,26 +184,16 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
             <div className="flex items-start justify-between w-full">
               <div className="space-y-1 flex-1">
                 <CardTitle className="text-2xl font-bold">
-                  {proteinData.proteinNames || 'Unknown Protein'}
+                  {proteinNames.main}
                 </CardTitle>
+                {proteinNames.alternatives.length > 0 && (
+                  <div className="text-sm text-muted-foreground">
+                    <span className="font-medium">Also known as:</span> {proteinNames.alternatives.join(', ')}
+                  </div>
+                )}
                 <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <span className="font-medium">{proteinData.entry}</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-5 w-5 p-0"
-                            onClick={() => copyToClipboard(proteinData.entry)}
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Copy UniProt ID</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </div>
                   {proteinData.entryName && (
                     <span>• {proteinData.entryName}</span>
