@@ -60,6 +60,7 @@ export function SearchBar({
       } catch (error) {
         console.error("Error fetching suggestions:", error)
         toast.error("Failed to fetch search suggestions")
+        setSuggestions([])
         setIsOpen(false)
       } 
     }, 300)
@@ -120,7 +121,7 @@ export function SearchBar({
                 </div>
               </PopoverTrigger>
               <PopoverContent 
-                className="w-[--radix-popover-trigger-width] p-0" 
+                className="w-[--radix-popover-trigger-width] p-0 max-h-80 overflow-y-auto" 
                 align="start"
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
