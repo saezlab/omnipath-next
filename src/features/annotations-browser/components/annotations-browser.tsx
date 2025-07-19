@@ -272,7 +272,7 @@ export function AnnotationsBrowser() {
   }
 
   return (
-      <div className="flex flex-col gap-6 max-w-7xl mx-auto px-4 pb-6">
+      <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6">
         <SearchBar
           placeholder="Search for a protein..."
           onSearch={handleSearch}
