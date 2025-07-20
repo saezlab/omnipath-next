@@ -38,7 +38,7 @@ export function Pagination({
           <span className="hidden sm:inline ml-1">Previous</span>
         </Button>
         <div className="text-sm">
-          Page {currentPage} of {totalPages}
+         {currentPage} / {totalPages}
         </div>
         <Button
           variant="outline"

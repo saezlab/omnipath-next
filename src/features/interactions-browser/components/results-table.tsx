@@ -169,7 +169,6 @@ export function InteractionResultsTable({
         initialSortDirection="desc"
         bodyRowClassName="cursor-pointer hover:bg-muted/50"
         maxHeight=""
-        scrollAreaClassName="border-t"
         showSearch={showSearch}
         searchKeys={searchKeys}
         searchPlaceholder={searchPlaceholder}
