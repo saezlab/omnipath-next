@@ -38,6 +38,9 @@ export function AIAssistantCard() {
             <p className="text-sm text-muted-foreground">
               Ask questions about proteins, pathways, and interactions. Get instant insights from OmniPath's comprehensive biological database.
             </p>
+            <p className="text-xs text-muted-foreground mt-2 opacity-70">
+              Rate limits may apply during peak usage
+            </p>
           </div>
         </CardContent>
         <CardFooter className="relative">

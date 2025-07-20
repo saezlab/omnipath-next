@@ -3,15 +3,15 @@ import { Button } from "@/components/ui/button"
 
 export function AboutSection() {
   return (
-    <section className="container px-4 py-12 relative mt-12">
+    <section className="container p-4 relative mt-12">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-indigo-500/5 to-purple-500/5 dark:from-blue-500/10 dark:via-indigo-500/10 dark:to-purple-500/10 rounded-2xl" />
-      <div className="relative grid md:grid-cols-2 gap-8 items-center">
+      <div className="relative grid md:grid-cols-2 gap-8 items-center p-2 sm:p-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
             About OmniPath
           </h2>
           <p className="text-lg text-muted-foreground mb-6">
-            OmniPath is a database of molecular biology prior knowledge, combining data from over 100 resources to build
+            OmniPath is a database of molecular biology prior knowledge, combining data from over 150 resources to build
             5 integrated databases:
           </p>
           <ul className="space-y-4">
@@ -46,15 +46,17 @@ export function AboutSection() {
               <span>Intercellular communication roles (ligand, receptor, intercell)</span>
             </li>
           </ul>
-          <Button className="mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600">
-            Read Our Publication
-          </Button>
+          <a href="https://www.embopress.org/doi/full/10.15252/msb.20209923" target="_blank" rel="noopener noreferrer">
+            <Button className="mt-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600">
+              Read Our Publication
+            </Button>
+          </a>
         </div>
         <div className="bg-card rounded-xl border p-6 shadow-sm">
           <h3 className="font-medium text-lg mb-6">OmniPath Statistics</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-muted/50 dark:bg-muted/30 p-4 text-center hover:bg-muted/70 dark:hover:bg-muted/50 transition-colors duration-300">
-              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">100+</div>
+              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">150+</div>
               <div className="text-sm text-muted-foreground">Data Resources</div>
             </div>
             <div className="rounded-lg bg-muted/50 dark:bg-muted/30 p-4 text-center hover:bg-muted/70 dark:hover:bg-muted/50 transition-colors duration-300">
@@ -62,12 +64,12 @@ export function AboutSection() {
               <div className="text-sm text-muted-foreground">Integrated Databases</div>
             </div>
             <div className="rounded-lg bg-muted/50 dark:bg-muted/30 p-4 text-center hover:bg-muted/70 dark:hover:bg-muted/50 transition-colors duration-300">
-              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400">500K+</div>
+              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400">1M+</div>
               <div className="text-sm text-muted-foreground">Interactions</div>
             </div>
             <div className="rounded-lg bg-muted/50 dark:bg-muted/30 p-4 text-center hover:bg-muted/70 dark:hover:bg-muted/50 transition-colors duration-300">
-              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-amber-600 dark:from-pink-400 dark:to-amber-400">20K+</div>
-              <div className="text-sm text-muted-foreground">Proteins</div>
+              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-600 to-amber-600 dark:from-pink-400 dark:to-amber-400">5M+</div>
+              <div className="text-sm text-muted-foreground">Annotations</div>
             </div>
           </div>
         </div>
