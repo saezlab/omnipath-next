@@ -74,7 +74,7 @@ export function MainNav() {
         <Link
           href="/interactions"
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-lg text-base font-medium transition-all hover:bg-accent/50",
+            "flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium transition-all hover:bg-accent/50",
             pathname === "/interactions" 
               ? "bg-primary/10 text-primary" 
               : "text-muted-foreground hover:text-foreground",
@@ -86,7 +86,7 @@ export function MainNav() {
         <Link
           href="/annotations"
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-lg text-base font-medium transition-all hover:bg-accent/50",
+            "flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium transition-all hover:bg-accent/50",
             pathname === "/annotations" 
               ? "bg-primary/10 text-primary" 
               : "text-muted-foreground hover:text-foreground",
@@ -98,7 +98,7 @@ export function MainNav() {
         <Link
           href="/chat"
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-lg text-base font-medium transition-all hover:bg-accent/50",
+            "flex items-center gap-2 px-4 py-2 rounded-full text-base font-medium transition-all hover:bg-accent/50",
             pathname === "/chat" 
               ? "bg-primary/10 text-primary" 
               : "text-muted-foreground hover:text-foreground",

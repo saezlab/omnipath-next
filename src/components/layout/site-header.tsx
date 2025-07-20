@@ -116,7 +116,7 @@ export function SiteHeader() {
           </div>
 
           <div className="flex-1 flex justify-center">
-            <div className="bg-muted/30 rounded-full px-2">
+            <div className="bg-muted/30 rounded-full">
               <MainNav />
             </div>
           </div>
