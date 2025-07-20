@@ -299,10 +299,10 @@ export function Chat({
           </div>
         </div>
       ) : (
-        <div className="h-[calc(100vh-130px)] w-full overflow-hidden">
+        <div className="h-[calc(100vh-130px)] w-full flex flex-col">
           <div
             ref={messagesContainerRef}
-            className="p-4 space-y-4 w-full overflow-auto h-full"
+            className="p-4 space-y-4 w-full overflow-auto flex-1 pb-24"
           >
             <div className="max-w-2xl mx-auto">
               {messages.map((message, index) => (
@@ -328,8 +328,8 @@ export function Chat({
       )}
 
       {messages.length > 1 && (
-        <div ref={inputAreaRef} className="fixed bottom-0 left-0 right-0">
-          <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 md:px-0 translate-y-[-20%]">
+        <div ref={inputAreaRef} className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t">
+          <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 py-4 md:px-0">
             <div className="relative">
               <Textarea
                 ref={textareaRef}
