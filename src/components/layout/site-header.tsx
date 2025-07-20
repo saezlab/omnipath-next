@@ -41,7 +41,7 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-background">
+    <header className="sticky top-0 z-20 w-full bg-background/95 backdrop-blur-sm border-b">
       <div className="container mx-auto px-4">
         {/* Mobile Layout */}
         <div className="sm:hidden flex h-14 items-center justify-between">
@@ -62,14 +62,14 @@ export function SiteHeader() {
               className="h-9 w-9"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="default" size="icon" className="h-9 w-9">
-                  <History className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <History className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-60">
@@ -108,31 +108,34 @@ export function SiteHeader() {
 
         {/* Desktop Layout */}
         <div className="hidden sm:flex h-16 items-center">
-          <div className="flex items-center gap-2 mr-4">
-            <Database className="h-6 w-6" />
-            <Link href="/" className="text-xl font-bold tracking-tight">
+          <div className="flex items-center gap-3 mr-8">
+            <Database className="h-8 w-8" />
+            <Link href="/" className="text-2xl font-bold tracking-tight">
               OmniPath
             </Link>
           </div>
 
           <div className="flex-1 flex justify-center">
-            <MainNav />
+            <div className="bg-muted/30 rounded-full px-2">
+              <MainNav />
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
+              className="h-10 w-10"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="default" size="icon">
-                  <History className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-10 w-10">
+                  <History className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-60">
