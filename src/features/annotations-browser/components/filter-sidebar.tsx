@@ -9,9 +9,6 @@ import { SearchFilters } from "@/features/annotations-browser/types"
 
 // Filter options
 const SOURCE_GROUPS = {
-  "UniProt": [
-    { value: "UniProt_keyword", label: "Keywords" },
-  ],
   "Cell Communication": [
     { value: "CellPhoneDB", label: "CellPhoneDB" },
     { value: "CellPhoneDB_complex", label: "CellPhoneDB Complexes" },
@@ -57,6 +54,7 @@ const SOURCE_GROUPS = {
     { value: "SIGNOR", label: "SIGNOR" },
     { value: "PROGENy", label: "PROGENy" },
     { value: "MSigDB", label: "MSigDB" },
+    { value: "UniProt_keyword", label: "Keywords" },
   ],
   "Disease/Cancer": [
     { value: "DisGeNet", label: "DisGeNet" },
