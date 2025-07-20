@@ -30,14 +30,12 @@ Example query: "SELECT sourceGenesymbol, targetGenesymbol, type FROM interaction
       sqlQuery: z.string().describe("The read-only SQL query (starting with SELECT) to execute."),
     }),
     execute: async ({ sqlQuery }: { sqlQuery: string }) => {
-      console.log(`Executing SQL query: ${sqlQuery}`);
       try {
         // Ensure the query is read-only server-side as well, although the function already does this.
         if (!sqlQuery.trim().toUpperCase().startsWith("SELECT")) {
            return { error: "Invalid query. Only SELECT statements are allowed." };
         }
         const results = await executeReadOnlyQuery(sqlQuery);
-        console.log(`SQL query returned ${results.length} results.`);
         return { 
           results: results,
           totalCount: results.length,
@@ -114,10 +112,9 @@ Today: ${new Date().toLocaleDateString()}`
           chunking: "word",
         }),
       ],
-      onFinish: async (result) => {
-        // Here you could save the chat history if needed
-        console.log("Chat completed with result:", result);
-      },
+      // onFinish: async (result) => {
+      //   // Here you could save the chat history if needed
+      // },
       maxSteps: 5,
       temperature: 0.7,
     });

@@ -195,123 +195,203 @@ export function Chat({
   const editingIndex = editingMessageId ? messages.findIndex(m => m.id === editingMessageId) : -1;
 
   return (
-    <div className="h-full">
-      <div className="h-[calc(100vh-130px)] w-full overflow-hidden">
-        <div
-          ref={messagesContainerRef}
-          className="p-4 space-y-4 w-full overflow-auto h-full"
-        >
-          <div className="max-w-2xl mx-auto">
-            {messages.map((message, index) => (
-              <div 
-                key={message.id} 
-                className={`${editingIndex !== -1 && index > editingIndex ? "opacity-50 pointer-events-none" : ""} transition-opacity duration-300`}
-              >
+    <div className="h-[calc(100vh-130px)]">
+      {messages.length === 1 ? (
+        <div className="h-full flex items-center justify-center">
+          <div className="max-w-2xl w-full px-4 space-y-4">
+            {messages.map((message) => (
+              <div key={message.id}>
                 <PreviewMessage
                   id={message.id}
                   role={message.role}
                   content={message.content}
                   toolInvocations={message.toolInvocations}
-                  isInitialMessage={messages.length === 1 && index === 0}
+                  isInitialMessage={true}
                   onRerunQuery={handleRerunQuery}
                   startEdit={startEdit}
                 />
               </div>
             ))}
-            <div ref={messagesEndRef} className="h-4" />
-          </div>
-        </div>
-      </div>
+            
+            <div className="space-y-4">
+              <div className="relative">
+                <Textarea
+                  ref={textareaRef}
+                  placeholder={editingMessageId ? "Edit message..." : "Send a message..."}
+                  value={input}
+                  onChange={handleInput}
+                  className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none pr-12 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+                  rows={3}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && !event.shiftKey) {
+                      event.preventDefault();
 
-      <div ref={inputAreaRef} className="fixed bottom-0 left-0 right-0">
-        <div className={`relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 md:px-0 ${
-          messages.length === 1 ? "md:translate-y-[-230%] translate-y-[-50%]" : "translate-y-[-20%]"
-        }`}>
-          <div className="relative">
-            <Textarea
-              ref={textareaRef}
-              placeholder={editingMessageId ? "Edit message..." : "Send a message..."}
-              value={input}
-              onChange={handleInput}
-              className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none pr-12 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
-              rows={3}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault();
+                      if (isLoading) {
+                        toast.error("Please wait for the model to finish its response!");
+                      } else {
+                        submitForm();
+                      }
+                    }
+                  }}
+                />
 
-                  if (isLoading) {
-                    toast.error("Please wait for the model to finish its response!");
-                  } else {
-                    submitForm();
-                  }
-                }
-              }}
-            />
-
-            {editingMessageId && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute bottom-11 right-2 m-0.5 h-7 w-7 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
-                onClick={(event) => {
-                  event.preventDefault();
-                  cancelEdit();
-                }}
-                aria-label="Cancel edit"
-              >
-                <XIcon size={16} />
-              </Button>
-            )}
-
-            {isLoading ? (
-              <Button
-                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                onClick={(event) => {
-                  event.preventDefault();
-                  stop();
-                }}
-              >
-                <StopCircle size={14} />
-              </Button>
-            ) : (
-              <Button
-                className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                onClick={(event) => {
-                  event.preventDefault();
-                  submitForm();
-                }}
-                disabled={input.length === 0}
-              >
-                <ArrowUp size={14} />
-              </Button>
-            )}
-          </div>
-
-          {messages.length === 1 && (
-            <div className="w-full mt-4 overflow-x-auto scrollbar-hide">
-              <div className="flex gap-3 w-max pb-2">
-                {suggestedActions.map((suggestedAction, index) => (
-                  <button
-                    key={index}
-                    onClick={async () => {
-                      append({
-                        role: "user",
-                        content: suggestedAction.action,
-                      });
+                {editingMessageId && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute bottom-11 right-2 m-0.5 h-7 w-7 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      cancelEdit();
                     }}
-                    className="border-none bg-muted/50 min-w-[280px] text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+                    aria-label="Cancel edit"
                   >
-                    <span className="font-medium">{suggestedAction.title}</span>
-                    <span className="text-zinc-500 dark:text-zinc-400">
-                      {suggestedAction.label}
-                    </span>
-                  </button>
-                ))}
+                    <XIcon size={16} />
+                  </Button>
+                )}
+
+                {isLoading ? (
+                  <Button
+                    className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      stop();
+                    }}
+                  >
+                    <StopCircle size={14} />
+                  </Button>
+                ) : (
+                  <Button
+                    className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      submitForm();
+                    }}
+                    disabled={input.length === 0}
+                  >
+                    <ArrowUp size={14} />
+                  </Button>
+                )}
+              </div>
+
+              <div className="w-full mt-4 overflow-x-auto scrollbar-hide">
+                <div className="flex gap-3 w-max pb-2">
+                  {suggestedActions.map((suggestedAction, index) => (
+                    <button
+                      key={index}
+                      onClick={async () => {
+                        append({
+                          role: "user",
+                          content: suggestedAction.action,
+                        });
+                      }}
+                      className="border-none bg-muted/50 min-w-[280px] text-left border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-300 rounded-lg p-3 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex flex-col"
+                    >
+                      <span className="font-medium">{suggestedAction.title}</span>
+                      <span className="text-zinc-500 dark:text-zinc-400">
+                        {suggestedAction.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="h-[calc(100vh-130px)] w-full overflow-hidden">
+          <div
+            ref={messagesContainerRef}
+            className="p-4 space-y-4 w-full overflow-auto h-full"
+          >
+            <div className="max-w-2xl mx-auto">
+              {messages.map((message, index) => (
+                <div 
+                  key={message.id} 
+                  className={`${editingIndex !== -1 && index > editingIndex ? "opacity-50 pointer-events-none" : ""} transition-opacity duration-300`}
+                >
+                  <PreviewMessage
+                    id={message.id}
+                    role={message.role}
+                    content={message.content}
+                    toolInvocations={message.toolInvocations}
+                    isInitialMessage={false}
+                    onRerunQuery={handleRerunQuery}
+                    startEdit={startEdit}
+                  />
+                </div>
+              ))}
+              <div ref={messagesEndRef} className="h-4" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {messages.length > 1 && (
+        <div ref={inputAreaRef} className="fixed bottom-0 left-0 right-0">
+          <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 md:px-0 translate-y-[-20%]">
+            <div className="relative">
+              <Textarea
+                ref={textareaRef}
+                placeholder={editingMessageId ? "Edit message..." : "Send a message..."}
+                value={input}
+                onChange={handleInput}
+                className="min-h-[24px] overflow-hidden resize-none rounded-lg text-base bg-muted border-none pr-12 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400"
+                rows={3}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+
+                    if (isLoading) {
+                      toast.error("Please wait for the model to finish its response!");
+                    } else {
+                      submitForm();
+                    }
+                  }
+                }}
+              />
+
+              {editingMessageId && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute bottom-11 right-2 m-0.5 h-7 w-7 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    cancelEdit();
+                  }}
+                  aria-label="Cancel edit"
+                >
+                  <XIcon size={16} />
+                </Button>
+              )}
+
+              {isLoading ? (
+                <Button
+                  className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    stop();
+                  }}
+                >
+                  <StopCircle size={14} />
+                </Button>
+              ) : (
+                <Button
+                  className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    submitForm();
+                  }}
+                  disabled={input.length === 0}
+                >
+                  <ArrowUp size={14} />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
