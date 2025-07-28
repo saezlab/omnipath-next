@@ -61,7 +61,7 @@ const formatUniprotText = (text: string) => {
 }
 
 export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = false }: ProteinSummaryCardProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+  const [showMainCardDetails, setShowMainCardDetails] = useState(defaultExpanded)
   
   const parseProteinNames = (proteinNames: string | null) => {
     if (!proteinNames) return { main: 'Unknown Protein', alternatives: [] }
@@ -222,7 +222,10 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
   return (
     <div className="w-full">
         {/* Main Card Header - Always Visible */}
-        <Card className="w-full border-0 shadow-none sm:py-6 py-3 gap-0">
+        <Card 
+          className="w-full border-0 shadow-none py-0 gap-0 cursor-pointer hover:bg-muted/30 transition-colors"
+          onClick={() => setShowMainCardDetails(!showMainCardDetails)}
+        >
           <CardHeader className="p-2 sm:p-6 pb-0">
             <div className="flex items-start justify-between w-full gap-2 sm:gap-4">
               <div className="space-y-2 flex-1 min-w-0">
@@ -283,7 +286,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               </div>
             </div>
           </CardHeader>
-          {proteinData.functionCc && (
+          {proteinData.functionCc && showMainCardDetails && (
             <CardContent className="pt-0 px-3 sm:px-6">
               <div className="max-h-64 overflow-y-auto">
                 <StatementRenderer statements={formatUniprotText(proteinData.functionCc)} />
@@ -292,33 +295,9 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
           )}
         </Card>
         
-        {/* Expand/Collapse Button */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 rounded-full bg-background border-2 shadow-sm hover:shadow-md transition-all"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                >
-                  {isExpanded ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {isExpanded ? 'Hide details' : 'Show more details'}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
 
         {/* Collapsible Details Section */}
-        {isExpanded && (
+        {showMainCardDetails && (
           <div className="p-0 sm:pt-6 border-t">
             <div className="columns-1 md:columns-2 lg:columns-3 gap-2 sm:gap-3 space-y-2 sm:space-y-3 [&>*]:break-inside-avoid">
               
