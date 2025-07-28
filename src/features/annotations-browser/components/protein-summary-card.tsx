@@ -226,18 +226,18 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
           <CardHeader className="p-2 sm:p-6 pb-0">
             <div className="flex items-start justify-between w-full gap-2 sm:gap-4">
               <div className="space-y-2 flex-1 min-w-0">
-                {/* Gene Symbol - Prominent */}
-                {proteinData.geneNamesPrimary && (
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-lg px-3 sm:px-4 py-1 sm:py-2 h-auto font-bold">
+                {/* Gene Symbol and Protein Name on same line */}
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                  {proteinData.geneNamesPrimary && (
+                    <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-lg px-3 sm:px-4 py-1 sm:py-2 h-auto font-bold flex-shrink-0">
                       <Dna className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                       {proteinData.geneNamesPrimary}
                     </Badge>
-                  </div>
-                )}
-                <CardTitle className="text-lg sm:text-2xl font-bold">
-                  {proteinNames.main}
-                </CardTitle>
+                  )}
+                  <CardTitle className="text-lg sm:text-2xl font-bold min-w-0">
+                    {proteinNames.main}
+                  </CardTitle>
+                </div>
                 {proteinNames.alternatives.length > 0 && (
                   <div className="text-sm text-muted-foreground">
         {proteinNames.alternatives.join(', ')}
@@ -284,7 +284,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
             </div>
           </CardHeader>
           {proteinData.functionCc && (
-            <CardContent className="pt-0 pb-8 sm:pb-12 px-3 sm:px-6">
+            <CardContent className="pt-0 px-3 sm:px-6">
               <div className="max-h-64 overflow-y-auto">
                 <StatementRenderer statements={formatUniprotText(proteinData.functionCc)} />
               </div>
