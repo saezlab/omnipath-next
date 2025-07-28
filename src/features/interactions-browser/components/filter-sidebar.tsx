@@ -148,7 +148,7 @@ export function FilterSidebar({
                       htmlFor={`type-${type}`}
                       className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
                         isSelected ? "text-primary font-medium" : ""
-                      } ${!isDisabled ? "group-hover:text-primary" : ""}`}
+                      } ${!isDisabled && !isSelected ? "group-hover:text-primary" : ""}`}
                     >
                       <Checkbox
                         id={`type-${type}`}
@@ -167,7 +167,7 @@ export function FilterSidebar({
                       variant={isSelected ? "default" : "outline"} 
                       className={`ml-auto transition-colors ${
                         isSelected ? "bg-primary text-primary-foreground" : ""
-                      } ${!isDisabled ? "group-hover:bg-primary/10" : ""}`}
+                      } ${!isDisabled && !isSelected ? "group-hover:bg-primary/10" : ""}`}
                     >
                       {count}
                     </Badge>
@@ -209,7 +209,7 @@ export function FilterSidebar({
                       htmlFor={`source-type-${type}`}
                       className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
                         isSelected ? "text-primary font-medium" : ""
-                      } ${!isDisabled ? "group-hover:text-primary" : ""}`}
+                      } ${!isDisabled && !isSelected ? "group-hover:text-primary" : ""}`}
                     >
                       <Checkbox
                         id={`source-type-${type}`}
@@ -223,7 +223,7 @@ export function FilterSidebar({
                       variant={isSelected ? "default" : "outline"}
                       className={`ml-auto transition-colors ${
                         isSelected ? "bg-primary text-primary-foreground" : ""
-                      } ${!isDisabled ? "group-hover:bg-primary/10" : ""}`}
+                      } ${!isDisabled && !isSelected ? "group-hover:bg-primary/10" : ""}`}
                     >
                       {count}
                     </Badge>
@@ -249,7 +249,7 @@ export function FilterSidebar({
                       htmlFor={`target-type-${type}`}
                       className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
                         isSelected ? "text-primary font-medium" : ""
-                      } ${!isDisabled ? "group-hover:text-primary" : ""}`}
+                      } ${!isDisabled && !isSelected ? "group-hover:text-primary" : ""}`}
                     >
                       <Checkbox
                         id={`target-type-${type}`}
@@ -263,7 +263,7 @@ export function FilterSidebar({
                       variant={isSelected ? "default" : "outline"}
                       className={`ml-auto transition-colors ${
                         isSelected ? "bg-primary text-primary-foreground" : ""
-                      } ${!isDisabled ? "group-hover:bg-primary/10" : ""}`}
+                      } ${!isDisabled && !isSelected ? "group-hover:bg-primary/10" : ""}`}
                     >
                       {count}
                     </Badge>
