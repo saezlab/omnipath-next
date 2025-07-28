@@ -8,6 +8,7 @@ import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/
 import { cn } from "@/lib/utils";
 import { ArrowRight, Minus, HeartHandshake } from "lucide-react";
 import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons";
+import { getInteractionColor, getInteractionColorMeaning } from "@/features/interactions-browser/constants/interaction-colors";
 import React from 'react';
 
 type InteractionData = SearchProteinNeighborsResponse['interactions'][number];
@@ -25,13 +26,6 @@ interface InteractionResultsTableProps {
 }
 
 
-const getInteractionColor = (interaction: InteractionData) => {
-  let color = "text-grey-500";
-  if (interaction.isInhibition || interaction.isStimulation) color = "text-orange-500";
-  if (interaction.consensusStimulation) color = "text-green-500";
-  if (interaction.consensusInhibition) color = "text-red-500";
-  return color;
-}
 
 const getInteractionTypeIcon = (type: string | null) => {
   if (!type) return { icon: <HeartHandshake className="h-4 w-4" />, label: "Unknown" }
@@ -88,13 +82,22 @@ export function InteractionResultsTable({
                 </Tooltip>
               </TooltipProvider>
 
-              <div className={cn("flex items-center", getInteractionColor(row))}>
-                {row.isDirected ? (
-                  <ArrowRight className="h-6 w-6" />
-                ) : (
-                  <Minus className="h-6 w-6" />
-                )}
-              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={cn("flex items-center", getInteractionColor(row))}>
+                      {row.isDirected ? (
+                        <ArrowRight className="h-6 w-6" />
+                      ) : (
+                        <Minus className="h-6 w-6" />
+                      )}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{getInteractionColorMeaning(getInteractionColor(row))}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             <div onClick={(e) => e.stopPropagation()}>

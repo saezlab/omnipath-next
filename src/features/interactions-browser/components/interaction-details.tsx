@@ -3,17 +3,14 @@ import { FileText, Search, ArrowRight, Minus } from "lucide-react"
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { EntityBadge } from "@/components/EntityBadge"
 import { cn } from "@/lib/utils"
+import { getInteractionColor, getInteractionColorMeaning } from "@/features/interactions-browser/constants/interaction-colors"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface InteractionDetailsProps {
   selectedInteraction: SearchProteinNeighborsResponse['interactions'][number] | null
 }
 
 export function InteractionDetails({ selectedInteraction }: InteractionDetailsProps) {
-  const getInteractionColor = () => {
-    if (selectedInteraction?.consensusStimulation) return "text-green-500"
-    if (selectedInteraction?.consensusInhibition) return "text-red-500"
-    return "text-orange-500"
-  }
 
   return (
     <div className="p-4">
@@ -27,13 +24,22 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
                 uniprotId={selectedInteraction.source || ''} 
               />
               
-              <div className={cn("flex items-center", getInteractionColor())}>
-                {selectedInteraction.isDirected ? (
-                  <ArrowRight className="h-6 w-6" />
-                ) : (
-                  <Minus className="h-6 w-6" />
-                )}
-              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={cn("flex items-center", getInteractionColor(selectedInteraction))}>
+                      {selectedInteraction.isDirected ? (
+                        <ArrowRight className="h-6 w-6" />
+                      ) : (
+                        <Minus className="h-6 w-6" />
+                      )}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{getInteractionColorMeaning(getInteractionColor(selectedInteraction))}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
 
               <EntityBadge 
                 geneSymbol={selectedInteraction.targetGenesymbol || ''} 
@@ -43,7 +49,7 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
 
             {/* Interaction Type Badge */}
             <div className="flex justify-center">
-              <Badge variant="secondary" className={cn("text-sm", getInteractionColor())}>
+              <Badge variant="secondary" className={cn("text-sm", getInteractionColor(selectedInteraction))}>
                 {selectedInteraction.type}
               </Badge>
             </div>
