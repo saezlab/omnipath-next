@@ -1,24 +1,22 @@
-import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
-import { 
-  ExternalLink,
+import {
+  BookOpen,
   Dna,
+  ExternalLink,
+  FileText,
   FlaskConical,
+  Globe,
   Heart,
   MapPin,
-  Network,
-  Tag,
   Microscope,
-  BookOpen,
-  Globe,
-  FileText,
-  ChevronDown,
-  ChevronUp
+  Network,
+  Tag
 } from "lucide-react"
+import { useState } from "react"
 
 interface ProteinSummaryCardProps {
   proteinData?: GetProteinInformationResponse
