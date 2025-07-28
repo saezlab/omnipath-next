@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
-import { ArrowRight, Atom, Check, Dna, FlaskConical, Info, Mic } from "lucide-react"
+import { ArrowRight, Check, Info, HeartHandshake } from "lucide-react"
+import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons"
 
 interface FilterSidebarProps {
   filters: InteractionsFilters
@@ -30,13 +31,6 @@ interface FilterSidebarProps {
 }
 
 
-const INTERACTION_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: string }> = {
-  post_translational: { icon: <Atom className="h-4 w-4" />, label: "Post-translational" },
-  transcriptional: { icon: <Dna className="h-4 w-4" />, label: "Transcriptional" },
-  post_transcriptional: { icon: <Dna className="h-4 w-4" />, label: "Post-transcriptional" },
-  mirna_transcriptional: { icon: <Mic className="h-4 w-4" />, label: "miRNA Transcriptional" },
-  small_molecule_protein: { icon: <FlaskConical className="h-4 w-4" />, label: "Small Molecule-Protein" },
-}
 
 export function FilterSidebar({
   filters,
@@ -137,7 +131,7 @@ export function FilterSidebar({
           <AccordionContent>
             <div className="space-y-2">
               {interactionTypes.map((type) => {
-                const typeIcon = INTERACTION_TYPE_ICONS[type] || { icon: <Atom className="h-4 w-4" />, label: type }
+                const typeIcon = INTERACTION_TYPE_ICONS[type] || { icon: <HeartHandshake className="h-4 w-4" />, label: type }
                 const count = filterCounts.interactionType[type] || 0
                 const isSelected = filters.interactionType?.includes(type) || false
                 const isDisabled = count === 0 && !isSelected

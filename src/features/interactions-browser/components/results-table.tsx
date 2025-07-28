@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Atom, Dna, FlaskConical, Mic, Minus } from "lucide-react";
+import { ArrowRight, Minus, HeartHandshake } from "lucide-react";
+import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons";
 import React from 'react';
 
 type InteractionData = SearchProteinNeighborsResponse['interactions'][number];
@@ -23,13 +24,6 @@ interface InteractionResultsTableProps {
   maxCellChars?: number;
 }
 
-const INTERACTION_TYPE_ICONS: Record<string, { icon: React.ReactNode; label: string }> = {
-  post_translational: { icon: <Atom className="h-4 w-4" />, label: "Post-translational" },
-  transcriptional: { icon: <Dna className="h-4 w-4" />, label: "Transcriptional" },
-  post_transcriptional: { icon: <Dna className="h-4 w-4" />, label: "Post-transcriptional" },
-  mirna_transcriptional: { icon: <Mic className="h-4 w-4" />, label: "miRNA Transcriptional" },
-  small_molecule_protein: { icon: <FlaskConical className="h-4 w-4" />, label: "Small Molecule-Protein" },
-}
 
 const getInteractionColor = (interaction: InteractionData) => {
   let color = "text-grey-500";
@@ -40,8 +34,8 @@ const getInteractionColor = (interaction: InteractionData) => {
 }
 
 const getInteractionTypeIcon = (type: string | null) => {
-  if (!type) return { icon: <Atom className="h-4 w-4" />, label: "Unknown" }
-  return INTERACTION_TYPE_ICONS[type] || { icon: <Atom className="h-4 w-4" />, label: type }
+  if (!type) return { icon: <HeartHandshake className="h-4 w-4" />, label: "Unknown" }
+  return INTERACTION_TYPE_ICONS[type] || { icon: <HeartHandshake className="h-4 w-4" />, label: type }
 }
 
 const getReferenceCount = (interaction: InteractionData): number => {
