@@ -183,10 +183,10 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
   }
 
   const StatementRenderer = ({ statements }: { statements: ReturnType<typeof formatUniprotText> }) => (
-    <div className="text-sm leading-relaxed max-h-64 overflow-y-auto">
+    <div className="text-sm leading-relaxed max-h-48 overflow-y-auto">
       {statements.map((statement) => (
         <span key={statement.key}>
-          <span className="inline-block bg-background/80 px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs sm:text-sm rounded border border-border/30 mr-1 mb-1">
+          <span className="inline-block bg-background/80 px-1.5 py-0.5 text-xs sm:text-sm rounded border border-border/30 mr-1 mb-1">
             {statement.text}
             <PubMedButton pubmedIds={statement.pubmedIds} />
           </span>
@@ -207,13 +207,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
     colorClass: string 
   }) => (
     <Card className={`${colorClass}`}>
-      <CardHeader className="p-3 sm:p-4 pb-2">
+      <CardHeader className="p-2 sm:p-3 pb-1 sm:pb-1">
         <CardTitle className="text-sm sm:text-base flex items-center gap-2">
           <Icon className="h-4 w-4" />
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-3 sm:p-4 pt-0">
+      <CardContent className="p-2 sm:p-3 pt-1 sm:pt-1">
         {children}
       </CardContent>
     </Card>
@@ -221,7 +221,6 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
   return (
     <div className="w-full">
-      <div className="sm:border sm:border-2 rounded-lg relative">
         {/* Main Card Header - Always Visible */}
         <Card className="w-full border-0 shadow-none sm:py-6 py-3 gap-0">
           <CardHeader className="p-2 sm:p-6 pb-0">
@@ -320,8 +319,8 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
         {/* Collapsible Details Section */}
         {isExpanded && (
-          <div className="p-0 sm:pt-8 border-t">
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-2 sm:gap-4 space-y-3 sm:space-y-4 [&>*]:break-inside-avoid">
+          <div className="p-0 sm:pt-6 border-t">
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-2 sm:gap-3 space-y-2 sm:space-y-3 [&>*]:break-inside-avoid">
               
               {/* Subcellular Location Card */}
               {proteinData.subcellularLocation && (
@@ -352,16 +351,16 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                   icon={(props) => <Network {...props} className="h-4 w-4 text-purple-600 dark:text-purple-400" />}
                   colorClass="border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/20"
                 >
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
                     {proteinData.proteinFamilies && (
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1">Protein Family</p>
+                        <p className="text-xs font-medium text-muted-foreground mb-0.5">Protein Family</p>
                         <p className="text-sm">{proteinData.proteinFamilies}</p>
                       </div>
                     )}
                     {proteinData.ecNumber && (
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground mb-1">EC Number</p>
+                        <p className="text-xs font-medium text-muted-foreground mb-0.5">EC Number</p>
                         <a
                           href={`https://www.brenda-enzymes.org/enzyme.php?ecno=${proteinData.ecNumber}`}
                           target="_blank"
@@ -386,12 +385,12 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                   icon={(props) => <Tag {...props} className="h-4 w-4 text-orange-600 dark:text-orange-400" />}
                   colorClass="border-orange-200 dark:border-orange-900/50 bg-orange-50/50 dark:bg-orange-950/20"
                 >
-                  <div className="flex flex-wrap gap-1.5 max-h-64 overflow-y-auto">
+                  <div className="flex flex-wrap gap-1 max-h-48 overflow-y-auto">
                     {proteinData.keywords.split(';').map((keyword, index) => (
                       <Badge 
                         key={index} 
                         variant="outline" 
-                        className="text-xs border-orange-300 dark:border-orange-800 bg-white/70 dark:bg-gray-900/30 text-orange-800 dark:text-orange-200"
+                        className="text-xs border-orange-300 dark:border-orange-800 bg-white/70 dark:bg-gray-900/30 text-orange-800 dark:text-orange-200 px-1.5 py-0.5"
                       >
                         {keyword.trim()}
                       </Badge>
@@ -407,9 +406,9 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                   icon={(props) => <Microscope {...props} className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />}
                   colorClass="border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20"
                 >
-                  <div className="max-h-64 overflow-y-auto space-y-0.5 pr-2">
+                  <div className="max-h-48 overflow-y-auto space-y-0.5 pr-1">
                     {goTerms.map((term, index) => (
-                      <p key={index} className="text-xs text-muted-foreground">
+                      <p key={index} className="text-xs text-muted-foreground leading-tight">
                         • {term.name} (
                         <a 
                           href={`https://amigo.geneontology.org/amigo/term/${term.id}`}
@@ -443,7 +442,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                 icon={(props) => <Globe {...props} className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600 dark:text-gray-400" />}
                 colorClass="border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/20"
               >
-                <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
                   {proteinData.entry && (
                     <div>
                       {renderExternalLink(
@@ -515,7 +514,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* References Card */}
               {proteinData.pubmedId && (
                 <Card className="border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/50 dark:bg-yellow-950/20">
-                  <CardHeader className="p-3 sm:p-4 pb-2">
+                  <CardHeader className="p-2 sm:p-3 pb-1">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-yellow-700 dark:text-yellow-400" />
@@ -529,23 +528,23 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                           const pubmedUrl = `https://pubmed.ncbi.nlm.nih.gov/?term=${pmids.join('%20OR%20')}`
                           window.open(pubmedUrl, '_blank')
                         }}
-                        className="h-7 text-xs"
+                        className="h-6 text-xs px-2"
                       >
                         View all
-                        <ExternalLink className="ml-1 h-3 w-3" />
+                        <ExternalLink className="ml-1 h-2.5 w-2.5" />
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-3 sm:p-4 pt-0">
-                    <div className="max-h-64 overflow-y-auto pr-2">
-                      <div className="flex flex-wrap gap-1.5">
+                  <CardContent className="p-2 sm:p-3 pt-1">
+                    <div className="max-h-48 overflow-y-auto pr-1">
+                      <div className="flex flex-wrap gap-1">
                         {proteinData.pubmedId.split(';').map((pmid, index) => (
                           <a
                             key={index}
                             href={`https://pubmed.ncbi.nlm.nih.gov/${pmid.trim()}/`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
+                            className="text-xs px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
                           >
                             {pmid.trim()}
                           </a>
@@ -558,7 +557,6 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
             </div>
           </div>
         )}
-      </div>
     </div>
   )
 }
