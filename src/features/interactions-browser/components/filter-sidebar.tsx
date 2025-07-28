@@ -130,7 +130,9 @@ export function FilterSidebar({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 text-muted-foreground" />
+                  <div className="[&>svg]:!rotate-0">
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Filter by the type of interaction between entities</p>
@@ -264,7 +266,9 @@ export function FilterSidebar({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 text-muted-foreground" />
+                  <div className="[&>svg]:!rotate-0">
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Filter by specific properties of the interactions</p>

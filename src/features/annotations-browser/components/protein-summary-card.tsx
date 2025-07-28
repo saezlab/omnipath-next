@@ -107,32 +107,18 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
   )
 
   const parseGOTerms = (goTerms: string | null) => {
-    if (!goTerms) return { process: [], function: [], component: [] }
+    if (!goTerms) return []
     
     const terms = goTerms.split(';').map(term => term.trim()).filter(Boolean)
-    const categorized = {
-      process: [] as string[],
-      function: [] as string[],
-      component: [] as string[]
-    }
     
-    terms.forEach(term => {
+    return terms.map(term => {
       const match = term.match(/(.+?)\s*\[GO:(\d+)\]/)
       if (match) {
         const [, name, id] = match
-        const goTerm = { name: name.trim(), id: `GO:${id}` }
-        
-        if (name.includes('binding') || name.includes('activity')) {
-          categorized.function.push(`${goTerm.name} (${goTerm.id})`)
-        } else if (name.includes('membrane') || name.includes('cell') || name.includes('space')) {
-          categorized.component.push(`${goTerm.name} (${goTerm.id})`)
-        } else {
-          categorized.process.push(`${goTerm.name} (${goTerm.id})`)
-        }
+        return { name: name.trim(), id: `GO:${id}` }
       }
-    })
-    
-    return categorized
+      return null
+    }).filter(Boolean) as Array<{ name: string; id: string }>
   }
 
   if (isLoading) {
@@ -446,100 +432,30 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               )}
 
               {/* Gene Ontology Card */}
-              {proteinData.geneOntology && (
+              {proteinData.geneOntology && goTerms.length > 0 && (
                 <Card className="border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20">
                   <CardHeader className="p-2 sm:p-6 pb-2 sm:pb-3">
                     <CardTitle className="text-sm sm:text-base flex items-center gap-2">
                       <Microscope className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-                      Gene Ontology
+                      Gene Ontology Terms
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-2 sm:p-6 pt-0">
-                    <div className="grid grid-cols-1 gap-3">
-                      {goTerms.process.length > 0 && (
-                        <div>
-                          <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Biological Process</p>
-                          <div className="max-h-48 overflow-y-auto space-y-0.5 pr-2">
-                            {goTerms.process.map((term, index) => {
-                              const match = term.match(/(.+?)\s*\((GO:\d+)\)$/)
-                              if (match) {
-                                const [, name, goId] = match
-                                return (
-                                  <p key={index} className="text-xs text-muted-foreground">
-                                    • {name} (
-                                    <a 
-                                      href={`https://amigo.geneontology.org/amigo/term/${goId}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-cyan-600 dark:text-cyan-400 hover:underline"
-                                    >
-                                      {goId}
-                                    </a>
-                                    )
-                                  </p>
-                                )
-                              }
-                              return <p key={index} className="text-xs text-muted-foreground">• {term}</p>
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {goTerms.function.length > 0 && (
-                        <div>
-                          <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Molecular Function</p>
-                          <div className="max-h-48 overflow-y-auto space-y-0.5 pr-2">
-                            {goTerms.function.map((term, index) => {
-                              const match = term.match(/(.+?)\s*\((GO:\d+)\)$/)
-                              if (match) {
-                                const [, name, goId] = match
-                                return (
-                                  <p key={index} className="text-xs text-muted-foreground">
-                                    • {name} (
-                                    <a 
-                                      href={`https://amigo.geneontology.org/amigo/term/${goId}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-cyan-600 dark:text-cyan-400 hover:underline"
-                                    >
-                                      {goId}
-                                    </a>
-                                    )
-                                  </p>
-                                )
-                              }
-                              return <p key={index} className="text-xs text-muted-foreground">• {term}</p>
-                            })}
-                          </div>
-                        </div>
-                      )}
-                      {goTerms.component.length > 0 && (
-                        <div>
-                          <p className="text-xs font-medium text-cyan-700 dark:text-cyan-300 mb-1">Cellular Component</p>
-                          <div className="max-h-48 overflow-y-auto space-y-0.5 pr-2">
-                            {goTerms.component.map((term, index) => {
-                              const match = term.match(/(.+?)\s*\((GO:\d+)\)$/)
-                              if (match) {
-                                const [, name, goId] = match
-                                return (
-                                  <p key={index} className="text-xs text-muted-foreground">
-                                    • {name} (
-                                    <a 
-                                      href={`https://amigo.geneontology.org/amigo/term/${goId}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-cyan-600 dark:text-cyan-400 hover:underline"
-                                    >
-                                      {goId}
-                                    </a>
-                                    )
-                                  </p>
-                                )
-                              }
-                              return <p key={index} className="text-xs text-muted-foreground">• {term}</p>
-                            })}
-                          </div>
-                        </div>
-                      )}
+                    <div className="max-h-64 overflow-y-auto space-y-0.5 pr-2">
+                      {goTerms.map((term, index) => (
+                        <p key={index} className="text-xs text-muted-foreground">
+                          • {term.name} (
+                          <a 
+                            href={`https://amigo.geneontology.org/amigo/term/${term.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-cyan-600 dark:text-cyan-400 hover:underline"
+                          >
+                            {term.id}
+                          </a>
+                          )
+                        </p>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
