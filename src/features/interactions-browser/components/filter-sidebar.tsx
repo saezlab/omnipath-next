@@ -45,16 +45,10 @@ export function FilterSidebar({
   showMobileFilters,
   onClearFilters,
 }: FilterSidebarProps) {
-  // Get unique values for each filter type, filtering out those with zero counts
-  const interactionTypes = Object.entries(filterCounts.interactionType)
-    .filter(([, count]) => count > 0)
-    .map(([type]) => type)
-  const entityTypesSource = Object.entries(filterCounts.entityTypeSource)
-    .filter(([, count]) => count > 0)
-    .map(([type]) => type)
-  const entityTypesTarget = Object.entries(filterCounts.entityTypeTarget)
-    .filter(([, count]) => count > 0)
-    .map(([type]) => type)
+  // Get unique values for each filter type
+  const interactionTypes = Object.keys(filterCounts.interactionType)
+  const entityTypesSource = Object.keys(filterCounts.entityTypeSource)
+  const entityTypesTarget = Object.keys(filterCounts.entityTypeTarget)
 
   // Calculate active filter count
   const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
@@ -144,19 +138,23 @@ export function FilterSidebar({
             <div className="space-y-2">
               {interactionTypes.map((type) => {
                 const typeIcon = INTERACTION_TYPE_ICONS[type] || { icon: <Atom className="h-4 w-4" />, label: type }
+                const count = filterCounts.interactionType[type] || 0
+                const isSelected = filters.interactionType?.includes(type) || false
+                const isDisabled = count === 0 && !isSelected
+                
                 return (
-                  <div key={type} className="flex items-center justify-between group">
+                  <div key={type} className={`flex items-center justify-between group ${isDisabled ? 'opacity-50' : ''}`}>
                     <Label
                       htmlFor={`type-${type}`}
-                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer group-hover:text-primary transition-colors ${
-                        filters.interactionType?.includes(type) ? "text-primary font-medium" : ""
-                      }`}
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
+                        isSelected ? "text-primary font-medium" : ""
+                      } ${!isDisabled ? "group-hover:text-primary" : ""}`}
                     >
                       <Checkbox
                         id={`type-${type}`}
-                        checked={filters.interactionType?.includes(type) || false}
+                        checked={isSelected}
                         onCheckedChange={() => onFilterChange("interactionType", type)}
-                        className={filters.interactionType?.includes(type) ? "border-primary" : ""}
+                        className={isSelected ? "border-primary" : ""}
                       />
                       <div className="flex items-center gap-2">
                         <div className="text-muted-foreground">
@@ -166,12 +164,12 @@ export function FilterSidebar({
                       </div>
                     </Label>
                     <Badge 
-                      variant={filters.interactionType?.includes(type) ? "default" : "outline"} 
-                      className={`ml-auto group-hover:bg-primary/10 transition-colors ${
-                        filters.interactionType?.includes(type) ? "bg-primary text-primary-foreground" : ""
-                      }`}
+                      variant={isSelected ? "default" : "outline"} 
+                      className={`ml-auto transition-colors ${
+                        isSelected ? "bg-primary text-primary-foreground" : ""
+                      } ${!isDisabled ? "group-hover:bg-primary/10" : ""}`}
                     >
-                      {filterCounts.interactionType[type] || 0}
+                      {count}
                     </Badge>
                   </div>
                 )
@@ -200,30 +198,38 @@ export function FilterSidebar({
           <AccordionTrigger>Source Entity Type</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
-              {entityTypesSource.map((type) => (
-                <div key={type} className="flex items-center justify-between">
-                  <Label
-                    htmlFor={`source-type-${type}`}
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.entityTypeSource?.includes(type) ? "text-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id={`source-type-${type}`}
-                      checked={filters.entityTypeSource?.includes(type) || false}
-                      onCheckedChange={() => onFilterChange("entityTypeSource", type)}
-                      className={filters.entityTypeSource?.includes(type) ? "border-primary" : ""}
-                    />
-                    {type}
-                  </Label>
-                  <Badge 
-                    variant={filters.entityTypeSource?.includes(type) ? "default" : "outline"}
-                    className={filters.entityTypeSource?.includes(type) ? "bg-primary text-primary-foreground" : ""}
-                  >
-                    {filterCounts.entityTypeSource[type] || 0}
-                  </Badge>
-                </div>
-              ))}
+              {entityTypesSource.map((type) => {
+                const count = filterCounts.entityTypeSource[type] || 0
+                const isSelected = filters.entityTypeSource?.includes(type) || false
+                const isDisabled = count === 0 && !isSelected
+                
+                return (
+                  <div key={type} className={`flex items-center justify-between group ${isDisabled ? 'opacity-50' : ''}`}>
+                    <Label
+                      htmlFor={`source-type-${type}`}
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
+                        isSelected ? "text-primary font-medium" : ""
+                      } ${!isDisabled ? "group-hover:text-primary" : ""}`}
+                    >
+                      <Checkbox
+                        id={`source-type-${type}`}
+                        checked={isSelected}
+                        onCheckedChange={() => onFilterChange("entityTypeSource", type)}
+                        className={isSelected ? "border-primary" : ""}
+                      />
+                      {type}
+                    </Label>
+                    <Badge 
+                      variant={isSelected ? "default" : "outline"}
+                      className={`ml-auto transition-colors ${
+                        isSelected ? "bg-primary text-primary-foreground" : ""
+                      } ${!isDisabled ? "group-hover:bg-primary/10" : ""}`}
+                    >
+                      {count}
+                    </Badge>
+                  </div>
+                )
+              })}
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -232,30 +238,38 @@ export function FilterSidebar({
           <AccordionTrigger>Target Entity Type</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-2">
-              {entityTypesTarget.map((type) => (
-                <div key={type} className="flex items-center justify-between">
-                  <Label
-                    htmlFor={`target-type-${type}`}
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.entityTypeTarget?.includes(type) ? "text-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id={`target-type-${type}`}
-                      checked={filters.entityTypeTarget?.includes(type) || false}
-                      onCheckedChange={() => onFilterChange("entityTypeTarget", type)}
-                      className={filters.entityTypeTarget?.includes(type) ? "border-primary" : ""}
-                    />
-                    {type}
-                  </Label>
-                  <Badge 
-                    variant={filters.entityTypeTarget?.includes(type) ? "default" : "outline"}
-                    className={filters.entityTypeTarget?.includes(type) ? "bg-primary text-primary-foreground" : ""}
-                  >
-                    {filterCounts.entityTypeTarget[type] || 0}
-                  </Badge>
-                </div>
-              ))}
+              {entityTypesTarget.map((type) => {
+                const count = filterCounts.entityTypeTarget[type] || 0
+                const isSelected = filters.entityTypeTarget?.includes(type) || false
+                const isDisabled = count === 0 && !isSelected
+                
+                return (
+                  <div key={type} className={`flex items-center justify-between group ${isDisabled ? 'opacity-50' : ''}`}>
+                    <Label
+                      htmlFor={`target-type-${type}`}
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
+                        isSelected ? "text-primary font-medium" : ""
+                      } ${!isDisabled ? "group-hover:text-primary" : ""}`}
+                    >
+                      <Checkbox
+                        id={`target-type-${type}`}
+                        checked={isSelected}
+                        onCheckedChange={() => onFilterChange("entityTypeTarget", type)}
+                        className={isSelected ? "border-primary" : ""}
+                      />
+                      {type}
+                    </Label>
+                    <Badge 
+                      variant={isSelected ? "default" : "outline"}
+                      className={`ml-auto transition-colors ${
+                        isSelected ? "bg-primary text-primary-foreground" : ""
+                      } ${!isDisabled ? "group-hover:bg-primary/10" : ""}`}
+                    >
+                      {count}
+                    </Badge>
+                  </div>
+                )
+              })}
             </div>
           </AccordionContent>
         </AccordionItem>

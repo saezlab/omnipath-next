@@ -244,6 +244,14 @@ export function InteractionsBrowser({
       })
     }
 
+    // Count interaction types excluding interaction type filter
+    const interactionTypeInteractions = filterInteractionsExcept(['interactionType'])
+    interactionTypeInteractions.forEach((interaction) => {
+      if (interaction.type) {
+        counts.interactionType[interaction.type] = (counts.interactionType[interaction.type] || 0) + 1
+      }
+    })
+
     // Count source entity types excluding source entity type filter
     const sourceEntityInteractions = filterInteractionsExcept(['entityTypeSource'])
     sourceEntityInteractions.forEach((interaction) => {
@@ -263,10 +271,6 @@ export function InteractionsBrowser({
     // Count all other properties using all filters
     const allFilteredInteractions = filterInteractionsExcept([])
     allFilteredInteractions.forEach((interaction) => {
-      // Count interaction types
-      if (interaction.type) {
-        counts.interactionType[interaction.type] = (counts.interactionType[interaction.type] || 0) + 1
-      }
 
       // Count curation effort
       if (interaction.curationEffort) {
