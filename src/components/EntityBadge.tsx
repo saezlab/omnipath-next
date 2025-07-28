@@ -4,11 +4,13 @@ import React, { useRef } from 'react';
 interface EntityBadgeProps {
   geneSymbol?: string;  // Keep for backward compatibility
   uniprotId?: string;   // Keep for backward compatibility
+  onClick?: () => void;
 }
 
 export const EntityBadge: React.FC<EntityBadgeProps> = ({ 
   geneSymbol, 
   uniprotId,
+  onClick,
 }) => {
   // Use new props if provided, fallback to old props for backward compatibility
   const name = geneSymbol || '';
@@ -21,7 +23,11 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   const content = (
     <div className="relative">
       {/* Modern glass-morphism card */}
-      <div className="relative bg-gradient-to-br from-slate-50/80 to-slate-100/80 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-md px-2 py-1 shadow-sm min-w-[80px] w-full">
+      <div 
+        className={`relative bg-gradient-to-br from-slate-50/80 to-slate-100/80 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-md px-2 py-1 shadow-sm min-w-[80px] w-full transition-all duration-200 ${
+          onClick ? 'cursor-pointer hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-700 dark:hover:to-slate-800 hover:shadow-md hover:scale-105' : ''
+        }`}
+        onClick={onClick}>
         
         
         {/* Content */}

@@ -58,6 +58,9 @@ export function InteractionResultsTable({
   resultsPerPage,
   maxCellChars = 50,
 }: InteractionResultsTableProps) {
+  const handleEntityClick = (entity: string) => {
+    window.open(`/interactions?q=${encodeURIComponent(entity)}`, '_blank');
+  };
   const columns: ColumnDef<InteractionDataWithCount>[] = [
     {
       accessorKey: 'interaction',
@@ -67,10 +70,15 @@ export function InteractionResultsTable({
         const typeIcon = getInteractionTypeIcon(row.type);
         return (
           <div className="flex items-center justify-center gap-4">
-            <EntityBadge
-              geneSymbol={row.sourceGenesymbol || ''}
-              uniprotId={row.source || ''}
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <EntityBadge
+                geneSymbol={row.sourceGenesymbol || ''}
+                uniprotId={row.source || ''}
+                onClick={() => {
+                  handleEntityClick(row.sourceGenesymbol || row.source || '');
+                }}
+              />
+            </div>
 
             <div className="flex items-center gap-2">
               <TooltipProvider>
@@ -95,10 +103,15 @@ export function InteractionResultsTable({
               </div>
             </div>
 
-            <EntityBadge
-              geneSymbol={row.targetGenesymbol || ''}
-              uniprotId={row.target || ''}
-            />
+            <div onClick={(e) => e.stopPropagation()}>
+              <EntityBadge
+                geneSymbol={row.targetGenesymbol || ''}
+                uniprotId={row.target || ''}
+                onClick={() => {
+                  handleEntityClick(row.targetGenesymbol || row.target || '');
+                }}
+              />
+            </div>
           </div>
         );
       },
