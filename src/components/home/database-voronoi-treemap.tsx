@@ -38,6 +38,22 @@ export function DatabaseVoronoiTreemap() {
       Intercellular: "#8dd1e1"
     };
 
+    // Function to clean source names by removing _word suffixes
+    const cleanSourceName = (sourceName: string): string => {
+      // Remove everything after underscore + word pattern
+      const underscoreIndex = sourceName.indexOf('_');
+      if (underscoreIndex > 0) {
+        const beforeUnderscore = sourceName.substring(0, underscoreIndex);
+        const afterUnderscore = sourceName.substring(underscoreIndex + 1);
+        
+        // Check if what comes after underscore looks like a word (contains letters)
+        if (/^[A-Za-z]/.test(afterUnderscore)) {
+          return beforeUnderscore;
+        }
+      }
+      return sourceName;
+    };
+
     // Transform data into hierarchical format
     const hierarchicalData: VoronoiNode = {
       name: "OmniPath",
@@ -45,47 +61,67 @@ export function DatabaseVoronoiTreemap() {
         {
           name: "Interactions",
           color: databaseColors.Interactions,
-          children: dbStats.interactions.slice(0, 100).map(d => ({
-            name: d.source,
-            weight: Math.log10(d.record_count + 1), // Log scale for better visualization
-            code: d.source.length > 15 ? d.source.substring(0, 12) + "..." : d.source
-          }))
+          children: dbStats.interactions.slice(0, 100).map(d => {
+            const cleanedName = cleanSourceName(d.source);
+            return {
+              name: cleanedName,
+              originalName: d.source,
+              weight: Math.log10(d.record_count + 1), // Log scale for better visualization
+              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
+            };
+          })
         },
         {
           name: "Enzyme-Substrate",
           color: databaseColors["Enzyme-Substrate"],
-          children: dbStats.enzsub.slice(0, 50).map(d => ({
-            name: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: d.source.length > 15 ? d.source.substring(0, 12) + "..." : d.source
-          }))
+          children: dbStats.enzsub.slice(0, 50).map(d => {
+            const cleanedName = cleanSourceName(d.source);
+            return {
+              name: cleanedName,
+              originalName: d.source,
+              weight: Math.log10(d.record_count + 1),
+              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
+            };
+          })
         },
         {
           name: "Complexes",
           color: databaseColors.Complexes,
-          children: dbStats.complexes.map(d => ({
-            name: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: d.source.length > 15 ? d.source.substring(0, 12) + "..." : d.source
-          }))
+          children: dbStats.complexes.map(d => {
+            const cleanedName = cleanSourceName(d.source);
+            return {
+              name: cleanedName,
+              originalName: d.source,
+              weight: Math.log10(d.record_count + 1),
+              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
+            };
+          })
         },
         {
           name: "Annotations",
           color: databaseColors.Annotations,
-          children: dbStats.annotations.slice(0, 50).map(d => ({
-            name: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: d.source.length > 15 ? d.source.substring(0, 12) + "..." : d.source
-          }))
+          children: dbStats.annotations.slice(0, 50).map(d => {
+            const cleanedName = cleanSourceName(d.source);
+            return {
+              name: cleanedName,
+              originalName: d.source,
+              weight: Math.log10(d.record_count + 1),
+              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
+            };
+          })
         },
         {
           name: "Intercellular",
           color: databaseColors.Intercellular,
-          children: dbStats.intercell.slice(0, 50).map(d => ({
-            name: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: d.source.length > 15 ? d.source.substring(0, 12) + "..." : d.source
-          }))
+          children: dbStats.intercell.slice(0, 50).map(d => {
+            const cleanedName = cleanSourceName(d.source);
+            return {
+              name: cleanedName,
+              originalName: d.source,
+              weight: Math.log10(d.record_count + 1),
+              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
+            };
+          })
         }
       ]
     };
@@ -147,10 +183,29 @@ export function DatabaseVoronoiTreemap() {
       .append("path")
       .attr("class", "cell")
       .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
-      .style("fill", (d: any) => d.parent.data.color)
+      .style("fill", (d: any) => {
+        // Slightly vary the color based on size for better visual distinction
+        const baseColor = d3.color(d.parent.data.color);
+        const sizeFactor = d.value / d.parent.value;
+        return baseColor ? baseColor.darker(0.5 - sizeFactor) : d.parent.data.color;
+      })
       .style("stroke", "white")
-      .style("stroke-width", 1)
-      .style("opacity", 0.8);
+      .style("stroke-width", 1.5)
+      .style("opacity", 0.9);
+
+    // Calculate polygon bounds for each cell
+    const calculatePolygonBounds = (polygon: any) => {
+      const xs = polygon.map((p: [number, number]) => p[0]);
+      const ys = polygon.map((p: [number, number]) => p[1]);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      return {
+        width: maxX - minX,
+        height: maxY - minY
+      };
+    };
 
     // Draw labels
     const labels = g.append("g")
@@ -164,14 +219,35 @@ export function DatabaseVoronoiTreemap() {
     labels.append("text")
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "middle")
-      .style("font-size", (d: any) => `${fontScale(d.value)}px`)
+      .style("font-size", (d: any) => {
+        const bounds = calculatePolygonBounds(d.polygon);
+        const fontSize = fontScale(d.value);
+        // Adjust font size to fit within cell
+        return `${Math.min(fontSize, bounds.width / 8, bounds.height / 2)}px`;
+      })
       .style("fill", "white")
-      .style("font-weight", "500")
+      .style("font-weight", "600")
+      .style("text-shadow", "0 1px 2px rgba(0,0,0,0.5)")
       .style("pointer-events", "none")
       .text((d: any) => {
-        const totalInDb = d.parent.value;
-        const percentage = (d.value / totalInDb) * 100;
-        return percentage > 5 ? d.data.name : (percentage > 2 ? d.data.code : "");
+        const bounds = calculatePolygonBounds(d.polygon);
+        const minDimension = Math.min(bounds.width, bounds.height);
+        
+        // Only show text if the cell is large enough
+        if (minDimension < 20) return "";
+        
+        // Use shorter text for smaller cells
+        if (minDimension < 40) {
+          // Show first few letters
+          return d.data.name.substring(0, 3);
+        } else if (minDimension < 60) {
+          // Show abbreviated code
+          return d.data.code || d.data.name.substring(0, 6);
+        } else {
+          // Show full name if it fits
+          const estimatedTextWidth = d.data.name.length * 6; // rough estimate
+          return estimatedTextWidth < bounds.width * 0.8 ? d.data.name : d.data.code;
+        }
       });
 
     // Add hover effects
@@ -199,33 +275,16 @@ export function DatabaseVoronoiTreemap() {
       .append("title")
       .text((d: any) => {
         const actualCount = Math.round(Math.pow(10, d.value) - 1);
-        return `${d.data.name}\n${actualCount.toLocaleString()} records\nDatabase: ${d.parent.data.name}`;
+        let tooltip = `${d.data.name}\n${actualCount.toLocaleString()} records\nDatabase: ${d.parent.data.name}`;
+        
+        // Show original name if it was cleaned
+        if (d.data.originalName && d.data.originalName !== d.data.name) {
+          tooltip += `\nOriginal: ${d.data.originalName}`;
+        }
+        
+        return tooltip;
       });
 
-    // Draw database labels
-    const databaseLabels = g.append("g")
-      .selectAll(".db-label")
-      .data(hierarchy.children || [])
-      .enter()
-      .append("text")
-      .attr("class", "db-label")
-      .attr("x", (d: any) => {
-        const leaves = d.leaves();
-        const avgX = leaves.reduce((sum: number, leaf: any) => sum + leaf.polygon.site.x, 0) / leaves.length;
-        return avgX;
-      })
-      .attr("y", (d: any) => {
-        const leaves = d.leaves();
-        const avgY = leaves.reduce((sum: number, leaf: any) => sum + leaf.polygon.site.y, 0) / leaves.length;
-        return avgY;
-      })
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .style("font-size", "20px")
-      .style("font-weight", "bold")
-      .style("fill", "rgba(0,0,0,0.7)")
-      .style("pointer-events", "none")
-      .text((d: any) => d.data.name);
 
   }, []);
 
