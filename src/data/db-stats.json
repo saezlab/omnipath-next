@@ -585,7 +585,788 @@
       "record_count": 37
     }
   ],
-  "interactionsSourceType": [],
+  "interactionsSourceType": [
+    {
+      "source": "ABS",
+      "type": "transcriptional",
+      "record_count": 211
+    },
+    {
+      "source": "ACSN",
+      "type": "post_translational",
+      "record_count": 7475
+    },
+    {
+      "source": "ACSN_SignaLink3",
+      "type": "post_translational",
+      "record_count": 79
+    },
+    {
+      "source": "Adhesome",
+      "type": "post_translational",
+      "record_count": 4530
+    },
+    {
+      "source": "AlzPathway",
+      "type": "post_translational",
+      "record_count": 172
+    },
+    {
+      "source": "ARACNe-GTEx_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 26592
+    },
+    {
+      "source": "ARN",
+      "type": "post_translational",
+      "record_count": 248
+    },
+    {
+      "source": "Baccin2019",
+      "type": "post_translational",
+      "record_count": 4385
+    },
+    {
+      "source": "BEL-Large-Corpus_ProtMapper",
+      "type": "post_translational",
+      "record_count": 1645
+    },
+    {
+      "source": "BioGRID",
+      "type": "post_translational",
+      "record_count": 11265
+    },
+    {
+      "source": "CA1",
+      "type": "post_translational",
+      "record_count": 2887
+    },
+    {
+      "source": "CancerCellMap",
+      "type": "post_translational",
+      "record_count": 2849
+    },
+    {
+      "source": "CancerDrugsDB",
+      "type": "small_molecule_protein",
+      "record_count": 2101
+    },
+    {
+      "source": "CellCall",
+      "type": "post_translational",
+      "record_count": 2476
+    },
+    {
+      "source": "CellChatDB",
+      "type": "post_translational",
+      "record_count": 3369
+    },
+    {
+      "source": "CellChatDB-cofactors",
+      "type": "post_translational",
+      "record_count": 1528
+    },
+    {
+      "source": "Cellinker",
+      "type": "post_translational",
+      "record_count": 8285
+    },
+    {
+      "source": "Cellinker",
+      "type": "small_molecule_protein",
+      "record_count": 314
+    },
+    {
+      "source": "CellPhoneDB",
+      "type": "post_translational",
+      "record_count": 4406
+    },
+    {
+      "source": "CellPhoneDB_Cellinker",
+      "type": "post_translational",
+      "record_count": 678
+    },
+    {
+      "source": "cellsignal.com_LRdb",
+      "type": "post_translational",
+      "record_count": 37
+    },
+    {
+      "source": "CellTalkDB",
+      "type": "post_translational",
+      "record_count": 8688
+    },
+    {
+      "source": "CollecTRI",
+      "type": "transcriptional",
+      "record_count": 129234
+    },
+    {
+      "source": "connectomeDB2020",
+      "type": "post_translational",
+      "record_count": 5656
+    },
+    {
+      "source": "Cui2007",
+      "type": "post_translational",
+      "record_count": 11977
+    },
+    {
+      "source": "CytReg_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 4255
+    },
+    {
+      "source": "dbPTM",
+      "type": "post_translational",
+      "record_count": 2590
+    },
+    {
+      "source": "DeathDomain",
+      "type": "post_translational",
+      "record_count": 87
+    },
+    {
+      "source": "DEPOD",
+      "type": "post_translational",
+      "record_count": 2184
+    },
+    {
+      "source": "DIP",
+      "type": "post_translational",
+      "record_count": 5624
+    },
+    {
+      "source": "DLRP_Cellinker",
+      "type": "post_translational",
+      "record_count": 772
+    },
+    {
+      "source": "DLRP_talklr",
+      "type": "post_translational",
+      "record_count": 1120
+    },
+    {
+      "source": "DOMINO",
+      "type": "post_translational",
+      "record_count": 5657
+    },
+    {
+      "source": "DoRothEA",
+      "type": "transcriptional",
+      "record_count": 666310
+    },
+    {
+      "source": "DoRothEA-A_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 6799
+    },
+    {
+      "source": "DoRothEA-reviews_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 640
+    },
+    {
+      "source": "ELM",
+      "type": "post_translational",
+      "record_count": 1755
+    },
+    {
+      "source": "EMBRACE",
+      "type": "post_translational",
+      "record_count": 4439
+    },
+    {
+      "source": "ENCODE-distal",
+      "type": "transcriptional",
+      "record_count": 41548
+    },
+    {
+      "source": "ENCODE-proximal",
+      "type": "transcriptional",
+      "record_count": 56144
+    },
+    {
+      "source": "ENCODE_tf-mirna",
+      "type": "mirna_transcriptional",
+      "record_count": 1234
+    },
+    {
+      "source": "ENCODE_tf-mirna",
+      "type": "transcriptional",
+      "record_count": 3
+    },
+    {
+      "source": "ExTRI_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 94887
+    },
+    {
+      "source": "FANTOM4_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 1009
+    },
+    {
+      "source": "Fantom5_LRdb",
+      "type": "post_translational",
+      "record_count": 6199
+    },
+    {
+      "source": "GEREDB_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 22873
+    },
+    {
+      "source": "GOA_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 2070
+    },
+    {
+      "source": "Guide2Pharma",
+      "type": "post_translational",
+      "record_count": 1632
+    },
+    {
+      "source": "Guide2Pharma_Cellinker",
+      "type": "post_translational",
+      "record_count": 766
+    },
+    {
+      "source": "Guide2Pharma_Cellinker",
+      "type": "small_molecule_protein",
+      "record_count": 314
+    },
+    {
+      "source": "Guide2Pharma_LRdb",
+      "type": "post_translational",
+      "record_count": 925
+    },
+    {
+      "source": "Guide2Pharma_talklr",
+      "type": "post_translational",
+      "record_count": 882
+    },
+    {
+      "source": "HOCOMOCO_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 23103
+    },
+    {
+      "source": "HPMR",
+      "type": "post_translational",
+      "record_count": 1313
+    },
+    {
+      "source": "HPMR_Cellinker",
+      "type": "post_translational",
+      "record_count": 1634
+    },
+    {
+      "source": "HPMR_LRdb",
+      "type": "post_translational",
+      "record_count": 2176
+    },
+    {
+      "source": "HPMR_talklr",
+      "type": "post_translational",
+      "record_count": 2096
+    },
+    {
+      "source": "HPRD",
+      "type": "post_translational",
+      "record_count": 78295
+    },
+    {
+      "source": "HPRD_KEA",
+      "type": "post_translational",
+      "record_count": 5071
+    },
+    {
+      "source": "HPRD_LRdb",
+      "type": "post_translational",
+      "record_count": 3401
+    },
+    {
+      "source": "HPRD_MIMP",
+      "type": "post_translational",
+      "record_count": 12732
+    },
+    {
+      "source": "HPRD-phos",
+      "type": "post_translational",
+      "record_count": 4724
+    },
+    {
+      "source": "HPRD_talklr",
+      "type": "post_translational",
+      "record_count": 3228
+    },
+    {
+      "source": "HTRI_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 7087
+    },
+    {
+      "source": "HTRIdb",
+      "type": "transcriptional",
+      "record_count": 39679
+    },
+    {
+      "source": "HTRIdb_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 5816
+    },
+    {
+      "source": "HuRI",
+      "type": "post_translational",
+      "record_count": 13596
+    },
+    {
+      "source": "ICELLNET",
+      "type": "post_translational",
+      "record_count": 1777
+    },
+    {
+      "source": "InnateDB",
+      "type": "post_translational",
+      "record_count": 13015
+    },
+    {
+      "source": "InnateDB_SignaLink3",
+      "type": "post_translational",
+      "record_count": 87
+    },
+    {
+      "source": "IntAct",
+      "type": "post_translational",
+      "record_count": 26379
+    },
+    {
+      "source": "IntAct_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 860
+    },
+    {
+      "source": "IntAct_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 1642
+    },
+    {
+      "source": "iPTMnet",
+      "type": "post_translational",
+      "record_count": 14179
+    },
+    {
+      "source": "iTALK",
+      "type": "post_translational",
+      "record_count": 6487
+    },
+    {
+      "source": "JASPAR_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 20320
+    },
+    {
+      "source": "KEA",
+      "type": "post_translational",
+      "record_count": 18163
+    },
+    {
+      "source": "KEGG",
+      "type": "post_translational",
+      "record_count": 14472
+    },
+    {
+      "source": "KEGG",
+      "type": "transcriptional",
+      "record_count": 3559
+    },
+    {
+      "source": "KEGG_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 2851
+    },
+    {
+      "source": "KEGG-MEDICUS",
+      "type": "post_translational",
+      "record_count": 4716
+    },
+    {
+      "source": "KEGG-MEDICUS",
+      "type": "transcriptional",
+      "record_count": 670
+    },
+    {
+      "source": "Kinexus_KEA",
+      "type": "post_translational",
+      "record_count": 2490
+    },
+    {
+      "source": "Kirouac2010",
+      "type": "post_translational",
+      "record_count": 371
+    },
+    {
+      "source": "Li2012",
+      "type": "post_translational",
+      "record_count": 1023
+    },
+    {
+      "source": "Lit-BM-17",
+      "type": "post_translational",
+      "record_count": 24590
+    },
+    {
+      "source": "LncRNADisease",
+      "type": "lncrna_post_transcriptional",
+      "record_count": 54
+    },
+    {
+      "source": "LRdb",
+      "type": "post_translational",
+      "record_count": 8225
+    },
+    {
+      "source": "Macrophage",
+      "type": "post_translational",
+      "record_count": 2823
+    },
+    {
+      "source": "MatrixDB",
+      "type": "post_translational",
+      "record_count": 273
+    },
+    {
+      "source": "MIMP",
+      "type": "post_translational",
+      "record_count": 16899
+    },
+    {
+      "source": "miR2Disease",
+      "type": "post_transcriptional",
+      "record_count": 435
+    },
+    {
+      "source": "miRDeathDB",
+      "type": "post_transcriptional",
+      "record_count": 331
+    },
+    {
+      "source": "miRecords",
+      "type": "post_transcriptional",
+      "record_count": 1525
+    },
+    {
+      "source": "miRTarBase",
+      "type": "post_transcriptional",
+      "record_count": 8124
+    },
+    {
+      "source": "MPPI",
+      "type": "post_translational",
+      "record_count": 855
+    },
+    {
+      "source": "NCI-PID_ProtMapper",
+      "type": "post_translational",
+      "record_count": 2106
+    },
+    {
+      "source": "ncRDeathDB",
+      "type": "post_transcriptional",
+      "record_count": 2773
+    },
+    {
+      "source": "ncRDeathDB",
+      "type": "lncrna_post_transcriptional",
+      "record_count": 129
+    },
+    {
+      "source": "NetPath",
+      "type": "post_translational",
+      "record_count": 9002
+    },
+    {
+      "source": "NetworKIN_KEA",
+      "type": "post_translational",
+      "record_count": 9496
+    },
+    {
+      "source": "NFIRegulomeDB_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 73
+    },
+    {
+      "source": "NRF2ome",
+      "type": "post_translational",
+      "record_count": 267
+    },
+    {
+      "source": "NTNU.Curated_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 30194
+    },
+    {
+      "source": "ORegAnno",
+      "type": "transcriptional",
+      "record_count": 780
+    },
+    {
+      "source": "ORegAnno_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 1093
+    },
+    {
+      "source": "Pavlidis2021_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 3778
+    },
+    {
+      "source": "PAZAR_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 378281
+    },
+    {
+      "source": "PDZBase",
+      "type": "post_translational",
+      "record_count": 282
+    },
+    {
+      "source": "phosphoELM",
+      "type": "post_translational",
+      "record_count": 3235
+    },
+    {
+      "source": "phosphoELM_KEA",
+      "type": "post_translational",
+      "record_count": 3933
+    },
+    {
+      "source": "phosphoELM_MIMP",
+      "type": "post_translational",
+      "record_count": 12738
+    },
+    {
+      "source": "PhosphoNetworks",
+      "type": "post_translational",
+      "record_count": 4658
+    },
+    {
+      "source": "PhosphoPoint",
+      "type": "post_translational",
+      "record_count": 23067
+    },
+    {
+      "source": "PhosphoSite",
+      "type": "post_translational",
+      "record_count": 9733
+    },
+    {
+      "source": "PhosphoSite_KEA",
+      "type": "post_translational",
+      "record_count": 7091
+    },
+    {
+      "source": "PhosphoSite_MIMP",
+      "type": "post_translational",
+      "record_count": 16046
+    },
+    {
+      "source": "PhosphoSite_noref",
+      "type": "post_translational",
+      "record_count": 6496
+    },
+    {
+      "source": "PhosphoSite_ProtMapper",
+      "type": "post_translational",
+      "record_count": 13350
+    },
+    {
+      "source": "ProtMapper",
+      "type": "post_translational",
+      "record_count": 31266
+    },
+    {
+      "source": "Ramilowski2015",
+      "type": "post_translational",
+      "record_count": 4789
+    },
+    {
+      "source": "Ramilowski2015_Baccin2019",
+      "type": "post_translational",
+      "record_count": 3862
+    },
+    {
+      "source": "REACH_ProtMapper",
+      "type": "post_translational",
+      "record_count": 9898
+    },
+    {
+      "source": "Reactome_LRdb",
+      "type": "post_translational",
+      "record_count": 1858
+    },
+    {
+      "source": "Reactome_ProtMapper",
+      "type": "post_translational",
+      "record_count": 1375
+    },
+    {
+      "source": "Reactome_SignaLink3",
+      "type": "post_translational",
+      "record_count": 69
+    },
+    {
+      "source": "RegNetwork_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 16732
+    },
+    {
+      "source": "ReMap_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 275556
+    },
+    {
+      "source": "RLIMS-P_ProtMapper",
+      "type": "post_translational",
+      "record_count": 4492
+    },
+    {
+      "source": "scConnect",
+      "type": "post_translational",
+      "record_count": 1164
+    },
+    {
+      "source": "SignaLink3",
+      "type": "post_translational",
+      "record_count": 4641
+    },
+    {
+      "source": "SIGNOR",
+      "type": "post_translational",
+      "record_count": 80263
+    },
+    {
+      "source": "SIGNOR",
+      "type": "transcriptional",
+      "record_count": 2512
+    },
+    {
+      "source": "SIGNOR",
+      "type": "small_molecule_protein",
+      "record_count": 1604
+    },
+    {
+      "source": "SIGNOR",
+      "type": "post_transcriptional",
+      "record_count": 8
+    },
+    {
+      "source": "SIGNOR_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 6629
+    },
+    {
+      "source": "SIGNOR_ProtMapper",
+      "type": "post_translational",
+      "record_count": 10094
+    },
+    {
+      "source": "Sparser_ProtMapper",
+      "type": "post_translational",
+      "record_count": 10600
+    },
+    {
+      "source": "SPIKE",
+      "type": "post_translational",
+      "record_count": 19148
+    },
+    {
+      "source": "SPIKE_LC",
+      "type": "post_translational",
+      "record_count": 70178
+    },
+    {
+      "source": "STRING_talklr",
+      "type": "post_translational",
+      "record_count": 3420
+    },
+    {
+      "source": "talklr",
+      "type": "post_translational",
+      "record_count": 6074
+    },
+    {
+      "source": "TCRcuration_SignaLink3",
+      "type": "post_translational",
+      "record_count": 653
+    },
+    {
+      "source": "TFactS_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 10426
+    },
+    {
+      "source": "TFactS_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 4104
+    },
+    {
+      "source": "TFe_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 1276
+    },
+    {
+      "source": "TransmiR",
+      "type": "mirna_transcriptional",
+      "record_count": 3813
+    },
+    {
+      "source": "TransmiR",
+      "type": "transcriptional",
+      "record_count": 55
+    },
+    {
+      "source": "TRED_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 16732
+    },
+    {
+      "source": "TRIP",
+      "type": "post_translational",
+      "record_count": 459
+    },
+    {
+      "source": "TRRD_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 552
+    },
+    {
+      "source": "TRRUST_CollecTRI",
+      "type": "transcriptional",
+      "record_count": 25495
+    },
+    {
+      "source": "TRRUST_DoRothEA",
+      "type": "transcriptional",
+      "record_count": 17561
+    },
+    {
+      "source": "UniProt_LRdb",
+      "type": "post_translational",
+      "record_count": 612
+    },
+    {
+      "source": "Wang",
+      "type": "post_translational",
+      "record_count": 120407
+    },
+    {
+      "source": "Wojtowicz2020",
+      "type": "post_translational",
+      "record_count": 821
+    }
+  ],
   "enzsub": [
     {
       "source": "ProtMapper",
@@ -1250,5 +2031,5 @@
       "record_count": 124
     }
   ],
-  "generatedAt": "2025-07-30T11:45:10.273Z"
+  "generatedAt": "2025-07-30T11:59:49.134Z"
 }
