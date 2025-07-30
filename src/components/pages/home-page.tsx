@@ -2,6 +2,7 @@
 
 import { AboutSection } from "@/components/home/about-section"
 import { AIAssistantCard } from "@/components/home/ai-assistant-card"
+import { DatabaseStats } from "@/components/home/database-stats"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { SiteLayout } from "@/components/layout/main-layout"
@@ -67,6 +68,10 @@ export function HomePage() {
 
         <div className="mt-6 flex justify-center">
           <AIAssistantCard />
+        </div>
+
+        <div className="mt-12">
+          <DatabaseStats />
         </div>
 
         <AboutSection />
