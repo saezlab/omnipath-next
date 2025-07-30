@@ -247,6 +247,20 @@ export function DatabaseVoronoiTreemap() {
       .style("stroke-width", 1.5)
       .style("opacity", 0.9);
 
+    // Draw thicker borders for main category boundaries
+    const mainCategoryNodes = hierarchy.children || [];
+    g.append("g")
+      .selectAll(".main-category-border")
+      .data(mainCategoryNodes)
+      .enter()
+      .append("path")
+      .attr("class", "main-category-border")
+      .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
+      .style("fill", "none")
+      .style("stroke", "white")
+      .style("stroke-width", 5)
+      .style("pointer-events", "none");
+
     // Calculate polygon bounds for each cell
     const calculatePolygonBounds = (polygon: any) => {
       const xs = polygon.map((p: [number, number]) => p[0]);
