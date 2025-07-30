@@ -2,13 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import dbStats from "@/data/db-stats.json";
 
-const COLORS = [
-  "#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8",
-  "#82CA9D", "#FFC658", "#8DD1E1", "#D084D0", "#FFD93D"
-];
 
 interface SourceStat {
   source: string;
