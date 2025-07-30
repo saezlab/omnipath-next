@@ -9,40 +9,71 @@ import { SearchFilters } from "@/features/annotations-browser/types"
 
 // Filter options
 const SOURCE_GROUPS = {
-  "Cell Communication": [
-    { value: "CellPhoneDB", label: "CellPhoneDB" },
-    { value: "CellPhoneDB_complex", label: "CellPhoneDB Complexes" },
-    { value: "CellChatDB", label: "CellChatDB" },
-    { value: "CellChatDB_complex", label: "CellChatDB Complexes" },
-    { value: "CellTalkDB", label: "CellTalkDB" },
-    { value: "ICELLNET", label: "ICELLNET" },
-    { value: "ICELLNET_complex", label: "ICELLNET Complexes" },
+  "Cell-cell communication": [
+    { value: "Baccin2019", label: "Baccin 2019" },
     { value: "CellCall", label: "CellCall" },
     { value: "CellCellInteractions", label: "Cell-Cell Interactions" },
+    { value: "CellChatDB", label: "CellChatDB" },
+    { value: "CellChatDB_complex", label: "CellChatDB Complexes" },
     { value: "Cellinker", label: "Cellinker" },
     { value: "Cellinker_complex", label: "Cellinker Complexes" },
+    { value: "CellPhoneDB", label: "CellPhoneDB" },
+    { value: "CellPhoneDB_complex", label: "CellPhoneDB Complexes" },
+    { value: "CellTalkDB", label: "CellTalkDB" },
+    { value: "connectomeDB2020", label: "ConnectomeDB" },
+    { value: "EMBRACE", label: "EMBRACE" },
+    { value: "Guide2Pharma", label: "Guide2Pharma" },
+    { value: "iTALK", label: "iTALK" },
+    { value: "HPMR", label: "HPMR" },
+    { value: "ICELLNET", label: "ICELLNET" },
+    { value: "ICELLNET_complex", label: "ICELLNET Complexes" },
+    { value: "Kirouac2010", label: "Kirouac 2010" },
+    { value: "LRdb", label: "LRdb" },
+    { value: "Ramilowski2015", label: "Ramilowski 2015" },
     { value: "scConnect", label: "scConnect" },
     { value: "scConnect_complex", label: "scConnect Complexes" },
-    { value: "iTALK", label: "iTALK" },
+    { value: "SignaLink_function", label: "SignaLink Function" },
+    { value: "Surfaceome", label: "Surfaceome" },
     { value: "talklr", label: "talklr" },
-    { value: "LRdb", label: "LRdb" },
-    { value: "connectomeDB2020", label: "ConnectomeDB" },
   ],
-  "Localization/Subcellular": [
-    { value: "UniProt_location", label: "UniProt Location" },
+  "Localization (subcellular)": [
+    { value: "ComPPI", label: "ComPPI" },
+    { value: "Exocarta", label: "Exocarta" },
     { value: "HPA_subcellular", label: "HPA Subcellular" },
     { value: "HPA_secretome", label: "HPA Secretome" },
-    { value: "ComPPI", label: "ComPPI" },
+    { value: "HumanCellMap", label: "Human Cell Map" },
+    { value: "LOCATE", label: "LOCATE" },
+    { value: "Ramilowski_location", label: "Ramilowski Location" },
+    { value: "UniProt_location", label: "UniProt Location" },
+    { value: "Vesiclepedia", label: "Vesiclepedia" },
+    { value: "Wang", label: "Wang" },
+  ],
+  "Membrane localization & topology": [
+    { value: "Almen2009", label: "Almen 2009" },
+    { value: "CellPhoneDB", label: "CellPhoneDB" },
+    { value: "CSPA", label: "CSPA" },
     { value: "LOCATE", label: "LOCATE" },
     { value: "Membranome", label: "Membranome" },
-    { value: "Surfaceome", label: "Surfaceome" },
     { value: "OPM", label: "OPM" },
-    { value: "TopDB", label: "TopDB" },
-    { value: "TCDB", label: "TCDB" },
     { value: "Phobius", label: "Phobius" },
     { value: "Ramilowski_location", label: "Ramilowski Location" },
+    { value: "TopDB", label: "TopDB" },
+    { value: "UniProt_topology", label: "Topology" },
   ],
-  "Function/Pathway": [
+  "Extracellular matrix, adhesion": [
+    { value: "Matrisome", label: "Matrisome" },
+    { value: "MatrixDB", label: "MatrixDB" },
+    { value: "Integrins", label: "Integrins" },
+    { value: "MCAM", label: "MCAM" },
+    { value: "Zhong2015", label: "Zhong 2015" },
+  ],
+  "Vesicles, secretome": [
+    { value: "Almen2009", label: "Almen 2009" },
+    { value: "Exocarta", label: "Exocarta" },
+    { value: "Vesiclepedia", label: "Vesiclepedia" },
+  ],
+  "Function, pathway": [
+    { value: "CellChatDB", label: "CellChatDB" },
     { value: "GO_Intercell", label: "GO Intercell" },
     { value: "KEGG", label: "KEGG" },
     { value: "KEGG-PC", label: "KEGG-PC" },
@@ -55,8 +86,14 @@ const SOURCE_GROUPS = {
     { value: "PROGENy", label: "PROGENy" },
     { value: "MSigDB", label: "MSigDB" },
     { value: "UniProt_keyword", label: "Keywords" },
+    { value: "Wang", label: "Wang" },
   ],
-  "Disease/Cancer": [
+  "Signatures": [
+    { value: "CytoSig", label: "CytoSig" },
+    { value: "PanglaoDB", label: "PanglaoDB" },
+    { value: "PROGENy", label: "PROGENy" },
+  ],
+  "Disease, cancer": [
     { value: "DisGeNet", label: "DisGeNet" },
     { value: "CancerGeneCensus", label: "Cancer Gene Census" },
     { value: "IntOGen", label: "IntOGen" },
@@ -65,53 +102,31 @@ const SOURCE_GROUPS = {
     { value: "DGIdb", label: "DGIdb" },
     { value: "CPAD", label: "CPAD" },
   ],
-  "Protein Classification": [
+  "Protein classes & families": [
+    { value: "Adhesome", label: "Adhesome" },
+    { value: "DGIdb", label: "DGIdb" },
     { value: "UniProt_family", label: "Protein Family" },
-    { value: "UniProt_topology", label: "Topology" },
     { value: "GPCRdb", label: "GPCRdb" },
+    { value: "HPMR", label: "HPMR" },
     { value: "kinase.com", label: "Kinase.com" },
     { value: "Phosphatome", label: "Phosphatome" },
     { value: "TFcensus", label: "TFcensus" },
+    { value: "TCDB", label: "TCDB" },
     { value: "InterPro", label: "InterPro" },
     { value: "HGNC", label: "HGNC" },
+    { value: "OPM", label: "OPM" },
   ],
-  "Extracellular Matrix": [
-    { value: "Matrisome", label: "Matrisome" },
-    { value: "MatrixDB", label: "MatrixDB" },
-    { value: "Adhesome", label: "Adhesome" },
-    { value: "Integrins", label: "Integrins" },
-    { value: "MCAM", label: "MCAM" },
-  ],
-  "Vesicles/Secretome": [
-    { value: "Exocarta", label: "Exocarta" },
-    { value: "Vesiclepedia", label: "Vesiclepedia" },
-    { value: "HPMR", label: "HPMR" },
-  ],
-  "Cell Type/Tissue": [
+  "Cell type, tissue": [
     { value: "HPA_tissue", label: "HPA Tissue" },
-    { value: "CSPA", label: "CSPA" },
     { value: "CSPA_celltype", label: "CSPA Cell Type" },
     { value: "CellTypist", label: "CellTypist" },
-    { value: "PanglaoDB", label: "PanglaoDB" },
-    { value: "HumanCellMap", label: "Human Cell Map" },
     { value: "UniProt_tissue", label: "UniProt Tissue" },
-  ],
-  "Literature/Reviews": [
-    { value: "Almen2009", label: "Almen 2009" },
-    { value: "Baccin2019", label: "Baccin 2019" },
-    { value: "Kirouac2010", label: "Kirouac 2010" },
-    { value: "Lambert2018", label: "Lambert 2018" },
-    { value: "Ramilowski2015", label: "Ramilowski 2015" },
-    { value: "Wang", label: "Wang" },
-    { value: "Zhong2015", label: "Zhong 2015" },
-  ],
-  "Pharmacology": [
-    { value: "Guide2Pharma", label: "Guide2Pharma" },
-    { value: "CytoSig", label: "CytoSig" },
-  ],
-  "Other": [
     { value: "EMBRACE", label: "EMBRACE" },
-  ]
+  ],
+  "Transcription factors": [
+    { value: "Lambert2018", label: "Lambert 2018" },
+    { value: "TFcensus", label: "TFcensus" },
+  ],
 }
 
 interface FilterCounts {
@@ -161,7 +176,7 @@ export function AnnotationsFilterSidebar({
         if (groupName === "Other") {
           // Get all sources that exist in filterCounts
           const allAvailableSources = Object.keys(filterCounts.sources);
-          
+
           // Get all categorized sources (excluding "Other")
           const categorizedSources = new Set();
           Object.entries(SOURCE_GROUPS).forEach(([key, groupSources]) => {
@@ -171,7 +186,7 @@ export function AnnotationsFilterSidebar({
               });
             }
           });
-          
+
           // Find uncategorized sources
           const uncategorizedSources = allAvailableSources
             .filter(source => !categorizedSources.has(source) && (filterCounts.sources[source] || 0) > 0)
@@ -179,7 +194,7 @@ export function AnnotationsFilterSidebar({
               value: source,
               label: source.charAt(0).toUpperCase() + source.slice(1).replace(/_/g, ' ')
             }));
-          
+
           // Add uncategorized sources to the "Other" category
           filteredSources = [...filteredSources, ...uncategorizedSources]
             .sort((a, b) => {
@@ -212,8 +227,8 @@ export function AnnotationsFilterSidebar({
                     />
                     {source.label}
                   </Label>
-                  <Badge 
-                    variant={filters.sources.includes(source.value) ? "default" : "outline"} 
+                  <Badge
+                    variant={filters.sources.includes(source.value) ? "default" : "outline"}
                     className={`ml-auto group-hover:bg-primary/10 transition-colors ${
                       filters.sources.includes(source.value) ? "bg-primary text-primary-foreground" : ""
                     }`}
