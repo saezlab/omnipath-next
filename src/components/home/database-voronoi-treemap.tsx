@@ -29,13 +29,22 @@ export function DatabaseVoronoiTreemap() {
     const margin = { top: 20, right: 20, bottom: 20, left: 20 };
     const radius = (svgSize - margin.left - margin.right) / 2;
 
-    // Database colors
+    // Database colors - using a scientifically inspired palette
     const databaseColors = {
-      Interactions: "#8884d8",
-      "Enzyme-Substrate": "#82ca9d",
-      Complexes: "#ffc658",
-      Annotations: "#ff7c7c",
-      Intercellular: "#8dd1e1"
+      Interactions: "#2E86AB",        // Ocean blue - for molecular interactions
+      "Enzyme-Substrate": "#A23B72",  // Deep magenta - for enzymatic processes
+      Complexes: "#F18F01",           // Amber orange - for protein complexes
+      Annotations: "#C73E1D",         // Rust red - for functional annotations
+      Intercellular: "#6A994E"        // Forest green - for cell communication
+    };
+
+    // Interaction type colors - blue-adjacent palette for clear distinction while maintaining cohesion
+    const interactionTypeColors = {
+      "transcriptional": "#2E86AB",          // Main blue - core gene regulation (matches parent)
+      "post_translational": "#4A5568",       // Slate gray-blue - protein modifications
+      "mirna_transcriptional": "#7C3AED",    // Purple-blue - miRNA regulation
+      "post_transcriptional": "#0891B2",     // Cyan-blue - RNA processing  
+      "small_molecule_protein": "#059669"    // Teal-green - drug/chemical interactions
     };
 
     // Function to clean source names by removing _word suffixes
@@ -54,6 +63,57 @@ export function DatabaseVoronoiTreemap() {
       return sourceName;
     };
 
+    // Function to process interaction types as subsections within Interactions
+    const processInteractionTypes = () => {
+      // Group interactions by type
+      const typeGroups = new Map<string, any[]>();
+      
+      dbStats.interactionsSourceType.forEach(item => {
+        let type = item.type;
+        
+        // Combine post_transcriptional and lncrna_post_transcriptional
+        if (type === 'lncrna_post_transcriptional') {
+          type = 'post_transcriptional';
+        }
+        
+        if (!typeGroups.has(type)) {
+          typeGroups.set(type, []);
+        }
+        typeGroups.get(type)!.push(item);
+      });
+      
+      // Convert to children format for interaction subsections
+      const interactionSubsections = [];
+      const targetTypes = ['mirna_transcriptional', 'post_transcriptional', 'small_molecule_protein', 'transcriptional', 'post_translational'];
+      
+      for (const type of targetTypes) {
+        const sources = typeGroups.get(type) || [];
+        if (sources.length > 0) {
+          // Sort by record count and take top sources
+          const sortedSources = sources
+            .sort((a, b) => b.record_count - a.record_count)
+            .slice(0, type === 'post_translational' ? 40 : 20);
+          
+          interactionSubsections.push({
+            name: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            color: interactionTypeColors[type as keyof typeof interactionTypeColors],
+            children: sortedSources.map(d => {
+              const cleanedName = cleanSourceName(d.source);
+              return {
+                name: cleanedName,
+                originalName: d.source,
+                interactionType: type,
+                weight: Math.log10(d.record_count + 1),
+                code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
+              };
+            })
+          });
+        }
+      }
+      
+      return interactionSubsections;
+    };
+
     // Transform data into hierarchical format
     const hierarchicalData: VoronoiNode = {
       name: "OmniPath",
@@ -61,15 +121,7 @@ export function DatabaseVoronoiTreemap() {
         {
           name: "Interactions",
           color: databaseColors.Interactions,
-          children: dbStats.interactions.slice(0, 100).map(d => {
-            const cleanedName = cleanSourceName(d.source);
-            return {
-              name: cleanedName,
-              originalName: d.source,
-              weight: Math.log10(d.record_count + 1), // Log scale for better visualization
-              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
-            };
-          })
+          children: processInteractionTypes()
         },
         {
           name: "Enzyme-Substrate",
@@ -276,6 +328,11 @@ export function DatabaseVoronoiTreemap() {
       .text((d: any) => {
         const actualCount = Math.round(Math.pow(10, d.value) - 1);
         let tooltip = `${d.data.name}\n${actualCount.toLocaleString()} records\nDatabase: ${d.parent.data.name}`;
+        
+        // Show interaction type if available
+        if (d.data.interactionType) {
+          tooltip += `\nType: ${d.data.interactionType.replace(/_/g, ' ')}`;
+        }
         
         // Show original name if it was cleaned
         if (d.data.originalName && d.data.originalName !== d.data.name) {
