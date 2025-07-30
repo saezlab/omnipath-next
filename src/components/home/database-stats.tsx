@@ -97,8 +97,21 @@ export function DatabaseStats() {
         </Card>
       </div>
 
+      {/* Voronoi Treemap - prominently displayed above tabs */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Database Overview - Voronoi Treemap</CardTitle>
+          <CardDescription>
+            Hierarchical visualization of all databases and their sources. Circle size represents the logarithm of record counts.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DatabaseVoronoiTreemap />
+        </CardContent>
+      </Card>
+
       <Tabs defaultValue="interactions" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-6">
           {databases.map((db) => (
             <TabsTrigger key={db.title} value={db.title.toLowerCase()}>
               {db.title}
@@ -106,9 +119,6 @@ export function DatabaseStats() {
           ))}
           <TabsTrigger value="source-types">
             Source-Types
-          </TabsTrigger>
-          <TabsTrigger value="treemap">
-            Treemap
           </TabsTrigger>
         </TabsList>
         
@@ -247,20 +257,6 @@ export function DatabaseStats() {
               </Card>
             ))}
           </div>
-        </TabsContent>
-
-        <TabsContent value="treemap" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Database Overview - Voronoi Treemap</CardTitle>
-              <CardDescription>
-                Hierarchical visualization of all databases and their sources. Circle size represents the logarithm of record counts.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DatabaseVoronoiTreemap />
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>
