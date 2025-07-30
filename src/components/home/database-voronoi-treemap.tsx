@@ -13,6 +13,24 @@ interface VoronoiNode {
   code?: string;
 }
 
+// Database colors - using a scientifically inspired palette
+const databaseColors = {
+  Interactions: "#2E86AB",        // Ocean blue - for molecular interactions
+  "Enzyme-Substrate": "#A23B72",  // Deep magenta - for enzymatic processes
+  Complexes: "#F18F01",           // Amber orange - for protein complexes
+  Annotations: "#C73E1D",         // Rust red - for functional annotations
+  Intercellular: "#6A994E"        // Forest green - for cell communication
+};
+
+// Interaction type colors - blue-adjacent palette for clear distinction while maintaining cohesion
+const interactionTypeColors = {
+  "transcriptional": "#2E86AB",          // Main blue - core gene regulation (matches parent)
+  "post_translational": "#4A5568",       // Slate gray-blue - protein modifications
+  "mirna_transcriptional": "#7C3AED",    // Purple-blue - miRNA regulation
+  "post_transcriptional": "#0891B2",     // Cyan-blue - RNA processing  
+  "small_molecule_protein": "#059669"    // Teal-green - drug/chemical interactions
+};
+
 export function DatabaseVoronoiTreemap() {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,24 +46,6 @@ export function DatabaseVoronoiTreemap() {
     const svgSize = Math.min(containerWidth, 800);
     const margin = { top: 20, right: 20, bottom: 20, left: 20 };
     const radius = (svgSize - margin.left - margin.right) / 2;
-
-    // Database colors - using a scientifically inspired palette
-    const databaseColors = {
-      Interactions: "#2E86AB",        // Ocean blue - for molecular interactions
-      "Enzyme-Substrate": "#A23B72",  // Deep magenta - for enzymatic processes
-      Complexes: "#F18F01",           // Amber orange - for protein complexes
-      Annotations: "#C73E1D",         // Rust red - for functional annotations
-      Intercellular: "#6A994E"        // Forest green - for cell communication
-    };
-
-    // Interaction type colors - blue-adjacent palette for clear distinction while maintaining cohesion
-    const interactionTypeColors = {
-      "transcriptional": "#2E86AB",          // Main blue - core gene regulation (matches parent)
-      "post_translational": "#4A5568",       // Slate gray-blue - protein modifications
-      "mirna_transcriptional": "#7C3AED",    // Purple-blue - miRNA regulation
-      "post_transcriptional": "#0891B2",     // Cyan-blue - RNA processing  
-      "small_molecule_protein": "#059669"    // Teal-green - drug/chemical interactions
-    };
 
     // Function to clean source names by removing _word suffixes
     const cleanSourceName = (sourceName: string): string => {
@@ -346,8 +346,48 @@ export function DatabaseVoronoiTreemap() {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full flex justify-center">
-      <svg ref={svgRef}></svg>
+    <div ref={containerRef} className="w-full space-y-6">
+      {/* Treemap visualization */}
+      <div className="flex justify-center">
+        <svg ref={svgRef}></svg>
+      </div>
+      
+      {/* Legend */}
+      <div className="space-y-4">
+        {/* Main databases legend */}
+        <div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-2">Databases</h4>
+          <div className="flex flex-wrap gap-4">
+            {Object.entries(databaseColors).map(([name, color]) => (
+              <div key={name} className="flex items-center gap-2">
+                <div 
+                  className="w-4 h-4 rounded-sm border border-gray-300" 
+                  style={{ backgroundColor: color }}
+                ></div>
+                <span className="text-sm text-gray-600">{name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Interaction types legend */}
+        <div>
+          <h4 className="text-sm font-semibold text-gray-700 mb-2">Interaction Types</h4>
+          <div className="flex flex-wrap gap-4">
+            {Object.entries(interactionTypeColors).map(([type, color]) => (
+              <div key={type} className="flex items-center gap-2">
+                <div 
+                  className="w-4 h-4 rounded-sm border border-gray-300" 
+                  style={{ backgroundColor: color }}
+                ></div>
+                <span className="text-sm text-gray-600">
+                  {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
