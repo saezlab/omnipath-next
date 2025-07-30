@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'd3-voronoi-treemap' {
   import { HierarchyNode } from 'd3-hierarchy';
 

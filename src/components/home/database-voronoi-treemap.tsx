@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useRef } from "react";
@@ -228,7 +230,7 @@ export function DatabaseVoronoiTreemap() {
       .clamp(true);
 
     // Draw cells
-    const cells = g.append("g")
+    g.append("g")
       .selectAll(".cell")
       .data(leaves)
       .enter()
@@ -303,7 +305,7 @@ export function DatabaseVoronoiTreemap() {
       });
 
     // Add hover effects
-    const hoverers = g.append("g")
+    g.append("g")
       .selectAll(".hoverer")
       .data(leaves)
       .enter()
@@ -314,7 +316,7 @@ export function DatabaseVoronoiTreemap() {
       .style("stroke", "transparent")
       .style("stroke-width", 0)
       .style("cursor", "pointer")
-      .on("mouseenter", function(event, d: any) {
+      .on("mouseenter", function() {
         d3.select(this)
           .style("stroke", "white")
           .style("stroke-width", 3);
