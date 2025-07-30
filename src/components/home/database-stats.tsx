@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import dbStats from "@/data/db-stats.json";
+import { DatabaseVoronoiTreemap } from "./database-voronoi-treemap";
 
 
 interface SourceStat {
@@ -95,6 +96,19 @@ export function DatabaseStats() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Voronoi Treemap - prominently displayed above tabs */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Database Overview - Voronoi Treemap</CardTitle>
+          <CardDescription>
+            Hierarchical visualization of all databases and their sources. Circle size represents the logarithm of record counts.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <DatabaseVoronoiTreemap />
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="interactions" className="w-full">
         <TabsList className="grid w-full grid-cols-6">
