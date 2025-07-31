@@ -113,9 +113,11 @@ function createTreemap(
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove();
 
-  // Set viewBox for proper scaling - extend width to accommodate side labels
-  const svgWidth = size + 300; // Add more width for side labels
-  svg.attr("viewBox", `0 0 ${svgWidth} ${size}`)
+  // Set viewBox for proper scaling - extend in all directions for circular labels
+  const padding = 120; // Padding for labels around the entire circle
+  const svgWidth = size + padding * 2;
+  const svgHeight = size + padding * 2;
+  svg.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
   const margin = { top: 5, right: 5, bottom: 30, left: 5 };
@@ -124,7 +126,7 @@ function createTreemap(
   // Add title below the circle - centered in the extended viewBox
   svg.append("text")
     .attr("x", svgWidth / 2)
-    .attr("y", size - 2)
+    .attr("y", svgHeight - 20)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "bold")
@@ -132,7 +134,7 @@ function createTreemap(
     .text(title);
 
   const g = svg.append("g")
-    .attr("transform", `translate(${svgWidth/2},${size/2})`);
+    .attr("transform", `translate(${svgWidth/2},${svgHeight/2 - 10})`);
 
   // Create circular clipping polygon
   const _2PI = 2 * Math.PI;
@@ -224,130 +226,57 @@ function createTreemap(
     };
   };
 
-  // Draw category/type labels connected to circle edge
+  // Draw category/type labels around the circle with direct radial lines
   if (parents.length > 0) {
-    // Sort parents by their centroid angle for consistent ordering
-    const sortedParents = parents.sort((a: any, b: any) => {
-      const angleA = Math.atan2(a.polygon.site.y, a.polygon.site.x);
-      const angleB = Math.atan2(b.polygon.site.y, b.polygon.site.x);
-      return angleA - angleB;
-    });
-
-    const leftLabels: any[] = [];
-    const rightLabels: any[] = [];
+    const labelRadius = radius + 50; // Distance from center to labels
+    const linesGroup = g.append("g").attr("class", "connector-lines");
     
-    // Calculate edge connection points and organize by sides
-    sortedParents.forEach((d: any) => {
+    // Draw direct radial lines and labels for each parent
+    parents.forEach((d: any) => {
       const centroid = d.polygon.site;
       const angle = Math.atan2(centroid.y, centroid.x);
       
-      // Calculate connection point at circle edge
-      const edgeX = radius * Math.cos(angle);
-      const edgeY = radius * Math.sin(angle);
+      // Calculate label position at fixed radius
+      const labelX = labelRadius * Math.cos(angle);
+      const labelY = labelRadius * Math.sin(angle);
       
-      const labelData = {
-        ...d,
-        centroid,
-        angle,
-        edgeX,
-        edgeY
-      };
-      
-      if (edgeX < 0) {
-        leftLabels.push(labelData);
-      } else {
-        rightLabels.push(labelData);
-      }
-    });
-
-    // Draw connecting lines
-    const linesGroup = g.append("g").attr("class", "connector-lines");
-    
-    // Draw lines for left labels
-    leftLabels.forEach((d: any, i: number) => {
-      const spacing = Math.max(35, 250 / Math.max(leftLabels.length, 1));
-      const labelY = (i - leftLabels.length / 2 + 0.5) * spacing;
-      
-      // Line from centroid to circle edge
+      // Draw direct line from centroid to label
       linesGroup.append("line")
-        .attr("x1", d.centroid.x)
-        .attr("y1", d.centroid.y)
-        .attr("x2", d.edgeX)
-        .attr("y2", d.edgeY)
-        .style("stroke", d.data.color || "#666")
-        .style("stroke-width", 2)
-        .style("opacity", 0.8);
-      
-      // Line from circle edge to label
-      linesGroup.append("line")
-        .attr("x1", d.edgeX)
-        .attr("y1", d.edgeY)
-        .attr("x2", -radius - 30)
+        .attr("x1", centroid.x)
+        .attr("y1", centroid.y)
+        .attr("x2", labelX)
         .attr("y2", labelY)
         .style("stroke", d.data.color || "#666")
         .style("stroke-width", 2)
         .style("opacity", 0.8);
     });
 
-    // Draw lines for right labels
-    rightLabels.forEach((d: any, i: number) => {
-      const spacing = Math.max(35, 250 / Math.max(rightLabels.length, 1));
-      const labelY = (i - rightLabels.length / 2 + 0.5) * spacing;
-      
-      // Line from centroid to circle edge
-      linesGroup.append("line")
-        .attr("x1", d.centroid.x)
-        .attr("y1", d.centroid.y)
-        .attr("x2", d.edgeX)
-        .attr("y2", d.edgeY)
-        .style("stroke", d.data.color || "#666")
-        .style("stroke-width", 2)
-        .style("opacity", 0.8);
-      
-      // Line from circle edge to label
-      linesGroup.append("line")
-        .attr("x1", d.edgeX)
-        .attr("y1", d.edgeY)
-        .attr("x2", radius + 30)
-        .attr("y2", labelY)
-        .style("stroke", d.data.color || "#666")
-        .style("stroke-width", 2)
-        .style("opacity", 0.8);
-    });
-
-    // Draw left side labels
+    // Draw labels positioned around the circle
     g.append("g")
-      .selectAll(".left-label")
-      .data(leftLabels)
+      .selectAll(".radial-label")
+      .data(parents)
       .enter()
       .append("text")
-      .attr("class", "left-label")
-      .attr("x", -radius - 40)
-      .attr("y", (_, i: number) => {
-        const spacing = Math.max(35, 250 / Math.max(leftLabels.length, 1));
-        return (i - leftLabels.length / 2 + 0.5) * spacing;
+      .attr("class", "radial-label")
+      .attr("x", (d: any) => {
+        const centroid = d.polygon.site;
+        const angle = Math.atan2(centroid.y, centroid.x);
+        return labelRadius * Math.cos(angle);
       })
-      .attr("text-anchor", "end")
-      .attr("dominant-baseline", "middle")
-      .style("font-size", "11px")
-      .style("font-family", "Arial, sans-serif")
-      .style("fill", "#333")
-      .style("font-weight", "600")
-      .text((d: any) => d.data.name);
-
-    // Draw right side labels
-    g.append("g")
-      .selectAll(".right-label")
-      .data(rightLabels)
-      .enter()
-      .append("text")
-      .attr("class", "right-label")
-      .attr("x", radius + 40)
-      .attr("y", (_, i: number) => {
-        const spacing = Math.max(35, 250 / Math.max(rightLabels.length, 1));
-        return (i - rightLabels.length / 2 + 0.5) * spacing;
+      .attr("y", (d: any) => {
+        const centroid = d.polygon.site;
+        const angle = Math.atan2(centroid.y, centroid.x);
+        return labelRadius * Math.sin(angle);
       })
-      .attr("text-anchor", "start")
+      .attr("text-anchor", (d: any) => {
+        const centroid = d.polygon.site;
+        const angle = Math.atan2(centroid.y, centroid.x);
+        // Adjust text anchor based on position around circle
+        if (angle > Math.PI / 2 || angle < -Math.PI / 2) {
+          return "end"; // Left side of circle
+        }
+        return "start"; // Right side of circle
+      })
       .attr("dominant-baseline", "middle")
       .style("font-size", "11px")
       .style("font-family", "Arial, sans-serif")
@@ -568,14 +497,14 @@ export function DatabasePrintTreemaps() {
         {/* Interactions with integrated labels */}
         <div className="flex justify-center">
           <div className="text-center">
-            <svg ref={interactionsRef} width={750} height={450} style={{ display: "block" }}></svg>
+            <svg ref={interactionsRef} width={590} height={590} style={{ display: "block" }}></svg>
           </div>
         </div>
 
         {/* Annotations with integrated labels */}
         <div className="flex justify-center">
           <div className="text-center">
-            <svg ref={annotationsRef} width={750} height={450} style={{ display: "block" }}></svg>
+            <svg ref={annotationsRef} width={590} height={590} style={{ display: "block" }}></svg>
           </div>
         </div>
 
