@@ -446,21 +446,22 @@ export function DatabasePrintTreemapsAlternative() {
 
       {/* Treemaps container */}
       <div className="max-w-7xl mx-auto px-4">
-        {/* First row - 3 treemaps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-          <div className="flex justify-center">
-            <svg ref={enzymeSubstrateRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+        <div>
+          {/* First row - 3 treemaps */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+            <div className="flex justify-center">
+              <svg ref={enzymeSubstrateRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+            </div>
+            <div className="flex justify-center">
+              <svg ref={interactionsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+            </div>
+            <div className="flex justify-center">
+              <svg ref={complexesRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+            </div>
           </div>
-          <div className="flex justify-center">
-            <svg ref={interactionsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
-          </div>
-          <div className="flex justify-center">
-            <svg ref={complexesRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
-          </div>
-        </div>
 
-        {/* Second row - 2 treemaps + legend */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+          {/* Second row - 2 treemaps + legend */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
           <div className="flex justify-center">
             <svg ref={intercellularRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
           </div>
@@ -529,6 +530,7 @@ export function DatabasePrintTreemapsAlternative() {
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>
