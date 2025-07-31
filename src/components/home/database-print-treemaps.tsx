@@ -244,87 +244,8 @@ function createTreemap(
     }
   });
 
-  // Draw category/type labels around the circle with lines from arc midpoints (only for edge sections)
+  // Draw external labels positioned around the circle (only for edge sections)
   if (edgeSections.length > 0) {
-    const labelRadius = radius + 50; // Distance from center to labels
-    const linesGroup = g.append("g").attr("class", "connector-lines");
-    
-    // Calculate arc midpoints for each edge section
-    edgeSections.forEach((d: any) => {
-      // Find all points of the polygon that are on or near the circle edge
-      const edgePoints = d.polygon.filter((point: [number, number]) => {
-        const distFromCenter = Math.sqrt(point[0] * point[0] + point[1] * point[1]);
-        return Math.abs(distFromCenter - radius) < radius * 0.1; // Within 10% of radius
-      });
-      
-      // Calculate angles for edge points
-      const angles = edgePoints.map((point: [number, number]) => 
-        Math.atan2(point[1], point[0])
-      );
-      
-      // Normalize angles to [0, 2π] and sort
-      const normalizedAngles = angles.map((angle: number) => angle < 0 ? angle + 2 * Math.PI : angle).sort();
-      
-      // Handle wraparound case (section crosses 0/2π boundary)
-      let minAngle = normalizedAngles[0];
-      let maxAngle = normalizedAngles[normalizedAngles.length - 1];
-      
-      // Check if the arc spans across the 0/2π boundary
-      const angleSpan = maxAngle - minAngle;
-      if (angleSpan > Math.PI) {
-        // Section wraps around, so we need to find the actual arc bounds
-        const gaps = [];
-        for (let i = 1; i < normalizedAngles.length; i++) {
-          gaps.push({
-            size: normalizedAngles[i] - normalizedAngles[i-1],
-            startAngle: normalizedAngles[i-1],
-            endAngle: normalizedAngles[i]
-          });
-        }
-        // Add the wraparound gap
-        gaps.push({
-          size: (2 * Math.PI - maxAngle) + minAngle,
-          startAngle: maxAngle,
-          endAngle: minAngle + 2 * Math.PI
-        });
-        
-        // Find the largest gap (this is NOT part of our section)
-        const largestGap = gaps.reduce((max, gap) => gap.size > max.size ? gap : max);
-        
-        // The section spans from the end of the largest gap to its start
-        minAngle = largestGap.endAngle % (2 * Math.PI);
-        maxAngle = largestGap.startAngle;
-      }
-      
-      // Calculate midpoint angle
-      let midAngle;
-      if (maxAngle < minAngle) {
-        // Wraparound case
-        midAngle = ((maxAngle + 2 * Math.PI + minAngle) / 2) % (2 * Math.PI);
-      } else {
-        midAngle = (minAngle + maxAngle) / 2;
-      }
-      
-      // Calculate the point on circle edge at midpoint angle
-      const edgeX = radius * Math.cos(midAngle);
-      const edgeY = radius * Math.sin(midAngle);
-      
-      // Calculate label position at fixed radius
-      const labelX = labelRadius * Math.cos(midAngle);
-      const labelY = labelRadius * Math.sin(midAngle);
-      
-      // Draw line from circle edge to label
-      linesGroup.append("line")
-        .attr("x1", edgeX)
-        .attr("y1", edgeY)
-        .attr("x2", labelX)
-        .attr("y2", labelY)
-        .style("stroke", d.data.color || "#666")
-        .style("stroke-width", 2)
-        .style("opacity", 0.8);
-    });
-
-    // Draw external labels positioned around the circle (only for edge sections)
     g.append("g")
       .selectAll(".radial-label")
       .data(edgeSections)
@@ -478,25 +399,6 @@ function createTreemap(
       .text((d: any) => d.data.name);
   }
 
-  // Draw overlay labels for inner sections (sections not touching the edge)
-  if (innerSections.length > 0) {
-    g.append("g")
-      .selectAll(".inner-label")
-      .data(innerSections)
-      .enter()
-      .append("text")
-      .attr("class", "inner-label")
-      .attr("transform", (d: any) => `translate(${d.polygon.site.x},${d.polygon.site.y})`)
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .style("font-size", "12px")
-      .style("font-family", "Arial, sans-serif")
-      .style("fill", "#333")
-      .style("font-weight", "600")
-      .style("text-shadow", "0 0 3px white, 0 0 6px white")
-      .text((d: any) => d.data.name);
-  }
-
   // Draw source labels
   g.append("g")
     .selectAll(".label")
@@ -530,6 +432,25 @@ function createTreemap(
         return estimatedTextWidth < bounds.width * 0.8 ? d.data.name : d.data.code;
       }
     });
+
+  // Draw overlay labels for inner sections (sections not touching the edge)
+  if (innerSections.length > 0) {
+    g.append("g")
+      .selectAll(".inner-label")
+      .data(innerSections)
+      .enter()
+      .append("text")
+      .attr("class", "inner-label")
+      .attr("transform", (d: any) => `translate(${d.polygon.site.x},${d.polygon.site.y})`)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .style("font-size", "12px")
+      .style("font-family", "Arial, sans-serif")
+      .style("fill", "#333")
+      .style("font-weight", "600")
+      .style("text-shadow", "0 0 3px white, 0 0 6px white")
+      .text((d: any) => d.data.name);
+  }
 }
 
 export function DatabasePrintTreemaps() {
