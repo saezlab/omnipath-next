@@ -554,22 +554,11 @@ export function DatabasePrintTreemaps() {
         OmniPath Database Contents
       </h2>
 
-      {/* Flexible packed bubble layout */}
+      {/* Main layout */}
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex gap-4 justify-center">
-          {/* Main content area with packed bubbles */}
-          <div className="flex flex-wrap gap-3 justify-center items-center" style={{ maxWidth: "800px" }}>
-            {/* Interactions - largest */}
-            <div style={{ width: `${sizes.interactions}px`, height: `${sizes.interactions}px` }}>
-              <svg ref={interactionsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
-            </div>
-            
-            {/* Annotations - second largest */}
-            <div style={{ width: `${sizes.annotations}px`, height: `${sizes.annotations}px` }}>
-              <svg ref={annotationsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
-            </div>
-            
-            {/* Smaller databases */}
+          {/* Left side - smaller databases */}
+          <div className="flex flex-wrap gap-3 justify-end items-center" style={{ width: "250px" }}>
             <div style={{ width: `${sizes.intercellular}px`, height: `${sizes.intercellular}px` }}>
               <svg ref={intercellularRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
@@ -583,39 +572,49 @@ export function DatabasePrintTreemaps() {
             </div>
           </div>
 
-          {/* Side panel with labels */}
-          <div className="flex flex-col gap-6" style={{ width: "280px", paddingLeft: "15px" }}>
-            {/* Interaction Types */}
-            <div>
-              <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
-              <div className="space-y-2">
-                {Object.entries(interactionTypeColors).map(([type, color]) => (
-                  <div key={type} className="flex items-start gap-3">
-                    <div 
-                      className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
-                      style={{ backgroundColor: color }}
-                    ></div>
-                    <span className="text-sm text-gray-700 leading-5">
-                      {type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </span>
-                  </div>
-                ))}
+          {/* Center - main databases aligned with their legends */}
+          <div className="flex flex-col gap-4">
+            {/* Interactions row */}
+            <div className="flex items-center gap-4">
+              <div style={{ width: `${sizes.interactions}px`, height: `${sizes.interactions}px` }}>
+                <svg ref={interactionsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
+              </div>
+              <div style={{ width: "280px" }}>
+                <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
+                <div className="space-y-2">
+                  {Object.entries(interactionTypeColors).map(([type, color]) => (
+                    <div key={type} className="flex items-start gap-3">
+                      <div 
+                        className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                        style={{ backgroundColor: color }}
+                      ></div>
+                      <span className="text-sm text-gray-700 leading-5">
+                        {type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Annotation Categories */}
-            <div>
-              <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
-              <div className="space-y-1.5">
-                {Object.entries(annotationCategoryColors).map(([category, color]) => (
-                  <div key={category} className="flex items-start gap-3">
-                    <div 
-                      className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
-                      style={{ backgroundColor: color }}
-                    ></div>
-                    <span className="text-xs text-gray-700 leading-4">{category}</span>
-                  </div>
-                ))}
+            {/* Annotations row */}
+            <div className="flex items-center gap-4">
+              <div style={{ width: `${sizes.annotations}px`, height: `${sizes.annotations}px` }}>
+                <svg ref={annotationsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
+              </div>
+              <div style={{ width: "280px" }}>
+                <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
+                <div className="space-y-1.5">
+                  {Object.entries(annotationCategoryColors).map(([category, color]) => (
+                    <div key={category} className="flex items-start gap-3">
+                      <div 
+                        className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                        style={{ backgroundColor: color }}
+                      ></div>
+                      <span className="text-xs text-gray-700 leading-4">{category}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
