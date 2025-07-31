@@ -420,57 +420,57 @@ export function DatabasePrintTreemapsAlternative() {
           {/* Legend */}
           <div className="flex justify-center">
             <div className="w-[420px] h-[420px] bg-white p-4">
-              <div className="grid grid-cols-2 gap-4 h-full" style={{ fontFamily: "Arial, sans-serif" }}>
-                {/* Left column */}
-                <div className="space-y-4">
-                  {/* Database categories */}
-                  <div>
-                    <h3 className="font-bold mb-2 text-base text-gray-900">Database Categories</h3>
-                    <div className="space-y-1.5">
-                      {Object.entries(databaseColors).map(([category, color]) => (
-                        <div key={category} className="flex items-center gap-2">
-                          <div 
-                            className="w-4 h-4 rounded flex-shrink-0" 
-                            style={{ backgroundColor: color }}
-                          ></div>
-                          <span className="text-sm font-medium text-gray-800">{category}</span>
-                        </div>
-                      ))}
+              <div className="h-full" style={{ fontFamily: "Arial, sans-serif" }}>
+                {/* Three column layout for everything */}
+                <div className="grid grid-cols-2 gap-6 h-full">
+                  {/* Left column - Database Categories and Interaction Types */}
+                  <div className="flex flex-col">
+                    {/* Database categories - only in left column */}
+                    <div className="mb-6">
+                      <h3 className="font-bold mb-3 text-lg text-gray-900">Database Categories</h3>
+                      <div className="space-y-2">
+                        {Object.entries(databaseColors).map(([category, color]) => (
+                          <div key={category} className="flex items-center gap-3">
+                            <div 
+                              className="w-5 h-5 rounded flex-shrink-0" 
+                              style={{ backgroundColor: color }}
+                            ></div>
+                            <span className="text-base font-medium text-gray-800">{category}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Interaction Types */}
+                    <div className="flex-1">
+                      <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
+                      <div className="space-y-2">
+                        {Object.entries(interactionTypeColors).map(([type, color]) => (
+                          <div key={type} className="flex items-center gap-3">
+                            <div 
+                              className="w-4 h-4 rounded-sm flex-shrink-0" 
+                              style={{ backgroundColor: color }}
+                            ></div>
+                            <span className="text-sm text-gray-700">
+                              {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Interaction types legend */}
+                  {/* Right column - Annotation Categories */}
                   <div>
-                    <h4 className="font-bold mb-2 text-base text-gray-800">Interaction Types</h4>
-                    <div className="space-y-1">
-                      {Object.entries(interactionTypeColors).map(([type, color]) => (
-                        <div key={type} className="flex items-center gap-2">
-                          <div 
-                            className="w-3.5 h-3.5 rounded-sm flex-shrink-0" 
-                            style={{ backgroundColor: color }}
-                          ></div>
-                          <span className="text-xs text-gray-700">
-                            {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right column */}
-                <div>
-                  {/* Annotation categories legend */}
-                  <div>
-                    <h4 className="font-bold mb-2 text-base text-gray-800">Annotation Categories</h4>
-                    <div className="space-y-1">
+                    <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
+                    <div className="space-y-2">
                       {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
-                        <div key={category} className="flex items-center gap-2">
+                        <div key={category} className="flex items-center gap-3">
                           <div 
-                            className="w-3.5 h-3.5 rounded-sm flex-shrink-0" 
+                            className="w-4 h-4 rounded-sm flex-shrink-0" 
                             style={{ backgroundColor: color }}
                           ></div>
-                          <span className="text-xs text-gray-700">{category}</span>
+                          <span className="text-sm text-gray-700">{category}</span>
                         </div>
                       ))}
                     </div>
