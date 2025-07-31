@@ -93,8 +93,7 @@ export function DatabaseVoronoiTreemap() {
         if (sources.length > 0) {
           // Sort by record count and take top sources
           const sortedSources = sources
-            .sort((a, b) => b.record_count - a.record_count)
-            .slice(0, type === 'post_translational' ? 40 : 20);
+            .sort((a, b) => b.record_count - a.record_count);
           
           interactionSubsections.push({
             name: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
@@ -128,7 +127,7 @@ export function DatabaseVoronoiTreemap() {
         {
           name: "Enzyme-Substrate",
           color: databaseColors["Enzyme-Substrate"],
-          children: dbStats.enzsub.slice(0, 50).map(d => {
+          children: dbStats.enzsub.map(d => {
             const cleanedName = cleanSourceName(d.source);
             return {
               name: cleanedName,
@@ -154,7 +153,7 @@ export function DatabaseVoronoiTreemap() {
         {
           name: "Annotations",
           color: databaseColors.Annotations,
-          children: dbStats.annotations.slice(0, 50).map(d => {
+          children: dbStats.annotations.map(d => {
             const cleanedName = cleanSourceName(d.source);
             return {
               name: cleanedName,
@@ -167,7 +166,7 @@ export function DatabaseVoronoiTreemap() {
         {
           name: "Intercellular",
           color: databaseColors.Intercellular,
-          children: dbStats.intercell.slice(0, 50).map(d => {
+          children: dbStats.intercell.map(d => {
             const cleanedName = cleanSourceName(d.source);
             return {
               name: cleanedName,

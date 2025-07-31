@@ -318,8 +318,7 @@ export function DatabasePrintTreemaps() {
         const sources = typeGroups.get(type) || [];
         if (sources.length > 0) {
           const sortedSources = sources
-            .sort((a, b) => b.record_count - a.record_count)
-            .slice(0, 15); // Limit sources for clarity
+            .sort((a, b) => b.record_count - a.record_count);
           
           interactionSubsections.push({
             name: type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
@@ -358,8 +357,7 @@ export function DatabasePrintTreemaps() {
       for (const [category, sources] of categoryGroups.entries()) {
         if (sources.length > 0 && category !== "Other") {
           const sortedSources = sources
-            .sort((a, b) => b.record_count - a.record_count)
-            .slice(0, 10); // Limit sources for clarity
+            .sort((a, b) => b.record_count - a.record_count);
           
           annotationSubsections.push({
             name: category,
@@ -380,7 +378,7 @@ export function DatabasePrintTreemaps() {
       return annotationSubsections.sort((a, b) => 
         b.children.reduce((sum, c) => sum + c.weight, 0) - 
         a.children.reduce((sum, c) => sum + c.weight, 0)
-      ).slice(0, 8); // Top 8 categories for clarity
+      );
     };
 
     // Create individual treemaps
@@ -397,7 +395,7 @@ export function DatabasePrintTreemaps() {
       const enzymeSubstrateData: VoronoiNode = {
         name: "Enzyme-Substrate",
         color: databaseColors["Enzyme-Substrate"],
-        children: dbStats.enzsub.slice(0, 30).map(d => {
+        children: dbStats.enzsub.map(d => {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
@@ -414,7 +412,7 @@ export function DatabasePrintTreemaps() {
       const complexesData: VoronoiNode = {
         name: "Complexes",
         color: databaseColors.Complexes,
-        children: dbStats.complexes.slice(0, 30).map(d => {
+        children: dbStats.complexes.map(d => {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
@@ -440,7 +438,7 @@ export function DatabasePrintTreemaps() {
       const intercellularData: VoronoiNode = {
         name: "Intercellular",
         color: databaseColors.Intercellular,
-        children: dbStats.intercell.slice(0, 30).map(d => {
+        children: dbStats.intercell.map(d => {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
@@ -514,7 +512,7 @@ export function DatabasePrintTreemaps() {
               <div className="w-full">
                 <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
                 <div className="space-y-1.5">
-                  {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
+                  {Object.entries(annotationCategoryColors).map(([category, color]) => (
                     <div key={category} className="flex items-start gap-3">
                       <div 
                         className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
