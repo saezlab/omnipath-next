@@ -150,8 +150,6 @@ function createTreemap(
     .attr("class", "parent-cell")
     .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
     .style("fill", (d: any) => d.data.color || "#e0e0e0")
-    .style("stroke", "#333")
-    .style("stroke-width", 2)
     .style("opacity", 0.3);
 
   // Draw leaf cells
