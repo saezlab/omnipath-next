@@ -87,8 +87,7 @@ function cleanSourceName(sourceName: string): string {
 function createTreemap(
   svgElement: SVGSVGElement,
   data: VoronoiNode,
-  size: number,
-  title: string
+  size: number
 ) {
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove();
@@ -97,19 +96,9 @@ function createTreemap(
   svg.attr("viewBox", `0 0 ${size} ${size}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
-  const margin = { top: 5, right: 5, bottom: 30, left: 5 };
+  const margin = { top: 2, right: 2, bottom: 2, left: 2 };
   const width = size - margin.left - margin.right;
   const height = size - margin.top - margin.bottom;
-
-  // Add title below the rectangle
-  svg.append("text")
-    .attr("x", size / 2)
-    .attr("y", size - 2)
-    .attr("text-anchor", "middle")
-    .style("font-size", "16px")
-    .style("font-weight", "bold")
-    .style("font-family", "Arial, sans-serif")
-    .text(title);
 
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -182,7 +171,7 @@ function createTreemap(
       return "#ccc";
     })
     .style("stroke", "#fff")
-    .style("stroke-width", 0.5)
+    .style("stroke-width", 0.3)
     .style("opacity", 0.9);
 
   // Calculate polygon bounds
@@ -242,7 +231,7 @@ export function DatabasePrintTreemapsAlternative() {
   const intercellularRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const treemapSize = 380; // Larger size for better visibility
+    const treemapSize = 420; // Larger size for better visibility
 
     // Process interaction types
     const processInteractionTypes = () => {
@@ -336,7 +325,7 @@ export function DatabasePrintTreemapsAlternative() {
         color: databaseColors.Interactions,
         children: processInteractionTypes()
       };
-      createTreemap(interactionsRef.current, interactionsData, treemapSize, "Interactions");
+      createTreemap(interactionsRef.current, interactionsData, treemapSize);
     }
 
     if (enzymeSubstrateRef.current) {
@@ -352,7 +341,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, treemapSize, "Enzyme-Substrate");
+      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, treemapSize);
     }
 
     if (complexesRef.current) {
@@ -368,7 +357,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(complexesRef.current, complexesData, treemapSize, "Complexes");
+      createTreemap(complexesRef.current, complexesData, treemapSize);
     }
 
     if (annotationsRef.current) {
@@ -377,7 +366,7 @@ export function DatabasePrintTreemapsAlternative() {
         color: databaseColors.Annotations,
         children: processAnnotationsByCategory()
       };
-      createTreemap(annotationsRef.current, annotationsData, treemapSize, "Annotations");
+      createTreemap(annotationsRef.current, annotationsData, treemapSize);
     }
 
     if (intercellularRef.current) {
@@ -393,7 +382,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(intercellularRef.current, intercellularData, treemapSize, "Intercellular");
+      createTreemap(intercellularRef.current, intercellularData, treemapSize);
     }
   }, []);
 
@@ -407,31 +396,47 @@ export function DatabasePrintTreemapsAlternative() {
       {/* Treemaps container */}
       <div className="max-w-7xl mx-auto px-4">
         {/* First row - 3 treemaps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1 mb-1">
           <div className="flex justify-center">
-            <svg ref={interactionsRef} width={380} height={380} style={{ display: "block" }}></svg>
+            <svg ref={interactionsRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={enzymeSubstrateRef} width={380} height={380} style={{ display: "block" }}></svg>
+            <svg ref={enzymeSubstrateRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={complexesRef} width={380} height={380} style={{ display: "block" }}></svg>
+            <svg ref={complexesRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
         </div>
 
         {/* Second row - 2 treemaps + legend */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
           <div className="flex justify-center">
-            <svg ref={annotationsRef} width={380} height={380} style={{ display: "block" }}></svg>
+            <svg ref={annotationsRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={intercellularRef} width={380} height={380} style={{ display: "block" }}></svg>
+            <svg ref={intercellularRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
           
           {/* Legend */}
           <div className="flex justify-center">
-            <div className="w-[380px] h-[380px] bg-white rounded-lg border-2 border-gray-300 p-6 overflow-y-auto">
+            <div className="w-[420px] h-[420px] bg-white rounded-lg border-2 border-gray-300 p-6 overflow-y-auto">
               <div className="space-y-5" style={{ fontFamily: "Arial, sans-serif" }}>
+                {/* Database categories */}
+                <div>
+                  <h3 className="font-bold mb-3 text-lg text-gray-900">Database Categories</h3>
+                  <div className="space-y-2 mb-5">
+                    {Object.entries(databaseColors).map(([category, color]) => (
+                      <div key={category} className="flex items-center gap-2">
+                        <div 
+                          className="w-5 h-5 rounded flex-shrink-0" 
+                          style={{ backgroundColor: color }}
+                        ></div>
+                        <span className="text-base font-medium text-gray-800">{category}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Interaction types legend */}
                 <div>
                   <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
