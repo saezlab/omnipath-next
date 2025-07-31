@@ -18,37 +18,37 @@ interface VoronoiNode {
   interactionType?: string;
 }
 
-// IBM colorblind-friendly palette
+// RWTH color palette
 const databaseColors = {
-  Interactions: "#1192e8",      // IBM Blue 60
-  "Enzyme-Substrate": "#da1e28", // IBM Red 60
-  Complexes: "#198038",          // IBM Green 60
-  Annotations: "#ff832b",        // IBM Orange 50
-  Intercellular: "#8a3ffc"       // IBM Purple 60
+  Interactions: "#176fc1",      // Havelock blue
+  "Enzyme-Substrate": "#d22027", // Tomato
+  Complexes: "#4cbd38",          // Forest green
+  Annotations: "#f89d0e",        // Orange
+  Intercellular: "#5b205f"       // Seance
 };
 
-// IBM colorblind-friendly interaction type colors
+// RWTH palette - shades of blue for interaction types
 const interactionTypeColors = {
-  "transcriptional": "#0f62fe",      // IBM Blue 60
-  "post_translational": "#1192e8",   // IBM Blue 50
-  "mirna_transcriptional": "#4589ff", // IBM Blue 40
-  "post_transcriptional": "#78a9ff",  // IBM Blue 30
-  "small_molecule_protein": "#a6c8ff" // IBM Blue 20
+  "transcriptional": "#176fc1",      // Havelock blue
+  "post_translational": "#2e7cc7",   // Slightly lighter blue
+  "mirna_transcriptional": "#4b87ce", // Medium blue
+  "post_transcriptional": "#6899d5",  // Lighter medium blue
+  "small_molecule_protein": "#83a7dd" // Jordy blue (lightest we'll go)
 };
 
-// IBM colorblind-friendly annotation category colors
+// RWTH palette - shades of orange for annotation categories
 const annotationCategoryColors = {
-  "Cell-cell communication": "#da1e28",    // IBM Red 60
-  "Localization (subcellular)": "#fa4d56", // IBM Red 50
-  "Membrane localization & topology": "#ff832b", // IBM Orange 50
-  "Extracellular matrix, adhesion": "#ffb000",   // IBM Gold 40
-  "Vesicles, secretome": "#f1c21b",       // IBM Yellow 30
-  "Function, pathway": "#198038",         // IBM Green 60
-  "Signatures": "#24a148",               // IBM Green 50
-  "Disease, cancer": "#1192e8",          // IBM Blue 50
-  "Protein classes & families": "#0f62fe", // IBM Blue 60
-  "Cell type, tissue": "#8a3ffc",        // IBM Purple 60
-  "Transcription factors": "#d12771"     // IBM Magenta 60
+  "Cell-cell communication": "#f89d0e",    // Orange (base)
+  "Localization (subcellular)": "#f5920a", // Slightly darker orange
+  "Membrane localization & topology": "#f08706", // Darker orange
+  "Extracellular matrix, adhesion": "#eb7c03",   // More saturated orange
+  "Vesicles, secretome": "#e57100",       // Deep orange
+  "Function, pathway": "#fab23f",         // My sin (lighter but visible)
+  "Signatures": "#f9aa2a",               // Medium light orange
+  "Disease, cancer": "#f7a216",          // Medium orange
+  "Protein classes & families": "#d97005", // Dark orange
+  "Cell type, tissue": "#c96504",        // Very dark orange
+  "Transcription factors": "#b85a04"     // Darkest orange
 };
 
 // Source groups from filter sidebar
@@ -173,13 +173,30 @@ function createTreemap(
       if (d.parent?.data.color) {
         const baseColor = d3.color(d.parent.data.color);
         const sizeFactor = d.value / d.parent.value;
-        return baseColor ? baseColor.darker(0.3 - sizeFactor * 0.3).toString() : d.parent.data.color;
+        // Use brighter/darker variations based on the size
+        // Larger cells get slightly darker, smaller cells get slightly brighter
+        const adjustment = 0.5 - sizeFactor * 0.8;
+        return baseColor ? (adjustment > 0 ? baseColor.brighter(adjustment) : baseColor.darker(-adjustment)).toString() : d.parent.data.color;
       }
       return "#ccc";
     })
     .style("stroke", "#fff")
-    .style("stroke-width", 0.3)
+    .style("stroke-width", 0.5)
     .style("opacity", 0.9);
+
+  // Draw thicker borders for subcategory boundaries (depth 1 nodes with children)
+  const subcategoryNodes = hierarchy.descendants().filter(d => d.children && d.depth === 1);
+  g.append("g")
+    .selectAll(".subcategory-border")
+    .data(subcategoryNodes)
+    .enter()
+    .append("path")
+    .attr("class", "subcategory-border")
+    .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
+    .style("fill", "none")
+    .style("stroke", "#fff")
+    .style("stroke-width", 2)
+    .style("pointer-events", "none");
 
   // Add hover effects
   g.append("g")
