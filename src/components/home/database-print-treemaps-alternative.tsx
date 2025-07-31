@@ -314,7 +314,7 @@ export function DatabasePrintTreemapsAlternative() {
             .slice(0, 15); // Limit sources for clarity
           
           interactionSubsections.push({
-            name: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            name: type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
             color: interactionTypeColors[type as keyof typeof interactionTypeColors],
             children: sortedSources.map(d => {
               const cleanedName = cleanSourceName(d.source);
@@ -493,7 +493,7 @@ export function DatabasePrintTreemapsAlternative() {
                         style={{ backgroundColor: color }}
                       ></div>
                       <span className="text-sm text-gray-700 leading-5">
-                        {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        {type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </span>
                     </div>
                   ))}
