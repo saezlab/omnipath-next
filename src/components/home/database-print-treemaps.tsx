@@ -317,7 +317,17 @@ export function DatabasePrintTreemaps() {
       for (const type of targetTypes) {
         const sources = typeGroups.get(type) || [];
         if (sources.length > 0) {
-          const sortedSources = sources
+          // Deduplicate within this subcategory by cleaned source name
+          const deduplicatedSources = new Map<string, any>();
+          sources.forEach(item => {
+            const cleanedName = cleanSourceName(item.source);
+            if (!deduplicatedSources.has(cleanedName) || 
+                deduplicatedSources.get(cleanedName).record_count < item.record_count) {
+              deduplicatedSources.set(cleanedName, item);
+            }
+          });
+          
+          const sortedSources = Array.from(deduplicatedSources.values())
             .sort((a, b) => b.record_count - a.record_count);
           
           interactionSubsections.push({
@@ -356,7 +366,17 @@ export function DatabasePrintTreemaps() {
       
       for (const [category, sources] of categoryGroups.entries()) {
         if (sources.length > 0 && category !== "Other") {
-          const sortedSources = sources
+          // Deduplicate within this category by cleaned source name
+          const deduplicatedSources = new Map<string, any>();
+          sources.forEach(item => {
+            const cleanedName = cleanSourceName(item.source);
+            if (!deduplicatedSources.has(cleanedName) || 
+                deduplicatedSources.get(cleanedName).record_count < item.record_count) {
+              deduplicatedSources.set(cleanedName, item);
+            }
+          });
+          
+          const sortedSources = Array.from(deduplicatedSources.values())
             .sort((a, b) => b.record_count - a.record_count);
           
           annotationSubsections.push({
@@ -392,10 +412,20 @@ export function DatabasePrintTreemaps() {
     }
 
     if (enzymeSubstrateRef.current) {
+      // Deduplicate enzyme-substrate sources by cleaned name
+      const deduplicatedEnzsub = new Map<string, any>();
+      dbStats.enzsub.forEach(item => {
+        const cleanedName = cleanSourceName(item.source);
+        if (!deduplicatedEnzsub.has(cleanedName) || 
+            deduplicatedEnzsub.get(cleanedName).record_count < item.record_count) {
+          deduplicatedEnzsub.set(cleanedName, item);
+        }
+      });
+      
       const enzymeSubstrateData: VoronoiNode = {
         name: "Enzyme-Substrate",
         color: databaseColors["Enzyme-Substrate"],
-        children: dbStats.enzsub.map(d => {
+        children: Array.from(deduplicatedEnzsub.values()).map(d => {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
@@ -409,10 +439,20 @@ export function DatabasePrintTreemaps() {
     }
 
     if (complexesRef.current) {
+      // Deduplicate complexes sources by cleaned name
+      const deduplicatedComplexes = new Map<string, any>();
+      dbStats.complexes.forEach(item => {
+        const cleanedName = cleanSourceName(item.source);
+        if (!deduplicatedComplexes.has(cleanedName) || 
+            deduplicatedComplexes.get(cleanedName).record_count < item.record_count) {
+          deduplicatedComplexes.set(cleanedName, item);
+        }
+      });
+      
       const complexesData: VoronoiNode = {
         name: "Complexes",
         color: databaseColors.Complexes,
-        children: dbStats.complexes.map(d => {
+        children: Array.from(deduplicatedComplexes.values()).map(d => {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
@@ -435,10 +475,20 @@ export function DatabasePrintTreemaps() {
     }
 
     if (intercellularRef.current) {
+      // Deduplicate intercellular sources by cleaned name
+      const deduplicatedIntercell = new Map<string, any>();
+      dbStats.intercell.forEach(item => {
+        const cleanedName = cleanSourceName(item.source);
+        if (!deduplicatedIntercell.has(cleanedName) || 
+            deduplicatedIntercell.get(cleanedName).record_count < item.record_count) {
+          deduplicatedIntercell.set(cleanedName, item);
+        }
+      });
+      
       const intercellularData: VoronoiNode = {
         name: "Intercellular",
         color: databaseColors.Intercellular,
-        children: dbStats.intercell.map(d => {
+        children: Array.from(deduplicatedIntercell.values()).map(d => {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
