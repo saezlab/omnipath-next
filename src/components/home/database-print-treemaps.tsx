@@ -113,8 +113,8 @@ function createTreemap(
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove();
 
-  // Set viewBox for proper scaling - extend in all directions for circular labels
-  const padding = 120; // Padding for labels around the entire circle
+  // Set viewBox for proper scaling - extend in all directions for circumferential labels
+  const padding = 140; // Increased padding for rotated labels around the entire circle
   const svgWidth = size + padding * 2;
   const svgHeight = size + padding * 2;
   svg.attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
@@ -226,6 +226,52 @@ function createTreemap(
     };
   };
 
+  // Helper function to calculate midpoint angle for a section
+  const calculateSectionMidAngle = (polygon: any) => {
+    const edgePoints = polygon.filter((point: [number, number]) => {
+      const distFromCenter = Math.sqrt(point[0] * point[0] + point[1] * point[1]);
+      return Math.abs(distFromCenter - radius) < radius * 0.1;
+    });
+    
+    const angles = edgePoints.map((point: [number, number]) => 
+      Math.atan2(point[1], point[0])
+    );
+    const normalizedAngles = angles.map((angle: number) => angle < 0 ? angle + 2 * Math.PI : angle).sort();
+    
+    let minAngle = normalizedAngles[0];
+    let maxAngle = normalizedAngles[normalizedAngles.length - 1];
+    
+    const angleSpan = maxAngle - minAngle;
+    if (angleSpan > Math.PI) {
+      const gaps = [];
+      for (let i = 1; i < normalizedAngles.length; i++) {
+        gaps.push({
+          size: normalizedAngles[i] - normalizedAngles[i-1],
+          startAngle: normalizedAngles[i-1],
+          endAngle: normalizedAngles[i]
+        });
+      }
+      gaps.push({
+        size: (2 * Math.PI - maxAngle) + minAngle,
+        startAngle: maxAngle,
+        endAngle: minAngle + 2 * Math.PI
+      });
+      
+      const largestGap = gaps.reduce((max, gap) => gap.size > max.size ? gap : max);
+      minAngle = largestGap.endAngle % (2 * Math.PI);
+      maxAngle = largestGap.startAngle;
+    }
+    
+    let midAngle;
+    if (maxAngle < minAngle) {
+      midAngle = ((maxAngle + 2 * Math.PI + minAngle) / 2) % (2 * Math.PI);
+    } else {
+      midAngle = (minAngle + maxAngle) / 2;
+    }
+    
+    return midAngle;
+  };
+
   // Separate edge sections from inner sections
   const edgeSections: any[] = [];
   const innerSections: any[] = [];
@@ -244,159 +290,81 @@ function createTreemap(
     }
   });
 
-  // Draw external labels positioned around the circle (only for edge sections)
+  // Create curved text paths for labels following the circumference
   if (edgeSections.length > 0) {
-    g.append("g")
-      .selectAll(".radial-label")
-      .data(edgeSections)
-      .enter()
-      .append("text")
-      .attr("class", "radial-label")
-      .attr("x", (d: any) => {
-        // Find edge points and calculate midpoint angle (same logic as above)
-        const edgePoints = d.polygon.filter((point: [number, number]) => {
-          const distFromCenter = Math.sqrt(point[0] * point[0] + point[1] * point[1]);
-          return Math.abs(distFromCenter - radius) < radius * 0.1;
-        });
+    // Create defs section for text paths
+    const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
+    
+    // Add curved text labels
+    const labelGroup = g.append("g").attr("class", "curved-labels");
+    
+    edgeSections.forEach((d: any, i: number) => {
+      const midAngle = calculateSectionMidAngle(d.polygon);
+      const labelRadius = radius + 20; // Distance from center for curved text
+      const textLength = d.data.name.length * 8; // Approximate text width
+      const arcLength = textLength / labelRadius; // Arc length in radians
+      
+      // Create unique path ID
+      const pathId = `textPath-${i}`;
+      
+      // Calculate start and end angles for the arc
+      const startAngle = midAngle - arcLength / 2;
+      const endAngle = midAngle + arcLength / 2;
+      
+      // Determine if text should be flipped to prevent upside-down reading
+      // Normalize angle to 0-2π range
+      const normalizedAngle = ((midAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      // Flip text when it would appear upside down (roughly left side of circle)
+      const shouldFlip = normalizedAngle > Math.PI / 2 && normalizedAngle < 3 * Math.PI / 2;
+      
+      // Debug log for troublesome labels
+      if (d.data.name.includes("Translational")) {
+        console.log(`${d.data.name}: midAngle=${midAngle}, normalizedAngle=${normalizedAngle}, shouldFlip=${shouldFlip}`);
+      }
+      const textRadius = radius + 25; // Always place text outside the circle
+      
+      // Create the path in reverse direction for left side to prevent upside-down text
+      let pathData;
+      if (shouldFlip) {
+        // For left side, create path from right to left so text reads normally
+        const adjustedStartAngle = midAngle + arcLength / 2;
+        const adjustedEndAngle = midAngle - arcLength / 2;
+        const startX = textRadius * Math.cos(adjustedStartAngle);
+        const startY = textRadius * Math.sin(adjustedStartAngle);
+        const endX = textRadius * Math.cos(adjustedEndAngle);
+        const endY = textRadius * Math.sin(adjustedEndAngle);
         
-        const angles = edgePoints.map((point: [number, number]) => 
-          Math.atan2(point[1], point[0])
-        );
-        const normalizedAngles = angles.map((angle: number) => angle < 0 ? angle + 2 * Math.PI : angle).sort();
+        pathData = `M ${startX} ${startY} A ${textRadius} ${textRadius} 0 0 0 ${endX} ${endY}`;
+      } else {
+        // For right side, normal left to right path
+        const startX = textRadius * Math.cos(startAngle);
+        const startY = textRadius * Math.sin(startAngle);
+        const endX = textRadius * Math.cos(endAngle);
+        const endY = textRadius * Math.sin(endAngle);
         
-        let minAngle = normalizedAngles[0];
-        let maxAngle = normalizedAngles[normalizedAngles.length - 1];
-        
-        const angleSpan = maxAngle - minAngle;
-        if (angleSpan > Math.PI) {
-          const gaps = [];
-          for (let i = 1; i < normalizedAngles.length; i++) {
-            gaps.push({
-              size: normalizedAngles[i] - normalizedAngles[i-1],
-              startAngle: normalizedAngles[i-1],
-              endAngle: normalizedAngles[i]
-            });
-          }
-          gaps.push({
-            size: (2 * Math.PI - maxAngle) + minAngle,
-            startAngle: maxAngle,
-            endAngle: minAngle + 2 * Math.PI
-          });
-          
-          const largestGap = gaps.reduce((max, gap) => gap.size > max.size ? gap : max);
-          minAngle = largestGap.endAngle % (2 * Math.PI);
-          maxAngle = largestGap.startAngle;
-        }
-        
-        let midAngle;
-        if (maxAngle < minAngle) {
-          midAngle = ((maxAngle + 2 * Math.PI + minAngle) / 2) % (2 * Math.PI);
-        } else {
-          midAngle = (minAngle + maxAngle) / 2;
-        }
-        
-        return (radius + 10) * Math.cos(midAngle);
-      })
-      .attr("y", (d: any) => {
-        // Same midpoint angle calculation for Y coordinate
-        const edgePoints = d.polygon.filter((point: [number, number]) => {
-          const distFromCenter = Math.sqrt(point[0] * point[0] + point[1] * point[1]);
-          return Math.abs(distFromCenter - radius) < radius * 0.1;
-        });
-        
-        const angles = edgePoints.map((point: [number, number]) => 
-          Math.atan2(point[1], point[0])
-        );
-        const normalizedAngles = angles.map((angle: number) => angle < 0 ? angle + 2 * Math.PI : angle).sort();
-        
-        let minAngle = normalizedAngles[0];
-        let maxAngle = normalizedAngles[normalizedAngles.length - 1];
-        
-        const angleSpan = maxAngle - minAngle;
-        if (angleSpan > Math.PI) {
-          const gaps = [];
-          for (let i = 1; i < normalizedAngles.length; i++) {
-            gaps.push({
-              size: normalizedAngles[i] - normalizedAngles[i-1],
-              startAngle: normalizedAngles[i-1],
-              endAngle: normalizedAngles[i]
-            });
-          }
-          gaps.push({
-            size: (2 * Math.PI - maxAngle) + minAngle,
-            startAngle: maxAngle,
-            endAngle: minAngle + 2 * Math.PI
-          });
-          
-          const largestGap = gaps.reduce((max, gap) => gap.size > max.size ? gap : max);
-          minAngle = largestGap.endAngle % (2 * Math.PI);
-          maxAngle = largestGap.startAngle;
-        }
-        
-        let midAngle;
-        if (maxAngle < minAngle) {
-          midAngle = ((maxAngle + 2 * Math.PI + minAngle) / 2) % (2 * Math.PI);
-        } else {
-          midAngle = (minAngle + maxAngle) / 2;
-        }
-        
-        return (radius + 10) * Math.sin(midAngle);
-      })
-      .attr("text-anchor", (d: any) => {
-        // Use midpoint angle for text anchor determination
-        const edgePoints = d.polygon.filter((point: [number, number]) => {
-          const distFromCenter = Math.sqrt(point[0] * point[0] + point[1] * point[1]);
-          return Math.abs(distFromCenter - radius) < radius * 0.1;
-        });
-        
-        const angles = edgePoints.map((point: [number, number]) => 
-          Math.atan2(point[1], point[0])
-        );
-        const normalizedAngles = angles.map((angle: number) => angle < 0 ? angle + 2 * Math.PI : angle).sort();
-        
-        let minAngle = normalizedAngles[0];
-        let maxAngle = normalizedAngles[normalizedAngles.length - 1];
-        
-        const angleSpan = maxAngle - minAngle;
-        if (angleSpan > Math.PI) {
-          const gaps = [];
-          for (let i = 1; i < normalizedAngles.length; i++) {
-            gaps.push({
-              size: normalizedAngles[i] - normalizedAngles[i-1],
-              startAngle: normalizedAngles[i-1],
-              endAngle: normalizedAngles[i]
-            });
-          }
-          gaps.push({
-            size: (2 * Math.PI - maxAngle) + minAngle,
-            startAngle: maxAngle,
-            endAngle: minAngle + 2 * Math.PI
-          });
-          
-          const largestGap = gaps.reduce((max, gap) => gap.size > max.size ? gap : max);
-          minAngle = largestGap.endAngle % (2 * Math.PI);
-          maxAngle = largestGap.startAngle;
-        }
-        
-        let midAngle;
-        if (maxAngle < minAngle) {
-          midAngle = ((maxAngle + 2 * Math.PI + minAngle) / 2) % (2 * Math.PI);
-        } else {
-          midAngle = (minAngle + maxAngle) / 2;
-        }
-        
-        // Adjust text anchor based on position around circle
-        if (midAngle > Math.PI / 2 && midAngle < 3 * Math.PI / 2) {
-          return "end"; // Left side of circle
-        }
-        return "start"; // Right side of circle
-      })
-      .attr("dominant-baseline", "middle")
-      .style("font-size", "11px")
-      .style("font-family", "Arial, sans-serif")
-      .style("fill", "#333")
-      .style("font-weight", "600")
-      .text((d: any) => d.data.name);
+        pathData = `M ${startX} ${startY} A ${textRadius} ${textRadius} 0 0 1 ${endX} ${endY}`;
+      }
+      
+      // Add path to defs
+      defs.append("path")
+        .attr("id", pathId)
+        .attr("d", pathData)
+        .style("fill", "none");
+      
+      // Add text element with textPath
+      labelGroup.append("text")
+        .attr("class", "curved-label")
+        .style("font-size", "11px")
+        .style("font-family", "Arial, sans-serif")
+        .style("fill", "#333")
+        .style("font-weight", "600")
+        .style("letter-spacing", "0.3px")
+        .append("textPath")
+        .attr("href", `#${pathId}`)
+        .attr("startOffset", "50%") // Center text on path
+        .style("text-anchor", "middle")
+        .text(d.data.name);
+    });
   }
 
   // Draw source labels
