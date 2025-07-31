@@ -113,16 +113,17 @@ function createTreemap(
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove();
 
-  // Set viewBox for proper scaling
-  svg.attr("viewBox", `0 0 ${size} ${size}`)
+  // Set viewBox for proper scaling - extend width to accommodate side labels
+  const svgWidth = size + 300; // Add more width for side labels
+  svg.attr("viewBox", `0 0 ${svgWidth} ${size}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
   const margin = { top: 5, right: 5, bottom: 30, left: 5 };
   const radius = (size - margin.top - margin.bottom) / 2;
 
-  // Add title below the circle
+  // Add title below the circle - centered in the extended viewBox
   svg.append("text")
-    .attr("x", size / 2)
+    .attr("x", svgWidth / 2)
     .attr("y", size - 2)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
@@ -131,7 +132,7 @@ function createTreemap(
     .text(title);
 
   const g = svg.append("g")
-    .attr("transform", `translate(${size/2},${size/2})`);
+    .attr("transform", `translate(${svgWidth/2},${size/2})`);
 
   // Create circular clipping polygon
   const _2PI = 2 * Math.PI;
@@ -223,9 +224,9 @@ function createTreemap(
     };
   };
 
-  // Draw category/type labels on left and right sides with connecting lines
+  // Draw category/type labels connected to circle edge
   if (parents.length > 0) {
-    // Sort parents by their centroid position for better label organization
+    // Sort parents by their centroid angle for consistent ordering
     const sortedParents = parents.sort((a: any, b: any) => {
       const angleA = Math.atan2(a.polygon.site.y, a.polygon.site.x);
       const angleB = Math.atan2(b.polygon.site.y, b.polygon.site.x);
@@ -235,46 +236,83 @@ function createTreemap(
     const leftLabels: any[] = [];
     const rightLabels: any[] = [];
     
-    // Separate labels into left and right sides based on centroid position
+    // Calculate edge connection points and organize by sides
     sortedParents.forEach((d: any) => {
-      if (d.polygon.site.x < 0) {
-        leftLabels.push(d);
+      const centroid = d.polygon.site;
+      const angle = Math.atan2(centroid.y, centroid.x);
+      
+      // Calculate connection point at circle edge
+      const edgeX = radius * Math.cos(angle);
+      const edgeY = radius * Math.sin(angle);
+      
+      const labelData = {
+        ...d,
+        centroid,
+        angle,
+        edgeX,
+        edgeY
+      };
+      
+      if (edgeX < 0) {
+        leftLabels.push(labelData);
       } else {
-        rightLabels.push(d);
+        rightLabels.push(labelData);
       }
     });
 
-    // Draw connecting lines first (so they appear behind labels)
+    // Draw connecting lines
     const linesGroup = g.append("g").attr("class", "connector-lines");
     
     // Draw lines for left labels
     leftLabels.forEach((d: any, i: number) => {
-      const centroid = d.polygon.site;
-      const labelY = (i - leftLabels.length / 2 + 0.5) * 25;
+      const spacing = Math.max(35, 250 / Math.max(leftLabels.length, 1));
+      const labelY = (i - leftLabels.length / 2 + 0.5) * spacing;
       
+      // Line from centroid to circle edge
       linesGroup.append("line")
-        .attr("x1", centroid.x)
-        .attr("y1", centroid.y)
-        .attr("x2", -radius - 15)
+        .attr("x1", d.centroid.x)
+        .attr("y1", d.centroid.y)
+        .attr("x2", d.edgeX)
+        .attr("y2", d.edgeY)
+        .style("stroke", d.data.color || "#666")
+        .style("stroke-width", 2)
+        .style("opacity", 0.8);
+      
+      // Line from circle edge to label
+      linesGroup.append("line")
+        .attr("x1", d.edgeX)
+        .attr("y1", d.edgeY)
+        .attr("x2", -radius - 30)
         .attr("y2", labelY)
         .style("stroke", d.data.color || "#666")
         .style("stroke-width", 2)
-        .style("opacity", 0.7);
+        .style("opacity", 0.8);
     });
 
     // Draw lines for right labels
     rightLabels.forEach((d: any, i: number) => {
-      const centroid = d.polygon.site;
-      const labelY = (i - rightLabels.length / 2 + 0.5) * 25;
+      const spacing = Math.max(35, 250 / Math.max(rightLabels.length, 1));
+      const labelY = (i - rightLabels.length / 2 + 0.5) * spacing;
       
+      // Line from centroid to circle edge
       linesGroup.append("line")
-        .attr("x1", centroid.x)
-        .attr("y1", centroid.y)
-        .attr("x2", radius + 15)
+        .attr("x1", d.centroid.x)
+        .attr("y1", d.centroid.y)
+        .attr("x2", d.edgeX)
+        .attr("y2", d.edgeY)
+        .style("stroke", d.data.color || "#666")
+        .style("stroke-width", 2)
+        .style("opacity", 0.8);
+      
+      // Line from circle edge to label
+      linesGroup.append("line")
+        .attr("x1", d.edgeX)
+        .attr("y1", d.edgeY)
+        .attr("x2", radius + 30)
         .attr("y2", labelY)
         .style("stroke", d.data.color || "#666")
         .style("stroke-width", 2)
-        .style("opacity", 0.7);
+        .style("opacity", 0.8);
     });
 
     // Draw left side labels
@@ -284,11 +322,14 @@ function createTreemap(
       .enter()
       .append("text")
       .attr("class", "left-label")
-      .attr("x", -radius - 80)
-      .attr("y", (_, i: number) => (i - leftLabels.length / 2 + 0.5) * 25)
+      .attr("x", -radius - 40)
+      .attr("y", (_, i: number) => {
+        const spacing = Math.max(35, 250 / Math.max(leftLabels.length, 1));
+        return (i - leftLabels.length / 2 + 0.5) * spacing;
+      })
       .attr("text-anchor", "end")
       .attr("dominant-baseline", "middle")
-      .style("font-size", "12px")
+      .style("font-size", "11px")
       .style("font-family", "Arial, sans-serif")
       .style("fill", "#333")
       .style("font-weight", "600")
@@ -301,11 +342,14 @@ function createTreemap(
       .enter()
       .append("text")
       .attr("class", "right-label")
-      .attr("x", radius + 80)
-      .attr("y", (_, i: number) => (i - rightLabels.length / 2 + 0.5) * 25)
+      .attr("x", radius + 40)
+      .attr("y", (_, i: number) => {
+        const spacing = Math.max(35, 250 / Math.max(rightLabels.length, 1));
+        return (i - rightLabels.length / 2 + 0.5) * spacing;
+      })
       .attr("text-anchor", "start")
       .attr("dominant-baseline", "middle")
-      .style("font-size", "12px")
+      .style("font-size", "11px")
       .style("font-family", "Arial, sans-serif")
       .style("fill", "#333")
       .style("font-weight", "600")
@@ -518,20 +562,20 @@ export function DatabasePrintTreemaps() {
       </h2>
 
       {/* Treemaps container */}
-      <div className="max-w-7xl mx-auto px-4 space-y-8">
+      <div className="max-w-8xl mx-auto px-4 space-y-8">
         {/* Complex databases with legends */}
         
         {/* Interactions with integrated labels */}
         <div className="flex justify-center">
           <div className="text-center">
-            <svg ref={interactionsRef} width={450} height={450} style={{ display: "block" }}></svg>
+            <svg ref={interactionsRef} width={750} height={450} style={{ display: "block" }}></svg>
           </div>
         </div>
 
         {/* Annotations with integrated labels */}
         <div className="flex justify-center">
           <div className="text-center">
-            <svg ref={annotationsRef} width={450} height={450} style={{ display: "block" }}></svg>
+            <svg ref={annotationsRef} width={750} height={450} style={{ display: "block" }}></svg>
           </div>
         </div>
 
@@ -540,7 +584,7 @@ export function DatabasePrintTreemaps() {
           <h3 className="text-lg font-semibold text-center mb-4 text-gray-800" style={{ fontFamily: "Arial, sans-serif" }}>
             Other Database Types
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
             <div className="flex justify-center">
               <svg ref={enzymeSubstrateRef} width={350} height={350} style={{ display: "block" }}></svg>
             </div>
