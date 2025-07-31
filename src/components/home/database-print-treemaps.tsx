@@ -16,38 +16,58 @@ interface VoronoiNode {
   category?: string;
 }
 
-// Professional color palette with better contrast
+// IBM Design Library color-blind safe palette
 const databaseColors = {
-  Interactions: "#2563eb",      // Bright blue
-  "Enzyme-Substrate": "#dc2626", // Red
-  Complexes: "#16a34a",          // Green
-  Annotations: "#ea580c",        // Orange
-  Intercellular: "#7c3aed"       // Purple
+  Interactions: "#648fff",      // Blue
+  "Enzyme-Substrate": "#fe6100", // Orange
+  Complexes: "#785ef0",          // Purple
+  Annotations: "#dc267f",        // Magenta
+  Intercellular: "#ffb000"       // Yellow
 };
 
-// Interaction type colors - darker shades for better contrast
+// Function to generate shades of a color
+function generateShades(baseColor: string, count: number): string[] {
+  const color = d3.color(baseColor);
+  if (!color) return [baseColor];
+  
+  const shades: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const factor = i / (count - 1);
+    shades.push(color.darker(factor * 1.5).toString());
+  }
+  return shades;
+}
+
+// Generate interaction type colors as shades of the main Interactions color
+const interactionShades = generateShades(databaseColors.Interactions, 5);
 const interactionTypeColors = {
-  "transcriptional": "#1e40af",
-  "post_translational": "#2563eb",
-  "mirna_transcriptional": "#3b82f6",
-  "post_transcriptional": "#60a5fa",
-  "small_molecule_protein": "#93bbfc"
+  "transcriptional": interactionShades[0],
+  "post_translational": interactionShades[1],
+  "mirna_transcriptional": interactionShades[2],
+  "post_transcriptional": interactionShades[3],
+  "small_molecule_protein": interactionShades[4]
 };
 
-// Annotation category colors - vibrant colors for better visibility
-const annotationCategoryColors = {
-  "Cell-cell communication": "#dc2626",
-  "Localization (subcellular)": "#ef4444",
-  "Membrane localization & topology": "#f97316",
-  "Extracellular matrix, adhesion": "#fb923c",
-  "Vesicles, secretome": "#fbbf24",
-  "Function, pathway": "#84cc16",
-  "Signatures": "#22c55e",
-  "Disease, cancer": "#06b6d4",
-  "Protein classes & families": "#3b82f6",
-  "Cell type, tissue": "#8b5cf6",
-  "Transcription factors": "#ec4899"
-};
+// Generate annotation category colors as shades of the main Annotations color
+const annotationShades = generateShades(databaseColors.Annotations, 11);
+const annotationCategories = [
+  "Cell-cell communication",
+  "Localization (subcellular)",
+  "Membrane localization & topology",
+  "Extracellular matrix, adhesion",
+  "Vesicles, secretome",
+  "Function, pathway",
+  "Signatures",
+  "Disease, cancer",
+  "Protein classes & families",
+  "Cell type, tissue",
+  "Transcription factors"
+];
+
+const annotationCategoryColors: Record<string, string> = {};
+annotationCategories.forEach((category, index) => {
+  annotationCategoryColors[category] = annotationShades[index];
+});
 
 // Source groups from filter sidebar
 const ANNOTATION_SOURCE_GROUPS = {
@@ -177,10 +197,13 @@ function createTreemap(
     .attr("class", "cell")
     .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
     .style("fill", (d: any) => {
+      // For databases without subtypes, use the main color directly
+      if (!d.parent || d.parent.depth === 0) {
+        return data.color || "#ccc";
+      }
+      // For subtypes, use the predefined shade
       if (d.parent?.data.color) {
-        const baseColor = d3.color(d.parent.data.color);
-        const sizeFactor = d.value / d.parent.value;
-        return baseColor ? baseColor.darker(0.3 - sizeFactor * 0.3).toString() : d.parent.data.color;
+        return d.parent.data.color;
       }
       return "#ccc";
     })
@@ -408,67 +431,60 @@ export function DatabasePrintTreemaps() {
       </h2>
 
       {/* Treemaps container */}
-      <div className="max-w-7xl mx-auto px-4">
-        {/* First row - 3 treemaps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+      <div className="max-w-7xl mx-auto px-4 space-y-6">
+        {/* Interactions with legend */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 items-center">
           <div className="flex justify-center">
             <svg ref={interactionsRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
+          <div className="bg-white rounded-lg border border-gray-300 p-4 h-fit">
+            <h4 className="font-bold mb-2 text-sm text-gray-800">Interaction Types</h4>
+            <div className="space-y-1">
+              {Object.entries(interactionTypeColors).map(([type, color]) => (
+                <div key={type} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-sm flex-shrink-0" 
+                    style={{ backgroundColor: color }}
+                  ></div>
+                  <span className="text-xs text-gray-700">
+                    {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Second row - Enzyme-Substrate, Complexes, Intercellular */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex justify-center">
             <svg ref={enzymeSubstrateRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
             <svg ref={complexesRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
-        </div>
-
-        {/* Second row - 2 treemaps + legend */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="flex justify-center">
-            <svg ref={annotationsRef} width={380} height={380} style={{ display: "block" }}></svg>
-          </div>
           <div className="flex justify-center">
             <svg ref={intercellularRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
-          
-          {/* Legend */}
-          <div className="flex justify-center">
-            <div className="w-[380px] h-[380px] bg-white rounded-lg border-2 border-gray-300 p-6 overflow-y-auto">
-              <div className="space-y-5" style={{ fontFamily: "Arial, sans-serif" }}>
-                {/* Interaction types legend */}
-                <div>
-                  <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
-                  <div className="space-y-1.5">
-                    {Object.entries(interactionTypeColors).map(([type, color]) => (
-                      <div key={type} className="flex items-center gap-2">
-                        <div 
-                          className="w-4 h-4 rounded-sm flex-shrink-0" 
-                          style={{ backgroundColor: color }}
-                        ></div>
-                        <span className="text-sm text-gray-700">
-                          {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+        </div>
 
-                {/* Annotation categories legend */}
-                <div>
-                  <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
-                  <div className="space-y-1.5">
-                    {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
-                      <div key={category} className="flex items-center gap-2">
-                        <div 
-                          className="w-4 h-4 rounded-sm flex-shrink-0" 
-                          style={{ backgroundColor: color }}
-                        ></div>
-                        <span className="text-sm text-gray-700">{category}</span>
-                      </div>
-                    ))}
-                  </div>
+        {/* Annotations with legend */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 items-center">
+          <div className="flex justify-center">
+            <svg ref={annotationsRef} width={380} height={380} style={{ display: "block" }}></svg>
+          </div>
+          <div className="bg-white rounded-lg border border-gray-300 p-4 h-fit max-h-[380px] overflow-y-auto">
+            <h4 className="font-bold mb-2 text-sm text-gray-800">Annotation Categories</h4>
+            <div className="space-y-1">
+              {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
+                <div key={category} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-sm flex-shrink-0" 
+                    style={{ backgroundColor: color }}
+                  ></div>
+                  <span className="text-xs text-gray-700">{category}</span>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
