@@ -89,18 +89,19 @@ function cleanSourceName(sourceName: string): string {
 function createTreemap(
   svgElement: SVGSVGElement,
   data: VoronoiNode,
-  size: number
+  width: number,
+  height: number
 ) {
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove();
 
   // Set viewBox for proper scaling
-  svg.attr("viewBox", `0 0 ${size} ${size}`)
+  svg.attr("viewBox", `0 0 ${width} ${height}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
   const margin = { top: 0, right: 0, bottom: 0, left: 0 };
-  const width = size - margin.left - margin.right;
-  const height = size - margin.top - margin.bottom;
+  const actualWidth = width - margin.left - margin.right;
+  const actualHeight = height - margin.top - margin.bottom;
 
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -108,9 +109,9 @@ function createTreemap(
   // Create rectangular clipping polygon
   const rectangularPolygon: [number, number][] = [
     [0, 0],
-    [width, 0],
-    [width, height],
-    [0, height]
+    [actualWidth, 0],
+    [actualWidth, actualHeight],
+    [0, actualHeight]
   ];
 
   // Create hierarchy
@@ -127,8 +128,8 @@ function createTreemap(
   g.append("rect")
     .attr("x", 0)
     .attr("y", 0)
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", actualWidth)
+    .attr("height", actualHeight)
     .attr("fill", "#f5f5f5");
 
   // Get all nodes
@@ -276,7 +277,12 @@ export function DatabasePrintTreemapsAlternative() {
   const intercellularRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const treemapSize = 420; // Larger size for better visibility
+    // Calculate sizes based on container dimensions
+    // For equal width and height, with col2 treemaps being 1.5x larger
+    const baseSize = 200; // Base size for col1 treemaps (200x200)
+    const col1TreemapSize = baseSize; // Square treemaps for column 1
+    const col2TreemapSize = baseSize * 1.5; // 1.5x larger for column 2 (300x300)
+    // Container height would be baseSize * 3 for column 1
 
     // Process interaction types
     const processInteractionTypes = () => {
@@ -373,7 +379,7 @@ export function DatabasePrintTreemapsAlternative() {
         color: databaseColors.Interactions,
         children: processInteractionTypes()
       };
-      createTreemap(interactionsRef.current, interactionsData, treemapSize);
+      createTreemap(interactionsRef.current, interactionsData, col2TreemapSize, col2TreemapSize);
     }
 
     if (enzymeSubstrateRef.current) {
@@ -390,7 +396,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, treemapSize);
+      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, col1TreemapSize, col1TreemapSize);
     }
 
     if (complexesRef.current) {
@@ -407,7 +413,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(complexesRef.current, complexesData, treemapSize);
+      createTreemap(complexesRef.current, complexesData, col1TreemapSize, col1TreemapSize);
     }
 
     if (annotationsRef.current) {
@@ -416,7 +422,7 @@ export function DatabasePrintTreemapsAlternative() {
         color: databaseColors.Annotations,
         children: processAnnotationsByCategory()
       };
-      createTreemap(annotationsRef.current, annotationsData, treemapSize);
+      createTreemap(annotationsRef.current, annotationsData, col2TreemapSize, col2TreemapSize);
     }
 
     if (intercellularRef.current) {
@@ -433,7 +439,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(intercellularRef.current, intercellularData, treemapSize);
+      createTreemap(intercellularRef.current, intercellularData, col1TreemapSize, col1TreemapSize);
     }
   }, []);
 
@@ -444,97 +450,71 @@ export function DatabasePrintTreemapsAlternative() {
         OmniPath Database Contents
       </h2>
 
-      {/* Treemaps container */}
+      {/* Three column layout */}
       <div className="max-w-7xl mx-auto px-4">
-        <div>
-          {/* First row - 3 treemaps */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-            <div className="flex justify-center">
-              <svg ref={enzymeSubstrateRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+        <div className="flex gap-4 justify-center">
+          {/* Column 1: 3 databases vertically stacked */}
+          <div className="flex flex-col gap-2" style={{ width: "200px" }}>
+            <div style={{ width: "200px", height: "200px" }}>
+              <svg ref={intercellularRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
             </div>
-            <div className="flex justify-center">
-              <svg ref={interactionsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+            <div style={{ width: "200px", height: "200px" }}>
+              <svg ref={complexesRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
             </div>
-            <div className="flex justify-center">
-              <svg ref={complexesRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+            <div style={{ width: "200px", height: "200px" }}>
+              <svg ref={enzymeSubstrateRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
             </div>
           </div>
 
-          {/* Second row - 2 treemaps + legend */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-          <div className="flex justify-center">
-            <svg ref={intercellularRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
+          {/* Column 2: 2 databases vertically stacked */}
+          <div className="flex flex-col gap-2" style={{ width: "300px" }}>
+            <div style={{ width: "300px", height: "300px" }}>
+              <svg ref={interactionsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
+            </div>
+            <div style={{ width: "300px", height: "300px" }}>
+              <svg ref={annotationsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
+            </div>
           </div>
-          <div className="flex justify-center">
-            <svg ref={annotationsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
-          </div>
-          
-          {/* Legend */}
-          <div className="flex justify-center">
-            <div className="w-[420px] h-[420px] bg-white p-4">
-              <div className="h-full" style={{ fontFamily: "Arial, sans-serif" }}>
-                {/* Three column layout for everything */}
-                <div className="grid grid-cols-2 gap-6 h-full">
-                  {/* Left column - Database Categories and Interaction Types */}
-                  <div className="flex flex-col h-full">
-                    {/* Database categories - only in left column */}
-                    <div className="mb-6">
-                      <h3 className="font-bold mb-3 text-lg text-gray-900">Database Categories</h3>
-                      <div className="space-y-2">
-                        {Object.entries(databaseColors).map(([category, color]) => (
-                          <div key={category} className="flex items-start gap-3">
-                            <div 
-                              className="w-5 h-5 rounded flex-shrink-0 mt-0.5" 
-                              style={{ backgroundColor: color }}
-                            ></div>
-                            <span className="text-base font-medium text-gray-800 leading-6">{category}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
-                    {/* Interaction Types */}
-                    <div className="flex-grow flex flex-col justify-end">
-                      <div>
-                        <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
-                        <div className="space-y-2">
-                          {Object.entries(interactionTypeColors).map(([type, color]) => (
-                            <div key={type} className="flex items-start gap-3">
-                              <div 
-                                className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
-                                style={{ backgroundColor: color }}
-                              ></div>
-                              <span className="text-sm text-gray-700 leading-5">
-                                {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+          {/* Column 3: Labels */}
+          <div className="flex flex-col gap-2 pl-4" style={{ width: "240px", height: "608px" }}>
+            {/* Interaction Types - aligned with interactions treemap */}
+            <div style={{ height: "300px" }} className="flex items-center">
+              <div className="w-full">
+                <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
+                <div className="space-y-2">
+                  {Object.entries(interactionTypeColors).map(([type, color]) => (
+                    <div key={type} className="flex items-start gap-3">
+                      <div 
+                        className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                        style={{ backgroundColor: color }}
+                      ></div>
+                      <span className="text-sm text-gray-700 leading-5">
+                        {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
                     </div>
-                  </div>
-
-                  {/* Right column - Annotation Categories */}
-                  <div className="flex flex-col justify-end h-full">
-                    <div>
-                      <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
-                      <div className="space-y-2">
-                        {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
-                          <div key={category} className="flex items-start gap-3">
-                            <div 
-                              className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
-                              style={{ backgroundColor: color }}
-                            ></div>
-                            <span className="text-sm text-gray-700 leading-5">{category}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-          </div>
+
+            {/* Annotation Categories - aligned with annotations treemap */}
+            <div style={{ height: "300px" }} className="flex items-center">
+              <div className="w-full">
+                <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
+                <div className="space-y-1.5">
+                  {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
+                    <div key={category} className="flex items-start gap-3">
+                      <div 
+                        className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                        style={{ backgroundColor: color }}
+                      ></div>
+                      <span className="text-xs text-gray-700 leading-4">{category}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
