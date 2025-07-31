@@ -277,12 +277,15 @@ export function DatabasePrintTreemapsAlternative() {
   const intercellularRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    // Calculate sizes based on container dimensions
-    // For equal width and height, with col2 treemaps being 1.5x larger
-    const baseSize = 200; // Base size for col1 treemaps (200x200)
-    const col1TreemapSize = baseSize; // Square treemaps for column 1
-    const col2TreemapSize = baseSize * 1.5; // 1.5x larger for column 2 (300x300)
-    // Container height would be baseSize * 3 for column 1
+    // Calculate sizes to ensure equal column widths and matching heights
+    const columnWidth = 280; // Equal width for all columns
+    const totalHeight = 600; // Total height for the layout
+    
+    // Column 1: 3 square treemaps
+    const col1TreemapSize = totalHeight / 3; // 200x200 each
+    
+    // Column 2: 2 treemaps that are 1.5x the size
+    const col2TreemapSize = totalHeight / 2; // 300x300 each
 
     // Process interaction types
     const processInteractionTypes = () => {
@@ -379,7 +382,7 @@ export function DatabasePrintTreemapsAlternative() {
         color: databaseColors.Interactions,
         children: processInteractionTypes()
       };
-      createTreemap(interactionsRef.current, interactionsData, col2TreemapSize, col2TreemapSize);
+      createTreemap(interactionsRef.current, interactionsData, columnWidth, col2TreemapSize);
     }
 
     if (enzymeSubstrateRef.current) {
@@ -422,7 +425,7 @@ export function DatabasePrintTreemapsAlternative() {
         color: databaseColors.Annotations,
         children: processAnnotationsByCategory()
       };
-      createTreemap(annotationsRef.current, annotationsData, col2TreemapSize, col2TreemapSize);
+      createTreemap(annotationsRef.current, annotationsData, columnWidth, col2TreemapSize);
     }
 
     if (intercellularRef.current) {
@@ -454,30 +457,30 @@ export function DatabasePrintTreemapsAlternative() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex gap-4 justify-center">
           {/* Column 1: 3 databases vertically stacked */}
-          <div className="flex flex-col gap-2" style={{ width: "200px" }}>
-            <div style={{ width: "200px", height: "200px" }}>
-              <svg ref={intercellularRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
+          <div className="flex flex-col" style={{ width: "280px", height: "600px" }}>
+            <div style={{ width: "200px", height: "200px", margin: "0 auto" }}>
+              <svg ref={intercellularRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "200px", height: "200px" }}>
-              <svg ref={complexesRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
+            <div style={{ width: "200px", height: "200px", margin: "0 auto" }}>
+              <svg ref={complexesRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "200px", height: "200px" }}>
-              <svg ref={enzymeSubstrateRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
+            <div style={{ width: "200px", height: "200px", margin: "0 auto" }}>
+              <svg ref={enzymeSubstrateRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
           </div>
 
           {/* Column 2: 2 databases vertically stacked */}
-          <div className="flex flex-col gap-2" style={{ width: "300px" }}>
-            <div style={{ width: "300px", height: "300px" }}>
-              <svg ref={interactionsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
+          <div className="flex flex-col" style={{ width: "280px", height: "600px" }}>
+            <div style={{ width: "280px", height: "300px" }}>
+              <svg ref={interactionsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "300px", height: "300px" }}>
-              <svg ref={annotationsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "100%" }}></svg>
+            <div style={{ width: "280px", height: "300px" }}>
+              <svg ref={annotationsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
           </div>
 
           {/* Column 3: Labels */}
-          <div className="flex flex-col gap-2 pl-4" style={{ width: "240px", height: "608px" }}>
+          <div className="flex flex-col" style={{ width: "280px", height: "600px", paddingLeft: "20px" }}>
             {/* Interaction Types - aligned with interactions treemap */}
             <div style={{ height: "300px" }} className="flex items-center">
               <div className="w-full">
