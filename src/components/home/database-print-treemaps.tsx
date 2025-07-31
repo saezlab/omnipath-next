@@ -27,28 +27,28 @@ const databaseColors = {
   Intercellular: "#5b205f"       // Seance
 };
 
-// RWTH palette - shades of blue for interaction types
+// More distinct colors for interaction types
 const interactionTypeColors = {
   "transcriptional": "#176fc1",      // Havelock blue
-  "post_translational": "#2e7cc7",   // Slightly lighter blue
-  "mirna_transcriptional": "#4b87ce", // Medium blue
-  "post_transcriptional": "#6899d5",  // Lighter medium blue
-  "small_molecule_protein": "#83a7dd" // Jordy blue (lightest we'll go)
+  "post_translational": "#00acc1",   // Cyan
+  "mirna_transcriptional": "#5e35b1", // Deep purple
+  "post_transcriptional": "#1e88e5",  // Bright blue
+  "small_molecule_protein": "#00897b" // Teal
 };
 
-// RWTH palette - shades of orange for annotation categories
+// More distinct colors for annotation categories
 const annotationCategoryColors = {
-  "Cell-cell communication": "#f89d0e",    // Orange (base)
-  "Localization (subcellular)": "#f5920a", // Slightly darker orange
-  "Membrane localization & topology": "#f08706", // Darker orange
-  "Extracellular matrix, adhesion": "#eb7c03",   // More saturated orange
-  "Vesicles, secretome": "#e57100",       // Deep orange
-  "Function, pathway": "#fab23f",         // My sin (lighter but visible)
-  "Signatures": "#f9aa2a",               // Medium light orange
-  "Disease, cancer": "#f7a216",          // Medium orange
-  "Protein classes & families": "#d97005", // Dark orange
-  "Cell type, tissue": "#c96504",        // Very dark orange
-  "Transcription factors": "#b85a04"     // Darkest orange
+  "Cell-cell communication": "#f89d0e",    // Orange
+  "Localization (subcellular)": "#ef5350", // Red
+  "Membrane localization & topology": "#ab47bc", // Purple
+  "Extracellular matrix, adhesion": "#42a5f5",   // Light blue
+  "Vesicles, secretome": "#66bb6a",       // Green
+  "Function, pathway": "#ffa726",         // Amber
+  "Signatures": "#8d6e63",               // Brown
+  "Disease, cancer": "#ec407a",          // Pink
+  "Protein classes & families": "#5c6bc0", // Indigo
+  "Cell type, tissue": "#26a69a",        // Teal
+  "Transcription factors": "#d4e157"     // Lime
 };
 
 // Source groups from filter sidebar
@@ -170,13 +170,9 @@ function createTreemap(
     .attr("class", "cell")
     .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
     .style("fill", (d: any) => {
+      // Use the parent's color directly for better distinction
       if (d.parent?.data.color) {
-        const baseColor = d3.color(d.parent.data.color);
-        const sizeFactor = d.value / d.parent.value;
-        // Use brighter/darker variations based on the size
-        // Larger cells get slightly darker, smaller cells get slightly brighter
-        const adjustment = 0.5 - sizeFactor * 0.8;
-        return baseColor ? (adjustment > 0 ? baseColor.brighter(adjustment) : baseColor.darker(-adjustment)).toString() : d.parent.data.color;
+        return d.parent.data.color;
       }
       return "#ccc";
     })
