@@ -286,14 +286,14 @@ export function DatabasePrintTreemaps() {
 
   useEffect(() => {
     // Calculate sizes to ensure equal column widths and matching heights
-    const columnWidth = 280; // Equal width for all columns
-    const totalHeight = 600; // Total height for the layout
+    const columnWidth = 320; // Increased from 280
+    const totalHeight = 700; // Increased from 600
     
     // Column 1: 3 square treemaps
-    const col1TreemapSize = totalHeight / 3; // 200x200 each
+    const col1TreemapSize = totalHeight / 3; // ~233x233 each
     
     // Column 2: 2 treemaps that are 1.5x the size
-    const col2TreemapSize = totalHeight / 2; // 300x300 each
+    const col2TreemapSize = totalHeight / 2; // 350x350 each
 
     // Process interaction types
     const processInteractionTypes = () => {
@@ -463,34 +463,34 @@ export function DatabasePrintTreemaps() {
 
       {/* Three column layout */}
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-2 justify-center">
           {/* Column 1: 3 databases vertically stacked */}
-          <div className="flex flex-col" style={{ width: "280px", height: "600px" }}>
-            <div style={{ width: "280px", height: "200px" }}>
+          <div className="flex flex-col" style={{ width: "320px", height: "700px" }}>
+            <div style={{ width: "320px", height: "233px" }}>
               <svg ref={intercellularRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "280px", height: "200px" }}>
+            <div style={{ width: "320px", height: "233px" }}>
               <svg ref={complexesRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "280px", height: "200px" }}>
+            <div style={{ width: "320px", height: "234px" }}>
               <svg ref={enzymeSubstrateRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
           </div>
 
           {/* Column 2: 2 databases vertically stacked */}
-          <div className="flex flex-col" style={{ width: "280px", height: "600px" }}>
-            <div style={{ width: "280px", height: "300px" }}>
+          <div className="flex flex-col" style={{ width: "320px", height: "700px" }}>
+            <div style={{ width: "320px", height: "350px" }}>
               <svg ref={interactionsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "280px", height: "300px" }}>
+            <div style={{ width: "320px", height: "350px" }}>
               <svg ref={annotationsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
           </div>
 
           {/* Column 3: Labels */}
-          <div className="flex flex-col" style={{ width: "280px", height: "600px", paddingLeft: "20px" }}>
+          <div className="flex flex-col" style={{ width: "280px", height: "700px", paddingLeft: "15px" }}>
             {/* Interaction Types - aligned with interactions treemap */}
-            <div style={{ height: "300px" }} className="flex items-center">
+            <div style={{ height: "350px" }} className="flex items-center">
               <div className="w-full">
                 <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
                 <div className="space-y-2">
@@ -510,7 +510,7 @@ export function DatabasePrintTreemaps() {
             </div>
 
             {/* Annotation Categories - aligned with annotations treemap */}
-            <div style={{ height: "300px" }} className="flex items-center">
+            <div style={{ height: "350px" }} className="flex items-center">
               <div className="w-full">
                 <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
                 <div className="space-y-1.5">
