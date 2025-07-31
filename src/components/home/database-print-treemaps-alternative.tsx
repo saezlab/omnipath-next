@@ -14,6 +14,8 @@ interface VoronoiNode {
   children?: VoronoiNode[];
   code?: string;
   category?: string;
+  originalName?: string;
+  interactionType?: string;
 }
 
 // Professional color palette with better contrast
@@ -174,6 +176,46 @@ function createTreemap(
     .style("stroke-width", 0.3)
     .style("opacity", 0.9);
 
+  // Add hover effects
+  g.append("g")
+    .selectAll(".hoverer")
+    .data(leaves)
+    .enter()
+    .append("path")
+    .attr("class", "hoverer")
+    .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
+    .style("fill", "transparent")
+    .style("stroke", "transparent")
+    .style("stroke-width", 0)
+    .style("cursor", "pointer")
+    .on("mouseenter", function() {
+      d3.select(this)
+        .style("stroke", "white")
+        .style("stroke-width", 3);
+    })
+    .on("mouseleave", function() {
+      d3.select(this)
+        .style("stroke", "transparent")
+        .style("stroke-width", 0);
+    })
+    .append("title")
+    .text((d: any) => {
+      const actualCount = Math.round(Math.pow(10, d.value) - 1);
+      let tooltip = `${d.data.name}\n${actualCount.toLocaleString()} records\nDatabase: ${d.parent.data.name}`;
+      
+      // Show interaction type if available
+      if (d.data.interactionType) {
+        tooltip += `\nType: ${d.data.interactionType.replace(/_/g, ' ')}`;
+      }
+      
+      // Show original name if it was cleaned
+      if (d.data.originalName && d.data.originalName !== d.data.name) {
+        tooltip += `\nOriginal: ${d.data.originalName}`;
+      }
+      
+      return tooltip;
+    });
+
   // Calculate polygon bounds
   const calculatePolygonBounds = (polygon: any) => {
     const xs = polygon.map((p: [number, number]) => p[0]);
@@ -266,6 +308,8 @@ export function DatabasePrintTreemapsAlternative() {
               const cleanedName = cleanSourceName(d.source);
               return {
                 name: cleanedName,
+                originalName: d.source,
+                interactionType: type,
                 weight: Math.log10(d.record_count + 1),
                 code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
               };
@@ -304,6 +348,7 @@ export function DatabasePrintTreemapsAlternative() {
               const cleanedName = cleanSourceName(d.source);
               return {
                 name: cleanedName,
+                originalName: d.source,
                 weight: Math.log10(d.record_count + 1),
                 code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
               };
@@ -336,6 +381,7 @@ export function DatabasePrintTreemapsAlternative() {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
+            originalName: d.source,
             weight: Math.log10(d.record_count + 1),
             code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
           };
@@ -352,6 +398,7 @@ export function DatabasePrintTreemapsAlternative() {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
+            originalName: d.source,
             weight: Math.log10(d.record_count + 1),
             code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
           };
@@ -377,6 +424,7 @@ export function DatabasePrintTreemapsAlternative() {
           const cleanedName = cleanSourceName(d.source);
           return {
             name: cleanedName,
+            originalName: d.source,
             weight: Math.log10(d.record_count + 1),
             code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
           };
