@@ -396,12 +396,12 @@ export function DatabasePrintTreemapsAlternative() {
       {/* Treemaps container */}
       <div className="max-w-7xl mx-auto px-4">
         {/* First row - 3 treemaps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1 mb-1">
-          <div className="flex justify-center">
-            <svg ref={interactionsRef} width={420} height={420} style={{ display: "block" }}></svg>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
           <div className="flex justify-center">
             <svg ref={enzymeSubstrateRef} width={420} height={420} style={{ display: "block" }}></svg>
+          </div>
+          <div className="flex justify-center">
+            <svg ref={interactionsRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
             <svg ref={complexesRef} width={420} height={420} style={{ display: "block" }}></svg>
@@ -411,63 +411,69 @@ export function DatabasePrintTreemapsAlternative() {
         {/* Second row - 2 treemaps + legend */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
           <div className="flex justify-center">
-            <svg ref={annotationsRef} width={420} height={420} style={{ display: "block" }}></svg>
+            <svg ref={intercellularRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={intercellularRef} width={420} height={420} style={{ display: "block" }}></svg>
+            <svg ref={annotationsRef} width={420} height={420} style={{ display: "block" }}></svg>
           </div>
           
           {/* Legend */}
           <div className="flex justify-center">
-            <div className="w-[420px] h-[420px] bg-white rounded-lg border-2 border-gray-300 p-6 overflow-y-auto">
-              <div className="space-y-5" style={{ fontFamily: "Arial, sans-serif" }}>
-                {/* Database categories */}
-                <div>
-                  <h3 className="font-bold mb-3 text-lg text-gray-900">Database Categories</h3>
-                  <div className="space-y-2 mb-5">
-                    {Object.entries(databaseColors).map(([category, color]) => (
-                      <div key={category} className="flex items-center gap-2">
-                        <div 
-                          className="w-5 h-5 rounded flex-shrink-0" 
-                          style={{ backgroundColor: color }}
-                        ></div>
-                        <span className="text-base font-medium text-gray-800">{category}</span>
-                      </div>
-                    ))}
+            <div className="w-[420px] h-[420px] bg-white p-4">
+              <div className="grid grid-cols-2 gap-4 h-full" style={{ fontFamily: "Arial, sans-serif" }}>
+                {/* Left column */}
+                <div className="space-y-4">
+                  {/* Database categories */}
+                  <div>
+                    <h3 className="font-bold mb-2 text-base text-gray-900">Database Categories</h3>
+                    <div className="space-y-1.5">
+                      {Object.entries(databaseColors).map(([category, color]) => (
+                        <div key={category} className="flex items-center gap-2">
+                          <div 
+                            className="w-4 h-4 rounded flex-shrink-0" 
+                            style={{ backgroundColor: color }}
+                          ></div>
+                          <span className="text-sm font-medium text-gray-800">{category}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Interaction types legend */}
+                  <div>
+                    <h4 className="font-bold mb-2 text-base text-gray-800">Interaction Types</h4>
+                    <div className="space-y-1">
+                      {Object.entries(interactionTypeColors).map(([type, color]) => (
+                        <div key={type} className="flex items-center gap-2">
+                          <div 
+                            className="w-3.5 h-3.5 rounded-sm flex-shrink-0" 
+                            style={{ backgroundColor: color }}
+                          ></div>
+                          <span className="text-xs text-gray-700">
+                            {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Interaction types legend */}
+                {/* Right column */}
                 <div>
-                  <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
-                  <div className="space-y-1.5">
-                    {Object.entries(interactionTypeColors).map(([type, color]) => (
-                      <div key={type} className="flex items-center gap-2">
-                        <div 
-                          className="w-4 h-4 rounded-sm flex-shrink-0" 
-                          style={{ backgroundColor: color }}
-                        ></div>
-                        <span className="text-sm text-gray-700">
-                          {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Annotation categories legend */}
-                <div>
-                  <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
-                  <div className="space-y-1.5">
-                    {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
-                      <div key={category} className="flex items-center gap-2">
-                        <div 
-                          className="w-4 h-4 rounded-sm flex-shrink-0" 
-                          style={{ backgroundColor: color }}
-                        ></div>
-                        <span className="text-sm text-gray-700">{category}</span>
-                      </div>
-                    ))}
+                  {/* Annotation categories legend */}
+                  <div>
+                    <h4 className="font-bold mb-2 text-base text-gray-800">Annotation Categories</h4>
+                    <div className="space-y-1">
+                      {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
+                        <div key={category} className="flex items-center gap-2">
+                          <div 
+                            className="w-3.5 h-3.5 rounded-sm flex-shrink-0" 
+                            style={{ backgroundColor: color }}
+                          ></div>
+                          <span className="text-xs text-gray-700">{category}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
