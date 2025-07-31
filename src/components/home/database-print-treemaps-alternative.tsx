@@ -476,55 +476,59 @@ export function DatabasePrintTreemapsAlternative() {
                 {/* Three column layout for everything */}
                 <div className="grid grid-cols-2 gap-6 h-full">
                   {/* Left column - Database Categories and Interaction Types */}
-                  <div className="flex flex-col">
+                  <div className="flex flex-col h-full">
                     {/* Database categories - only in left column */}
                     <div className="mb-6">
                       <h3 className="font-bold mb-3 text-lg text-gray-900">Database Categories</h3>
                       <div className="space-y-2">
                         {Object.entries(databaseColors).map(([category, color]) => (
-                          <div key={category} className="flex items-center gap-3">
+                          <div key={category} className="flex items-start gap-3">
                             <div 
-                              className="w-5 h-5 rounded flex-shrink-0" 
+                              className="w-5 h-5 rounded flex-shrink-0 mt-0.5" 
                               style={{ backgroundColor: color }}
                             ></div>
-                            <span className="text-base font-medium text-gray-800">{category}</span>
+                            <span className="text-base font-medium text-gray-800 leading-6">{category}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Interaction Types */}
-                    <div className="flex-1">
-                      <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
-                      <div className="space-y-2">
-                        {Object.entries(interactionTypeColors).map(([type, color]) => (
-                          <div key={type} className="flex items-center gap-3">
-                            <div 
-                              className="w-4 h-4 rounded-sm flex-shrink-0" 
-                              style={{ backgroundColor: color }}
-                            ></div>
-                            <span className="text-sm text-gray-700">
-                              {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                            </span>
-                          </div>
-                        ))}
+                    <div className="flex-grow flex flex-col justify-end">
+                      <div>
+                        <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
+                        <div className="space-y-2">
+                          {Object.entries(interactionTypeColors).map(([type, color]) => (
+                            <div key={type} className="flex items-start gap-3">
+                              <div 
+                                className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                                style={{ backgroundColor: color }}
+                              ></div>
+                              <span className="text-sm text-gray-700 leading-5">
+                                {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Right column - Annotation Categories */}
-                  <div>
-                    <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
-                    <div className="space-y-2">
-                      {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
-                        <div key={category} className="flex items-center gap-3">
-                          <div 
-                            className="w-4 h-4 rounded-sm flex-shrink-0" 
-                            style={{ backgroundColor: color }}
-                          ></div>
-                          <span className="text-sm text-gray-700">{category}</span>
-                        </div>
-                      ))}
+                  <div className="flex flex-col justify-end h-full">
+                    <div>
+                      <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
+                      <div className="space-y-2">
+                        {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
+                          <div key={category} className="flex items-start gap-3">
+                            <div 
+                              className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                              style={{ backgroundColor: color }}
+                            ></div>
+                            <span className="text-sm text-gray-700 leading-5">{category}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
