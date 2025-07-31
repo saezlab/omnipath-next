@@ -223,7 +223,94 @@ function createTreemap(
     };
   };
 
-  // Skip drawing category/type labels as requested
+  // Draw category/type labels on left and right sides with connecting lines
+  if (parents.length > 0) {
+    // Sort parents by their centroid position for better label organization
+    const sortedParents = parents.sort((a: any, b: any) => {
+      const angleA = Math.atan2(a.polygon.site.y, a.polygon.site.x);
+      const angleB = Math.atan2(b.polygon.site.y, b.polygon.site.x);
+      return angleA - angleB;
+    });
+
+    const leftLabels: any[] = [];
+    const rightLabels: any[] = [];
+    
+    // Separate labels into left and right sides based on centroid position
+    sortedParents.forEach((d: any) => {
+      if (d.polygon.site.x < 0) {
+        leftLabels.push(d);
+      } else {
+        rightLabels.push(d);
+      }
+    });
+
+    // Draw connecting lines first (so they appear behind labels)
+    const linesGroup = g.append("g").attr("class", "connector-lines");
+    
+    // Draw lines for left labels
+    leftLabels.forEach((d: any, i: number) => {
+      const centroid = d.polygon.site;
+      const labelY = (i - leftLabels.length / 2 + 0.5) * 25;
+      
+      linesGroup.append("line")
+        .attr("x1", centroid.x)
+        .attr("y1", centroid.y)
+        .attr("x2", -radius - 15)
+        .attr("y2", labelY)
+        .style("stroke", d.data.color || "#666")
+        .style("stroke-width", 2)
+        .style("opacity", 0.7);
+    });
+
+    // Draw lines for right labels
+    rightLabels.forEach((d: any, i: number) => {
+      const centroid = d.polygon.site;
+      const labelY = (i - rightLabels.length / 2 + 0.5) * 25;
+      
+      linesGroup.append("line")
+        .attr("x1", centroid.x)
+        .attr("y1", centroid.y)
+        .attr("x2", radius + 15)
+        .attr("y2", labelY)
+        .style("stroke", d.data.color || "#666")
+        .style("stroke-width", 2)
+        .style("opacity", 0.7);
+    });
+
+    // Draw left side labels
+    g.append("g")
+      .selectAll(".left-label")
+      .data(leftLabels)
+      .enter()
+      .append("text")
+      .attr("class", "left-label")
+      .attr("x", -radius - 80)
+      .attr("y", (_, i: number) => (i - leftLabels.length / 2 + 0.5) * 25)
+      .attr("text-anchor", "end")
+      .attr("dominant-baseline", "middle")
+      .style("font-size", "12px")
+      .style("font-family", "Arial, sans-serif")
+      .style("fill", "#333")
+      .style("font-weight", "600")
+      .text((d: any) => d.data.name);
+
+    // Draw right side labels
+    g.append("g")
+      .selectAll(".right-label")
+      .data(rightLabels)
+      .enter()
+      .append("text")
+      .attr("class", "right-label")
+      .attr("x", radius + 80)
+      .attr("y", (_, i: number) => (i - rightLabels.length / 2 + 0.5) * 25)
+      .attr("text-anchor", "start")
+      .attr("dominant-baseline", "middle")
+      .style("font-size", "12px")
+      .style("font-family", "Arial, sans-serif")
+      .style("fill", "#333")
+      .style("font-weight", "600")
+      .text((d: any) => d.data.name);
+  }
 
   // Draw source labels
   g.append("g")
@@ -268,7 +355,7 @@ export function DatabasePrintTreemaps() {
   const intercellularRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const treemapSize = 380; // Larger size for better visibility
+    const treemapSize = 450; // Size to accommodate side labels
 
     // Process interaction types
     const processInteractionTypes = () => {
@@ -431,60 +518,37 @@ export function DatabasePrintTreemaps() {
       </h2>
 
       {/* Treemaps container */}
-      <div className="max-w-7xl mx-auto px-4 space-y-6">
-        {/* Interactions with legend */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 items-center">
-          <div className="flex justify-center">
-            <svg ref={interactionsRef} width={380} height={380} style={{ display: "block" }}></svg>
+      <div className="max-w-7xl mx-auto px-4 space-y-8">
+        {/* Complex databases with legends */}
+        
+        {/* Interactions with integrated labels */}
+        <div className="flex justify-center">
+          <div className="text-center">
+            <svg ref={interactionsRef} width={450} height={450} style={{ display: "block" }}></svg>
           </div>
-          <div className="bg-white rounded-lg border border-gray-300 p-4 h-fit">
-            <h4 className="font-bold mb-2 text-sm text-gray-800">Interaction Types</h4>
-            <div className="space-y-1">
-              {Object.entries(interactionTypeColors).map(([type, color]) => (
-                <div key={type} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-sm flex-shrink-0" 
-                    style={{ backgroundColor: color }}
-                  ></div>
-                  <span className="text-xs text-gray-700">
-                    {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </span>
-                </div>
-              ))}
+        </div>
+
+        {/* Annotations with integrated labels */}
+        <div className="flex justify-center">
+          <div className="text-center">
+            <svg ref={annotationsRef} width={450} height={450} style={{ display: "block" }}></svg>
+          </div>
+        </div>
+
+        {/* Simple databases - compact row */}
+        <div>
+          <h3 className="text-lg font-semibold text-center mb-4 text-gray-800" style={{ fontFamily: "Arial, sans-serif" }}>
+            Other Database Types
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+            <div className="flex justify-center">
+              <svg ref={enzymeSubstrateRef} width={350} height={350} style={{ display: "block" }}></svg>
             </div>
-          </div>
-        </div>
-
-        {/* Second row - Enzyme-Substrate, Complexes, Intercellular */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="flex justify-center">
-            <svg ref={enzymeSubstrateRef} width={380} height={380} style={{ display: "block" }}></svg>
-          </div>
-          <div className="flex justify-center">
-            <svg ref={complexesRef} width={380} height={380} style={{ display: "block" }}></svg>
-          </div>
-          <div className="flex justify-center">
-            <svg ref={intercellularRef} width={380} height={380} style={{ display: "block" }}></svg>
-          </div>
-        </div>
-
-        {/* Annotations with legend */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 items-center">
-          <div className="flex justify-center">
-            <svg ref={annotationsRef} width={380} height={380} style={{ display: "block" }}></svg>
-          </div>
-          <div className="bg-white rounded-lg border border-gray-300 p-4 h-fit max-h-[380px] overflow-y-auto">
-            <h4 className="font-bold mb-2 text-sm text-gray-800">Annotation Categories</h4>
-            <div className="space-y-1">
-              {Object.entries(annotationCategoryColors).slice(0, 8).map(([category, color]) => (
-                <div key={category} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-sm flex-shrink-0" 
-                    style={{ backgroundColor: color }}
-                  ></div>
-                  <span className="text-xs text-gray-700">{category}</span>
-                </div>
-              ))}
+            <div className="flex justify-center">
+              <svg ref={complexesRef} width={350} height={350} style={{ display: "block" }}></svg>
+            </div>
+            <div className="flex justify-center">
+              <svg ref={intercellularRef} width={350} height={350} style={{ display: "block" }}></svg>
             </div>
           </div>
         </div>
