@@ -98,7 +98,7 @@ function createTreemap(
   svg.attr("viewBox", `0 0 ${size} ${size}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
-  const margin = { top: 2, right: 2, bottom: 2, left: 2 };
+  const margin = { top: 0, right: 0, bottom: 0, left: 0 };
   const width = size - margin.left - margin.right;
   const height = size - margin.top - margin.bottom;
 
