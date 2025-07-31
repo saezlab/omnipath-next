@@ -3,6 +3,7 @@
 import { AboutSection } from "@/components/home/about-section"
 import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { DatabaseStats } from "@/components/home/database-stats"
+import { DatabasePrintTreemaps } from "@/components/home/database-print-treemaps"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { SiteLayout } from "@/components/layout/main-layout"
@@ -72,6 +73,10 @@ export function HomePage() {
 
         <div className="mt-12">
           <DatabaseStats />
+        </div>
+
+        <div className="mt-12">
+          <DatabasePrintTreemaps />
         </div>
 
         <AboutSection />
