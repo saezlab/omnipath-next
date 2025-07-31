@@ -8,7 +8,7 @@ import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { SiteLayout } from "@/components/layout/main-layout"
 import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
-
+import { DatabasePrintTreemapsAlternative } from "../home/database-print-treemaps-alternative"
 export function HomePage() {
   return (
     <SiteLayout>
@@ -75,6 +75,9 @@ export function HomePage() {
           <DatabaseStats />
         </div>
 
+        <div className="mt-12">
+          <DatabasePrintTreemapsAlternative />
+        </div>
         <div className="mt-12">
           <DatabasePrintTreemaps />
         </div>
