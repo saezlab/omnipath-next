@@ -201,7 +201,14 @@ function createTreemap(
     .append("title")
     .text((d: any) => {
       const actualCount = Math.round(Math.pow(10, d.value) - 1);
-      let tooltip = `${d.data.name}\n${actualCount.toLocaleString()} records\nDatabase: ${d.parent.data.name}`;
+      
+      // Get the root database name - go up the hierarchy to find it
+      let databaseName = d.parent.data.name;
+      if (d.parent.parent && d.parent.parent.data.name !== "root") {
+        databaseName = d.parent.parent.data.name;
+      }
+      
+      let tooltip = `${d.data.name}\n${actualCount.toLocaleString()} records\nDatabase: ${databaseName}`;
       
       // Show interaction type if available
       if (d.data.interactionType) {
