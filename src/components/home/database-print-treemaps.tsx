@@ -284,16 +284,61 @@ export function DatabasePrintTreemaps() {
   const annotationsRef = useRef<SVGSVGElement>(null);
   const intercellularRef = useRef<SVGSVGElement>(null);
 
+  // Count resources for each database to calculate proportional sizes
+  const getResourceCount = (data: any[]): number => {
+    const deduplicatedSet = new Set<string>();
+    data.forEach(item => {
+      deduplicatedSet.add(cleanSourceName(item.source));
+    });
+    return deduplicatedSet.size;
+  };
+
+  // Count interaction resources (considering subcategories)
+  const getInteractionResourceCount = (): number => {
+    const deduplicatedSet = new Set<string>();
+    dbStats.interactionsSourceType.forEach(item => {
+      deduplicatedSet.add(cleanSourceName(item.source));
+    });
+    return deduplicatedSet.size;
+  };
+
+  // Count annotation resources (considering categories)
+  const getAnnotationResourceCount = (): number => {
+    const deduplicatedSet = new Set<string>();
+    dbStats.annotations.forEach(item => {
+      deduplicatedSet.add(cleanSourceName(item.source));
+    });
+    return deduplicatedSet.size;
+  };
+
+  const resourceCounts = {
+    interactions: getInteractionResourceCount(),
+    annotations: getAnnotationResourceCount(),
+    intercellular: getResourceCount(dbStats.intercell),
+    complexes: getResourceCount(dbStats.complexes),
+    enzymeSubstrate: getResourceCount(dbStats.enzsub)
+  };
+
+  // Calculate total resources and proportions
+  const totalResources = Object.values(resourceCounts).reduce((a, b) => a + b, 0);
+  const minSize = 180; // Minimum circle diameter
+  const maxSize = 380; // Maximum circle diameter
+  
+  // Calculate sizes proportionally
+  const calculateSize = (count: number): number => {
+    const proportion = count / totalResources;
+    return Math.max(minSize, Math.min(maxSize, minSize + (maxSize - minSize) * proportion * 3));
+  };
+
+  const sizes = {
+    interactions: calculateSize(resourceCounts.interactions),
+    annotations: calculateSize(resourceCounts.annotations),
+    intercellular: calculateSize(resourceCounts.intercellular),
+    complexes: calculateSize(resourceCounts.complexes),
+    enzymeSubstrate: calculateSize(resourceCounts.enzymeSubstrate)
+  };
+
   useEffect(() => {
-    // Calculate sizes to ensure equal column widths and matching heights
-    const columnWidth = 320; // Increased from 280
-    const totalHeight = 700; // Increased from 600
-    
-    // Column 1: 3 square treemaps
-    const col1TreemapSize = totalHeight / 3; // ~233x233 each
-    
-    // Column 2: 2 treemaps that are 1.5x the size
-    const col2TreemapSize = totalHeight / 2; // 350x350 each
 
     // Process interaction types
     const processInteractionTypes = () => {
@@ -408,7 +453,7 @@ export function DatabasePrintTreemaps() {
         color: databaseColors.Interactions,
         children: processInteractionTypes()
       };
-      createTreemap(interactionsRef.current, interactionsData, columnWidth, col2TreemapSize);
+      createTreemap(interactionsRef.current, interactionsData, sizes.interactions, sizes.interactions);
     }
 
     if (enzymeSubstrateRef.current) {
@@ -435,7 +480,7 @@ export function DatabasePrintTreemaps() {
           };
         })
       };
-      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, columnWidth, col1TreemapSize);
+      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, sizes.enzymeSubstrate, sizes.enzymeSubstrate);
     }
 
     if (complexesRef.current) {
@@ -462,7 +507,7 @@ export function DatabasePrintTreemaps() {
           };
         })
       };
-      createTreemap(complexesRef.current, complexesData, columnWidth, col1TreemapSize);
+      createTreemap(complexesRef.current, complexesData, sizes.complexes, sizes.complexes);
     }
 
     if (annotationsRef.current) {
@@ -471,7 +516,7 @@ export function DatabasePrintTreemaps() {
         color: databaseColors.Annotations,
         children: processAnnotationsByCategory()
       };
-      createTreemap(annotationsRef.current, annotationsData, columnWidth, col2TreemapSize);
+      createTreemap(annotationsRef.current, annotationsData, sizes.annotations, sizes.annotations);
     }
 
     if (intercellularRef.current) {
@@ -498,7 +543,7 @@ export function DatabasePrintTreemaps() {
           };
         })
       };
-      createTreemap(intercellularRef.current, intercellularData, columnWidth, col1TreemapSize);
+      createTreemap(intercellularRef.current, intercellularData, sizes.intercellular, sizes.intercellular);
     }
   }, []);
 
@@ -509,69 +554,68 @@ export function DatabasePrintTreemaps() {
         OmniPath Database Contents
       </h2>
 
-      {/* Three column layout */}
+      {/* Flexible packed bubble layout */}
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex gap-2 justify-center">
-          {/* Column 1: 3 databases vertically stacked */}
-          <div className="flex flex-col" style={{ width: "320px", height: "700px" }}>
-            <div style={{ width: "320px", height: "233px" }}>
+        <div className="flex gap-4 justify-center">
+          {/* Main content area with packed bubbles */}
+          <div className="flex flex-wrap gap-3 justify-center items-center" style={{ maxWidth: "800px" }}>
+            {/* Interactions - largest */}
+            <div style={{ width: `${sizes.interactions}px`, height: `${sizes.interactions}px` }}>
+              <svg ref={interactionsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
+            </div>
+            
+            {/* Annotations - second largest */}
+            <div style={{ width: `${sizes.annotations}px`, height: `${sizes.annotations}px` }}>
+              <svg ref={annotationsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
+            </div>
+            
+            {/* Smaller databases */}
+            <div style={{ width: `${sizes.intercellular}px`, height: `${sizes.intercellular}px` }}>
               <svg ref={intercellularRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "320px", height: "233px" }}>
+            
+            <div style={{ width: `${sizes.complexes}px`, height: `${sizes.complexes}px` }}>
               <svg ref={complexesRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "320px", height: "234px" }}>
+            
+            <div style={{ width: `${sizes.enzymeSubstrate}px`, height: `${sizes.enzymeSubstrate}px` }}>
               <svg ref={enzymeSubstrateRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
           </div>
 
-          {/* Column 2: 2 databases vertically stacked */}
-          <div className="flex flex-col" style={{ width: "320px", height: "700px" }}>
-            <div style={{ width: "320px", height: "350px" }}>
-              <svg ref={interactionsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
-            </div>
-            <div style={{ width: "320px", height: "350px" }}>
-              <svg ref={annotationsRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
-            </div>
-          </div>
-
-          {/* Column 3: Labels */}
-          <div className="flex flex-col" style={{ width: "280px", height: "700px", paddingLeft: "15px" }}>
-            {/* Interaction Types - aligned with interactions treemap */}
-            <div style={{ height: "350px" }} className="flex items-center">
-              <div className="w-full">
-                <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
-                <div className="space-y-2">
-                  {Object.entries(interactionTypeColors).map(([type, color]) => (
-                    <div key={type} className="flex items-start gap-3">
-                      <div 
-                        className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
-                        style={{ backgroundColor: color }}
-                      ></div>
-                      <span className="text-sm text-gray-700 leading-5">
-                        {type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+          {/* Side panel with labels */}
+          <div className="flex flex-col gap-6" style={{ width: "280px", paddingLeft: "15px" }}>
+            {/* Interaction Types */}
+            <div>
+              <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
+              <div className="space-y-2">
+                {Object.entries(interactionTypeColors).map(([type, color]) => (
+                  <div key={type} className="flex items-start gap-3">
+                    <div 
+                      className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                      style={{ backgroundColor: color }}
+                    ></div>
+                    <span className="text-sm text-gray-700 leading-5">
+                      {type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Annotation Categories - aligned with annotations treemap */}
-            <div style={{ height: "350px" }} className="flex items-center">
-              <div className="w-full">
-                <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
-                <div className="space-y-1.5">
-                  {Object.entries(annotationCategoryColors).map(([category, color]) => (
-                    <div key={category} className="flex items-start gap-3">
-                      <div 
-                        className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
-                        style={{ backgroundColor: color }}
-                      ></div>
-                      <span className="text-xs text-gray-700 leading-4">{category}</span>
-                    </div>
-                  ))}
-                </div>
+            {/* Annotation Categories */}
+            <div>
+              <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
+              <div className="space-y-1.5">
+                {Object.entries(annotationCategoryColors).map(([category, color]) => (
+                  <div key={category} className="flex items-start gap-3">
+                    <div 
+                      className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
+                      style={{ backgroundColor: color }}
+                    ></div>
+                    <span className="text-xs text-gray-700 leading-4">{category}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
