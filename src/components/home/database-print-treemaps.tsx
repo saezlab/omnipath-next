@@ -295,7 +295,7 @@ function createTreemap(
           midAngle = (minAngle + maxAngle) / 2;
         }
         
-        return (radius + 50) * Math.cos(midAngle);
+        return (radius + 10) * Math.cos(midAngle);
       })
       .attr("y", (d: any) => {
         // Same midpoint angle calculation for Y coordinate
@@ -340,7 +340,7 @@ function createTreemap(
           midAngle = (minAngle + maxAngle) / 2;
         }
         
-        return (radius + 50) * Math.sin(midAngle);
+        return (radius + 10) * Math.sin(midAngle);
       })
       .attr("text-anchor", (d: any) => {
         // Use midpoint angle for text anchor determination
