@@ -399,7 +399,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, col1TreemapSize, col1TreemapSize);
+      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, columnWidth, col1TreemapSize);
     }
 
     if (complexesRef.current) {
@@ -416,7 +416,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(complexesRef.current, complexesData, col1TreemapSize, col1TreemapSize);
+      createTreemap(complexesRef.current, complexesData, columnWidth, col1TreemapSize);
     }
 
     if (annotationsRef.current) {
@@ -442,7 +442,7 @@ export function DatabasePrintTreemapsAlternative() {
           };
         })
       };
-      createTreemap(intercellularRef.current, intercellularData, col1TreemapSize, col1TreemapSize);
+      createTreemap(intercellularRef.current, intercellularData, columnWidth, col1TreemapSize);
     }
   }, []);
 
@@ -458,13 +458,13 @@ export function DatabasePrintTreemapsAlternative() {
         <div className="flex gap-4 justify-center">
           {/* Column 1: 3 databases vertically stacked */}
           <div className="flex flex-col" style={{ width: "280px", height: "600px" }}>
-            <div style={{ width: "200px", height: "200px", margin: "0 auto" }}>
+            <div style={{ width: "280px", height: "200px" }}>
               <svg ref={intercellularRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "200px", height: "200px", margin: "0 auto" }}>
+            <div style={{ width: "280px", height: "200px" }}>
               <svg ref={complexesRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
-            <div style={{ width: "200px", height: "200px", margin: "0 auto" }}>
+            <div style={{ width: "280px", height: "200px" }}>
               <svg ref={enzymeSubstrateRef} style={{ display: "block", width: "100%", height: "100%" }}></svg>
             </div>
           </div>
