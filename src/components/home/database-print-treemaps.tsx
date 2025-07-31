@@ -97,13 +97,13 @@ function createTreemap(
   svg.attr("viewBox", `0 0 ${size} ${size}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
-  const margin = { top: 10, right: 10, bottom: 35, left: 10 };
+  const margin = { top: 5, right: 5, bottom: 30, left: 5 };
   const radius = (size - margin.top - margin.bottom) / 2;
 
   // Add title below the circle
   svg.append("text")
     .attr("x", size / 2)
-    .attr("y", size - 5)
+    .attr("y", size - 2)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "bold")
@@ -245,7 +245,7 @@ export function DatabasePrintTreemaps() {
   const intercellularRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const treemapSize = 350; // Larger size for better visibility
+    const treemapSize = 380; // Larger size for better visibility
 
     // Process interaction types
     const processInteractionTypes = () => {
@@ -410,30 +410,30 @@ export function DatabasePrintTreemaps() {
       {/* Treemaps container */}
       <div className="max-w-7xl mx-auto px-4">
         {/* First row - 3 treemaps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
           <div className="flex justify-center">
-            <svg ref={interactionsRef} width={350} height={350} style={{ display: "block" }}></svg>
+            <svg ref={interactionsRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={enzymeSubstrateRef} width={350} height={350} style={{ display: "block" }}></svg>
+            <svg ref={enzymeSubstrateRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={complexesRef} width={350} height={350} style={{ display: "block" }}></svg>
+            <svg ref={complexesRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
         </div>
 
         {/* Second row - 2 treemaps + legend */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="flex justify-center">
-            <svg ref={annotationsRef} width={350} height={350} style={{ display: "block" }}></svg>
+            <svg ref={annotationsRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={intercellularRef} width={350} height={350} style={{ display: "block" }}></svg>
+            <svg ref={intercellularRef} width={380} height={380} style={{ display: "block" }}></svg>
           </div>
           
           {/* Legend */}
           <div className="flex justify-center">
-            <div className="w-[350px] h-[350px] bg-white rounded-lg border-2 border-gray-300 p-6 overflow-y-auto">
+            <div className="w-[380px] h-[380px] bg-white rounded-lg border-2 border-gray-300 p-6 overflow-y-auto">
               <div className="space-y-5" style={{ fontFamily: "Arial, sans-serif" }}>
                 {/* Interaction types legend */}
                 <div>
