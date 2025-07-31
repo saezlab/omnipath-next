@@ -129,9 +129,7 @@ function createTreemap(
     .attr("y", 0)
     .attr("width", width)
     .attr("height", height)
-    .attr("fill", "#f5f5f5")
-    .attr("stroke", "#333")
-    .attr("stroke-width", 1);
+    .attr("fill", "#f5f5f5");
 
   // Get all nodes
   const leaves = hierarchy.leaves();
@@ -453,23 +451,23 @@ export function DatabasePrintTreemapsAlternative() {
         {/* First row - 3 treemaps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
           <div className="flex justify-center">
-            <svg ref={enzymeSubstrateRef} width={420} height={420} style={{ display: "block" }}></svg>
+            <svg ref={enzymeSubstrateRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={interactionsRef} width={420} height={420} style={{ display: "block" }}></svg>
+            <svg ref={interactionsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={complexesRef} width={420} height={420} style={{ display: "block" }}></svg>
+            <svg ref={complexesRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
           </div>
         </div>
 
         {/* Second row - 2 treemaps + legend */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
           <div className="flex justify-center">
-            <svg ref={intercellularRef} width={420} height={420} style={{ display: "block" }}></svg>
+            <svg ref={intercellularRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
           </div>
           <div className="flex justify-center">
-            <svg ref={annotationsRef} width={420} height={420} style={{ display: "block" }}></svg>
+            <svg ref={annotationsRef} style={{ display: "block", margin: 0, padding: 0, width: "100%", height: "auto", aspectRatio: "1" }}></svg>
           </div>
           
           {/* Legend */}
