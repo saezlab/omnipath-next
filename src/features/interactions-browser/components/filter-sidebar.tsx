@@ -67,7 +67,7 @@ export function FilterSidebar({
             variant={filters.isDirected === true ? "default" : "outline"}
             size="sm"
             onClick={() => onFilterChange("isDirected", filters.isDirected === true ? null : true)}
-            className={filters.isDirected === true ? "bg-primary text-primary-foreground" : ""}
+            className={`[&:hover]:bg-[initial] [&:hover]:text-[initial] ${filters.isDirected === true ? "!text-primary-foreground" : ""}`}
           >
             <ArrowRight className="h-4 w-4 mr-1" />
             Directed ({filterCounts.isDirected.true})
@@ -76,36 +76,36 @@ export function FilterSidebar({
             variant={filters.isStimulation === true ? "default" : "outline"}
             size="sm"
             onClick={() => onFilterChange("isStimulation", filters.isStimulation === true ? null : true)}
-            className={filters.isStimulation === true ? "bg-primary text-primary-foreground" : ""}
+            className={`[&:hover]:bg-[initial] [&:hover]:text-[initial] ${filters.isStimulation === true ? "!text-primary-foreground" : ""}`}
           >
-            <span className="text-green-500 mr-1">→</span>
+            <span className="text-secondary mr-1">→</span>
             Stimulation ({filterCounts.isStimulation.true})
           </Button>
           <Button
             variant={filters.isInhibition === true ? "default" : "outline"}
             size="sm"
             onClick={() => onFilterChange("isInhibition", filters.isInhibition === true ? null : true)}
-            className={filters.isInhibition === true ? "bg-primary text-primary-foreground" : ""}
+            className={`[&:hover]:bg-[initial] [&:hover]:text-[initial] ${filters.isInhibition === true ? "!text-primary-foreground" : ""}`}
           >
-            <span className="text-red-500 mr-1">→</span>
+            <span className="text-destructive mr-1">→</span>
             Inhibition ({filterCounts.isInhibition.true})
           </Button>
           <Button
             variant={filters.isUpstream === true ? "default" : "outline"}
             size="sm"
             onClick={() => onFilterChange("isUpstream", filters.isUpstream === true ? null : true)}
-            className={filters.isUpstream === true ? "bg-primary text-primary-foreground" : ""}
+            className={`[&:hover]:bg-[initial] [&:hover]:text-[initial] ${filters.isUpstream === true ? "!text-primary-foreground" : ""}`}
           >
-            <span className="text-blue-500 mr-1">↑</span>
+            <span className="text-primary mr-1">↑</span>
             Upstream ({filterCounts.isUpstream.true})
           </Button>
           <Button
             variant={filters.isDownstream === true ? "default" : "outline"}
             size="sm"
             onClick={() => onFilterChange("isDownstream", filters.isDownstream === true ? null : true)}
-            className={filters.isDownstream === true ? "bg-primary text-primary-foreground" : ""}
+            className={`[&:hover]:bg-[initial] [&:hover]:text-[initial] ${filters.isDownstream === true ? "!text-primary-foreground" : ""}`}
           >
-            <span className="text-blue-500 mr-1">↓</span>
+            <span className="text-primary mr-1">↓</span>
             Downstream ({filterCounts.isDownstream.true})
           </Button>
         </div>
@@ -140,9 +140,9 @@ export function FilterSidebar({
                   <div key={type} className={`flex items-center justify-between group ${isDisabled ? 'opacity-50' : ''}`}>
                     <Label
                       htmlFor={`type-${type}`}
-                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
                         isSelected ? "text-primary font-medium" : ""
-                      } ${!isDisabled && !isSelected ? "group-hover:text-primary" : ""}`}
+                      }`}
                     >
                       <Checkbox
                         id={`type-${type}`}
@@ -159,9 +159,7 @@ export function FilterSidebar({
                     </Label>
                     <Badge 
                       variant={isSelected ? "default" : "outline"} 
-                      className={`ml-auto transition-colors ${
-                        isSelected ? "bg-primary text-primary-foreground" : ""
-                      } ${!isDisabled && !isSelected ? "group-hover:bg-primary/10" : ""}`}
+                      className="ml-auto"
                     >
                       {count}
                     </Badge>
@@ -201,9 +199,9 @@ export function FilterSidebar({
                   <div key={type} className={`flex items-center justify-between group ${isDisabled ? 'opacity-50' : ''}`}>
                     <Label
                       htmlFor={`source-type-${type}`}
-                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
                         isSelected ? "text-primary font-medium" : ""
-                      } ${!isDisabled && !isSelected ? "group-hover:text-primary" : ""}`}
+                      }`}
                     >
                       <Checkbox
                         id={`source-type-${type}`}
@@ -241,9 +239,9 @@ export function FilterSidebar({
                   <div key={type} className={`flex items-center justify-between group ${isDisabled ? 'opacity-50' : ''}`}>
                     <Label
                       htmlFor={`target-type-${type}`}
-                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer transition-colors ${
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
                         isSelected ? "text-primary font-medium" : ""
-                      } ${!isDisabled && !isSelected ? "group-hover:text-primary" : ""}`}
+                      }`}
                     >
                       <Checkbox
                         id={`target-type-${type}`}
@@ -295,7 +293,6 @@ export function FilterSidebar({
                     <Button 
                       variant={filters.isDirected !== null ? "default" : "outline"} 
                       size="sm"
-                      className={filters.isDirected !== null ? "bg-primary text-primary-foreground" : ""}
                     >
                       {filters.isDirected === null ? "Any" : filters.isDirected ? "Yes" : "No"}
                     </Button>
@@ -326,7 +323,6 @@ export function FilterSidebar({
                     <Button 
                       variant={filters.isStimulation !== null ? "default" : "outline"} 
                       size="sm"
-                      className={filters.isStimulation !== null ? "bg-primary text-primary-foreground" : ""}
                     >
                       {filters.isStimulation === null ? "Any" : filters.isStimulation ? "Yes" : "No"}
                     </Button>
@@ -357,7 +353,6 @@ export function FilterSidebar({
                     <Button 
                       variant={filters.isInhibition !== null ? "default" : "outline"} 
                       size="sm"
-                      className={filters.isInhibition !== null ? "bg-primary text-primary-foreground" : ""}
                     >
                       {filters.isInhibition === null ? "Any" : filters.isInhibition ? "Yes" : "No"}
                     </Button>
