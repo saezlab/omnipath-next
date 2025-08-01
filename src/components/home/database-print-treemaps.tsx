@@ -5,86 +5,13 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { voronoiTreemap } from "d3-voronoi-treemap";
-import dbStats from "@/data/db-stats.json";
-
-interface VoronoiNode {
-  name: string;
-  weight?: number;
-  color?: string;
-  children?: VoronoiNode[];
-  code?: string;
-  category?: string;
-  originalName?: string;
-  interactionType?: string;
-}
-
-// RWTH color palette
-const databaseColors = {
-  Interactions: "#176fc1",      // Havelock blue
-  "Enzyme-Substrate": "#d22027", // Tomato
-  Complexes: "#4cbd38",          // Forest green
-  Annotations: "#f89d0e",        // Orange
-  Intercellular: "#5b205f"       // Seance
-};
-
-// More distinct colors for interaction types
-const interactionTypeColors = {
-  "transcriptional": "#176fc1",      // Havelock blue
-  "post_translational": "#00acc1",   // Cyan
-  "mirna_transcriptional": "#5e35b1", // Deep purple
-  "post_transcriptional": "#1e88e5",  // Bright blue
-  "small_molecule_protein": "#00897b" // Teal
-};
-
-// More distinct colors for annotation categories
-const annotationCategoryColors = {
-  "Cell-cell communication": "#f89d0e",    // Orange
-  "Localization (subcellular)": "#ef5350", // Red
-  "Membrane localization & topology": "#ab47bc", // Purple
-  "Extracellular matrix, adhesion": "#42a5f5",   // Light blue
-  "Vesicles, secretome": "#66bb6a",       // Green
-  "Function, pathway": "#ffa726",         // Amber
-  "Signatures": "#8d6e63",               // Brown
-  "Disease, cancer": "#ec407a",          // Pink
-  "Protein classes & families": "#5c6bc0", // Indigo
-  "Cell type, tissue": "#26a69a",        // Teal
-  "Transcription factors": "#d4e157"     // Lime
-};
-
-// Source groups from filter sidebar
-const ANNOTATION_SOURCE_GROUPS = {
-  "Cell-cell communication": ["Baccin2019", "CellCall", "CellCellInteractions", "CellChatDB", "CellChatDB_complex", "Cellinker", "Cellinker_complex", "CellPhoneDB", "CellPhoneDB_complex", "CellTalkDB", "connectomeDB2020", "EMBRACE", "Guide2Pharma", "iTALK", "HPMR", "ICELLNET", "ICELLNET_complex", "Kirouac2010", "LRdb", "Ramilowski2015", "scConnect", "scConnect_complex", "SignaLink_function", "Surfaceome", "talklr"],
-  "Localization (subcellular)": ["ComPPI", "Exocarta", "HPA_subcellular", "HPA_secretome", "HumanCellMap", "LOCATE", "Ramilowski_location", "UniProt_location", "Vesiclepedia", "Wang"],
-  "Membrane localization & topology": ["Almen2009", "CellPhoneDB", "CSPA", "LOCATE", "Membranome", "OPM", "Phobius", "Ramilowski_location", "TopDB", "UniProt_topology"],
-  "Extracellular matrix, adhesion": ["Matrisome", "MatrixDB", "Integrins", "MCAM", "Zhong2015"],
-  "Vesicles, secretome": ["Almen2009", "Exocarta", "Vesiclepedia"],
-  "Function, pathway": ["CellChatDB", "GO_Intercell", "KEGG", "KEGG-PC", "NetPath", "SignaLink_pathway", "SignaLink_function", "CORUM_Funcat", "CORUM_GO", "SIGNOR", "PROGENy", "MSigDB", "UniProt_keyword", "Wang"],
-  "Signatures": ["CytoSig", "PanglaoDB", "PROGENy"],
-  "Disease, cancer": ["DisGeNet", "CancerGeneCensus", "IntOGen", "CancerSEA", "CancerDrugsDB", "DGIdb", "CPAD"],
-  "Protein classes & families": ["Adhesome", "DGIdb", "UniProt_family", "GPCRdb", "HPMR", "kinase.com", "Phosphatome", "TFcensus", "TCDB", "InterPro", "HGNC", "OPM"],
-  "Cell type, tissue": ["HPA_tissue", "CSPA_celltype", "CellTypist", "UniProt_tissue", "EMBRACE"],
-  "Transcription factors": ["Lambert2018", "TFcensus"]
-};
-
-// Create a map for quick lookup
-const sourceToCategory = new Map<string, string>();
-Object.entries(ANNOTATION_SOURCE_GROUPS).forEach(([category, sources]) => {
-  sources.forEach(source => {
-    sourceToCategory.set(source.toLowerCase(), category);
-  });
-});
-
-function cleanSourceName(sourceName: string): string {
-  const underscoreIndex = sourceName.indexOf('_');
-  if (underscoreIndex > 0) {
-    const beforeUnderscore = sourceName.substring(0, underscoreIndex);
-    const afterUnderscore = sourceName.substring(underscoreIndex + 1);
-    if (/^[A-Za-z]/.test(afterUnderscore)) {
-      return beforeUnderscore;
-    }
-  }
-  return sourceName;
-}
+import {
+  VoronoiNode,
+  getAllDatabaseData,
+  calculateTreemapSizes,
+  interactionTypeColors,
+  annotationCategoryColors
+} from "@/utils/database-treemap-data";
 
 function createTreemap(
   svgElement: SVGSVGElement,
@@ -297,266 +224,29 @@ export function DatabasePrintTreemaps() {
   const annotationsRef = useRef<SVGSVGElement>(null);
   const intercellularRef = useRef<SVGSVGElement>(null);
 
-  // Count resources for each database to calculate proportional sizes
-  const getResourceCount = (data: any[]): number => {
-    const deduplicatedSet = new Set<string>();
-    data.forEach(item => {
-      deduplicatedSet.add(cleanSourceName(item.source));
-    });
-    return deduplicatedSet.size;
-  };
-
-  // Count interaction resources (considering subcategories)
-  const getInteractionResourceCount = (): number => {
-    const deduplicatedSet = new Set<string>();
-    dbStats.interactionsSourceType.forEach(item => {
-      deduplicatedSet.add(cleanSourceName(item.source));
-    });
-    return deduplicatedSet.size;
-  };
-
-  // Count annotation resources (considering categories)
-  const getAnnotationResourceCount = (): number => {
-    const deduplicatedSet = new Set<string>();
-    dbStats.annotations.forEach(item => {
-      deduplicatedSet.add(cleanSourceName(item.source));
-    });
-    return deduplicatedSet.size;
-  };
-
-  const resourceCounts = {
-    interactions: getInteractionResourceCount(),
-    annotations: getAnnotationResourceCount(),
-    intercellular: getResourceCount(dbStats.intercell),
-    complexes: getResourceCount(dbStats.complexes),
-    enzymeSubstrate: getResourceCount(dbStats.enzsub)
-  };
-
-  // Calculate total resources and proportions
-  const totalResources = Object.values(resourceCounts).reduce((a, b) => a + b, 0);
-  const minSize = 180; // Minimum circle diameter
-  const maxSize = 380; // Maximum circle diameter
-  
-  // Calculate sizes proportionally
-  const calculateSize = (count: number): number => {
-    const proportion = count / totalResources;
-    return Math.max(minSize, Math.min(maxSize, minSize + (maxSize - minSize) * proportion * 3));
-  };
-
-  const sizes = {
-    interactions: calculateSize(resourceCounts.interactions),
-    annotations: calculateSize(resourceCounts.annotations),
-    intercellular: calculateSize(resourceCounts.intercellular),
-    complexes: calculateSize(resourceCounts.complexes),
-    enzymeSubstrate: calculateSize(resourceCounts.enzymeSubstrate)
-  };
+  const sizes = calculateTreemapSizes();
+  const dbData = getAllDatabaseData();
 
   useEffect(() => {
-
-    // Process interaction types
-    const processInteractionTypes = () => {
-      const typeGroups = new Map<string, any[]>();
-      
-      dbStats.interactionsSourceType.forEach(item => {
-        let type = item.type;
-        if (type === 'lncrna_post_transcriptional') {
-          type = 'post_transcriptional';
-        }
-        
-        if (!typeGroups.has(type)) {
-          typeGroups.set(type, []);
-        }
-        typeGroups.get(type)!.push(item);
-      });
-      
-      const interactionSubsections = [];
-      const targetTypes = ['transcriptional', 'post_translational', 'mirna_transcriptional', 'post_transcriptional', 'small_molecule_protein'];
-      
-      for (const type of targetTypes) {
-        const sources = typeGroups.get(type) || [];
-        if (sources.length > 0) {
-          // Deduplicate within this subcategory by cleaned source name
-          const deduplicatedSources = new Map<string, any>();
-          sources.forEach(item => {
-            const cleanedName = cleanSourceName(item.source);
-            if (!deduplicatedSources.has(cleanedName) || 
-                deduplicatedSources.get(cleanedName).record_count < item.record_count) {
-              deduplicatedSources.set(cleanedName, item);
-            }
-          });
-          
-          const sortedSources = Array.from(deduplicatedSources.values())
-            .sort((a, b) => b.record_count - a.record_count);
-          
-          interactionSubsections.push({
-            name: type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            color: interactionTypeColors[type as keyof typeof interactionTypeColors],
-            children: sortedSources.map(d => {
-              const cleanedName = cleanSourceName(d.source);
-              return {
-                name: cleanedName,
-                originalName: d.source,
-                interactionType: type,
-                weight: Math.log10(d.record_count + 1),
-                code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-              };
-            })
-          });
-        }
-      }
-      
-      return interactionSubsections;
-    };
-
-    // Process annotations by category
-    const processAnnotationsByCategory = () => {
-      const categoryGroups = new Map<string, any[]>();
-      
-      dbStats.annotations.forEach(item => {
-        const category = sourceToCategory.get(item.source.toLowerCase()) || "Other";
-        if (!categoryGroups.has(category)) {
-          categoryGroups.set(category, []);
-        }
-        categoryGroups.get(category)!.push(item);
-      });
-      
-      const annotationSubsections = [];
-      
-      for (const [category, sources] of categoryGroups.entries()) {
-        if (sources.length > 0 && category !== "Other") {
-          // Deduplicate within this category by cleaned source name
-          const deduplicatedSources = new Map<string, any>();
-          sources.forEach(item => {
-            const cleanedName = cleanSourceName(item.source);
-            if (!deduplicatedSources.has(cleanedName) || 
-                deduplicatedSources.get(cleanedName).record_count < item.record_count) {
-              deduplicatedSources.set(cleanedName, item);
-            }
-          });
-          
-          const sortedSources = Array.from(deduplicatedSources.values())
-            .sort((a, b) => b.record_count - a.record_count);
-          
-          annotationSubsections.push({
-            name: category,
-            color: annotationCategoryColors[category as keyof typeof annotationCategoryColors] || "#999",
-            children: sortedSources.map(d => {
-              const cleanedName = cleanSourceName(d.source);
-              return {
-                name: cleanedName,
-                originalName: d.source,
-                weight: Math.log10(d.record_count + 1),
-                code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-              };
-            })
-          });
-        }
-      }
-      
-      return annotationSubsections.sort((a, b) => 
-        b.children.reduce((sum, c) => sum + c.weight, 0) - 
-        a.children.reduce((sum, c) => sum + c.weight, 0)
-      );
-    };
-
     // Create individual treemaps
     if (interactionsRef.current) {
-      const interactionsData: VoronoiNode = {
-        name: "Interactions",
-        color: databaseColors.Interactions,
-        children: processInteractionTypes()
-      };
-      createTreemap(interactionsRef.current, interactionsData, sizes.interactions, sizes.interactions);
+      createTreemap(interactionsRef.current, dbData.interactions, sizes.interactions, sizes.interactions);
     }
 
     if (enzymeSubstrateRef.current) {
-      // Deduplicate enzyme-substrate sources by cleaned name
-      const deduplicatedEnzsub = new Map<string, any>();
-      dbStats.enzsub.forEach(item => {
-        const cleanedName = cleanSourceName(item.source);
-        if (!deduplicatedEnzsub.has(cleanedName) || 
-            deduplicatedEnzsub.get(cleanedName).record_count < item.record_count) {
-          deduplicatedEnzsub.set(cleanedName, item);
-        }
-      });
-      
-      const enzymeSubstrateData: VoronoiNode = {
-        name: "Enzyme-Substrate",
-        color: databaseColors["Enzyme-Substrate"],
-        children: Array.from(deduplicatedEnzsub.values()).map(d => {
-          const cleanedName = cleanSourceName(d.source);
-          return {
-            name: cleanedName,
-            originalName: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-          };
-        })
-      };
-      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, sizes.enzymeSubstrate, sizes.enzymeSubstrate);
+      createTreemap(enzymeSubstrateRef.current, dbData.enzymeSubstrate, sizes.enzymeSubstrate, sizes.enzymeSubstrate);
     }
 
     if (complexesRef.current) {
-      // Deduplicate complexes sources by cleaned name
-      const deduplicatedComplexes = new Map<string, any>();
-      dbStats.complexes.forEach(item => {
-        const cleanedName = cleanSourceName(item.source);
-        if (!deduplicatedComplexes.has(cleanedName) || 
-            deduplicatedComplexes.get(cleanedName).record_count < item.record_count) {
-          deduplicatedComplexes.set(cleanedName, item);
-        }
-      });
-      
-      const complexesData: VoronoiNode = {
-        name: "Complexes",
-        color: databaseColors.Complexes,
-        children: Array.from(deduplicatedComplexes.values()).map(d => {
-          const cleanedName = cleanSourceName(d.source);
-          return {
-            name: cleanedName,
-            originalName: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-          };
-        })
-      };
-      createTreemap(complexesRef.current, complexesData, sizes.complexes, sizes.complexes);
+      createTreemap(complexesRef.current, dbData.complexes, sizes.complexes, sizes.complexes);
     }
 
     if (annotationsRef.current) {
-      const annotationsData: VoronoiNode = {
-        name: "Annotations",
-        color: databaseColors.Annotations,
-        children: processAnnotationsByCategory()
-      };
-      createTreemap(annotationsRef.current, annotationsData, sizes.annotations, sizes.annotations);
+      createTreemap(annotationsRef.current, dbData.annotations, sizes.annotations, sizes.annotations);
     }
 
     if (intercellularRef.current) {
-      // Deduplicate intercellular sources by cleaned name
-      const deduplicatedIntercell = new Map<string, any>();
-      dbStats.intercell.forEach(item => {
-        const cleanedName = cleanSourceName(item.source);
-        if (!deduplicatedIntercell.has(cleanedName) || 
-            deduplicatedIntercell.get(cleanedName).record_count < item.record_count) {
-          deduplicatedIntercell.set(cleanedName, item);
-        }
-      });
-      
-      const intercellularData: VoronoiNode = {
-        name: "Intercellular",
-        color: databaseColors.Intercellular,
-        children: Array.from(deduplicatedIntercell.values()).map(d => {
-          const cleanedName = cleanSourceName(d.source);
-          return {
-            name: cleanedName,
-            originalName: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-          };
-        })
-      };
-      createTreemap(intercellularRef.current, intercellularData, sizes.intercellular, sizes.intercellular);
+      createTreemap(intercellularRef.current, dbData.intercellular, sizes.intercellular, sizes.intercellular);
     }
   }, []);
 

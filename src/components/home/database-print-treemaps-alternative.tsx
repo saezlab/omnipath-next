@@ -5,86 +5,12 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { voronoiTreemap } from "d3-voronoi-treemap";
-import dbStats from "@/data/db-stats.json";
-
-interface VoronoiNode {
-  name: string;
-  weight?: number;
-  color?: string;
-  children?: VoronoiNode[];
-  code?: string;
-  category?: string;
-  originalName?: string;
-  interactionType?: string;
-}
-
-// Professional color palette with better contrast
-const databaseColors = {
-  Interactions: "#2563eb",      // Bright blue
-  "Enzyme-Substrate": "#dc2626", // Red
-  Complexes: "#16a34a",          // Green
-  Annotations: "#ea580c",        // Orange
-  Intercellular: "#7c3aed"       // Purple
-};
-
-// Interaction type colors - darker shades for better contrast
-const interactionTypeColors = {
-  "transcriptional": "#1e40af",
-  "post_translational": "#2563eb",
-  "mirna_transcriptional": "#3b82f6",
-  "post_transcriptional": "#60a5fa",
-  "small_molecule_protein": "#93bbfc"
-};
-
-// Annotation category colors - vibrant colors for better visibility
-const annotationCategoryColors = {
-  "Cell-cell communication": "#dc2626",
-  "Localization (subcellular)": "#ef4444",
-  "Membrane localization & topology": "#f97316",
-  "Extracellular matrix, adhesion": "#fb923c",
-  "Vesicles, secretome": "#fbbf24",
-  "Function, pathway": "#84cc16",
-  "Signatures": "#22c55e",
-  "Disease, cancer": "#06b6d4",
-  "Protein classes & families": "#3b82f6",
-  "Cell type, tissue": "#8b5cf6",
-  "Transcription factors": "#ec4899"
-};
-
-// Source groups from filter sidebar
-const ANNOTATION_SOURCE_GROUPS = {
-  "Cell-cell communication": ["Baccin2019", "CellCall", "CellCellInteractions", "CellChatDB", "CellChatDB_complex", "Cellinker", "Cellinker_complex", "CellPhoneDB", "CellPhoneDB_complex", "CellTalkDB", "connectomeDB2020", "EMBRACE", "Guide2Pharma", "iTALK", "HPMR", "ICELLNET", "ICELLNET_complex", "Kirouac2010", "LRdb", "Ramilowski2015", "scConnect", "scConnect_complex", "SignaLink_function", "Surfaceome", "talklr"],
-  "Localization (subcellular)": ["ComPPI", "Exocarta", "HPA_subcellular", "HPA_secretome", "HumanCellMap", "LOCATE", "Ramilowski_location", "UniProt_location", "Vesiclepedia", "Wang"],
-  "Membrane localization & topology": ["Almen2009", "CellPhoneDB", "CSPA", "LOCATE", "Membranome", "OPM", "Phobius", "Ramilowski_location", "TopDB", "UniProt_topology"],
-  "Extracellular matrix, adhesion": ["Matrisome", "MatrixDB", "Integrins", "MCAM", "Zhong2015"],
-  "Vesicles, secretome": ["Almen2009", "Exocarta", "Vesiclepedia"],
-  "Function, pathway": ["CellChatDB", "GO_Intercell", "KEGG", "KEGG-PC", "NetPath", "SignaLink_pathway", "SignaLink_function", "CORUM_Funcat", "CORUM_GO", "SIGNOR", "PROGENy", "MSigDB", "UniProt_keyword", "Wang"],
-  "Signatures": ["CytoSig", "PanglaoDB", "PROGENy"],
-  "Disease, cancer": ["DisGeNet", "CancerGeneCensus", "IntOGen", "CancerSEA", "CancerDrugsDB", "DGIdb", "CPAD"],
-  "Protein classes & families": ["Adhesome", "DGIdb", "UniProt_family", "GPCRdb", "HPMR", "kinase.com", "Phosphatome", "TFcensus", "TCDB", "InterPro", "HGNC", "OPM"],
-  "Cell type, tissue": ["HPA_tissue", "CSPA_celltype", "CellTypist", "UniProt_tissue", "EMBRACE"],
-  "Transcription factors": ["Lambert2018", "TFcensus"]
-};
-
-// Create a map for quick lookup
-const sourceToCategory = new Map<string, string>();
-Object.entries(ANNOTATION_SOURCE_GROUPS).forEach(([category, sources]) => {
-  sources.forEach(source => {
-    sourceToCategory.set(source.toLowerCase(), category);
-  });
-});
-
-function cleanSourceName(sourceName: string): string {
-  const underscoreIndex = sourceName.indexOf('_');
-  if (underscoreIndex > 0) {
-    const beforeUnderscore = sourceName.substring(0, underscoreIndex);
-    const afterUnderscore = sourceName.substring(underscoreIndex + 1);
-    if (/^[A-Za-z]/.test(afterUnderscore)) {
-      return beforeUnderscore;
-    }
-  }
-  return sourceName;
-}
+import {
+  VoronoiNode,
+  getAllDatabaseDataAlt,
+  interactionTypeColorsAlt,
+  annotationCategoryColorsAlt
+} from "@/utils/database-treemap-data";
 
 function createTreemap(
   svgElement: SVGSVGElement,
@@ -276,6 +202,8 @@ export function DatabasePrintTreemapsAlternative() {
   const annotationsRef = useRef<SVGSVGElement>(null);
   const intercellularRef = useRef<SVGSVGElement>(null);
 
+  const dbData = getAllDatabaseDataAlt();
+
   useEffect(() => {
     // Calculate sizes to ensure equal column widths and matching heights
     const columnWidth = 280; // Equal width for all columns
@@ -287,160 +215,25 @@ export function DatabasePrintTreemapsAlternative() {
     // Column 2: 2 treemaps that are 1.5x the size
     const col2TreemapSize = totalHeight / 2; // 300x300 each
 
-    // Process interaction types
-    const processInteractionTypes = () => {
-      const typeGroups = new Map<string, any[]>();
-      
-      dbStats.interactionsSourceType.forEach(item => {
-        let type = item.type;
-        if (type === 'lncrna_post_transcriptional') {
-          type = 'post_transcriptional';
-        }
-        
-        if (!typeGroups.has(type)) {
-          typeGroups.set(type, []);
-        }
-        typeGroups.get(type)!.push(item);
-      });
-      
-      const interactionSubsections = [];
-      const targetTypes = ['transcriptional', 'post_translational', 'mirna_transcriptional', 'post_transcriptional', 'small_molecule_protein'];
-      
-      for (const type of targetTypes) {
-        const sources = typeGroups.get(type) || [];
-        if (sources.length > 0) {
-          const sortedSources = sources
-            .sort((a, b) => b.record_count - a.record_count);
-          
-          interactionSubsections.push({
-            name: type === 'mirna_transcriptional' ? 'miRNA Transcriptional' : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            color: interactionTypeColors[type as keyof typeof interactionTypeColors],
-            children: sortedSources.map(d => {
-              const cleanedName = cleanSourceName(d.source);
-              return {
-                name: cleanedName,
-                originalName: d.source,
-                interactionType: type,
-                weight: Math.log10(d.record_count + 1),
-                code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-              };
-            })
-          });
-        }
-      }
-      
-      return interactionSubsections;
-    };
-
-    // Process annotations by category
-    const processAnnotationsByCategory = () => {
-      const categoryGroups = new Map<string, any[]>();
-      
-      dbStats.annotations.forEach(item => {
-        const category = sourceToCategory.get(item.source.toLowerCase()) || "Other";
-        if (!categoryGroups.has(category)) {
-          categoryGroups.set(category, []);
-        }
-        categoryGroups.get(category)!.push(item);
-      });
-      
-      const annotationSubsections = [];
-      
-      for (const [category, sources] of categoryGroups.entries()) {
-        if (sources.length > 0 && category !== "Other") {
-          const sortedSources = sources
-            .sort((a, b) => b.record_count - a.record_count);
-          
-          annotationSubsections.push({
-            name: category,
-            color: annotationCategoryColors[category as keyof typeof annotationCategoryColors] || "#999",
-            children: sortedSources.map(d => {
-              const cleanedName = cleanSourceName(d.source);
-              return {
-                name: cleanedName,
-                originalName: d.source,
-                weight: Math.log10(d.record_count + 1),
-                code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-              };
-            })
-          });
-        }
-      }
-      
-      return annotationSubsections.sort((a, b) => 
-        b.children.reduce((sum, c) => sum + c.weight, 0) - 
-        a.children.reduce((sum, c) => sum + c.weight, 0)
-      );
-    };
-
     // Create individual treemaps
     if (interactionsRef.current) {
-      const interactionsData: VoronoiNode = {
-        name: "Interactions",
-        color: databaseColors.Interactions,
-        children: processInteractionTypes()
-      };
-      createTreemap(interactionsRef.current, interactionsData, columnWidth, col2TreemapSize);
+      createTreemap(interactionsRef.current, dbData.interactions, columnWidth, col2TreemapSize);
     }
 
     if (enzymeSubstrateRef.current) {
-      const enzymeSubstrateData: VoronoiNode = {
-        name: "Enzyme-Substrate",
-        color: databaseColors["Enzyme-Substrate"],
-        children: dbStats.enzsub.map(d => {
-          const cleanedName = cleanSourceName(d.source);
-          return {
-            name: cleanedName,
-            originalName: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-          };
-        })
-      };
-      createTreemap(enzymeSubstrateRef.current, enzymeSubstrateData, columnWidth, col1TreemapSize);
+      createTreemap(enzymeSubstrateRef.current, dbData.enzymeSubstrate, columnWidth, col1TreemapSize);
     }
 
     if (complexesRef.current) {
-      const complexesData: VoronoiNode = {
-        name: "Complexes",
-        color: databaseColors.Complexes,
-        children: dbStats.complexes.map(d => {
-          const cleanedName = cleanSourceName(d.source);
-          return {
-            name: cleanedName,
-            originalName: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-          };
-        })
-      };
-      createTreemap(complexesRef.current, complexesData, columnWidth, col1TreemapSize);
+      createTreemap(complexesRef.current, dbData.complexes, columnWidth, col1TreemapSize);
     }
 
     if (annotationsRef.current) {
-      const annotationsData: VoronoiNode = {
-        name: "Annotations",
-        color: databaseColors.Annotations,
-        children: processAnnotationsByCategory()
-      };
-      createTreemap(annotationsRef.current, annotationsData, columnWidth, col2TreemapSize);
+      createTreemap(annotationsRef.current, dbData.annotations, columnWidth, col2TreemapSize);
     }
 
     if (intercellularRef.current) {
-      const intercellularData: VoronoiNode = {
-        name: "Intercellular",
-        color: databaseColors.Intercellular,
-        children: dbStats.intercell.map(d => {
-          const cleanedName = cleanSourceName(d.source);
-          return {
-            name: cleanedName,
-            originalName: d.source,
-            weight: Math.log10(d.record_count + 1),
-            code: cleanedName.length > 10 ? cleanedName.substring(0, 8) + ".." : cleanedName
-          };
-        })
-      };
-      createTreemap(intercellularRef.current, intercellularData, columnWidth, col1TreemapSize);
+      createTreemap(intercellularRef.current, dbData.intercellular, columnWidth, col1TreemapSize);
     }
   }, []);
 
@@ -484,7 +277,7 @@ export function DatabasePrintTreemapsAlternative() {
               <div className="w-full">
                 <h4 className="font-bold mb-3 text-base text-gray-800">Interaction Types</h4>
                 <div className="space-y-2">
-                  {Object.entries(interactionTypeColors).map(([type, color]) => (
+                  {Object.entries(interactionTypeColorsAlt).map(([type, color]) => (
                     <div key={type} className="flex items-start gap-3">
                       <div 
                         className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
@@ -504,7 +297,7 @@ export function DatabasePrintTreemapsAlternative() {
               <div className="w-full">
                 <h4 className="font-bold mb-3 text-base text-gray-800">Annotation Categories</h4>
                 <div className="space-y-1.5">
-                  {Object.entries(annotationCategoryColors).map(([category, color]) => (
+                  {Object.entries(annotationCategoryColorsAlt).map(([category, color]) => (
                     <div key={category} className="flex items-start gap-3">
                       <div 
                         className="w-4 h-4 rounded-sm flex-shrink-0 mt-0.5" 
