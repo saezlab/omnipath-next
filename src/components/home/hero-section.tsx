@@ -15,10 +15,10 @@ export function HeroSection() {
           pathways, and biological annotations.
         </p>
         <div className="flex gap-4 justify-center">
-          <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90" asChild>
+          <Button size="lg" className="bg-gradient-to-r from-primary to-secondary" asChild>
             <Link href="/interactions">Explore Interactions</Link>
           </Button>
-          <Button size="lg" variant="outline" className="border border-primary/20 hover:border-primary/40 hover:bg-muted/50 transition-all duration-200" asChild>
+          <Button size="lg" className="bg-gradient-to-r from-secondary to-primary" asChild>
             <Link href="/annotations">Browse Annotations</Link>
           </Button>
         </div>

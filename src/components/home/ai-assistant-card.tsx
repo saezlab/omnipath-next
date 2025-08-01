@@ -13,13 +13,13 @@ export function AIAssistantCard() {
         <div className="absolute top-3 right-3">
           <Badge
             variant="outline"
-            className="border-accent text-accent-foreground font-medium px-2 py-1 flex items-center gap-1"
+            className="border-accent text-secondary font-medium px-2 py-1 flex items-center gap-1"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
             </span>
-            New
+            Experimental
           </Badge>
         </div>
         <CardHeader className="pb-3 relative">
