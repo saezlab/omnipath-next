@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, DivideSquareIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,6 @@ export function ResultsTable<TData extends DataRow>({
   tableClassName,
   headerRowClassName,
   bodyRowClassName,
-  scrollAreaClassName = "rounded-md border",
   maxHeight = "max-h-96",
   showSearch = true,
   searchKeys,
@@ -157,7 +156,7 @@ export function ResultsTable<TData extends DataRow>({
   }
 
   return (
-    <div className={scrollAreaClassName}>
+    <div>
       {(showSearch || showExport) && (
         <div className="flex items-center justify-between gap-2 px-4 py-3 border-b">
           <div className="flex-grow">
@@ -184,7 +183,7 @@ export function ResultsTable<TData extends DataRow>({
           )}
         </div>
       )}
-      <ScrollArea className={cn("relative", maxHeight, scrollAreaClassName, "overflow-auto")}>
+      <ScrollArea className={cn("relative", maxHeight, "overflow-auto")}>
         <TooltipProvider>
           <Table className={cn("w-full min-w-max", tableClassName)}>
             <TableHeader>
