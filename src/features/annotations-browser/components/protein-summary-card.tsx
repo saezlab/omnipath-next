@@ -241,11 +241,6 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                     {proteinNames.main}
                   </CardTitle>
                 </div>
-                {proteinNames.alternatives.length > 0 && (
-                  <div className="text-sm text-muted-foreground line-clamp-1">
-                    {proteinNames.alternatives.join(', ')}
-                  </div>
-                )}
                 {/* Function preview when collapsed */}
                 {!showMainCardDetails && proteinData.functionCc && (
                   <div className="text-xs text-muted-foreground line-clamp-2 leading-tight mt-1">
