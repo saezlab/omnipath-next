@@ -11,7 +11,7 @@ export function HeroSection() {
           Explore the Molecular Universe
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          OmniPath integrates data from over 100 resources to provide a comprehensive view of molecular interactions,
+          OmniPath integrates data from 150+ resources to provide a comprehensive view of molecular interactions,
           pathways, and biological annotations.
         </p>
         <div className="flex gap-4 justify-center">

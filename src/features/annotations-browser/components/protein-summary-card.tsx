@@ -220,12 +220,13 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
   )
 
   return (
-    <div className="w-full">
+    <div className={showMainCardDetails ? "w-full" : "w-full flex justify-center"}>
+      <div className={showMainCardDetails ? "w-full" : "w-full max-w-3xl"}>
         {/* Main Card Header - Always Visible */}
         <Card 
           className="w-full border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-r from-background to-muted/20"
         >
-          <CardHeader className="p-3 pb-1">
+          <CardHeader className={showMainCardDetails ? "p-3 pb-1" : "p-2.5 pb-1"}>
             <div className="flex items-start justify-between w-full gap-3">
               <div className="space-y-1 flex-1 min-w-0">
                 {/* Gene Symbol and Protein Name on same line */}
@@ -300,11 +301,11 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
             </CardContent>
           )}
           {/* Show more/less button at bottom center */}
-          <div className="flex justify-center py-1">
+          <div className={`flex justify-center ${showMainCardDetails ? 'py-1' : 'py-0.5'}`}>
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors border-t border-border/30 rounded-t-none rounded-b-md"
+              className={`${showMainCardDetails ? 'h-5' : 'h-4'} px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors border-t border-border/30 rounded-t-none rounded-b-md`}
               onClick={() => setShowMainCardDetails(!showMainCardDetails)}
             >
               {showMainCardDetails ? 'Show less' : 'Show more'}
@@ -558,6 +559,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
             </div>
           </div>
         )}
+      </div>
     </div>
   )
 }
