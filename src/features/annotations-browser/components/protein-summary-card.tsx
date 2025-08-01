@@ -5,6 +5,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import {
   BookOpen,
+  ChevronDown,
+  ChevronRight,
   Dna,
   ExternalLink,
   FileText,
@@ -221,62 +223,68 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
     <div className="w-full">
         {/* Main Card Header - Always Visible */}
         <Card 
-          className="w-full border-0 shadow-none py-0 gap-0 cursor-pointer hover:bg-muted/30 transition-colors"
-          onClick={() => setShowMainCardDetails(!showMainCardDetails)}
+          className="w-full border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md transition-all duration-200 bg-gradient-to-r from-background to-muted/20"
         >
-          <CardHeader className="p-2 sm:p-6 pb-0">
-            <div className="flex items-start justify-between w-full gap-2 sm:gap-4">
-              <div className="space-y-2 flex-1 min-w-0">
+          <CardHeader className="p-3 pb-1">
+            <div className="flex items-start justify-between w-full gap-3">
+              <div className="space-y-1 flex-1 min-w-0">
                 {/* Gene Symbol and Protein Name on same line */}
-                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
                   {proteinData.geneNamesPrimary && (
-                    <Badge className="bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-lg px-3 sm:px-4 py-1 sm:py-2 h-auto font-bold flex-shrink-0">
-                      <Dna className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm px-2.5 py-1 h-auto font-semibold flex-shrink-0">
+                      <Dna className="h-3 w-3 mr-1.5" />
                       {proteinData.geneNamesPrimary}
                     </Badge>
                   )}
-                  <CardTitle className="text-lg sm:text-2xl font-bold min-w-0">
+                  <CardTitle className="text-lg sm:text-xl font-bold min-w-0 text-foreground">
                     {proteinNames.main}
                   </CardTitle>
                 </div>
                 {proteinNames.alternatives.length > 0 && (
-                  <div className="text-sm text-muted-foreground">
-        {proteinNames.alternatives.join(', ')}
+                  <div className="text-sm text-muted-foreground line-clamp-1">
+                    {proteinNames.alternatives.join(', ')}
+                  </div>
+                )}
+                {/* Function preview when collapsed */}
+                {!showMainCardDetails && proteinData.functionCc && (
+                  <div className="text-xs text-muted-foreground line-clamp-2 leading-tight mt-1">
+                    {formatUniprotText(proteinData.functionCc)[0]?.text.slice(0, 150)}...
                   </div>
                 )}
               </div>
               
               {/* Metadata in top right */}
-              <div className="flex flex-col items-end gap-3 flex-shrink-0">
+              <div className="flex flex-col items-end gap-1 flex-shrink-0">
                 {/* Primary Identifiers Row */}
-                <div className="flex items-center gap-1 sm:gap-2 text-sm">
+                <div className="flex items-center gap-1 text-sm">
                   <a
                     href={`https://www.uniprot.org/uniprot/${proteinData.entry}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:scale-105 transition-transform"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <Badge variant="outline" className="font-mono text-[10px] sm:text-xs px-1.5 sm:px-2.5 h-5 sm:h-6 hover:bg-primary/10 cursor-pointer">
+                    <Badge variant="outline" className="font-mono text-xs px-2 py-1 hover:bg-primary/10 cursor-pointer border-primary/30">
                       {proteinData.entry}
-                      <ExternalLink className="h-2 w-2 sm:h-2.5 sm:w-2.5 ml-0.5 sm:ml-1" />
+                      <ExternalLink className="h-2.5 w-2.5 ml-1" />
                     </Badge>
                   </a>
                 </div>
                 
                 {/* Properties Row */}
-                <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   {proteinData.length && proteinData.mass && (
                     <>
-                      <span className="bg-muted/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs">
+                      <span className="bg-muted px-1.5 py-0.5 rounded text-xs">
                         {proteinData.length} aa
                       </span>
-                      <span className="bg-muted/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs">
+                      <span className="bg-muted px-1.5 py-0.5 rounded text-xs">
                         {formatMass(proteinData.mass)}
                       </span>
                     </>
                   )}
                   {proteinData.organismId && (
-                    <span className="bg-muted/50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs">
+                    <span className="bg-muted px-1.5 py-0.5 rounded text-xs">
                       {parseOrganism(proteinData.organismId)}
                     </span>
                   )}
@@ -285,26 +293,42 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
             </div>
           </CardHeader>
           {proteinData.functionCc && showMainCardDetails && (
-            <CardContent className="pt-0 px-3 sm:px-6">
-              <div className="max-h-64 overflow-y-auto">
+            <CardContent className="pt-0 px-3 sm:px-4 pb-3 sm:pb-4">
+              <div className="max-h-48 overflow-y-auto border-t border-border/50 pt-3">
                 <StatementRenderer statements={formatUniprotText(proteinData.functionCc)} />
               </div>
             </CardContent>
           )}
+          {/* Show more/less button at bottom center */}
+          <div className="flex justify-center py-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-5 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors border-t border-border/30 rounded-t-none rounded-b-md"
+              onClick={() => setShowMainCardDetails(!showMainCardDetails)}
+            >
+              {showMainCardDetails ? 'Show less' : 'Show more'}
+              {showMainCardDetails ? (
+                <ChevronDown className="h-3 w-3 ml-1" />
+              ) : (
+                <ChevronRight className="h-3 w-3 ml-1" />
+              )}
+            </Button>
+          </div>
         </Card>
         
 
         {/* Collapsible Details Section */}
         {showMainCardDetails && (
-          <div className="p-0 sm:pt-6 border-t">
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-2 sm:gap-3 space-y-2 sm:space-y-3 [&>*]:break-inside-avoid">
+          <div className="pt-2 border-t border-primary/20">
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-3 space-y-3 [&>*]:break-inside-avoid">
               
               {/* Subcellular Location Card */}
               {proteinData.subcellularLocation && (
                 <DetailCard 
                   title="Subcellular Location" 
-                  icon={(props) => <MapPin {...props} className="h-4 w-4 text-green-600 dark:text-green-400" />}
-                  colorClass="border-green-200 dark:border-green-900/50 bg-green-50/50 dark:bg-green-950/20"
+                  icon={(props) => <MapPin {...props} className="h-4 w-4 text-secondary dark:text-secondary" />}
+                  colorClass="border-secondary/30 bg-secondary/10"
                 >
                   <StatementRenderer statements={formatUniprotText(proteinData.subcellularLocation)} />
                 </DetailCard>
@@ -314,8 +338,8 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {proteinData.involvementInDisease && (
                 <DetailCard 
                   title="Disease Involvement" 
-                  icon={(props) => <Heart {...props} className="h-4 w-4 text-red-600 dark:text-red-400" />}
-                  colorClass="border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20"
+                  icon={(props) => <Heart {...props} className="h-4 w-4 text-destructive" />}
+                  colorClass="border-destructive/30 bg-destructive/10"
                 >
                   <StatementRenderer statements={formatUniprotText(proteinData.involvementInDisease)} />
                 </DetailCard>
@@ -325,8 +349,8 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {(proteinData.proteinFamilies || proteinData.ecNumber) && (
                 <DetailCard 
                   title="Classification" 
-                  icon={(props) => <Network {...props} className="h-4 w-4 text-purple-600 dark:text-purple-400" />}
-                  colorClass="border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/20"
+                  icon={(props) => <Network {...props} className="h-4 w-4 text-accent-foreground" />}
+                  colorClass="border-accent/50 bg-accent/20"
                 >
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {proteinData.proteinFamilies && (
@@ -344,7 +368,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                           rel="noopener noreferrer"
                           className="hover:scale-105 transition-transform inline-block"
                         >
-                          <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 hover:bg-purple-200 dark:hover:bg-purple-900/50 cursor-pointer">
+                          <Badge variant="secondary" className="bg-accent/30 text-accent-foreground hover:bg-accent/50 cursor-pointer">
                             {proteinData.ecNumber}
                             <ExternalLink className="h-2.5 w-2.5 ml-1" />
                           </Badge>
@@ -359,15 +383,15 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {proteinData.keywords && (
                 <DetailCard 
                   title="Keywords" 
-                  icon={(props) => <Tag {...props} className="h-4 w-4 text-orange-600 dark:text-orange-400" />}
-                  colorClass="border-orange-200 dark:border-orange-900/50 bg-orange-50/50 dark:bg-orange-950/20"
+                  icon={(props) => <Tag {...props} className="h-4 w-4 text-highlight-foreground" />}
+                  colorClass="border-highlight/30 bg-highlight/10"
                 >
                   <div className="flex flex-wrap gap-1 max-h-48 overflow-y-auto">
                     {proteinData.keywords.split(';').map((keyword, index) => (
                       <Badge 
                         key={index} 
                         variant="outline" 
-                        className="text-xs border-orange-300 dark:border-orange-800 bg-white/70 dark:bg-gray-900/30 text-orange-800 dark:text-orange-200 px-1.5 py-0.5"
+                        className="text-xs border-highlight/60 bg-highlight/40 text-foreground font-medium px-1.5 py-0.5"
                       >
                         {keyword.trim()}
                       </Badge>
@@ -380,8 +404,8 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {proteinData.geneOntology && goTerms.length > 0 && (
                 <DetailCard 
                   title="Gene Ontology Terms" 
-                  icon={(props) => <Microscope {...props} className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />}
-                  colorClass="border-cyan-200 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20"
+                  icon={(props) => <Microscope {...props} className="h-4 w-4 text-primary" />}
+                  colorClass="border-primary/30 bg-primary/10"
                 >
                   <div className="max-h-48 overflow-y-auto space-y-0.5 pr-1">
                     {goTerms.map((term, index) => (
@@ -391,7 +415,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                           href={`https://amigo.geneontology.org/amigo/term/${term.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-cyan-600 dark:text-cyan-400 hover:underline"
+                          className="text-primary hover:underline"
                         >
                           {term.id}
                         </a>
@@ -406,8 +430,8 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {proteinData.postTranslationalModification && (
                 <DetailCard 
                   title="Modifications" 
-                  icon={(props) => <FlaskConical {...props} className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />}
-                  colorClass="border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/20"
+                  icon={(props) => <FlaskConical {...props} className="h-4 w-4 text-chart-4" />}
+                  colorClass="border-chart-4/30 bg-chart-4/10"
                 >
                   <StatementRenderer statements={formatUniprotText(proteinData.postTranslationalModification)} />
                 </DetailCard>
@@ -416,8 +440,8 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
               {/* External Resources Card */}
               <DetailCard 
                 title="External Resources" 
-                icon={(props) => <Globe {...props} className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600 dark:text-gray-400" />}
-                colorClass="border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/20"
+                icon={(props) => <Globe {...props} className="h-4 w-4 text-muted-foreground" />}
+                colorClass="border-border bg-muted/30"
               >
                 <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
                   {proteinData.entry && (
@@ -490,11 +514,11 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
 
               {/* References Card */}
               {proteinData.pubmedId && (
-                <Card className="border-yellow-200 dark:border-yellow-900/50 bg-yellow-50/50 dark:bg-yellow-950/20">
+                <Card className="border-chart-3/30 bg-chart-3/10">
                   <CardHeader className="p-2 sm:p-3 pb-1">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                        <BookOpen className="h-4 w-4 text-yellow-700 dark:text-yellow-400" />
+                        <BookOpen className="h-4 w-4 text-chart-3" />
                         References
                       </CardTitle>
                       <Button
@@ -521,7 +545,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
                             href={`https://pubmed.ncbi.nlm.nih.gov/${pmid.trim()}/`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
+                            className="text-xs px-1.5 py-0.5 bg-chart-3/40 text-foreground font-medium rounded hover:bg-chart-3/60 border border-chart-3/60"
                           >
                             {pmid.trim()}
                           </a>
