@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ArrowUpDown, DivideSquareIcon } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
