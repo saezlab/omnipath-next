@@ -290,7 +290,7 @@ export function ProteinSummaryCard({ proteinData, isLoading, defaultExpanded = f
           </CardHeader>
           {proteinData.functionCc && showMainCardDetails && (
             <CardContent className="pt-0 px-3 sm:px-4 pb-3 sm:pb-4">
-              <div className="max-h-48 overflow-y-auto border-t border-border/50 pt-3">
+              <div className="border-t border-border/50 pt-3">
                 <StatementRenderer statements={formatUniprotText(proteinData.functionCc)} />
               </div>
             </CardContent>
