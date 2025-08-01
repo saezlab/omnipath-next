@@ -42,7 +42,7 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-20 w-full bg-background/95 backdrop-blur-sm border-b">
+    <header className="sticky top-0 z-20 w-full bg-background/95 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         {/* Mobile Layout */}
         <div className="sm:hidden flex h-14 items-center justify-between">

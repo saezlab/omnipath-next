@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button"
 export function HeroSection() {
   return (
     <div className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 dark:from-primary/5 dark:via-secondary/5 dark:to-accent/5" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.1),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.05),rgba(0,0,0,0))]" />
       <div className="container relative mx-auto py-24 px-4 text-center">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
           Explore the Molecular Universe
