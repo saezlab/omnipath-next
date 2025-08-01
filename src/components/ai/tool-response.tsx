@@ -153,7 +153,7 @@ export const ToolResponse = ({
                             showSearch={true} 
                             showExport={true} 
                             searchPlaceholder="Search results..."
-                            maxCellChars={10}
+                            maxCellChars={50}
                         />
                     </div>
                     {sqlResult.limited && (
