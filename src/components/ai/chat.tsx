@@ -9,7 +9,7 @@ import { Message as PreviewMessage } from "@/components/ai/message";
 import { useScrollToBottom } from "@/components/ai/use-scroll-to-bottom";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { ArrowUp, StopCircle, X as XIcon } from "lucide-react";
+import { ArrowUp, StopCircle, X as XIcon, Loader2, AlertTriangleIcon } from "lucide-react";
 import { useWindowSize } from "./use-window-size";
 
 const suggestedActions = [
@@ -65,11 +65,16 @@ export function Chat({
     stop,
     setMessages,
     reload,
+    error,
   } = useChat({
     id,
     body: { id },
     initialMessages,
     maxSteps: 10,
+    onError: (error) => {
+      console.error("Chat error:", error);
+      toast.error("Failed to send message. Please try again.");
+    },
   });
 
   const startEdit = useCallback((messageId: string, currentContent: string) => {
@@ -278,28 +283,30 @@ export function Chat({
                   </Button>
                 )}
 
-                {isLoading ? (
-                  <Button
-                    className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      stop();
-                    }}
-                  >
-                    <StopCircle size={14} />
-                  </Button>
-                ) : (
-                  <Button
-                    className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      submitForm();
-                    }}
-                    disabled={input.length === 0}
-                  >
-                    <ArrowUp size={14} />
-                  </Button>
-                )}
+                <div className="absolute bottom-2 right-2 flex items-center">
+                  {isLoading ? (
+                    <Button
+                      className="rounded-full p-1.5 h-8 w-8 flex items-center justify-center text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        stop();
+                      }}
+                    >
+                      <StopCircle size={14} />
+                    </Button>
+                  ) : (
+                    <Button
+                      className="rounded-full p-1.5 h-8 w-8 flex items-center justify-center text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        submitForm();
+                      }}
+                      disabled={input.length === 0}
+                    >
+                      <ArrowUp size={14} />
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <div className="w-full mt-4">
@@ -354,6 +361,21 @@ export function Chat({
                   />
                 </div>
               ))}
+              
+              {isLoading && messages.length > 0 && messages[messages.length - 1].role === "user" && (
+                <div className="flex items-center gap-3 text-sm text-muted-foreground px-4 py-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>AI is thinking...</span>
+                </div>
+              )}
+              
+              {error && (
+                <div className="flex items-center gap-2 text-sm text-red-500 dark:text-red-400 px-4 py-2 bg-red-50 dark:bg-red-900/20 rounded-lg mx-4">
+                  <AlertTriangleIcon className="h-4 w-4" />
+                  <span>Error: {error.message || "Something went wrong. Please try again."}</span>
+                </div>
+              )}
+              
               <div ref={messagesEndRef} className="h-4" />
             </div>
           </div>
@@ -399,28 +421,30 @@ export function Chat({
                 </Button>
               )}
 
-              {isLoading ? (
-                <Button
-                  className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    stop();
-                  }}
-                >
-                  <StopCircle size={14} />
-                </Button>
-              ) : (
-                <Button
-                  className="rounded-full p-1.5 h-fit absolute bottom-2 right-2 m-0.5 text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    submitForm();
-                  }}
-                  disabled={input.length === 0}
-                >
-                  <ArrowUp size={14} />
-                </Button>
-              )}
+              <div className="absolute bottom-2 right-2 flex items-center">
+                {isLoading ? (
+                  <Button
+                    className="rounded-full p-1.5 h-8 w-8 flex items-center justify-center text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      stop();
+                    }}
+                  >
+                    <StopCircle size={14} />
+                  </Button>
+                ) : (
+                  <Button
+                    className="rounded-full p-1.5 h-8 w-8 flex items-center justify-center text-zinc-900 dark:text-zinc-100 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      submitForm();
+                    }}
+                    disabled={input.length === 0}
+                  >
+                    <ArrowUp size={14} />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
