@@ -332,7 +332,7 @@ export function Chat({
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
-                  Responses may be subject to rate limits during high usage periods
+                  Shared limits: 10 requests/min, 250/day. Check back later if unavailable.
                 </p>
               </div>
             </div>

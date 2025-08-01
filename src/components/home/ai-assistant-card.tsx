@@ -39,7 +39,7 @@ export function AIAssistantCard() {
               Ask questions about proteins, pathways, and interactions. Get instant insights from OmniPath&apos;s comprehensive biological database.
             </p>
             <p className="text-xs text-muted-foreground mt-2 opacity-70">
-              Rate limits may apply during peak usage
+                  Shared limits: 10 requests/min, 250/day. Check back later if unavailable.
             </p>
           </div>
         </CardContent>
