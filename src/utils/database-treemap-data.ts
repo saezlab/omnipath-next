@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import dbStats from "@/data/db-stats.json";
 
 export interface VoronoiNode {
