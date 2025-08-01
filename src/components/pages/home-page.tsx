@@ -8,7 +8,7 @@ import { SiteLayout } from "@/components/layout/main-layout"
 import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
 import { DatabasePrintTreemapsAlternative } from "../home/database-print-treemaps-alternative"
 import { DatabasePrintTreemaps } from "../home/database-print-treemaps"
-// import { DatabaseVoronoiTreemapLinear } from "../home/database-voronoi-treemap-linear"
+import { DatabaseVoronoiTreemapLinear } from "../home/database-voronoi-treemap-linear"
 export function HomePage() {
   return (
     <SiteLayout>
@@ -81,9 +81,9 @@ export function HomePage() {
           <DatabasePrintTreemapsAlternative />
         </div>
 
-        {/* <div className="mt-12">
+        <div className="mt-12">
           <DatabaseVoronoiTreemapLinear />
-        </div> */}
+        </div>
 
         <AboutSection />
       </div>
