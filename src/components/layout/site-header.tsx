@@ -46,14 +46,12 @@ export function SiteHeader() {
       <div className="container mx-auto px-4">
         {/* Mobile Layout */}
         <div className="sm:hidden flex h-14 items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Image src="/omnipath-logo-gradient.svg" alt="OmniPath Logo" width={32} height={32} />
-            <Link href="/" className="text-lg font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
-                OmniPath
-              </span>
-            </Link>
-          </div>
+            <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
+              OmniPath
+            </span>
+          </Link>
           
           {/* Navigation dropdown in the middle */}
           <MainNav />
@@ -111,14 +109,12 @@ export function SiteHeader() {
 
         {/* Desktop Layout */}
         <div className="hidden sm:flex h-16 items-center">
-          <div className="flex items-center gap-3 mr-8">
+          <Link href="/" className="flex items-center gap-3 mr-8">
             <Image src="/omnipath-logo-gradient.svg" alt="OmniPath Logo" width={56} height={56} />
-            <Link href="/" className="text-2xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
-                OmniPath
-              </span>
-            </Link>
-          </div>
+            <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
+              OmniPath
+            </span>
+          </Link>
 
           <div className="flex-1 flex justify-center">
             <div className="bg-muted/30 rounded-full">
