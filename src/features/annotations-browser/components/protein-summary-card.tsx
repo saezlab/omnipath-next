@@ -36,13 +36,40 @@ const formatUniprotText = (text: string) => {
     .replace(/PTM:\s*/gi, '')
     .replace(/DISEASE:\s*/gi, '')
   
-  // Split into sentences and clean them up
-  const sentences = cleanText
-    .split(/[.;]/)
-    .map(s => s.trim())
-    .filter(s => s.length > 0)
+  // Split into sentences and clean them up, avoiding splits inside parentheses and with decimals
+  const sentences = []
+  let current = ''
+  let parenDepth = 0
   
-  return sentences.map((sentence, index) => {
+  for (let i = 0; i < cleanText.length; i++) {
+    const char = cleanText[i]
+    const prevChar = cleanText[i - 1]
+    const nextChar = cleanText[i + 1]
+    
+    if (char === '(') parenDepth++
+    else if (char === ')') parenDepth--
+    
+    if ((char === '.' || char === ';') && parenDepth === 0) {
+      // Don't split on decimals (digit.digit)
+      if (char === '.' && prevChar && nextChar && /\d/.test(prevChar) && /\d/.test(nextChar)) {
+        current += char
+      } else {
+        // This is a sentence boundary
+        if (current.trim()) sentences.push(current.trim())
+        current = ''
+        continue
+      }
+    } else {
+      current += char
+    }
+  }
+  
+  // Add the last sentence if there's content
+  if (current.trim()) sentences.push(current.trim())
+  
+  const filteredSentences = sentences.filter(s => s.length > 0)
+  
+  return filteredSentences.map((sentence, index) => {
     // Extract all PubMed IDs from this sentence (including comma-separated lists)
     const pubmedMatches = [...sentence.matchAll(/PubMed:(\d+)/g)]
     
