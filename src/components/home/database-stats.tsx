@@ -145,7 +145,7 @@ export function DatabaseStats() {
                       />
                       <YAxis />
                       <Tooltip />
-                      <Bar dataKey="record_count" fill="#8884d8" />
+                      <Bar dataKey="record_count" className="fill-primary" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -214,7 +214,7 @@ export function DatabaseStats() {
                       <tr key={index} className="border-b">
                         <td className="py-2">{item.source}</td>
                         <td className="py-2">
-                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                          <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
                             {item.type}
                           </span>
                         </td>

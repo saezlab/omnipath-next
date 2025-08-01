@@ -17,22 +17,22 @@ export function HomePage() {
       <div className="container py-8 mx-auto px-2">
         <div className="grid gap-6 lg:grid-cols-2">
           <FeatureCard
-            icon={<Network className="h-6 w-6 text-blue-700" />}
+            icon={<Network className="h-6 w-6 text-primary" />}
             title="Interactions Browser"
             description="Explore undirected, directed and causal molecular interactions"
             features={[
               {
-                icon: <Filter className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />,
+                icon: <Filter className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />,
                 title: "Advanced Filtering",
                 description: "Filter by interaction type, direction, and more",
               },
               {
-                icon: <FileText className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />,
+                icon: <FileText className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />,
                 title: "Reference Tracking",
                 description: "Access original publications and sources",
               },
               {
-                icon: <Download className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />,
+                icon: <Download className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />,
                 title: "Data Export",
                 description: "Download results in multiple formats",
               },
@@ -42,22 +42,22 @@ export function HomePage() {
           />
 
           <FeatureCard
-            icon={<Tag className="h-6 w-6 text-green-700" />}
+            icon={<Tag className="h-6 w-6 text-secondary" />}
             title="Annotations Browser"
             description="Discover functional annotations, localizations, and biological properties"
             features={[
               {
-                icon: <Tag className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />,
+                icon: <Tag className="h-4 w-4 mt-0.5 text-secondary flex-shrink-0" />,
                 title: "Functional Annotations",
                 description: "GO terms, pathways, and functions, and more",
               },
               {
-                icon: <MapPin className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />,
+                icon: <MapPin className="h-4 w-4 mt-0.5 text-secondary flex-shrink-0" />,
                 title: "Localization Data",
                 description: "Cellular and subcellular locations",
               },
               {
-                icon: <Users className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />,
+                icon: <Users className="h-4 w-4 mt-0.5 text-secondary flex-shrink-0" />,
                 title: "Intercellular Roles",
                 description: "Ligands, receptors, and signaling",
               },
