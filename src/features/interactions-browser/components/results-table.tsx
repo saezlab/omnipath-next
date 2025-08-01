@@ -23,6 +23,7 @@ interface InteractionResultsTableProps {
   showExport?: boolean;
   resultsPerPage?: number;
   maxCellChars?: number;
+  scrollAreaClassName?: string;
 }
 
 
@@ -139,7 +140,7 @@ export function InteractionResultsTable({
                 </div>
               </TooltipTrigger>
               <TooltipContent
-                className="max-w-[300px] p-3 bg-popover border shadow-lg"
+                className="max-w-[300px] p-3 bg-popover border border-primary/20 shadow-lg"
                 side="top"
                 align="start"
               >

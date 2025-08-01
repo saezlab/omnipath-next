@@ -158,7 +158,7 @@ export function ResultsTable<TData extends DataRow>({
   return (
     <div>
       {(showSearch || showExport) && (
-        <div className="flex items-center justify-between gap-2 px-4 py-3 border-b">
+        <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-primary/20">
           <div className="flex-grow">
             {showSearch && (
               <Input

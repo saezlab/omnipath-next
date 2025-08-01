@@ -26,7 +26,7 @@ export function FilterCard({
     <Card 
       className={cn(
         "w-full md:w-64 lg:w-72 shrink-0 transition-all duration-200",
-        "border-2 border-muted shadow-sm hover:shadow-md pt-4",
+        "border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md pt-4",
         "bg-background",
         showMobileFilters ? "block" : "hidden md:block",
         className

@@ -7,7 +7,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
         <Skeleton className="h-8 w-32" />
         <Skeleton className="h-8 w-24" />
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border border-primary/20">
         <div className="grid grid-cols-12 gap-4 p-4 border-b">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-4 w-full" />

@@ -23,7 +23,7 @@ export function Pagination({
   if (totalPages <= 1) return null
 
   return (
-    <div className="flex items-center justify-between p-4 border-t">
+    <div className="flex items-center justify-between p-4 border-t border-primary/20">
       <div className="text-sm text-muted-foreground">
         Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems} results
       </div>

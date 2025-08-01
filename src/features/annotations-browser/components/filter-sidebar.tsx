@@ -162,6 +162,7 @@ export function AnnotationsFilterSidebar({
       activeFilterCount={activeFilterCount}
       onClearFilters={onClearFilters}
       showMobileFilters={showMobileFilters}
+      className="border border-primary/20"
     >
       {Object.entries(SOURCE_GROUPS).map(([groupName, sources]) => {
         let filteredSources = sources

@@ -52,7 +52,7 @@ export function AboutSection() {
             </Button>
           </a>
         </div>
-        <div className="bg-card rounded-xl border p-6 shadow-sm">
+        <div className="bg-card rounded-xl border border-primary/20 hover:border-primary/40 p-6 shadow-sm hover:shadow-md transition-all duration-200">
           <h3 className="font-medium text-lg mb-6">OmniPath Statistics</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-muted/50 dark:bg-muted/30 p-4 text-center hover:bg-muted/70 dark:hover:bg-muted/50 transition-colors duration-300">

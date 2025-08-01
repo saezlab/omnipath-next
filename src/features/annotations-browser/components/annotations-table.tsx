@@ -119,7 +119,7 @@ export function AnnotationsTable({
         return (
           <div 
             key={source} 
-            className="overflow-hidden border-2 border-muted shadow-sm hover:shadow-md bg-background rounded-lg"
+            className="overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200"
           >
             <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background">
               <div className="flex items-center space-x-2">

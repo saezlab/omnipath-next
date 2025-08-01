@@ -444,7 +444,7 @@ export function InteractionsBrowser({
                   {/* Interactions Section */}
                   <div className="space-y-4">
                     {/* Results display based on view mode */}
-                  <Card className="py-0">
+                  <Card className="py-0 border border-primary/20 hover:border-primary/40 transition-all duration-200">
                           <InteractionResultsTable
                             interactions={filteredInteractions}
                             onSelectInteraction={handleSelectInteraction}

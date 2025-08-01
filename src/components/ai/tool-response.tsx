@@ -111,7 +111,7 @@ export const ToolResponse = ({
 
             {/* Edit Controls Section (conditional) */}
             {isEditingQuery && onRerunQuery && (
-                <div className="flex flex-col gap-2 border border-dashed border-zinc-300 dark:border-zinc-700 p-3 rounded-md">
+                <div className="flex flex-col gap-2 border border-dashed border-primary/20 hover:border-primary/40 p-3 rounded-md transition-all duration-200">
                     <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1">Edit query:</p>
                     <Textarea
                         value={editedQuery}
@@ -148,7 +148,7 @@ export const ToolResponse = ({
                         <ResultsTable 
                             columns={columns} 
                             data={sqlResult.results || []} // Handle cases where results might be undefined initially
-                            scrollAreaClassName="rounded-md border"
+                            scrollAreaClassName="rounded-md border border-primary/20"
                             maxHeight="max-h-60" 
                             showSearch={true} 
                             showExport={true} 

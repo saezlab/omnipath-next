@@ -14,7 +14,7 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
 
   return (
     <div className="p-4">
-      <div className="rounded-lg border bg-card p-4">
+      <div className="rounded-lg border border-primary/20 hover:border-primary/40 bg-card p-4 transition-all duration-200">
         {selectedInteraction ? (
           <div className="space-y-4">
             {/* Interaction Type Indicator */}

@@ -24,7 +24,7 @@ const ToolDetails = ({
   const hasError = result?.error != null;
 
   return (
-    <div className={`flex flex-col gap-2 border rounded-lg p-3 ${hasError ? 'border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30' : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50'}`}>
+    <div className={`flex flex-col gap-2 border rounded-lg p-3 transition-all duration-200 ${hasError ? 'border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/30' : 'border border-primary/20 hover:border-primary/40 bg-zinc-50 dark:bg-zinc-800/50'}`}>
       <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
         {hasError ? (
            <AlertTriangleIcon className="h-4 w-4 flex-shrink-0 text-red-500 dark:text-red-400" />

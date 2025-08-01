@@ -116,7 +116,7 @@ export function SearchBar({
                   <Input
                     type="search"
                     placeholder={placeholder}
-                    className="w-full pl-12 pr-4 h-12 text-lg rounded-full shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-12 pr-4 h-12 text-lg rounded-full shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-primary/20 hover:border-primary/40"
                     value={query}
                     onChange={(e) => {
                       setQuery(e.target.value)
@@ -134,7 +134,7 @@ export function SearchBar({
               </PopoverTrigger>
               {suggestions.length > 0 && (
                 <PopoverContent 
-                  className="w-[--radix-popover-trigger-width] p-0 max-h-80 overflow-y-auto" 
+                  className="w-[--radix-popover-trigger-width] p-0 max-h-80 overflow-y-auto border border-primary/20" 
                   align="start"
                   onOpenAutoFocus={(e) => e.preventDefault()}
                 >

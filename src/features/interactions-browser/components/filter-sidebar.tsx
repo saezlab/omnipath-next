@@ -58,6 +58,7 @@ export function FilterSidebar({
       activeFilterCount={activeFilterCount}
       onClearFilters={onClearFilters}
       showMobileFilters={showMobileFilters}
+      className="border border-primary/20"
     >
       {/* Quick Filters */}
       <div className="mb-4 space-y-2">
