@@ -5,37 +5,19 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { voronoiTreemap } from "d3-voronoi-treemap";
-import dbStats from "@/data/db-stats.json";
-
-interface VoronoiNode {
-  name: string;
-  weight?: number;
-  color?: string;
-  children?: VoronoiNode[];
-  code?: string;
-}
-
-// Database colors - using a scientifically inspired palette
-const databaseColors = {
-  Interactions: "#2E86AB",        // Ocean blue - for molecular interactions
-  "Enzyme-Substrate": "#A23B72",  // Deep magenta - for enzymatic processes
-  Complexes: "#F18F01",           // Amber orange - for protein complexes
-  Annotations: "#C73E1D",         // Rust red - for functional annotations
-  Intercellular: "#6A994E"        // Forest green - for cell communication
-};
-
-// Interaction type colors - blue-adjacent palette for clear distinction while maintaining cohesion
-const interactionTypeColors = {
-  "transcriptional": "#2E86AB",          // Main blue - core gene regulation (matches parent)
-  "post_translational": "#4A5568",       // Slate gray-blue - protein modifications
-  "mirna_transcriptional": "#7C3AED",    // Purple-blue - miRNA regulation
-  "post_transcriptional": "#0891B2",     // Cyan-blue - RNA processing  
-  "small_molecule_protein": "#059669"    // Teal-green - drug/chemical interactions
-};
+import {
+  VoronoiNode,
+  getAllDatabaseData,
+  databaseColors,
+  interactionTypeColors
+} from "@/utils/database-treemap-data";
 
 export function DatabaseVoronoiTreemap() {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Get processed data from utility
+  const dbData = getAllDatabaseData();
 
   useEffect(() => {
     if (!svgRef.current || !containerRef.current) return;
@@ -48,134 +30,16 @@ export function DatabaseVoronoiTreemap() {
     const svgSize = Math.min(containerWidth, 800);
     const margin = { top: 20, right: 20, bottom: 20, left: 20 };
     const radius = (svgSize - margin.left - margin.right) / 2;
-
-    // Function to clean source names by removing _word suffixes
-    const cleanSourceName = (sourceName: string): string => {
-      // Remove everything after underscore + word pattern
-      const underscoreIndex = sourceName.indexOf('_');
-      if (underscoreIndex > 0) {
-        const beforeUnderscore = sourceName.substring(0, underscoreIndex);
-        const afterUnderscore = sourceName.substring(underscoreIndex + 1);
-        
-        // Check if what comes after underscore looks like a word (contains letters)
-        if (/^[A-Za-z]/.test(afterUnderscore)) {
-          return beforeUnderscore;
-        }
-      }
-      return sourceName;
-    };
-
-    // Function to process interaction types as subsections within Interactions
-    const processInteractionTypes = () => {
-      // Group interactions by type
-      const typeGroups = new Map<string, any[]>();
-      
-      dbStats.interactionsSourceType.forEach(item => {
-        let type = item.type;
-        
-        // Combine post_transcriptional and lncrna_post_transcriptional
-        if (type === 'lncrna_post_transcriptional') {
-          type = 'post_transcriptional';
-        }
-        
-        if (!typeGroups.has(type)) {
-          typeGroups.set(type, []);
-        }
-        typeGroups.get(type)!.push(item);
-      });
-      
-      // Convert to children format for interaction subsections
-      const interactionSubsections = [];
-      const targetTypes = ['mirna_transcriptional', 'post_transcriptional', 'small_molecule_protein', 'transcriptional', 'post_translational'];
-      
-      for (const type of targetTypes) {
-        const sources = typeGroups.get(type) || [];
-        if (sources.length > 0) {
-          // Sort by record count and take top sources
-          const sortedSources = sources
-            .sort((a, b) => b.record_count - a.record_count);
-          
-          interactionSubsections.push({
-            name: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            color: interactionTypeColors[type as keyof typeof interactionTypeColors],
-            children: sortedSources.map(d => {
-              const cleanedName = cleanSourceName(d.source);
-              return {
-                name: cleanedName,
-                originalName: d.source,
-                interactionType: type,
-                weight: Math.log10(d.record_count + 1),
-                code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
-              };
-            })
-          });
-        }
-      }
-      
-      return interactionSubsections;
-    };
-
+    
     // Transform data into hierarchical format
     const hierarchicalData: VoronoiNode = {
       name: "OmniPath",
       children: [
-        {
-          name: "Interactions",
-          color: databaseColors.Interactions,
-          children: processInteractionTypes()
-        },
-        {
-          name: "Enzyme-Substrate",
-          color: databaseColors["Enzyme-Substrate"],
-          children: dbStats.enzsub.map(d => {
-            const cleanedName = cleanSourceName(d.source);
-            return {
-              name: cleanedName,
-              originalName: d.source,
-              weight: Math.log10(d.record_count + 1),
-              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
-            };
-          })
-        },
-        {
-          name: "Complexes",
-          color: databaseColors.Complexes,
-          children: dbStats.complexes.map(d => {
-            const cleanedName = cleanSourceName(d.source);
-            return {
-              name: cleanedName,
-              originalName: d.source,
-              weight: Math.log10(d.record_count + 1),
-              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
-            };
-          })
-        },
-        {
-          name: "Annotations",
-          color: databaseColors.Annotations,
-          children: dbStats.annotations.map(d => {
-            const cleanedName = cleanSourceName(d.source);
-            return {
-              name: cleanedName,
-              originalName: d.source,
-              weight: Math.log10(d.record_count + 1),
-              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
-            };
-          })
-        },
-        {
-          name: "Intercellular",
-          color: databaseColors.Intercellular,
-          children: dbStats.intercell.map(d => {
-            const cleanedName = cleanSourceName(d.source);
-            return {
-              name: cleanedName,
-              originalName: d.source,
-              weight: Math.log10(d.record_count + 1),
-              code: cleanedName.length > 15 ? cleanedName.substring(0, 12) + "..." : cleanedName
-            };
-          })
-        }
+        dbData.interactions,
+        dbData.enzymeSubstrate,
+        dbData.complexes,
+        dbData.annotations,
+        dbData.intercellular
       ]
     };
 
