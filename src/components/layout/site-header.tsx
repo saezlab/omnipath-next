@@ -5,10 +5,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Database, History, Search, Moon, Sun } from "lucide-react"
+import { History, Search, Moon, Sun } from "lucide-react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { useSearchStore } from "@/store/search-store"
+import Image from "next/image"
 
 export function SiteHeader() {
   const { theme, setTheme } = useTheme()
@@ -46,9 +47,11 @@ export function SiteHeader() {
         {/* Mobile Layout */}
         <div className="sm:hidden flex h-14 items-center justify-between">
           <div className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
+            <Image src="/omnipath-logo-gradient.svg" alt="OmniPath Logo" width={32} height={32} />
             <Link href="/" className="text-lg font-bold tracking-tight">
-              OmniPath
+              <span className="bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
+                OmniPath
+              </span>
             </Link>
           </div>
           
@@ -109,9 +112,11 @@ export function SiteHeader() {
         {/* Desktop Layout */}
         <div className="hidden sm:flex h-16 items-center">
           <div className="flex items-center gap-3 mr-8">
-            <Database className="h-8 w-8" />
+            <Image src="/omnipath-logo-gradient.svg" alt="OmniPath Logo" width={56} height={56} />
             <Link href="/" className="text-2xl font-bold tracking-tight">
-              OmniPath
+              <span className="bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
+                OmniPath
+              </span>
             </Link>
           </div>
 

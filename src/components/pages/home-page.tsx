@@ -1,5 +1,4 @@
 "use client"
-
 import { AboutSection } from "@/components/home/about-section"
 import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { DatabaseStats } from "@/components/home/database-stats"
