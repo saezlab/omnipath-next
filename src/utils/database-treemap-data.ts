@@ -117,9 +117,26 @@ function deduplicateSources(sources: any[]): any[] {
   const deduplicatedMap = new Map<string, any>();
   sources.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
-    if (!deduplicatedMap.has(cleanedName) || 
-        deduplicatedMap.get(cleanedName).record_count < item.record_count) {
+    const existing = deduplicatedMap.get(cleanedName);
+    
+    if (!existing) {
+      // First occurrence of this cleaned name
       deduplicatedMap.set(cleanedName, item);
+    } else {
+      // Check if current item is the original (matches cleaned name exactly)
+      const isCurrentOriginal = item.source === cleanedName;
+      const isExistingOriginal = existing.source === cleanedName;
+      
+      if (isCurrentOriginal && !isExistingOriginal) {
+        // Current is original, existing is secondary - replace
+        deduplicatedMap.set(cleanedName, item);
+      } else if (!isCurrentOriginal && !isExistingOriginal) {
+        // Both are secondary sources - keep the one with higher record count
+        if (item.record_count > existing.record_count) {
+          deduplicatedMap.set(cleanedName, item);
+        }
+      }
+      // If existing is original, keep it regardless of record count
     }
   });
   return Array.from(deduplicatedMap.values());
