@@ -202,10 +202,8 @@ function createCircleVisualization(
         baseColorString = databaseColors[dbName as keyof typeof databaseColors] || rwthColors.atoll; // fallback color
       }
       
-      // Slightly vary the color based on size for better visual distinction
-      const baseColor = d3.color(baseColorString);
-      const sizeFactor = d.value / d.parent.value;
-      return baseColor ? baseColor.darker(0.5 - sizeFactor * 0.7).toString() : baseColorString;
+      // Use consistent base colors without size-based variation
+      return baseColorString;
     })
     .style("stroke", "white")
     .style("stroke-width", 1.5)
