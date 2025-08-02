@@ -45,7 +45,7 @@ function createCircleVisualization(
   size: number,
   title: string
 ) {
-  const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+  const margin = { top: 40, right: 20, bottom: 20, left: 20 };
   const radius = (size - margin.left - margin.right) / 2;
   
   // Create circling polygon
@@ -190,7 +190,7 @@ function createCircleVisualization(
   // Add title
   svg.append("text")
     .attr("x", size / 2)
-    .attr("y", 10)
+    .attr("y", 20)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "600")
@@ -254,7 +254,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
 
     // Get container dimensions
     const containerWidth = containerRef.current.offsetWidth;
-    const svgSize = Math.min(containerWidth / 2 - 30, 500);
+    const svgSize = Math.min(containerWidth * 0.5, 500);
     
     // Setup SVGs
     const svg1 = d3.select(svgRef1.current)
@@ -290,117 +290,113 @@ export function DatabaseVoronoiTreemapTwoCircles() {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full space-y-6">
+    <div ref={containerRef} className="w-full space-y-4">
       {/* Title */}
       <div className="text-center">
         <h3 className="text-lg font-semibold text-gray-800">Database Resources (Linear Scale)</h3>
         <p className="text-sm text-gray-600 mt-1">Cell sizes are proportional to record counts</p>
       </div>
       
-      {/* Two circles side by side */}
-      <div className="flex justify-center gap-10">
-        <svg ref={svgRef1}></svg>
-        <svg ref={svgRef2}></svg>
-      </div>
-      
-      {/* Legend */}
-      <div className="space-y-6">
-        {/* Legend organized by circle */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Left circle legend */}
-          <div className="space-y-4">
-            <h4 className="text-base font-semibold text-gray-800 text-center">Annotations & Intercellular</h4>
-            
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="space-y-3">
-                {/* Annotations with categories */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-4 h-4 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: databaseColors["Annotations"] }}
-                    ></div>
-                    <span className="text-sm font-semibold text-gray-700">Annotations</span>
-                  </div>
-                  {/* Annotation categories indented */}
-                  <div className="ml-6 space-y-1">
-                    {Object.entries(annotationCategoryColors).map(([category, color]) => (
-                      <div key={category} className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-sm border border-gray-300" 
-                          style={{ backgroundColor: color }}
-                        ></div>
-                        <span className="text-xs text-gray-600">{category}</span>
-                      </div>
-                    ))}
-                  </div>
+      {/* First circle with legend */}
+      <div className="flex items-center justify-center gap-6 max-w-5xl mx-auto">
+        <div className="flex-shrink-0">
+          <svg ref={svgRef1}></svg>
+        </div>
+        <div className="flex-shrink-0">
+          <div className="bg-gray-50 rounded-lg p-3 w-80">
+            <h4 className="text-sm font-semibold text-gray-800 mb-2">Annotations & Intercellular</h4>
+            <div className="space-y-2">
+              {/* Annotations with categories */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    style={{ backgroundColor: databaseColors["Annotations"] }}
+                  ></div>
+                  <span className="text-xs font-semibold text-gray-700">Annotations</span>
                 </div>
-                
-                {/* Intercellular */}
-                <div className="pt-3 border-t border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-4 h-4 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: databaseColors["Intercellular"] }}
-                    ></div>
-                    <span className="text-sm font-semibold text-gray-700">Intercellular</span>
-                  </div>
+                {/* Annotation categories indented */}
+                <div className="ml-5 space-y-0.5">
+                  {Object.entries(annotationCategoryColors).map(([category, color]) => (
+                    <div key={category} className="flex items-center gap-1">
+                      <div 
+                        className="w-2 h-2 rounded-sm border border-gray-300 flex-shrink-0" 
+                        style={{ backgroundColor: color }}
+                      ></div>
+                      <span className="text-xs text-gray-600 leading-tight">{category}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Intercellular */}
+              <div className="pt-2 border-t border-gray-200">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    style={{ backgroundColor: databaseColors["Intercellular"] }}
+                  ></div>
+                  <span className="text-xs font-semibold text-gray-700">Intercellular</span>
                 </div>
               </div>
             </div>
           </div>
-          
-          {/* Right circle legend */}
-          <div className="space-y-4">
-            <h4 className="text-base font-semibold text-gray-800 text-center">Molecular Interactions</h4>
-            
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="space-y-3">
-                {/* Interactions with types */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-4 h-4 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: databaseColors["Interactions"] }}
-                    ></div>
-                    <span className="text-sm font-semibold text-gray-700">Interactions</span>
-                  </div>
-                  {/* Interaction types indented */}
-                  <div className="ml-6 space-y-1">
-                    {Object.entries(interactionTypeColors).map(([type, color]) => (
-                      <div key={type} className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-sm border border-gray-300" 
-                          style={{ backgroundColor: color }}
-                        ></div>
-                        <span className="text-xs text-gray-600">
-                          {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+        </div>
+      </div>
+      
+      {/* Second circle with legend */}
+      <div className="flex items-center justify-center gap-6 max-w-5xl mx-auto">
+        <div className="flex-shrink-0">
+          <svg ref={svgRef2}></svg>
+        </div>
+        <div className="flex-shrink-0">
+          <div className="bg-gray-50 rounded-lg p-3 w-80">
+            <h4 className="text-sm font-semibold text-gray-800 mb-2">Molecular Interactions</h4>
+            <div className="space-y-2">
+              {/* Interactions with types */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    style={{ backgroundColor: databaseColors["Interactions"] }}
+                  ></div>
+                  <span className="text-xs font-semibold text-gray-700">Interactions</span>
                 </div>
-                
-                {/* Enzyme-Substrate */}
-                <div className="pt-3 border-t border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-4 h-4 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: databaseColors["Enzyme-Substrate"] }}
-                    ></div>
-                    <span className="text-sm font-semibold text-gray-700">Enzyme-Substrate</span>
-                  </div>
+                {/* Interaction types indented */}
+                <div className="ml-5 space-y-0.5">
+                  {Object.entries(interactionTypeColors).map(([type, color]) => (
+                    <div key={type} className="flex items-center gap-1">
+                      <div 
+                        className="w-2 h-2 rounded-sm border border-gray-300 flex-shrink-0" 
+                        style={{ backgroundColor: color }}
+                      ></div>
+                      <span className="text-xs text-gray-600 leading-tight">
+                        {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                
-                {/* Complexes */}
-                <div className="pt-3 border-t border-gray-200">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-4 h-4 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: databaseColors["Complexes"] }}
-                    ></div>
-                    <span className="text-sm font-semibold text-gray-700">Complexes</span>
-                  </div>
+              </div>
+              
+              {/* Enzyme-Substrate */}
+              <div className="pt-2 border-t border-gray-200">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    style={{ backgroundColor: databaseColors["Enzyme-Substrate"] }}
+                  ></div>
+                  <span className="text-xs font-semibold text-gray-700">Enzyme-Substrate</span>
+                </div>
+              </div>
+              
+              {/* Complexes */}
+              <div className="pt-2 border-t border-gray-200">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    style={{ backgroundColor: databaseColors["Complexes"] }}
+                  ></div>
+                  <span className="text-xs font-semibold text-gray-700">Complexes</span>
                 </div>
               </div>
             </div>
