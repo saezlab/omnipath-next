@@ -7,11 +7,72 @@ import * as d3 from "d3";
 import { voronoiTreemap } from "d3-voronoi-treemap";
 import {
   VoronoiNode,
-  getAllDatabaseData,
-  databaseColors,
-  interactionTypeColors,
-  annotationCategoryColors
+  getAllDatabaseData
 } from "@/utils/database-treemap-data";
+
+// RWTH Color Palette
+const rwthColors = {
+  // Main colors
+  haverlockBlue: "rgb(23, 111, 193)",
+  jordyBlue: "rgb(131, 167, 221)",
+  yellowGreen: "rgb(166, 216, 28)",
+  orange: "rgb(248, 157, 14)",
+  yellow: "rgb(255, 242, 0)",
+  maroon: "rgb(237, 7, 114)",
+  atoll: "rgb(10, 97, 103)",
+  darkCyan: "rgb(0, 170, 176)",
+  forestGreen: "rgb(76, 189, 56)",
+  tomato: "rgb(210, 32, 39)",
+  hibiscus: "rgb(158, 22, 57)",
+  blueMarguerite: "rgb(114, 100, 185)",
+  seance: "rgb(91, 32, 95)",
+  // Lighter variations
+  lightSteelBlue: "rgb(191, 207, 238)",
+  hotPink: "rgb(241, 67, 142)",
+  goldenFizz: "rgb(255, 246, 64)",
+  paradiso: "rgb(57, 125, 128)",
+  mediumTurquoise: "rgb(64, 191, 188)",
+  apple: "rgb(121, 205, 93)",
+  conifer: "rgb(188, 225, 78)",
+  mysin: "rgb(250, 178, 63)",
+  firebrick: "rgb(219, 77, 65)",
+  cabaret: "rgb(177, 64, 84)",
+  eminence: "rgb(120, 67, 122)",
+  lavender: "rgb(145, 130, 201)"
+};
+
+// Database colors using RWTH palette
+const databaseColors = {
+  Interactions: rwthColors.haverlockBlue,
+  "Enzyme-Substrate": rwthColors.tomato,
+  Complexes: rwthColors.forestGreen,
+  Annotations: rwthColors.orange,
+  Intercellular: rwthColors.seance
+};
+
+// Interaction type colors with distinct RWTH colors from full palette
+const interactionTypeColors = {
+  "transcriptional": rwthColors.haverlockBlue,    // Blue
+  "post_translational": rwthColors.forestGreen,  // Green
+  "mirna_transcriptional": rwthColors.maroon,    // Pink/Red
+  "post_transcriptional": rwthColors.orange,     // Orange
+  "small_molecule_protein": rwthColors.seance    // Purple
+};
+
+// Annotation category colors with distinct RWTH colors
+const annotationCategoryColors = {
+  "Cell-cell communication": rwthColors.orange,
+  "Localization (subcellular)": rwthColors.tomato,
+  "Membrane localization & topology": rwthColors.seance,
+  "Extracellular matrix, adhesion": rwthColors.jordyBlue,
+  "Vesicles, secretome": rwthColors.forestGreen,
+  "Function, pathway": rwthColors.yellowGreen,
+  "Signatures": rwthColors.atoll,
+  "Disease, cancer": rwthColors.maroon,
+  "Protein classes & families": rwthColors.blueMarguerite,
+  "Cell type, tissue": rwthColors.darkCyan,
+  "Transcription factors": rwthColors.yellow
+};
 
 // Process data with linear weights
 function processDataWithLinearWeights() {
@@ -122,10 +183,29 @@ function createCircleVisualization(
     .attr("class", "cell")
     .attr("d", (d: any) => `M${d.polygon.join(",")}z`)
     .style("fill", (d: any) => {
+      // Get the appropriate color from our RWTH palette
+      let baseColorString;
+      
+      // Check if this is an interaction type
+      if (d.data.interactionType && interactionTypeColors[d.data.interactionType as keyof typeof interactionTypeColors]) {
+        baseColorString = interactionTypeColors[d.data.interactionType as keyof typeof interactionTypeColors];
+      }
+      // Check if this is an annotation category (parent name is the category)
+      else if (d.parent.data.name && annotationCategoryColors[d.parent.data.name as keyof typeof annotationCategoryColors]) {
+        baseColorString = annotationCategoryColors[d.parent.data.name as keyof typeof annotationCategoryColors];
+      }
+      // Use database color as fallback
+      else {
+        // For annotations: grandparent is the database (Annotations)
+        // For others (interactions, intercellular, complexes, enzyme-substrate): parent is the database
+        const dbName = d.parent.parent ? d.parent.parent.data.name : d.parent.data.name;
+        baseColorString = databaseColors[dbName as keyof typeof databaseColors] || rwthColors.atoll; // fallback color
+      }
+      
       // Slightly vary the color based on size for better visual distinction
-      const baseColor = d3.color(d.parent.data.color);
+      const baseColor = d3.color(baseColorString);
       const sizeFactor = d.value / d.parent.value;
-      return baseColor ? baseColor.darker(0.5 - sizeFactor * 0.7) : d.parent.data.color;
+      return baseColor ? baseColor.darker(0.5 - sizeFactor * 0.7).toString() : baseColorString;
     })
     .style("stroke", "white")
     .style("stroke-width", 1.5)
@@ -287,7 +367,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     createCircleVisualization(svg1, annotationsIntercellularData, svgSize, "Annotations & Intercellular");
     createCircleVisualization(svg2, interactionsData, svgSize, "Interactions, Enzymes & Complexes");
 
-  }, []);
+  }, [databaseColors, interactionTypeColors, annotationCategoryColors]);
 
   return (
     <div ref={containerRef} className="w-full space-y-4">
