@@ -53,7 +53,7 @@ const databaseColors = {
 // Interaction type colors with distinct RWTH colors from full palette
 const interactionTypeColors = {
   "transcriptional": rwthColors.haverlockBlue,    // Blue
-  "post_translational": rwthColors.forestGreen,  // Green
+  "post_translational": rwthColors.darkCyan,     // Dark Cyan (changed from forestGreen to avoid conflict with Complexes)
   "mirna_transcriptional": rwthColors.maroon,    // Pink/Red
   "post_transcriptional": rwthColors.orange,     // Orange
   "small_molecule_protein": rwthColors.seance    // Purple
