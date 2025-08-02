@@ -9,7 +9,8 @@ import {
   VoronoiNode,
   getAllDatabaseData,
   databaseColors,
-  interactionTypeColors
+  interactionTypeColors,
+  annotationCategoryColors
 } from "@/utils/database-treemap-data";
 
 // Process data with linear weights
@@ -253,7 +254,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
 
     // Get container dimensions
     const containerWidth = containerRef.current.offsetWidth;
-    const svgSize = Math.min(containerWidth / 2 - 20, 400);
+    const svgSize = Math.min(containerWidth / 2 - 30, 500);
     
     // Setup SVGs
     const svg1 = d3.select(svgRef1.current)
@@ -303,38 +304,83 @@ export function DatabaseVoronoiTreemapTwoCircles() {
       </div>
       
       {/* Legend */}
-      <div className="space-y-4">
-        {/* Main databases legend */}
-        <div>
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Databases</h4>
-          <div className="flex flex-wrap gap-4 justify-center">
-            {Object.entries(databaseColors).map(([name, color]) => (
-              <div key={name} className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-sm border border-gray-300" 
-                  style={{ backgroundColor: color }}
-                ></div>
-                <span className="text-sm text-gray-600">{name}</span>
+      <div className="space-y-6">
+        {/* Legend organized by circle */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left circle legend */}
+          <div className="space-y-4">
+            <h4 className="text-base font-semibold text-gray-800 text-center">Annotations & Intercellular</h4>
+            
+            {/* Main databases */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h5 className="text-sm font-semibold text-gray-700 mb-3">Databases</h5>
+              <div className="flex flex-col gap-2">
+                {["Annotations", "Intercellular"].map(name => (
+                  <div key={name} className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded-sm border border-gray-300" 
+                      style={{ backgroundColor: databaseColors[name as keyof typeof databaseColors] }}
+                    ></div>
+                    <span className="text-sm text-gray-600">{name}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            
+            {/* Annotation categories */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h5 className="text-sm font-semibold text-gray-700 mb-3">Annotation Categories</h5>
+              <div className="grid grid-cols-1 gap-2">
+                {Object.entries(annotationCategoryColors).map(([category, color]) => (
+                  <div key={category} className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-sm border border-gray-300" 
+                      style={{ backgroundColor: color }}
+                    ></div>
+                    <span className="text-xs text-gray-600">{category}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-        
-        {/* Interaction types legend */}
-        <div>
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Interaction Types</h4>
-          <div className="flex flex-wrap gap-4 justify-center">
-            {Object.entries(interactionTypeColors).map(([type, color]) => (
-              <div key={type} className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-sm border border-gray-300" 
-                  style={{ backgroundColor: color }}
-                ></div>
-                <span className="text-sm text-gray-600">
-                  {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                </span>
+          
+          {/* Right circle legend */}
+          <div className="space-y-4">
+            <h4 className="text-base font-semibold text-gray-800 text-center">Molecular Interactions</h4>
+            
+            {/* Main databases */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h5 className="text-sm font-semibold text-gray-700 mb-3">Databases</h5>
+              <div className="flex flex-col gap-2">
+                {["Interactions", "Enzyme-Substrate", "Complexes"].map(name => (
+                  <div key={name} className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded-sm border border-gray-300" 
+                      style={{ backgroundColor: databaseColors[name as keyof typeof databaseColors] }}
+                    ></div>
+                    <span className="text-sm text-gray-600">{name}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            
+            {/* Interaction types */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h5 className="text-sm font-semibold text-gray-700 mb-3">Interaction Types</h5>
+              <div className="flex flex-col gap-2">
+                {Object.entries(interactionTypeColors).map(([type, color]) => (
+                  <div key={type} className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-sm border border-gray-300" 
+                      style={{ backgroundColor: color }}
+                    ></div>
+                    <span className="text-xs text-gray-600">
+                      {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
