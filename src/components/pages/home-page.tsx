@@ -9,6 +9,7 @@ import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-
 import { DatabasePrintTreemapsAlternative } from "../home/database-print-treemaps-alternative"
 import { DatabasePrintTreemaps } from "../home/database-print-treemaps"
 import { DatabaseVoronoiTreemapLinear } from "../home/database-voronoi-treemap-linear"
+import { DatabaseVoronoiTreemapTwoCircles } from "@/components/home/database-voronoi-treemap-two-circles";
 export function HomePage() {
   return (
     <SiteLayout>
@@ -83,6 +84,9 @@ export function HomePage() {
 
         <div className="mt-12">
           <DatabaseVoronoiTreemapLinear />
+        </div>
+        <div className="mt-12">
+          <DatabaseVoronoiTreemapTwoCircles />
         </div>
 
         <AboutSection />
