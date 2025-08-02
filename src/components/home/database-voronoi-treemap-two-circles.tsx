@@ -311,35 +311,41 @@ export function DatabaseVoronoiTreemapTwoCircles() {
           <div className="space-y-4">
             <h4 className="text-base font-semibold text-gray-800 text-center">Annotations & Intercellular</h4>
             
-            {/* Main databases */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h5 className="text-sm font-semibold text-gray-700 mb-3">Databases</h5>
-              <div className="flex flex-col gap-2">
-                {["Annotations", "Intercellular"].map(name => (
-                  <div key={name} className="flex items-center gap-2">
+              <div className="space-y-3">
+                {/* Annotations with categories */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
                     <div 
                       className="w-4 h-4 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: databaseColors[name as keyof typeof databaseColors] }}
+                      style={{ backgroundColor: databaseColors["Annotations"] }}
                     ></div>
-                    <span className="text-sm text-gray-600">{name}</span>
+                    <span className="text-sm font-semibold text-gray-700">Annotations</span>
                   </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* Annotation categories */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h5 className="text-sm font-semibold text-gray-700 mb-3">Annotation Categories</h5>
-              <div className="grid grid-cols-1 gap-2">
-                {Object.entries(annotationCategoryColors).map(([category, color]) => (
-                  <div key={category} className="flex items-center gap-2">
+                  {/* Annotation categories indented */}
+                  <div className="ml-6 space-y-1">
+                    {Object.entries(annotationCategoryColors).map(([category, color]) => (
+                      <div key={category} className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-sm border border-gray-300" 
+                          style={{ backgroundColor: color }}
+                        ></div>
+                        <span className="text-xs text-gray-600">{category}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Intercellular */}
+                <div className="pt-3 border-t border-gray-200">
+                  <div className="flex items-center gap-2">
                     <div 
-                      className="w-3 h-3 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: color }}
+                      className="w-4 h-4 rounded-sm border border-gray-300" 
+                      style={{ backgroundColor: databaseColors["Intercellular"] }}
                     ></div>
-                    <span className="text-xs text-gray-600">{category}</span>
+                    <span className="text-sm font-semibold text-gray-700">Intercellular</span>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
@@ -348,37 +354,54 @@ export function DatabaseVoronoiTreemapTwoCircles() {
           <div className="space-y-4">
             <h4 className="text-base font-semibold text-gray-800 text-center">Molecular Interactions</h4>
             
-            {/* Main databases */}
             <div className="bg-gray-50 rounded-lg p-4">
-              <h5 className="text-sm font-semibold text-gray-700 mb-3">Databases</h5>
-              <div className="flex flex-col gap-2">
-                {["Interactions", "Enzyme-Substrate", "Complexes"].map(name => (
-                  <div key={name} className="flex items-center gap-2">
+              <div className="space-y-3">
+                {/* Interactions with types */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
                     <div 
                       className="w-4 h-4 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: databaseColors[name as keyof typeof databaseColors] }}
+                      style={{ backgroundColor: databaseColors["Interactions"] }}
                     ></div>
-                    <span className="text-sm text-gray-600">{name}</span>
+                    <span className="text-sm font-semibold text-gray-700">Interactions</span>
                   </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* Interaction types */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h5 className="text-sm font-semibold text-gray-700 mb-3">Interaction Types</h5>
-              <div className="flex flex-col gap-2">
-                {Object.entries(interactionTypeColors).map(([type, color]) => (
-                  <div key={type} className="flex items-center gap-2">
+                  {/* Interaction types indented */}
+                  <div className="ml-6 space-y-1">
+                    {Object.entries(interactionTypeColors).map(([type, color]) => (
+                      <div key={type} className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-sm border border-gray-300" 
+                          style={{ backgroundColor: color }}
+                        ></div>
+                        <span className="text-xs text-gray-600">
+                          {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Enzyme-Substrate */}
+                <div className="pt-3 border-t border-gray-200">
+                  <div className="flex items-center gap-2">
                     <div 
-                      className="w-3 h-3 rounded-sm border border-gray-300" 
-                      style={{ backgroundColor: color }}
+                      className="w-4 h-4 rounded-sm border border-gray-300" 
+                      style={{ backgroundColor: databaseColors["Enzyme-Substrate"] }}
                     ></div>
-                    <span className="text-xs text-gray-600">
-                      {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </span>
+                    <span className="text-sm font-semibold text-gray-700">Enzyme-Substrate</span>
                   </div>
-                ))}
+                </div>
+                
+                {/* Complexes */}
+                <div className="pt-3 border-t border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded-sm border border-gray-300" 
+                      style={{ backgroundColor: databaseColors["Complexes"] }}
+                    ></div>
+                    <span className="text-sm font-semibold text-gray-700">Complexes</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
