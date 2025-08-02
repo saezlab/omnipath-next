@@ -194,10 +194,12 @@ function createCircleVisualization(
       else if (d.parent.data.name && annotationCategoryColors[d.parent.data.name as keyof typeof annotationCategoryColors]) {
         baseColorString = annotationCategoryColors[d.parent.data.name as keyof typeof annotationCategoryColors];
       }
-      // Use database color as fallback
+      // Special handling for direct database children (Enzyme-Substrate, Complexes, Intercellular)
+      else if (d.parent.data.name && databaseColors[d.parent.data.name as keyof typeof databaseColors]) {
+        baseColorString = databaseColors[d.parent.data.name as keyof typeof databaseColors];
+      }
+      // Use database color as fallback for deeper hierarchies
       else {
-        // For annotations: grandparent is the database (Annotations)
-        // For others (interactions, intercellular, complexes, enzyme-substrate): parent is the database
         const dbName = d.parent.parent ? d.parent.parent.data.name : d.parent.data.name;
         baseColorString = databaseColors[dbName as keyof typeof databaseColors] || rwthColors.atoll; // fallback color
       }
