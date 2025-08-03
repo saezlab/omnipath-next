@@ -364,13 +364,13 @@ export function DatabaseVoronoiTreemapTwoCircles() {
       ]
     };
 
-    createCircleVisualization(svg1, annotationsIntercellularData, svgSize, "Annotations & Intercellular");
-    createCircleVisualization(svg2, interactionsData, svgSize, "Interactions, Enzymes & Complexes");
+    createCircleVisualization(svg1, annotationsIntercellularData, svgSize, "");
+    createCircleVisualization(svg2, interactionsData, svgSize, "");
 
   }, [databaseColors, interactionTypeColors, annotationCategoryColors]);
 
   return (
-    <div ref={containerRef} className="w-full space-y-4">
+    <div ref={containerRef} className="w-full space-y-2">
       {/* Title */}
       <div className="text-center">
         <h3 className="text-lg font-semibold text-gray-800">Database Resources (Linear Scale)</h3>
@@ -384,7 +384,6 @@ export function DatabaseVoronoiTreemapTwoCircles() {
         </div>
         <div className="flex-shrink-0">
           <div className="bg-gray-50 rounded-lg p-3 w-80">
-            <h4 className="text-sm font-semibold text-gray-800 mb-2">Annotations & Intercellular</h4>
             <div className="space-y-2">
               {/* Annotations with categories */}
               <div className="space-y-1">
@@ -431,7 +430,6 @@ export function DatabaseVoronoiTreemapTwoCircles() {
         </div>
         <div className="flex-shrink-0">
           <div className="bg-gray-50 rounded-lg p-3 w-80">
-            <h4 className="text-sm font-semibold text-gray-800 mb-2">Molecular Interactions</h4>
             <div className="space-y-2">
               {/* Interactions with types */}
               <div className="space-y-1">
