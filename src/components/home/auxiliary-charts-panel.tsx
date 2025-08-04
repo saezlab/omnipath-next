@@ -128,41 +128,50 @@ export function AuxiliaryChartsPanel() {
   // 4. Resource overlap data - split by type
   const overlapData = dbStats.plotData?.resourceOverlap || [];
   
-  const interactionOverlapData = overlapData
-    .filter((item: any) => item.entry_type === 'interaction')
-    .map((item: any) => ({
-      resources: item.number_of_resources === 5 ? '5+' : item.number_of_resources.toString(),
-      entries: item.number_of_entries
-    }))
-    .sort((a: any, b: any) => {
-      const aNum = a.resources === '5+' ? 5 : parseInt(a.resources);
-      const bNum = b.resources === '5+' ? 5 : parseInt(b.resources);
-      return aNum - bNum;
+  // Helper function to group overlap data into 1,2,3,4,5+ categories
+  const groupOverlapData = (filteredData: any[]) => {
+    const grouped: Record<string, number> = {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5+': 0
+    };
+
+    filteredData.forEach((item: any) => {
+      if (item.number_of_resources === 1) {
+        grouped['1'] += item.number_of_entries;
+      } else if (item.number_of_resources === 2) {
+        grouped['2'] += item.number_of_entries;
+      } else if (item.number_of_resources === 3) {
+        grouped['3'] += item.number_of_entries;
+      } else if (item.number_of_resources === 4) {
+        grouped['4'] += item.number_of_entries;
+      } else if (item.number_of_resources >= 5) {
+        grouped['5+'] += item.number_of_entries;
+      }
     });
 
-  const enzymeSubstrateOverlapData = overlapData
-    .filter((item: any) => item.entry_type === 'enzyme-substrate')
-    .map((item: any) => ({
-      resources: item.number_of_resources === 5 ? '5+' : item.number_of_resources.toString(),
-      entries: item.number_of_entries
-    }))
-    .sort((a: any, b: any) => {
-      const aNum = a.resources === '5+' ? 5 : parseInt(a.resources);
-      const bNum = b.resources === '5+' ? 5 : parseInt(b.resources);
-      return aNum - bNum;
-    });
+    return [
+      { resources: '1', entries: grouped['1'] },
+      { resources: '2', entries: grouped['2'] },
+      { resources: '3', entries: grouped['3'] },
+      { resources: '4', entries: grouped['4'] },
+      { resources: '5+', entries: grouped['5+'] }
+    ];
+  };
 
-  const complexOverlapData = overlapData
-    .filter((item: any) => item.entry_type === 'complex')
-    .map((item: any) => ({
-      resources: item.number_of_resources >= 5 ? '5+' : item.number_of_resources.toString(),
-      entries: item.number_of_entries
-    }))
-    .sort((a: any, b: any) => {
-      const aNum = a.resources === '5+' ? 5 : parseInt(a.resources);
-      const bNum = b.resources === '5+' ? 5 : parseInt(b.resources);
-      return aNum - bNum;
-    });
+  const interactionOverlapData = groupOverlapData(
+    overlapData.filter((item: any) => item.entry_type === 'interaction')
+  );
+
+  const enzymeSubstrateOverlapData = groupOverlapData(
+    overlapData.filter((item: any) => item.entry_type === 'enzyme-substrate')
+  );
+
+  const complexOverlapData = groupOverlapData(
+    overlapData.filter((item: any) => item.entry_type === 'complex')
+  );
 
   return (
     <div className="w-full space-y-6">
