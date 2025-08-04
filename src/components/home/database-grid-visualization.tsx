@@ -60,10 +60,11 @@ export default function DatabaseGridVisualization({
       dimensions: {
         width,
         height,
-        margin: { top: 60, right: 240, bottom: 40, left: 40 },
+        margin: { top: 60, right: 240, bottom: 40, left: 120 }, // More space for left labels
         gridGap: 4,
         rowHeight: 50,
         labelWidth: 200,
+        leftLabelWidth: 100,
       },
       colors: {
         database: databaseColors,
@@ -82,15 +83,15 @@ export default function DatabaseGridVisualization({
       // Main database categories
       const mainCategories = [
         { key: 'interactions', data: dbData.interactions, name: 'Interactions' },
-        { key: 'enzymeSubstrate', data: dbData.enzymeSubstrate, name: 'Enzyme-Substrate' },
-        { key: 'complexes', data: dbData.complexes, name: 'Complexes' },
         { key: 'annotations', data: dbData.annotations, name: 'Annotations' },
-        { key: 'intercellular', data: dbData.intercellular, name: 'Intercellular' }
+        { key: 'intercellular', data: dbData.intercellular, name: 'Intercellular' },
+        { key: 'complexes', data: dbData.complexes, name: 'Complexes' },
+        { key: 'enzymeSubstrate', data: dbData.enzymeSubstrate, name: 'Enzyme-Substrate' }
       ];
 
       mainCategories.forEach(mainCat => {
         if (mainCat.key === 'interactions') {
-          // For interactions, use interaction types as subcategories
+          // Add subcategory rows for interaction types (no main row)
           mainCat.data.children.forEach((interactionType: VoronoiNode) => {
             const resources: DatabaseResource[] = interactionType.children?.map((resource: VoronoiNode, idx: number) => ({
               id: `${mainCat.key}-${interactionType.name}-${idx}`,
@@ -114,7 +115,7 @@ export default function DatabaseGridVisualization({
             });
           });
         } else if (mainCat.key === 'annotations') {
-          // For annotations, use annotation categories as subcategories
+          // Add subcategory rows for annotation categories (no main row)
           mainCat.data.children.forEach((annotationCat: VoronoiNode) => {
             const resources: DatabaseResource[] = annotationCat.children?.map((resource: VoronoiNode, idx: number) => ({
               id: `${mainCat.key}-${annotationCat.name}-${idx}`,
@@ -137,8 +138,8 @@ export default function DatabaseGridVisualization({
             });
           });
         } else {
-          // For other categories, use all resources directly
-          const resources: DatabaseResource[] = mainCat.data.children?.map((resource: VoronoiNode, idx: number) => ({
+          // For Intercellular, Complexes, Enzyme-Substrate - create one row with all resources
+          const allResources: DatabaseResource[] = mainCat.data.children?.map((resource: VoronoiNode, idx: number) => ({
             id: `${mainCat.key}-${idx}`,
             name: resource.name,
             database: resource.originalName || resource.name,
@@ -152,8 +153,8 @@ export default function DatabaseGridVisualization({
 
           cells.push({
             category: mainCat.name,
-            subcategory: 'All',
-            resources,
+            subcategory: mainCat.name, // Use category name as subcategory for single rows
+            resources: allResources,
             x: 0, y: 0, width: 0, height: 0
           });
         }
@@ -215,7 +216,7 @@ export default function DatabaseGridVisualization({
         // Sort data by category and subcategory for consistent ordering
         const sortedData = [...this.data].sort((a, b) => {
           // Define category order
-          const categoryOrder = ['Interactions', 'Annotations', 'Enzyme-Substrate', 'Complexes', 'Intercellular'];
+          const categoryOrder = ['Interactions', 'Annotations', 'Intercellular', 'Complexes', 'Enzyme-Substrate'];
           const categoryA = categoryOrder.indexOf(a.category);
           const categoryB = categoryOrder.indexOf(b.category);
           
@@ -228,7 +229,7 @@ export default function DatabaseGridVisualization({
         });
 
         // Calculate row layout - one row per database/subcategory
-        const rowWidth = this.gridWidth - labelWidth - 20; // Leave space for label
+        const rowWidth = this.gridWidth - labelWidth - 20; // Leave space for right label
         
         sortedData.forEach((cell, index) => {
           cell.x = 0;
@@ -268,49 +269,31 @@ export default function DatabaseGridVisualization({
           this.renderCellTreemap(d3.select(nodes[i] as SVGGElement), d);
         });
 
-        // Add row labels on the right side
-        const { labelWidth } = this.config.dimensions;
-        
+        // Add row labels on the right side (subcategories only)
         cellGroups.append("text")
           .attr("class", "row-label")
           .attr("x", d => d.width + 12)
           .attr("y", d => d.height / 2)
           .attr("text-anchor", "start")
           .attr("dominant-baseline", "middle")
-          .style("font-size", "13px")
+          .style("font-size", "12px")
           .style("font-weight", "600")
-          .style("fill", "#374151")
+          .style("fill", "#4b5563")
           .text(d => {
-            if (d.subcategory === 'All') {
-              return d.category;
-            }
-            // For interaction types, show clean formatted name
+            // For interaction subcategories, show clean formatted name
             if (d.category === 'Interactions') {
               return d.subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
             }
-            // For annotations, show full category name
-            return d.subcategory;
+            // For annotation subcategories, show category name
+            if (d.category === 'Annotations') {
+              return d.subcategory;
+            }
+            // For single-row databases, show the database name
+            return d.category;
           });
 
-        // Add category indicators (colored squares) next to labels
-        cellGroups.append("rect")
-          .attr("class", "category-indicator")
-          .attr("x", d => d.width + 12 + this.getTextWidth(d) + 8)
-          .attr("y", d => d.height / 2 - 6)
-          .attr("width", 12)
-          .attr("height", 12)
-          .attr("rx", 2)
-          .attr("fill", d => {
-            if (d.category === 'Interactions') {
-              return this.config.colors.database.Interactions;
-            } else if (d.category === 'Annotations') {
-              return this.config.colors.database.Annotations;
-            } else {
-              return this.config.colors.database[d.category as keyof typeof this.config.colors.database] || "#6b7280";
-            }
-          })
-          .attr("stroke", "white")
-          .attr("stroke-width", 1);
+        // Add left-side category labels that span multiple rows
+        this.addLeftSideLabels();
       }
 
       renderCellTreemap(cellGroup: d3.Selection<SVGGElement, GridCell, null, undefined>, cellData: GridCell) {
@@ -373,20 +356,47 @@ export default function DatabaseGridVisualization({
           });
       }
 
-      getTextWidth(d: GridCell): number {
-        // Estimate text width - in a real implementation you'd measure actual text
-        let text = '';
-        if (d.subcategory === 'All') {
-          text = d.category;
-        } else if (d.category === 'Interactions') {
-          text = d.subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        } else {
-          text = d.subcategory;
-        }
-        return text.length * 7.5; // Approximate character width
+      addLeftSideLabels() {
+        // Group rows by category to determine spans
+        const categoryGroups = new Map<string, GridCell[]>();
+        this.data.forEach(cell => {
+          if (!categoryGroups.has(cell.category)) {
+            categoryGroups.set(cell.category, []);
+          }
+          categoryGroups.get(cell.category)!.push(cell);
+        });
+
+        // Add spanning labels for each category
+        categoryGroups.forEach((cells, category) => {
+          const minY = Math.min(...cells.map(c => c.y));
+          const maxY = Math.max(...cells.map(c => c.y + c.height));
+          const centerY = (minY + maxY) / 2;
+
+          // Add background rectangle for better visibility
+          this.g.append("rect")
+            .attr("class", "left-label-bg")
+            .attr("x", -this.config.dimensions.leftLabelWidth + 5)
+            .attr("y", minY - 2)
+            .attr("width", this.config.dimensions.leftLabelWidth - 10)
+            .attr("height", maxY - minY + 4)
+            .attr("fill", "rgba(249, 250, 251, 0.8)")
+            .attr("stroke", "#e5e7eb")
+            .attr("stroke-width", 1)
+            .attr("rx", 4);
+
+          // Add category label
+          this.g.append("text")
+            .attr("class", "left-category-label")
+            .attr("x", -this.config.dimensions.leftLabelWidth / 2)
+            .attr("y", centerY)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .style("font-size", "13px")
+            .style("font-weight", "700")
+            .style("fill", "#1f2937")
+            .text(category);
+        });
       }
-
-
 
       renderTitle() {
         this.svg.append("text")
