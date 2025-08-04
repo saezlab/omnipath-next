@@ -104,7 +104,7 @@ export function AuxiliaryChartsPanel() {
     value: db.data.length
   }));
 
-  // 2. Records per database with maintenance status breakdown
+  // 2. Records per database with maintenance status breakdown (as percentages)
   const recordsData = databases.map(db => {
     // Calculate records by maintenance category for this database
     const maintenanceBreakdown: Record<string, number> = {
@@ -120,10 +120,17 @@ export function AuxiliaryChartsPanel() {
       maintenanceBreakdown[category] += source.record_count;
     });
 
+    const total = db.data.reduce((sum, item) => sum + item.record_count, 0);
+    
+    // Convert to percentages
     return {
       category: db.title,
-      ...maintenanceBreakdown,
-      total: db.data.reduce((sum, item) => sum + item.record_count, 0)
+      frequent: total > 0 ? ((maintenanceBreakdown.frequent / total) * 100) : 0,
+      infrequent: total > 0 ? ((maintenanceBreakdown.infrequent / total) * 100) : 0,
+      one_time_paper: total > 0 ? ((maintenanceBreakdown.one_time_paper / total) * 100) : 0,
+      discontinued: total > 0 ? ((maintenanceBreakdown.discontinued / total) * 100) : 0,
+      unknown: total > 0 ? ((maintenanceBreakdown.unknown / total) * 100) : 0,
+      totalRecords: total // Keep for tooltip display
     };
   });
 
@@ -257,9 +264,9 @@ export function AuxiliaryChartsPanel() {
               {/* Records Chart with Maintenance Breakdown */}
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Records per Database</CardTitle>
+                  <CardTitle className="text-base">Records per Database (%)</CardTitle>
                   <CardDescription className="text-xs">
-                    Total records colored by maintenance status
+                    Maintenance status breakdown as percentages
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -274,9 +281,25 @@ export function AuxiliaryChartsPanel() {
                           height={60}
                           fontSize={11}
                         />
-                        <YAxis fontSize={11} />
-                        <Tooltip />
-                        <Legend fontSize={11} />
+                        <YAxis 
+                          fontSize={11}
+                          label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }}
+                          domain={[0, 100]}
+                        />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            `${value.toFixed(1)}%`,
+                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+                          ]}
+                          labelFormatter={(label: string) => {
+                            const data = recordsData.find(d => d.category === label);
+                            return `${label} (${data?.totalRecords?.toLocaleString()} records)`;
+                          }}
+                        />
+                        <Legend 
+                          fontSize={11}
+                          formatter={(value: string) => value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        />
                         <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
                         <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
                         <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
