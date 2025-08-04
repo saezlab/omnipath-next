@@ -421,7 +421,7 @@ export default function DatabaseGridVisualization({
             if (cell.category === 'Interactions') {
               labelText = cell.subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
             } else if (cell.category === 'Annotations') {
-              labelText = cell.subcategory;
+              labelText = this.shortenSubcategoryText(cell.subcategory);
             } else {
               // Single-row databases (Intercellular, Complexes, Enzyme-Substrate)
               labelText = cell.category.toUpperCase();
@@ -471,6 +471,55 @@ export default function DatabaseGridVisualization({
               .text(labelText);
           });
         });
+      }
+
+      shortenSubcategoryText(text: string): string {
+        // Define abbreviations for common long terms
+        const abbreviations: { [key: string]: string } = {
+          'Cell-cell communication': 'Cell-cell comm.',
+          'Localization (subcellular)': 'Subcellular loc.',
+          'Membrane localization & topology': 'Membrane loc. & topology',
+          'Extracellular matrix, adhesion': 'ECM & adhesion',
+          'Vesicles, secretome': 'Vesicles & secretome',
+          'Function, pathway': 'Function & pathway',
+          'Disease, cancer': 'Disease & cancer',
+          'Protein classes & families': 'Protein classes',
+          'Cell type, tissue': 'Cell type & tissue',
+          'Transcription factors': 'TF factors'
+        };
+
+        // Check if we have a specific abbreviation
+        if (abbreviations[text]) {
+          return abbreviations[text];
+        }
+
+        // If text is longer than 20 characters, apply generic shortening
+        if (text.length > 20) {
+          // Try to break at common word boundaries
+          if (text.includes(' & ')) {
+            const parts = text.split(' & ');
+            if (parts[0].length <= 12) {
+              return parts[0] + ' & ' + this.truncateText(parts[1], 8);
+            }
+          }
+          
+          if (text.includes(', ')) {
+            const parts = text.split(', ');
+            if (parts[0].length <= 15) {
+              return parts[0] + ', ' + this.truncateText(parts[1], 6);
+            }
+          }
+
+          // Fallback: truncate with ellipsis
+          return this.truncateText(text, 18);
+        }
+
+        return text;
+      }
+
+      truncateText(text: string, maxLength: number): string {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength - 1) + '…';
       }
 
       renderTitle() {
