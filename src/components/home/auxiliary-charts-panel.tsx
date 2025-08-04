@@ -70,6 +70,8 @@ export function AuxiliaryChartsPanel() {
 
   // Create a mapping of sources to their maintenance category
   const sourceMaintenanceMap: Record<string, string> = {};
+  const unmappedSources: string[] = [];
+  
   Object.entries(maintenanceCategories).forEach(([category, resources]) => {
     (resources as string[]).forEach(resource => {
       const matchingSource = Array.from(allSources).find(source => 
@@ -80,6 +82,19 @@ export function AuxiliaryChartsPanel() {
       }
     });
   });
+
+  // Find unmapped sources
+  Array.from(allSources).forEach(source => {
+    if (!sourceMaintenanceMap[source]) {
+      unmappedSources.push(source);
+    }
+  });
+
+  // Log unmapped sources for debugging
+  if (unmappedSources.length > 0) {
+    console.log('Unmapped sources:', unmappedSources.sort());
+    console.log('Unmapped sources JSON:', JSON.stringify(unmappedSources.sort(), null, 2));
+  }
 
   // Prepare data for charts
   
@@ -175,6 +190,30 @@ export function AuxiliaryChartsPanel() {
 
   return (
     <div className="w-full space-y-6">
+      {/* Debug: Show unmapped sources */}
+      {unmappedSources.length > 0 && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base text-orange-800">Unmapped Sources ({unmappedSources.length})</CardTitle>
+            <CardDescription className="text-xs text-orange-600">
+              Sources that need maintenance category mapping
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {unmappedSources.sort().map((source, idx) => (
+                <span 
+                  key={idx}
+                  className="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-mono"
+                >
+                  {source}
+                </span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Auxiliary Database Statistics</CardTitle>
