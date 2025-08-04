@@ -192,7 +192,7 @@ export function DatabaseStats() {
       const typeValue = resource.type;
       const type = (Array.isArray(typeValue) ? typeValue.join(' ') : typeValue || 'unknown').toLowerCase();
       
-      let evidenceCategory = 'Other';
+      let evidenceCategory = null;
       if (type.includes('literature curated') && type.includes('high')) {
         evidenceCategory = 'Literature Curated & High Throughput';
       } else if (type.includes('literature curated')) {
@@ -205,16 +205,19 @@ export function DatabaseStats() {
         evidenceCategory = 'Combined';
       }
       
-      // Sum up records from all databases for this source
-      let sourceTotal = 0;
-      databases.forEach(db => {
-        const sourceData = db.data.find(item => item.source === source);
-        if (sourceData) {
-          sourceTotal += sourceData.record_count;
-        }
-      });
-      
-      evidenceTypeAgg[evidenceCategory] = (evidenceTypeAgg[evidenceCategory] || 0) + sourceTotal;
+      // Only include sources with a specific evidence category (exclude "Other")
+      if (evidenceCategory) {
+        // Sum up records from all databases for this source
+        let sourceTotal = 0;
+        databases.forEach(db => {
+          const sourceData = db.data.find(item => item.source === source);
+          if (sourceData) {
+            sourceTotal += sourceData.record_count;
+          }
+        });
+        
+        evidenceTypeAgg[evidenceCategory] = (evidenceTypeAgg[evidenceCategory] || 0) + sourceTotal;
+      }
     }
   });
 
