@@ -155,13 +155,28 @@ export function AuxiliaryChartsPanel() {
     };
   });
 
-  // 3. References per database with maintenance breakdown
+  // 3. References per database with maintenance breakdown (reference-centric with priority)
   const referencesData = databases.map(db => {
     const dbNames = db.data.map(d => d.source);
     const literatureRefs = (dbStats.plotData?.literatureRefsByDatabaseAndType || [])
       .filter((ref: any) => dbNames.includes(ref.database));
     
-    // Calculate references by maintenance category
+    // Group references by unique reference, tracking all databases they appear in
+    const referenceMap: Record<string, { count: number; databases: string[] }> = {};
+    
+    literatureRefs.forEach((ref: any) => {
+      // Create unique key for each reference (could be improved with actual reference ID if available)
+      const refKey = `${ref.interaction_type}_${ref.unique_reference_count}`;
+      
+      if (!referenceMap[refKey]) {
+        referenceMap[refKey] = { count: ref.unique_reference_count, databases: [] };
+      }
+      referenceMap[refKey].databases.push(ref.database);
+    });
+
+    // Maintenance priority order: frequent > infrequent > one_time_paper > discontinued
+    const priorityOrder = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
+    
     const maintenanceBreakdown: Record<string, number> = {
       frequent: 0,
       infrequent: 0,
@@ -169,14 +184,28 @@ export function AuxiliaryChartsPanel() {
       discontinued: 0
     };
 
-    literatureRefs.forEach((ref: any) => {
-      const category = sourceMaintenanceMap[ref.database];
-      if (category) {
-        maintenanceBreakdown[category] += ref.unique_reference_count;
-      }
+    // Assign each reference to the best maintenance category it appears in
+    Object.values(referenceMap).forEach(refInfo => {
+      // Find the best maintenance category among all databases this reference appears in
+      let bestCategory = 'discontinued'; // Start with lowest priority
+      
+      refInfo.databases.forEach(database => {
+        const category = sourceMaintenanceMap[database];
+        if (category) {
+          const currentPriority = priorityOrder.indexOf(category);
+          const bestPriority = priorityOrder.indexOf(bestCategory);
+          
+          // Lower index = higher priority
+          if (currentPriority < bestPriority) {
+            bestCategory = category;
+          }
+        }
+      });
+      
+      maintenanceBreakdown[bestCategory] += refInfo.count;
     });
 
-    const totalReferences = literatureRefs.reduce((sum: number, ref: any) => sum + ref.unique_reference_count, 0);
+    const totalReferences = Object.values(referenceMap).reduce((sum, refInfo) => sum + refInfo.count, 0);
 
     return {
       category: db.title,
@@ -188,53 +217,54 @@ export function AuxiliaryChartsPanel() {
     };
   });
 
-  // 4. Resource overlap data - split by type
+  // 4. Resource overlap data - combined as percentages
   const overlapData = dbStats.plotData?.resourceOverlap || [];
   
-  // Helper function to group overlap data into 1,2,3,4,5+ categories
-  const groupOverlapData = (filteredData: any[]) => {
-    const grouped: Record<string, number> = {
-      '1': 0,
-      '2': 0,
-      '3': 0,
-      '4': 0,
-      '5+': 0
-    };
+  // Helper function to group overlap data into percentages by entry type
+  const createOverlapPercentageData = () => {
+    const entryTypes = ['interaction', 'enzyme-substrate', 'complex'];
+    
+    return entryTypes.map(entryType => {
+      const typeData = overlapData.filter((item: any) => item.entry_type === entryType);
+      
+      // Group by number of resources
+      const grouped: Record<string, number> = {
+        '1': 0,
+        '2': 0,
+        '3': 0,
+        '4': 0,
+        '5+': 0
+      };
 
-    filteredData.forEach((item: any) => {
-      if (item.number_of_resources === 1) {
-        grouped['1'] += item.number_of_entries;
-      } else if (item.number_of_resources === 2) {
-        grouped['2'] += item.number_of_entries;
-      } else if (item.number_of_resources === 3) {
-        grouped['3'] += item.number_of_entries;
-      } else if (item.number_of_resources === 4) {
-        grouped['4'] += item.number_of_entries;
-      } else if (item.number_of_resources >= 5) {
-        grouped['5+'] += item.number_of_entries;
-      }
+      typeData.forEach((item: any) => {
+        if (item.number_of_resources === 1) {
+          grouped['1'] += item.number_of_entries;
+        } else if (item.number_of_resources === 2) {
+          grouped['2'] += item.number_of_entries;
+        } else if (item.number_of_resources === 3) {
+          grouped['3'] += item.number_of_entries;
+        } else if (item.number_of_resources === 4) {
+          grouped['4'] += item.number_of_entries;
+        } else if (item.number_of_resources >= 5) {
+          grouped['5+'] += item.number_of_entries;
+        }
+      });
+
+      const total = Object.values(grouped).reduce((sum, count) => sum + count, 0);
+      
+      return {
+        entryType: entryType.charAt(0).toUpperCase() + entryType.slice(1).replace('-', ' '),
+        '1 resource': total > 0 ? ((grouped['1'] / total) * 100) : 0,
+        '2 resources': total > 0 ? ((grouped['2'] / total) * 100) : 0,
+        '3 resources': total > 0 ? ((grouped['3'] / total) * 100) : 0,
+        '4 resources': total > 0 ? ((grouped['4'] / total) * 100) : 0,
+        '5+ resources': total > 0 ? ((grouped['5+'] / total) * 100) : 0,
+        totalEntries: total
+      };
     });
-
-    return [
-      { resources: '1', entries: grouped['1'] },
-      { resources: '2', entries: grouped['2'] },
-      { resources: '3', entries: grouped['3'] },
-      { resources: '4', entries: grouped['4'] },
-      { resources: '5+', entries: grouped['5+'] }
-    ];
   };
 
-  const interactionOverlapData = groupOverlapData(
-    overlapData.filter((item: any) => item.entry_type === 'interaction')
-  );
-
-  const enzymeSubstrateOverlapData = groupOverlapData(
-    overlapData.filter((item: any) => item.entry_type === 'enzyme-substrate')
-  );
-
-  const complexOverlapData = groupOverlapData(
-    overlapData.filter((item: any) => item.entry_type === 'complex')
-  );
+  const combinedOverlapData = createOverlapPercentageData();
 
   return (
     <div className="w-full space-y-6">
@@ -372,7 +402,7 @@ export function AuxiliaryChartsPanel() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">References per Database</CardTitle>
                   <CardDescription className="text-xs">
-                    Unique literature references by maintenance status
+                    Unique literature references by best maintenance status (priority: frequent {'>'}  infrequent {'>'}  one-time {'>'}  discontinued)
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -413,83 +443,45 @@ export function AuxiliaryChartsPanel() {
               </Card>
             </div>
 
-            {/* Row 2: Resource Overlap Charts */}
-            <div className="grid gap-4 md:grid-cols-3">
-              {/* Interaction Overlap */}
+            {/* Row 2: Combined Resource Overlap Chart */}
+            <div className="grid gap-4">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Interaction Resource Overlap</CardTitle>
+                  <CardTitle className="text-base">Resource Overlap Distribution (%)</CardTitle>
                   <CardDescription className="text-xs">
-                    Entries by number of resources
+                    Percentage of entries by number of resources across entry types
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64">
+                  <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={interactionOverlapData}>
+                      <BarChart data={combinedOverlapData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis 
-                          dataKey="resources" 
-                          label={{ value: 'Number of Resources', position: 'insideBottom', offset: -5 }}
+                          dataKey="entryType" 
                           fontSize={11}
                         />
-                        <YAxis fontSize={11} />
-                        <Tooltip />
-                        <Bar dataKey="entries" fill={CHART_COLORS.overlap[0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Enzyme-Substrate Overlap */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Enzyme-Substrate Resource Overlap</CardTitle>
-                  <CardDescription className="text-xs">
-                    Entries by number of resources
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={enzymeSubstrateOverlapData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="resources" 
-                          label={{ value: 'Number of Resources', position: 'insideBottom', offset: -5 }}
+                        <YAxis 
                           fontSize={11}
+                          label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }}
+                          domain={[0, 100]}
                         />
-                        <YAxis fontSize={11} />
-                        <Tooltip />
-                        <Bar dataKey="entries" fill={CHART_COLORS.overlap[1]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Complex Overlap */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Complex Resource Overlap</CardTitle>
-                  <CardDescription className="text-xs">
-                    Entries by number of resources
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={complexOverlapData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="resources" 
-                          label={{ value: 'Number of Resources', position: 'insideBottom', offset: -5 }}
-                          fontSize={11}
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            `${value.toFixed(1)}%`,
+                            name
+                          ]}
+                          labelFormatter={(label: string) => {
+                            const data = combinedOverlapData.find(d => d.entryType === label);
+                            return `${label} (${data?.totalEntries?.toLocaleString()} total entries)`;
+                          }}
                         />
-                        <YAxis fontSize={11} />
-                        <Tooltip />
-                        <Bar dataKey="entries" fill={CHART_COLORS.overlap[2]} />
+                        <Legend fontSize={11} />
+                        <Bar dataKey="1 resource" stackId="a" fill={CHART_COLORS.overlap[0]} />
+                        <Bar dataKey="2 resources" stackId="a" fill={CHART_COLORS.overlap[1]} />
+                        <Bar dataKey="3 resources" stackId="a" fill={CHART_COLORS.overlap[2]} />
+                        <Bar dataKey="4 resources" stackId="a" fill={CHART_COLORS.overlap[3]} />
+                        <Bar dataKey="5+ resources" stackId="a" fill={CHART_COLORS.overlap[4]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
