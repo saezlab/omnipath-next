@@ -1,0 +1,298 @@
+{
+  "AFL 3.0": [
+    "GEREDB"
+  ],
+  "Apache 2.0": [
+    "Membranome",
+    "OPM",
+    "PROGENy"
+  ],
+  "Artistic-2.0": [
+    "CellCall"
+  ],
+  "BSD": [
+    "NCI-PID"
+  ],
+  "BioCarta": [
+    "BioCarta"
+  ],
+  "CC BY 2.5": [
+    "Ataxia",
+    "CancerCellMap",
+    "DOMINO",
+    "IMEx",
+    "NetPath"
+  ],
+  "CC BY 3.0": [
+    "AlzPathway",
+    "CellTypist",
+    "WikiPathways"
+  ],
+  "CC BY 4.0": [
+    "ACSN",
+    "ARACNe-GTEx",
+    "Adhesome",
+    "Almen2009",
+    "Awan2007",
+    "CA1",
+    "CARFMAP",
+    "CFinder",
+    "CSPA",
+    "Compath",
+    "ComplexPortal",
+    "Cui2007",
+    "CytReg",
+    "DISEASES",
+    "Dinarello2013",
+    "DoRothEA-reviews",
+    "EMBRACE",
+    "ENCODE",
+    "ExPASy",
+    "ExTRI",
+    "Exocarta",
+    "Fantom4",
+    "GO",
+    "GOA",
+    "GPCRdb",
+    "HIPPIE",
+    "HOCOMOCO",
+    "Havugimana2012",
+    "HuRI",
+    "HuRI Lit-BM",
+    "HumanCellMap",
+    "Humsavar",
+    "IntAct",
+    "Integrins",
+    "JASPAR",
+    "Kinexus",
+    "Laudanna",
+    "LipidMAPS",
+    "MINT",
+    "MSigDB",
+    "Macrophage",
+    "MatrixDB",
+    "NTNUcuration",
+    "NetworKIN",
+    "NetworkBlast",
+    "OmniPath",
+    "Pavlidis",
+    "Phobius",
+    "Phosphatome",
+    "ProtMapper",
+    "REACH",
+    "RLIMS-P",
+    "Ramilowski2015",
+    "ReMap",
+    "SIGNOR",
+    "SPIKE",
+    "STRING",
+    "Sparser",
+    "Surfaceome",
+    "SwissLipids",
+    "TFcensus",
+    "TRRD",
+    "TfactS",
+    "UniProt",
+    "Vesiclepedia",
+    "Wojtowicz2020",
+    "Zaman2013",
+    "Zhong2015",
+    "hu.MAP",
+    "hu.MAP2",
+    "iMEX"
+  ],
+  "CC BY-NC 2.0": [
+    "LMPID",
+    "miR2Disease"
+  ],
+  "CC BY-NC 3.0": [
+    "Li2012",
+    "Wang"
+  ],
+  "CC BY-NC 4.0": [
+    "Adrecs",
+    "Baccin2019",
+    "CORUM",
+    "CancerSEA",
+    "Cellinker",
+    "DEPOD",
+    "DrugBank",
+    "HPMR",
+    "Matrisome",
+    "TopDB",
+    "TransmiR",
+    "lncRNADisease",
+    "miRDeathDB",
+    "ncRDeathDB"
+  ],
+  "CC BY-NC-ND 3.0": [
+    "Kirouac2010"
+  ],
+  "CC BY-NC-SA 3.0": [
+    "PhosphoSite",
+    "TRIP",
+    "iTALK"
+  ],
+  "CC BY-NC-SA 4.0": [
+    "DDInter",
+    "DisGeNet",
+    "SIDER",
+    "iPTMnet"
+  ],
+  "CC BY-ND 3.0": [
+    "DIP"
+  ],
+  "CC BY-SA 2.5": [
+    "OMA"
+  ],
+  "CC BY-SA 3.0": [
+    "ARN",
+    "ChEMBL",
+    "Guide2Pharma",
+    "HPA",
+    "NRF2ome",
+    "SignaLink3",
+    "TCDB",
+    "TFe"
+  ],
+  "CC BY-SA 4.0": [
+    "ComPPI",
+    "Compleat",
+    "DrugCentral",
+    "KEGG-MEDICUS",
+    "PhosphoPoint",
+    "TRRUST"
+  ],
+  "CC0 1.0": [
+    "IntOGen",
+    "InterPro",
+    "Reactome",
+    "miRBase"
+  ],
+  "COSMIC": [
+    "COSMIC"
+  ],
+  "CellCellInteractions": [
+    "CellCellInteractions"
+  ],
+  "Composite": [
+    "CollecTRI",
+    "ConsensusPathDB",
+    "DoRothEA"
+  ],
+  "CytoSig": [
+    "CytoSig"
+  ],
+  "DSL": [
+    "InnateDB"
+  ],
+  "ELM": [
+    "ELM",
+    "phosphoELM"
+  ],
+  "EMBL-EBI": [
+    "Clinvar"
+  ],
+  "EUL": [
+    "Lambert2018"
+  ],
+  "GPLv2": [
+    "ABS",
+    "PANTHER"
+  ],
+  "GPLv3": [
+    "CellChatDB",
+    "CellTalkDB",
+    "ICELLNET",
+    "LRdb",
+    "talklr"
+  ],
+  "HGNC": [
+    "HGNC"
+  ],
+  "HPO": [
+    "HPO"
+  ],
+  "HPRD": [
+    "HPRD"
+  ],
+  "I2D": [
+    "I2D"
+  ],
+  "Informal": [
+    "DoRothEA-A",
+    "PanglaoDB"
+  ],
+  "KEGG": [
+    "KEGG"
+  ],
+  "Kinase.com": [
+    "kinase.com"
+  ],
+  "LGPLv3": [
+    "HTRIdb",
+    "MIMP",
+    "NFIRegulomeDB",
+    "ORegAnno",
+    "PAZAR",
+    "RegNetwork"
+  ],
+  "MIT": [
+    "BioGRID",
+    "CellPhoneDB",
+    "DGIdb",
+    "connectomeDB2020",
+    "scConnect"
+  ],
+  "MPPI": [
+    "MPPI"
+  ],
+  "NAR Open Access": [
+    "BEL-Large-Corpus",
+    "DeathDomain",
+    "LOCATE",
+    "TRED",
+    "dbPTM",
+    "lncrnadb"
+  ],
+  "No license": [
+    "CPAD",
+    "CST",
+    "HuPho",
+    "Negatome",
+    "Offsides",
+    "PathoPhenoDB",
+    "TLR",
+    "Twosides",
+    "cellsignal.com",
+    "gutMGene"
+  ],
+  "OpenTargets": [
+    "OpenTargets"
+  ],
+  "PDB": [
+    "PDB"
+  ],
+  "PathwayCommons": [
+    "PathwayCommons"
+  ],
+  "PhosphoNetworks": [
+    "PhosphoNetworks"
+  ],
+  "Unspecified NC-SA": [
+    "CTD",
+    "CancerDrugsDB",
+    "DLRP",
+    "KEA",
+    "MCAM",
+    "PDZBase",
+    "Pharos",
+    "RaMP"
+  ],
+  "miRTarBase": [
+    "miRTarBase"
+  ],
+  "miRecords": [
+    "miRecords"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "Literature curated": [
+    "CARFMAP",
+    "DOMINO",
+    "dbPTM",
+    "phosphoELM"
+  ],
+  "combined": [
+    "Laudanna",
+    "PathwayCommons"
+  ],
+  "high throughput": [
+    "BioGRID"
+  ],
+  "high throughput and literature curated": [
+    "HuPho"
+  ],
+  "high-throughput": [
+    "Ataxia",
+    "HuRI",
+    "HuRI Lit-BM"
+  ],
+  "high-throughput and prediction": [
+    "STRING"
+  ],
+  "literature curated": [
+    "3DComplex",
+    "ACSN",
+    "ARN",
+    "AlzPathway",
+    "Awan2007",
+    "BioCarta",
+    "CA1",
+    "CORUM",
+    "CST",
+    "CancerCellMap",
+    "CellPhoneDB",
+    "Compleat",
+    "ComplexPortal",
+    "ConsensusPathDB",
+    "Cui2007",
+    "DEPOD",
+    "DIP",
+    "DeathDomain",
+    "ELM",
+    "Guide2Pharma",
+    "HPMR",
+    "HPRD",
+    "ICELLNET",
+    "InnateDB",
+    "KEGG",
+    "KEGG-MEDICUS",
+    "LMPID",
+    "MPPI",
+    "Macrophage",
+    "MatrixDB",
+    "NCI-PID",
+    "NRF2ome",
+    "Negatome",
+    "NetPath",
+    "PANTHER",
+    "PDB",
+    "PDZBase",
+    "Reactome",
+    "SIGNOR",
+    "SPIKE",
+    "SignaLink3",
+    "TLR",
+    "TRIP",
+    "Wang",
+    "WikiPathways",
+    "Zaman2013",
+    "hu.MAP",
+    "hu.MAP2"
+  ],
+  "literature curated & high throughput": [
+    "ORegAnno",
+    "PAZAR"
+  ],
+  "literature curated and high throughput": [
+    "PhosphoSite"
+  ],
+  "literature curated and high-throughput": [
+    "IntAct",
+    "MINT"
+  ],
+  "literature curated and prediction": [
+    "PhosphoPoint"
+  ],
+  "original experiment": [
+    "Havugimana2012",
+    "PDB",
+    "hu.MAP",
+    "hu.MAP2"
+  ],
+  "prediction": [
+    "Compleat",
+    "Havugimana2012"
+  ]
+}
