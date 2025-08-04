@@ -379,19 +379,16 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     combinedSvg.appendChild(g1);
     
     // Add first legend
-    const legend1Height = Object.keys(annotationCategoryColors).length * 18 + 70;
+    const legend1Height = Object.keys(annotationCategoryColors).length * 20 + 75;
     const legend1YOffset = 70 + (svgSize - legend1Height) / 2; // Center vertically
     const legend1Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     legend1Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend1YOffset})`);
     
-    // Legend background
+    // Legend background (no border)
     const legend1Bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     legend1Bg.setAttribute("width", "264");
     legend1Bg.setAttribute("height", legend1Height.toString());
-    legend1Bg.setAttribute("fill", "white");
-    legend1Bg.setAttribute("stroke", "#e5e7eb");
-    legend1Bg.setAttribute("rx", "8");
-    legend1Bg.setAttribute("stroke-width", "1");
+    legend1Bg.setAttribute("fill", "transparent");
     legend1Group.appendChild(legend1Bg);
     
     // Annotations header with white square
@@ -439,7 +436,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
       text.textContent = category;
       legend1Group.appendChild(text);
       
-      yOffset += 18;
+      yOffset += 20;
     });
     
     // Intercellular
@@ -476,19 +473,16 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     combinedSvg.appendChild(g2);
     
     // Add second legend
-    const legend2Height = Object.keys(interactionTypeColors).length * 18 + 100;
+    const legend2Height = Object.keys(interactionTypeColors).length * 20 + 110;
     const legend2YOffset = 70 + svgSize + gap + (svgSize - legend2Height) / 2; // Center vertically
     const legend2Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     legend2Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend2YOffset})`);
     
-    // Legend background
+    // Legend background (no border)
     const legend2Bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     legend2Bg.setAttribute("width", "264");
     legend2Bg.setAttribute("height", legend2Height.toString());
-    legend2Bg.setAttribute("fill", "white");
-    legend2Bg.setAttribute("stroke", "#e5e7eb");
-    legend2Bg.setAttribute("rx", "8");
-    legend2Bg.setAttribute("stroke-width", "1");
+    legend2Bg.setAttribute("fill", "transparent");
     legend2Group.appendChild(legend2Bg);
     
     // Interactions header with white square
@@ -536,7 +530,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
       text.textContent = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
       legend2Group.appendChild(text);
       
-      yOffset += 18;
+      yOffset += 20;
     });
     
     // Enzyme-Substrate
