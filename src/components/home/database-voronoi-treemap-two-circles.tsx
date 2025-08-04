@@ -327,9 +327,9 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     // Create a combined SVG containing both circles and legends
     const svgSize = Math.min(containerRef.current?.offsetWidth || 600 * 0.6, 600);
     const legendWidth = 280;
-    const gap = 20;
+    const gap = 10;
     const combinedWidth = svgSize + legendWidth + 40; // Circle + legend + padding
-    const combinedHeight = svgSize * 2 + gap + 100; // Two circles stacked + gap + title
+    const combinedHeight = svgSize * 2 + gap; // Two circles stacked + gap
     
     // Create new SVG element
     const combinedSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -346,33 +346,11 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     `;
     combinedSvg.appendChild(style);
     
-    // Add title
-    const titleGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    title.setAttribute("x", (combinedWidth / 2).toString());
-    title.setAttribute("y", "30");
-    title.setAttribute("text-anchor", "middle");
-    title.setAttribute("font-size", "20");
-    title.setAttribute("font-weight", "600");
-    title.setAttribute("fill", "#1f2937");
-    title.textContent = "Database Resources (Linear Scale)";
-    titleGroup.appendChild(title);
-    
-    const subtitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    subtitle.setAttribute("x", (combinedWidth / 2).toString());
-    subtitle.setAttribute("y", "50");
-    subtitle.setAttribute("text-anchor", "middle");
-    subtitle.setAttribute("font-size", "14");
-    subtitle.setAttribute("fill", "#6b7280");
-    subtitle.textContent = "Cell sizes are proportional to record counts";
-    titleGroup.appendChild(subtitle);
-    
-    combinedSvg.appendChild(titleGroup);
     
     // Clone and position first SVG
     const svg1Clone = svgRef1.current.cloneNode(true) as SVGSVGElement;
     const g1 = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    g1.setAttribute("transform", "translate(0, 70)");
+    g1.setAttribute("transform", "translate(0, 0)");
     while (svg1Clone.firstChild) {
       g1.appendChild(svg1Clone.firstChild);
     }
@@ -380,7 +358,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     
     // Add first legend
     const legend1Height = Object.keys(annotationCategoryColors).length * 20 + 75;
-    const legend1YOffset = 70 + (svgSize - legend1Height) / 2; // Center vertically
+    const legend1YOffset = (svgSize - legend1Height) / 2; // Center vertically
     const legend1Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     legend1Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend1YOffset})`);
     
@@ -466,7 +444,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     // Clone and position second SVG (below the first one)
     const svg2Clone = svgRef2.current.cloneNode(true) as SVGSVGElement;
     const g2 = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    g2.setAttribute("transform", `translate(0, ${70 + svgSize + gap})`);
+    g2.setAttribute("transform", `translate(0, ${svgSize + gap})`);
     while (svg2Clone.firstChild) {
       g2.appendChild(svg2Clone.firstChild);
     }
@@ -474,7 +452,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     
     // Add second legend
     const legend2Height = Object.keys(interactionTypeColors).length * 20 + 110;
-    const legend2YOffset = 70 + svgSize + gap + (svgSize - legend2Height) / 2; // Center vertically
+    const legend2YOffset = svgSize + gap + (svgSize - legend2Height) / 2; // Center vertically
     const legend2Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     legend2Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend2YOffset})`);
     
