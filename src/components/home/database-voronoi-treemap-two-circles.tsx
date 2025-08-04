@@ -321,6 +321,308 @@ export function DatabaseVoronoiTreemapTwoCircles() {
   const svgRef2 = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
+  const exportToSVG = () => {
+    if (!svgRef1.current || !svgRef2.current) return;
+    
+    // Create a combined SVG containing both circles and legends
+    const svgSize = Math.min(containerRef.current?.offsetWidth || 600 * 0.6, 600);
+    const legendWidth = 280;
+    const gap = 20;
+    const combinedWidth = svgSize + legendWidth + 40; // Circle + legend + padding
+    const combinedHeight = svgSize * 2 + gap + 100; // Two circles stacked + gap + title
+    
+    // Create new SVG element
+    const combinedSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    combinedSvg.setAttribute("width", combinedWidth.toString());
+    combinedSvg.setAttribute("height", combinedHeight.toString());
+    combinedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    
+    // Add style element for font
+    const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+    style.textContent = `
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      }
+    `;
+    combinedSvg.appendChild(style);
+    
+    // Add title
+    const titleGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    title.setAttribute("x", (combinedWidth / 2).toString());
+    title.setAttribute("y", "30");
+    title.setAttribute("text-anchor", "middle");
+    title.setAttribute("font-size", "20");
+    title.setAttribute("font-weight", "600");
+    title.setAttribute("fill", "#1f2937");
+    title.textContent = "Database Resources (Linear Scale)";
+    titleGroup.appendChild(title);
+    
+    const subtitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    subtitle.setAttribute("x", (combinedWidth / 2).toString());
+    subtitle.setAttribute("y", "50");
+    subtitle.setAttribute("text-anchor", "middle");
+    subtitle.setAttribute("font-size", "14");
+    subtitle.setAttribute("fill", "#6b7280");
+    subtitle.textContent = "Cell sizes are proportional to record counts";
+    titleGroup.appendChild(subtitle);
+    
+    combinedSvg.appendChild(titleGroup);
+    
+    // Clone and position first SVG
+    const svg1Clone = svgRef1.current.cloneNode(true) as SVGSVGElement;
+    const g1 = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g1.setAttribute("transform", "translate(0, 70)");
+    while (svg1Clone.firstChild) {
+      g1.appendChild(svg1Clone.firstChild);
+    }
+    combinedSvg.appendChild(g1);
+    
+    // Add first legend
+    const legend1Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    legend1Group.setAttribute("transform", `translate(${svgSize + 20}, 90)`);
+    
+    // Legend background
+    const legend1Bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    legend1Bg.setAttribute("width", "264");
+    legend1Bg.setAttribute("height", (Object.keys(annotationCategoryColors).length * 20 + 90).toString());
+    legend1Bg.setAttribute("fill", "white");
+    legend1Bg.setAttribute("stroke", "#e5e7eb");
+    legend1Bg.setAttribute("rx", "8");
+    legend1Bg.setAttribute("stroke-width", "1");
+    legend1Group.appendChild(legend1Bg);
+    
+    // Annotations header with white square
+    let yOffset = 20;
+    const annotSquare = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    annotSquare.setAttribute("x", "8");
+    annotSquare.setAttribute("y", (yOffset - 12).toString());
+    annotSquare.setAttribute("width", "16");
+    annotSquare.setAttribute("height", "16");
+    annotSquare.setAttribute("fill", "white");
+    annotSquare.setAttribute("stroke", "#d1d5db");
+    annotSquare.setAttribute("stroke-width", "1");
+    annotSquare.setAttribute("rx", "2");
+    legend1Group.appendChild(annotSquare);
+    
+    const annotHeader = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    annotHeader.setAttribute("x", "32");
+    annotHeader.setAttribute("y", yOffset.toString());
+    annotHeader.setAttribute("font-size", "14");
+    annotHeader.setAttribute("font-weight", "600");
+    annotHeader.setAttribute("fill", "#374151");
+    annotHeader.textContent = "Annotations";
+    legend1Group.appendChild(annotHeader);
+    
+    // Annotation categories
+    yOffset += 25;
+    Object.entries(annotationCategoryColors).forEach(([category, color]) => {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", "24");
+      rect.setAttribute("y", (yOffset - 10).toString());
+      rect.setAttribute("width", "12");
+      rect.setAttribute("height", "12");
+      rect.setAttribute("fill", color);
+      rect.setAttribute("stroke", "#d1d5db");
+      rect.setAttribute("stroke-width", "1");
+      rect.setAttribute("rx", "2");
+      legend1Group.appendChild(rect);
+      
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", "42");
+      text.setAttribute("y", yOffset.toString());
+      text.setAttribute("font-size", "14");
+      text.setAttribute("fill", "#4b5563");
+      text.textContent = category;
+      legend1Group.appendChild(text);
+      
+      yOffset += 20;
+    });
+    
+    // Intercellular with separator line
+    yOffset += 10;
+    const separator1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    separator1.setAttribute("x1", "8");
+    separator1.setAttribute("x2", "256");
+    separator1.setAttribute("y1", (yOffset - 5).toString());
+    separator1.setAttribute("y2", (yOffset - 5).toString());
+    separator1.setAttribute("stroke", "#e5e7eb");
+    separator1.setAttribute("stroke-width", "1");
+    legend1Group.appendChild(separator1);
+    
+    yOffset += 10;
+    const intercellularRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    intercellularRect.setAttribute("x", "8");
+    intercellularRect.setAttribute("y", (yOffset - 12).toString());
+    intercellularRect.setAttribute("width", "16");
+    intercellularRect.setAttribute("height", "16");
+    intercellularRect.setAttribute("fill", databaseColors["Intercellular"]);
+    intercellularRect.setAttribute("stroke", "#d1d5db");
+    intercellularRect.setAttribute("stroke-width", "1");
+    intercellularRect.setAttribute("rx", "2");
+    legend1Group.appendChild(intercellularRect);
+    
+    const intercellularText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    intercellularText.setAttribute("x", "32");
+    intercellularText.setAttribute("y", yOffset.toString());
+    intercellularText.setAttribute("font-size", "14");
+    intercellularText.setAttribute("font-weight", "600");
+    intercellularText.setAttribute("fill", "#374151");
+    intercellularText.textContent = "Intercellular";
+    legend1Group.appendChild(intercellularText);
+    
+    combinedSvg.appendChild(legend1Group);
+    
+    // Clone and position second SVG (below the first one)
+    const svg2Clone = svgRef2.current.cloneNode(true) as SVGSVGElement;
+    const g2 = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g2.setAttribute("transform", `translate(0, ${70 + svgSize + gap})`);
+    while (svg2Clone.firstChild) {
+      g2.appendChild(svg2Clone.firstChild);
+    }
+    combinedSvg.appendChild(g2);
+    
+    // Add second legend
+    const legend2Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    legend2Group.setAttribute("transform", `translate(${svgSize + 20}, ${90 + svgSize + gap})`);
+    
+    // Legend background
+    const legend2Bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    legend2Bg.setAttribute("width", "264");
+    legend2Bg.setAttribute("height", (Object.keys(interactionTypeColors).length * 20 + 140).toString());
+    legend2Bg.setAttribute("fill", "white");
+    legend2Bg.setAttribute("stroke", "#e5e7eb");
+    legend2Bg.setAttribute("rx", "8");
+    legend2Bg.setAttribute("stroke-width", "1");
+    legend2Group.appendChild(legend2Bg);
+    
+    // Interactions header with white square
+    yOffset = 20;
+    const interSquare = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    interSquare.setAttribute("x", "8");
+    interSquare.setAttribute("y", (yOffset - 12).toString());
+    interSquare.setAttribute("width", "16");
+    interSquare.setAttribute("height", "16");
+    interSquare.setAttribute("fill", "white");
+    interSquare.setAttribute("stroke", "#d1d5db");
+    interSquare.setAttribute("stroke-width", "1");
+    interSquare.setAttribute("rx", "2");
+    legend2Group.appendChild(interSquare);
+    
+    const interHeader = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    interHeader.setAttribute("x", "32");
+    interHeader.setAttribute("y", yOffset.toString());
+    interHeader.setAttribute("font-size", "14");
+    interHeader.setAttribute("font-weight", "600");
+    interHeader.setAttribute("fill", "#374151");
+    interHeader.textContent = "Interactions";
+    legend2Group.appendChild(interHeader);
+    
+    // Interaction types
+    yOffset += 25;
+    Object.entries(interactionTypeColors).forEach(([type, color]) => {
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", "24");
+      rect.setAttribute("y", (yOffset - 10).toString());
+      rect.setAttribute("width", "12");
+      rect.setAttribute("height", "12");
+      rect.setAttribute("fill", color);
+      rect.setAttribute("stroke", "#d1d5db");
+      rect.setAttribute("stroke-width", "1");
+      rect.setAttribute("rx", "2");
+      legend2Group.appendChild(rect);
+      
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", "42");
+      text.setAttribute("y", yOffset.toString());
+      text.setAttribute("font-size", "14");
+      text.setAttribute("fill", "#4b5563");
+      text.textContent = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      legend2Group.appendChild(text);
+      
+      yOffset += 20;
+    });
+    
+    // Enzyme-Substrate with separator line
+    yOffset += 10;
+    const separator2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    separator2.setAttribute("x1", "8");
+    separator2.setAttribute("x2", "256");
+    separator2.setAttribute("y1", (yOffset - 5).toString());
+    separator2.setAttribute("y2", (yOffset - 5).toString());
+    separator2.setAttribute("stroke", "#e5e7eb");
+    separator2.setAttribute("stroke-width", "1");
+    legend2Group.appendChild(separator2);
+    
+    yOffset += 10;
+    const enzymeRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    enzymeRect.setAttribute("x", "8");
+    enzymeRect.setAttribute("y", (yOffset - 12).toString());
+    enzymeRect.setAttribute("width", "16");
+    enzymeRect.setAttribute("height", "16");
+    enzymeRect.setAttribute("fill", databaseColors["Enzyme-Substrate"]);
+    enzymeRect.setAttribute("stroke", "#d1d5db");
+    enzymeRect.setAttribute("stroke-width", "1");
+    enzymeRect.setAttribute("rx", "2");
+    legend2Group.appendChild(enzymeRect);
+    
+    const enzymeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    enzymeText.setAttribute("x", "32");
+    enzymeText.setAttribute("y", yOffset.toString());
+    enzymeText.setAttribute("font-size", "14");
+    enzymeText.setAttribute("font-weight", "600");
+    enzymeText.setAttribute("fill", "#374151");
+    enzymeText.textContent = "Enzyme-Substrate";
+    legend2Group.appendChild(enzymeText);
+    
+    // Complexes with separator line
+    yOffset += 10;
+    const separator3 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    separator3.setAttribute("x1", "8");
+    separator3.setAttribute("x2", "256");
+    separator3.setAttribute("y1", (yOffset - 5).toString());
+    separator3.setAttribute("y2", (yOffset - 5).toString());
+    separator3.setAttribute("stroke", "#e5e7eb");
+    separator3.setAttribute("stroke-width", "1");
+    legend2Group.appendChild(separator3);
+    
+    yOffset += 10;
+    const complexRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    complexRect.setAttribute("x", "8");
+    complexRect.setAttribute("y", (yOffset - 12).toString());
+    complexRect.setAttribute("width", "16");
+    complexRect.setAttribute("height", "16");
+    complexRect.setAttribute("fill", databaseColors["Complexes"]);
+    complexRect.setAttribute("stroke", "#d1d5db");
+    complexRect.setAttribute("stroke-width", "1");
+    complexRect.setAttribute("rx", "2");
+    legend2Group.appendChild(complexRect);
+    
+    const complexText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    complexText.setAttribute("x", "32");
+    complexText.setAttribute("y", yOffset.toString());
+    complexText.setAttribute("font-size", "14");
+    complexText.setAttribute("font-weight", "600");
+    complexText.setAttribute("fill", "#374151");
+    complexText.textContent = "Complexes";
+    legend2Group.appendChild(complexText);
+    
+    combinedSvg.appendChild(legend2Group);
+    
+    // Convert to string and download
+    const svgString = new XMLSerializer().serializeToString(combinedSvg);
+    const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "database-resources-treemap.svg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+  
   // Get processed data with linear weights
   const dbData = processDataWithLinearWeights();
 
@@ -370,10 +672,22 @@ export function DatabaseVoronoiTreemapTwoCircles() {
 
   return (
     <div ref={containerRef} className="w-full space-y-1">
-      {/* Title */}
+      {/* Title and Export Button */}
       <div className="text-center mb-2">
-        <h3 className="text-lg font-semibold text-gray-800">Database Resources (Linear Scale)</h3>
-        <p className="text-sm text-gray-600 mt-1">Cell sizes are proportional to record counts</p>
+        <div className="flex items-center justify-center gap-4 mb-1">
+          <h3 className="text-lg font-semibold text-gray-800">Database Resources (Linear Scale)</h3>
+          <button
+            onClick={exportToSVG}
+            className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md border border-gray-300 transition-colors duration-200 flex items-center gap-1"
+            title="Export as SVG"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export SVG
+          </button>
+        </div>
+        <p className="text-sm text-gray-600">Cell sizes are proportional to record counts</p>
       </div>
       
       {/* First circle with legend */}
