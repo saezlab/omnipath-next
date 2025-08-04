@@ -299,7 +299,7 @@ export default function DatabaseGridVisualization({
         // Create treemap layout
         const treemap = d3.treemap()
           .size([cellData.width, cellData.height])
-          .padding(1)
+          .padding(2) // Increased padding for better label spacing
           .round(true);
 
         const root = d3.hierarchy({ children: cellData.resources } as any)
@@ -335,8 +335,33 @@ export default function DatabaseGridVisualization({
           .style("font-size", (d: any) => {
             const width = d.x1 - d.x0;
             const height = d.y1 - d.y0;
-            const fontSize = Math.min(12, Math.min(width / 4, height / 2));
-            return fontSize < 8 ? "0px" : `${fontSize}px`; // Hide if too small
+            const area = width * height;
+            
+            // Account for padding in font size calculations
+            const textPadding = 8; // 4px padding on each side
+            const availableWidth = width - textPadding;
+            const availableHeight = height - 4; // 2px top/bottom padding
+            
+            if (availableWidth <= 0 || availableHeight <= 0) return "0px";
+            
+            // Dynamic font sizing based on available space (more conservative)
+            let fontSize;
+            if (area > 4000) {
+              // Large partitions: increase font size for better readability
+              fontSize = Math.min(14, Math.min(availableWidth / 3.5, availableHeight / 2));
+            } else if (area > 1600) {
+              // Medium partitions: moderate font size
+              fontSize = Math.min(10, Math.min(availableWidth / 4, availableHeight / 2.2));
+            } else if (area > 600) {
+              // Small partitions: use minimum readable size
+              fontSize = Math.max(5, Math.min(7, Math.min(availableWidth / 5, availableHeight / 2.8)));
+            } else {
+              // Very small partitions: hide text
+              fontSize = 0;
+            }
+            
+            // Ensure minimum readable size is 5pt, hide if smaller
+            return fontSize < 5 ? "0px" : `${Math.max(5, fontSize)}px`;
           })
           .style("fill", "white")
           .style("font-weight", "600")
@@ -345,11 +370,32 @@ export default function DatabaseGridVisualization({
           .text((d: any) => {
             const width = d.x1 - d.x0;
             const height = d.y1 - d.y0;
-            if (width < 40 || height < 20) return "";
+            const area = width * height;
+            
+            // Don't show text for very small areas
+            if (area < 600) return ""; // Increased threshold due to padding
             
             const name = d.data.name;
-            const maxChars = Math.floor(width / 6);
-            return name.length > maxChars ? name.substring(0, maxChars - 1) + "…" : name;
+            // Add padding margins to prevent overflow
+            const textPadding = 8; // 4px padding on each side
+            const availableWidth = width - textPadding;
+            
+            if (availableWidth <= 0) return "";
+            
+            // Adjust character calculation based on font size with more conservative spacing
+            let charWidth;
+            if (area > 4000) {
+              charWidth = 6.5; // More conservative for larger fonts
+            } else if (area > 1600) {
+              charWidth = 5.5;
+            } else {
+              charWidth = 4.5; // More space per character for smaller fonts
+            }
+            
+            const maxChars = Math.floor(availableWidth / charWidth);
+            if (maxChars <= 1) return "";
+            
+            return name.length > maxChars ? name.substring(0, Math.max(1, maxChars - 1)) + "…" : name;
           });
       }
 
@@ -392,7 +438,7 @@ export default function DatabaseGridVisualization({
               .attr("text-anchor", "middle")
               .attr("dominant-baseline", "middle")
               .attr("transform", `rotate(-90, ${-this.config.dimensions.leftLabelWidth + 25}, ${centerY})`)
-              .style("font-size", "14px")
+              .style("font-size", "15px")
               .style("font-weight", "700")
               .style("fill", "#374151")
               .style("letter-spacing", "1px")
@@ -433,19 +479,19 @@ export default function DatabaseGridVisualization({
             if (isMainCategory) {
               // Single-row main categories (Intercellular, Complexes, Enzyme-Substrate)
               indent = 15;
-              fontSize = "13px";
+              fontSize = "14px"; // Slightly larger for main categories
               fontWeight = "700";
               textColor = "#1f2937";
             } else if (cells.length > 1) {
               // Subcategories under multi-row categories (with rotated headers)
               indent = 55; // More space for rotated header + separator
-              fontSize = "12px";
+              fontSize = "11px"; // Reduced for subcategories to fit better
               fontWeight = "600";
               textColor = "#4b5563";
             } else {
               // Fallback
               indent = 15;
-              fontSize = "12px";
+              fontSize = "11px";
               fontWeight = "600";
               textColor = "#4b5563";
             }

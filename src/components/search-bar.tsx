@@ -25,10 +25,27 @@ export function SearchBar({
   const [query, setQuery] = useState(initialQuery)
   const [suggestions, setSuggestions] = useState<Awaited<ReturnType<typeof searchIdentifiers>>>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
   const debounceTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
   const querySetBySelectionRef = useRef(false)
   const querySetFromPropsRef = useRef(false)
   const prevQueryRef = useRef(initialQuery)
+  const lastScrollY = useRef(0)
+
+  // Handle scroll behavior
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      const isScrollingDown = currentScrollY > lastScrollY.current
+      const shouldHide = isScrollingDown && currentScrollY > 100
+      
+      setIsVisible(!shouldHide)
+      lastScrollY.current = currentScrollY
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Update local query state when initialQuery prop changes
   useEffect(() => {
@@ -105,7 +122,7 @@ export function SearchBar({
   }
 
   return (
-    <div className="w-full bg-background sticky top-0 z-10 p-6">
+    <div className={`w-full bg-background/95 backdrop-blur-sm sticky top-14 sm:top-16 z-10 p-6 border-b border-transparent transition-all duration-300 hover:bg-background hover:border-border/20 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col items-center gap-4">
           <div className="w-full max-w-2xl">
