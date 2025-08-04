@@ -458,17 +458,40 @@ export default function DatabaseGridVisualization({
             // The header and separator provide the visual grouping
             const adjustedY = rowCenterY;
 
-            this.g.append("text")
-              .attr("class", "row-label")
-              .attr("x", -this.config.dimensions.leftLabelWidth + indent)
-              .attr("y", adjustedY)
-              .attr("text-anchor", "start")
-              .attr("dominant-baseline", "middle")
-              .style("font-size", fontSize)
-              .style("font-weight", fontWeight)
-              .style("fill", textColor)
-              .style("letter-spacing", isMainCategory ? "1px" : "0px") // Add letter spacing for main categories
-              .text(labelText);
+            // Handle multi-line text
+            if (labelText.includes('\n')) {
+              const lines = labelText.split('\n');
+              const lineHeight = parseInt(fontSize) * 1.1; // 1.1x line height
+              const totalHeight = (lines.length - 1) * lineHeight;
+              const startY = adjustedY - totalHeight / 2;
+
+              lines.forEach((line, lineIndex) => {
+                this.g.append("text")
+                  .attr("class", "row-label")
+                  .attr("x", -this.config.dimensions.leftLabelWidth + indent)
+                  .attr("y", startY + lineIndex * lineHeight)
+                  .attr("text-anchor", "start")
+                  .attr("dominant-baseline", "middle")
+                  .style("font-size", fontSize)
+                  .style("font-weight", fontWeight)
+                  .style("fill", textColor)
+                  .style("letter-spacing", isMainCategory ? "1px" : "0px")
+                  .text(line);
+              });
+            } else {
+              // Single line text
+              this.g.append("text")
+                .attr("class", "row-label")
+                .attr("x", -this.config.dimensions.leftLabelWidth + indent)
+                .attr("y", adjustedY)
+                .attr("text-anchor", "start")
+                .attr("dominant-baseline", "middle")
+                .style("font-size", fontSize)
+                .style("font-weight", fontWeight)
+                .style("fill", textColor)
+                .style("letter-spacing", isMainCategory ? "1px" : "0px")
+                .text(labelText);
+            }
           });
         });
       }
@@ -478,7 +501,8 @@ export default function DatabaseGridVisualization({
         const abbreviations: { [key: string]: string } = {
           'Cell-cell communication': 'Cell-cell comm.',
           'Localization (subcellular)': 'Subcellular loc.',
-          'Membrane localization & topology': 'Membrane loc. & topology',
+          'Membrane localization & topology': 'Membrane\nloc. & topology', // Two-line version
+          // Alternative single-line version: 'Membrane loc.',
           'Extracellular matrix, adhesion': 'ECM & adhesion',
           'Vesicles, secretome': 'Vesicles & secretome',
           'Function, pathway': 'Function & pathway',
