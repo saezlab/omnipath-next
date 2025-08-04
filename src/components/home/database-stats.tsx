@@ -35,7 +35,7 @@ interface ResourceMetadata {
   type?: string | string[];
   license?: string;
   full_name?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Color schemes for different charts
@@ -143,7 +143,7 @@ export function DatabaseStats() {
     );
     
     if (resourceKey) {
-      const resource = (resourcesMetadata as any)[resourceKey] as ResourceMetadata;
+      const resource = (resourcesMetadata as Record<string, ResourceMetadata>)[resourceKey];
       const license = resource.license || 'Unknown';
       
       const isCommercial = license !== 'Unknown' && 
@@ -188,7 +188,7 @@ export function DatabaseStats() {
     );
     
     if (resourceKey) {
-      const resource = (resourcesMetadata as any)[resourceKey] as ResourceMetadata;
+      const resource = (resourcesMetadata as Record<string, ResourceMetadata>)[resourceKey];
       const typeValue = resource.type;
       const type = (Array.isArray(typeValue) ? typeValue.join(' ') : typeValue || 'unknown').toLowerCase();
       
@@ -641,7 +641,7 @@ export function DatabaseStats() {
         <TabsContent value="overlap" className="space-y-4">
           {/* Summary cards showing overlap statistics */}
           <div className="grid gap-4 md:grid-cols-3">
-            {['interaction', 'enzyme-substrate', 'complex'].map((entryType, index) => {
+            {['interaction', 'enzyme-substrate', 'complex'].map((entryType) => {
               const typeData = resourceOverlap.filter(item => item.entry_type === entryType);
               const totalEntries = typeData.reduce((sum, item) => sum + item.number_of_entries, 0);
               const multiResourceEntries = typeData.filter(item => item.number_of_resources > 1)
