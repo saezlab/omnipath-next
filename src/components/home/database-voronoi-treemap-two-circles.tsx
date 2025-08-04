@@ -379,13 +379,15 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     combinedSvg.appendChild(g1);
     
     // Add first legend
+    const legend1Height = Object.keys(annotationCategoryColors).length * 18 + 65;
+    const legend1YOffset = 70 + (svgSize - legend1Height) / 2; // Center vertically
     const legend1Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    legend1Group.setAttribute("transform", `translate(${svgSize + 20}, 90)`);
+    legend1Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend1YOffset})`);
     
     // Legend background
     const legend1Bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     legend1Bg.setAttribute("width", "264");
-    legend1Bg.setAttribute("height", (Object.keys(annotationCategoryColors).length * 20 + 90).toString());
+    legend1Bg.setAttribute("height", legend1Height.toString());
     legend1Bg.setAttribute("fill", "white");
     legend1Bg.setAttribute("stroke", "#e5e7eb");
     legend1Bg.setAttribute("rx", "8");
@@ -393,10 +395,10 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     legend1Group.appendChild(legend1Bg);
     
     // Annotations header with white square
-    let yOffset = 20;
+    let yOffset = 16;
     const annotSquare = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     annotSquare.setAttribute("x", "8");
-    annotSquare.setAttribute("y", (yOffset - 12).toString());
+    annotSquare.setAttribute("y", (yOffset - 10).toString());
     annotSquare.setAttribute("width", "16");
     annotSquare.setAttribute("height", "16");
     annotSquare.setAttribute("fill", "white");
@@ -415,11 +417,11 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     legend1Group.appendChild(annotHeader);
     
     // Annotation categories
-    yOffset += 25;
+    yOffset += 20;
     Object.entries(annotationCategoryColors).forEach(([category, color]) => {
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("x", "24");
-      rect.setAttribute("y", (yOffset - 10).toString());
+      rect.setAttribute("y", (yOffset - 9).toString());
       rect.setAttribute("width", "12");
       rect.setAttribute("height", "12");
       rect.setAttribute("fill", color);
@@ -429,31 +431,22 @@ export function DatabaseVoronoiTreemapTwoCircles() {
       legend1Group.appendChild(rect);
       
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      text.setAttribute("x", "42");
-      text.setAttribute("y", yOffset.toString());
+      text.setAttribute("x", "40");
+      text.setAttribute("y", (yOffset + 1).toString());
       text.setAttribute("font-size", "14");
       text.setAttribute("fill", "#4b5563");
+      text.setAttribute("line-height", "1.25");
       text.textContent = category;
       legend1Group.appendChild(text);
       
-      yOffset += 20;
+      yOffset += 18;
     });
     
-    // Intercellular with separator line
-    yOffset += 10;
-    const separator1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    separator1.setAttribute("x1", "8");
-    separator1.setAttribute("x2", "256");
-    separator1.setAttribute("y1", (yOffset - 5).toString());
-    separator1.setAttribute("y2", (yOffset - 5).toString());
-    separator1.setAttribute("stroke", "#e5e7eb");
-    separator1.setAttribute("stroke-width", "1");
-    legend1Group.appendChild(separator1);
-    
-    yOffset += 10;
+    // Intercellular
+    yOffset += 12;
     const intercellularRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     intercellularRect.setAttribute("x", "8");
-    intercellularRect.setAttribute("y", (yOffset - 12).toString());
+    intercellularRect.setAttribute("y", (yOffset - 10).toString());
     intercellularRect.setAttribute("width", "16");
     intercellularRect.setAttribute("height", "16");
     intercellularRect.setAttribute("fill", databaseColors["Intercellular"]);
@@ -464,7 +457,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     
     const intercellularText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     intercellularText.setAttribute("x", "32");
-    intercellularText.setAttribute("y", yOffset.toString());
+    intercellularText.setAttribute("y", (yOffset + 2).toString());
     intercellularText.setAttribute("font-size", "14");
     intercellularText.setAttribute("font-weight", "600");
     intercellularText.setAttribute("fill", "#374151");
@@ -483,13 +476,15 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     combinedSvg.appendChild(g2);
     
     // Add second legend
+    const legend2Height = Object.keys(interactionTypeColors).length * 18 + 95;
+    const legend2YOffset = 70 + svgSize + gap + (svgSize - legend2Height) / 2; // Center vertically
     const legend2Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    legend2Group.setAttribute("transform", `translate(${svgSize + 20}, ${90 + svgSize + gap})`);
+    legend2Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend2YOffset})`);
     
     // Legend background
     const legend2Bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     legend2Bg.setAttribute("width", "264");
-    legend2Bg.setAttribute("height", (Object.keys(interactionTypeColors).length * 20 + 140).toString());
+    legend2Bg.setAttribute("height", legend2Height.toString());
     legend2Bg.setAttribute("fill", "white");
     legend2Bg.setAttribute("stroke", "#e5e7eb");
     legend2Bg.setAttribute("rx", "8");
@@ -497,10 +492,10 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     legend2Group.appendChild(legend2Bg);
     
     // Interactions header with white square
-    yOffset = 20;
+    yOffset = 16;
     const interSquare = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     interSquare.setAttribute("x", "8");
-    interSquare.setAttribute("y", (yOffset - 12).toString());
+    interSquare.setAttribute("y", (yOffset - 10).toString());
     interSquare.setAttribute("width", "16");
     interSquare.setAttribute("height", "16");
     interSquare.setAttribute("fill", "white");
@@ -519,11 +514,11 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     legend2Group.appendChild(interHeader);
     
     // Interaction types
-    yOffset += 25;
+    yOffset += 20;
     Object.entries(interactionTypeColors).forEach(([type, color]) => {
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("x", "24");
-      rect.setAttribute("y", (yOffset - 10).toString());
+      rect.setAttribute("y", (yOffset - 9).toString());
       rect.setAttribute("width", "12");
       rect.setAttribute("height", "12");
       rect.setAttribute("fill", color);
@@ -533,31 +528,22 @@ export function DatabaseVoronoiTreemapTwoCircles() {
       legend2Group.appendChild(rect);
       
       const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      text.setAttribute("x", "42");
-      text.setAttribute("y", yOffset.toString());
+      text.setAttribute("x", "40");
+      text.setAttribute("y", (yOffset + 1).toString());
       text.setAttribute("font-size", "14");
       text.setAttribute("fill", "#4b5563");
+      text.setAttribute("line-height", "1.25");
       text.textContent = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
       legend2Group.appendChild(text);
       
-      yOffset += 20;
+      yOffset += 18;
     });
     
-    // Enzyme-Substrate with separator line
-    yOffset += 10;
-    const separator2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    separator2.setAttribute("x1", "8");
-    separator2.setAttribute("x2", "256");
-    separator2.setAttribute("y1", (yOffset - 5).toString());
-    separator2.setAttribute("y2", (yOffset - 5).toString());
-    separator2.setAttribute("stroke", "#e5e7eb");
-    separator2.setAttribute("stroke-width", "1");
-    legend2Group.appendChild(separator2);
-    
-    yOffset += 10;
+    // Enzyme-Substrate
+    yOffset += 12;
     const enzymeRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     enzymeRect.setAttribute("x", "8");
-    enzymeRect.setAttribute("y", (yOffset - 12).toString());
+    enzymeRect.setAttribute("y", (yOffset - 10).toString());
     enzymeRect.setAttribute("width", "16");
     enzymeRect.setAttribute("height", "16");
     enzymeRect.setAttribute("fill", databaseColors["Enzyme-Substrate"]);
@@ -568,28 +554,18 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     
     const enzymeText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     enzymeText.setAttribute("x", "32");
-    enzymeText.setAttribute("y", yOffset.toString());
+    enzymeText.setAttribute("y", (yOffset + 2).toString());
     enzymeText.setAttribute("font-size", "14");
     enzymeText.setAttribute("font-weight", "600");
     enzymeText.setAttribute("fill", "#374151");
     enzymeText.textContent = "Enzyme-Substrate";
     legend2Group.appendChild(enzymeText);
     
-    // Complexes with separator line
-    yOffset += 10;
-    const separator3 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    separator3.setAttribute("x1", "8");
-    separator3.setAttribute("x2", "256");
-    separator3.setAttribute("y1", (yOffset - 5).toString());
-    separator3.setAttribute("y2", (yOffset - 5).toString());
-    separator3.setAttribute("stroke", "#e5e7eb");
-    separator3.setAttribute("stroke-width", "1");
-    legend2Group.appendChild(separator3);
-    
-    yOffset += 10;
+    // Complexes
+    yOffset += 12;
     const complexRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     complexRect.setAttribute("x", "8");
-    complexRect.setAttribute("y", (yOffset - 12).toString());
+    complexRect.setAttribute("y", (yOffset - 10).toString());
     complexRect.setAttribute("width", "16");
     complexRect.setAttribute("height", "16");
     complexRect.setAttribute("fill", databaseColors["Complexes"]);
@@ -600,7 +576,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     
     const complexText = document.createElementNS("http://www.w3.org/2000/svg", "text");
     complexText.setAttribute("x", "32");
-    complexText.setAttribute("y", yOffset.toString());
+    complexText.setAttribute("y", (yOffset + 2).toString());
     complexText.setAttribute("font-size", "14");
     complexText.setAttribute("font-weight", "600");
     complexText.setAttribute("fill", "#374151");
