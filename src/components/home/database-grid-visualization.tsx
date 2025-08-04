@@ -61,7 +61,7 @@ export default function DatabaseGridVisualization({
         width,
         height,
         margin: { top: 60, right: 40, bottom: 40, left: 210 }, // More space for combined left labels, less on right
-        gridGap: 4,
+        gridGap: 0,
         minRowHeight: 30,  // Minimum row height
         maxRowHeight: 120, // Maximum row height
         baseRowHeight: 50, // Base row height for scaling
@@ -282,8 +282,7 @@ export default function DatabaseGridVisualization({
           .attr("width", d => d.width)
           .attr("height", d => d.height)
           .attr("fill", "#f8f9fa")
-          .attr("stroke", "#e9ecef")
-          .attr("stroke-width", 1);
+          .attr("stroke", "none");
 
         // Create treemap for each cell
         cellGroups.each((d, i, nodes) => {
