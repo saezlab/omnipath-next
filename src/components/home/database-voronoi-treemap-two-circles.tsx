@@ -63,7 +63,7 @@ const interactionTypeColors = {
 const annotationCategoryColors = {
   "Cell-cell communication": rwthColors.orange,
   "Localization (subcellular)": rwthColors.tomato,
-  "Membrane localization & topology": rwthColors.seance,
+  "Membrane localization & topology": rwthColors.hibiscus,
   "Extracellular matrix, adhesion": rwthColors.jordyBlue,
   "Vesicles, secretome": rwthColors.forestGreen,
   "Function, pathway": rwthColors.yellowGreen,
@@ -389,7 +389,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
                 <div className="flex items-center gap-2">
                   <div 
                     className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
-                    style={{ backgroundColor: databaseColors["Annotations"] }}
+                    style={{ backgroundColor: "white" }}
                   ></div>
                   <span className="text-xs font-semibold text-gray-700">Annotations</span>
                 </div>
@@ -435,7 +435,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
                 <div className="flex items-center gap-2">
                   <div 
                     className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
-                    style={{ backgroundColor: databaseColors["Interactions"] }}
+                    style={{ backgroundColor: "white" }}
                   ></div>
                   <span className="text-xs font-semibold text-gray-700">Interactions</span>
                 </div>
