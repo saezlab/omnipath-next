@@ -98,11 +98,32 @@ export function AuxiliaryChartsPanel() {
 
   // Prepare data for charts
   
-  // 1. Resources per database
-  const resourcesData = databases.map(db => ({
-    category: db.title,
-    value: db.data.length
-  }));
+  // 1. Resources per database with maintenance breakdown
+  const resourcesData = databases.map(db => {
+    // Calculate resources by maintenance category for this database
+    const maintenanceBreakdown: Record<string, number> = {
+      frequent: 0,
+      infrequent: 0,
+      one_time_paper: 0,
+      discontinued: 0
+    };
+
+    db.data.forEach(source => {
+      const category = sourceMaintenanceMap[source.source];
+      if (category) {
+        maintenanceBreakdown[category]++;
+      }
+    });
+
+    return {
+      category: db.title,
+      frequent: maintenanceBreakdown.frequent,
+      infrequent: maintenanceBreakdown.infrequent,
+      one_time_paper: maintenanceBreakdown.one_time_paper,
+      discontinued: maintenanceBreakdown.discontinued,
+      total: db.data.length
+    };
+  });
 
   // 2. Records per database with maintenance status breakdown (as percentages)
   const recordsData = databases.map(db => {
@@ -111,13 +132,14 @@ export function AuxiliaryChartsPanel() {
       frequent: 0,
       infrequent: 0,
       one_time_paper: 0,
-      discontinued: 0,
-      unknown: 0
+      discontinued: 0
     };
 
     db.data.forEach(source => {
-      const category = sourceMaintenanceMap[source.source] || 'unknown';
-      maintenanceBreakdown[category] += source.record_count;
+      const category = sourceMaintenanceMap[source.source];
+      if (category) {
+        maintenanceBreakdown[category] += source.record_count;
+      }
     });
 
     const total = db.data.reduce((sum, item) => sum + item.record_count, 0);
@@ -129,21 +151,40 @@ export function AuxiliaryChartsPanel() {
       infrequent: total > 0 ? ((maintenanceBreakdown.infrequent / total) * 100) : 0,
       one_time_paper: total > 0 ? ((maintenanceBreakdown.one_time_paper / total) * 100) : 0,
       discontinued: total > 0 ? ((maintenanceBreakdown.discontinued / total) * 100) : 0,
-      unknown: total > 0 ? ((maintenanceBreakdown.unknown / total) * 100) : 0,
       totalRecords: total // Keep for tooltip display
     };
   });
 
-  // 3. References per database
+  // 3. References per database with maintenance breakdown
   const referencesData = databases.map(db => {
     const dbNames = db.data.map(d => d.source);
-    const references = (dbStats.plotData?.literatureRefsByDatabaseAndType || [])
-      .filter((ref: any) => dbNames.includes(ref.database))
-      .reduce((sum: number, ref: any) => sum + ref.unique_reference_count, 0);
+    const literatureRefs = (dbStats.plotData?.literatureRefsByDatabaseAndType || [])
+      .filter((ref: any) => dbNames.includes(ref.database));
+    
+    // Calculate references by maintenance category
+    const maintenanceBreakdown: Record<string, number> = {
+      frequent: 0,
+      infrequent: 0,
+      one_time_paper: 0,
+      discontinued: 0
+    };
+
+    literatureRefs.forEach((ref: any) => {
+      const category = sourceMaintenanceMap[ref.database];
+      if (category) {
+        maintenanceBreakdown[category] += ref.unique_reference_count;
+      }
+    });
+
+    const totalReferences = literatureRefs.reduce((sum: number, ref: any) => sum + ref.unique_reference_count, 0);
 
     return {
       category: db.title,
-      value: references || 0
+      frequent: maintenanceBreakdown.frequent,
+      infrequent: maintenanceBreakdown.infrequent,
+      one_time_paper: maintenanceBreakdown.one_time_paper,
+      discontinued: maintenanceBreakdown.discontinued,
+      total: totalReferences
     };
   });
 
@@ -237,7 +278,7 @@ export function AuxiliaryChartsPanel() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">Resources per Database</CardTitle>
                   <CardDescription className="text-xs">
-                    Number of unique data sources
+                    Number of unique data sources by maintenance status
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -253,8 +294,24 @@ export function AuxiliaryChartsPanel() {
                           fontSize={11}
                         />
                         <YAxis fontSize={11} />
-                        <Tooltip />
-                        <Bar dataKey="value" fill={CHART_COLORS.primary} />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            `${value} resources`,
+                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+                          ]}
+                          labelFormatter={(label: string) => {
+                            const data = resourcesData.find(d => d.category === label);
+                            return `${label} (${data?.total} total resources)`;
+                          }}
+                        />
+                        <Legend 
+                          fontSize={11}
+                          formatter={(value: string) => value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        />
+                        <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
+                        <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
+                        <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
+                        <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -304,7 +361,6 @@ export function AuxiliaryChartsPanel() {
                         <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
                         <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
                         <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
-                        <Bar dataKey="unknown" stackId="a" fill={CHART_COLORS.maintenance.unknown} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -316,7 +372,7 @@ export function AuxiliaryChartsPanel() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">References per Database</CardTitle>
                   <CardDescription className="text-xs">
-                    Unique literature references
+                    Unique literature references by maintenance status
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -332,8 +388,24 @@ export function AuxiliaryChartsPanel() {
                           fontSize={11}
                         />
                         <YAxis fontSize={11} />
-                        <Tooltip />
-                        <Bar dataKey="value" fill={CHART_COLORS.tertiary} />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            `${value.toLocaleString()} references`,
+                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+                          ]}
+                          labelFormatter={(label: string) => {
+                            const data = referencesData.find(d => d.category === label);
+                            return `${label} (${data?.total?.toLocaleString()} total references)`;
+                          }}
+                        />
+                        <Legend 
+                          fontSize={11}
+                          formatter={(value: string) => value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        />
+                        <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
+                        <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
+                        <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
+                        <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
