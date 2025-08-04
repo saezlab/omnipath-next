@@ -369,39 +369,39 @@ export function DatabaseVoronoiTreemapTwoCircles() {
   }, [databaseColors, interactionTypeColors, annotationCategoryColors]);
 
   return (
-    <div ref={containerRef} className="w-full space-y-2">
+    <div ref={containerRef} className="w-full space-y-1">
       {/* Title */}
-      <div className="text-center">
+      <div className="text-center mb-2">
         <h3 className="text-lg font-semibold text-gray-800">Database Resources (Linear Scale)</h3>
         <p className="text-sm text-gray-600 mt-1">Cell sizes are proportional to record counts</p>
       </div>
       
       {/* First circle with legend */}
-      <div className="flex items-center justify-center gap-6 max-w-5xl mx-auto">
+      <div className="flex items-center justify-center gap-3 max-w-6xl mx-auto">
         <div className="flex-shrink-0">
           <svg ref={svgRef1}></svg>
         </div>
         <div className="flex-shrink-0">
-          <div className="bg-gray-50 rounded-lg p-3 w-80">
-            <div className="space-y-2">
+          <div className="bg-gray-50 rounded-lg p-2 w-64">
+            <div className="space-y-3">
               {/* Annotations with categories */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div 
-                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    className="w-4 h-4 rounded-sm border border-gray-300 flex-shrink-0" 
                     style={{ backgroundColor: "white" }}
                   ></div>
-                  <span className="text-xs font-semibold text-gray-700">Annotations</span>
+                  <span className="text-sm font-semibold text-gray-700">Annotations</span>
                 </div>
                 {/* Annotation categories indented */}
-                <div className="ml-5 space-y-0.5">
+                <div className="ml-6 space-y-1">
                   {Object.entries(annotationCategoryColors).map(([category, color]) => (
-                    <div key={category} className="flex items-center gap-1">
+                    <div key={category} className="flex items-center gap-2">
                       <div 
-                        className="w-2 h-2 rounded-sm border border-gray-300 flex-shrink-0" 
+                        className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
                         style={{ backgroundColor: color }}
                       ></div>
-                      <span className="text-xs text-gray-600 leading-tight">{category}</span>
+                      <span className="text-sm text-gray-600 leading-tight">{category}</span>
                     </div>
                   ))}
                 </div>
@@ -411,10 +411,10 @@ export function DatabaseVoronoiTreemapTwoCircles() {
               <div className="pt-2 border-t border-gray-200">
                 <div className="flex items-center gap-2">
                   <div 
-                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    className="w-4 h-4 rounded-sm border border-gray-300 flex-shrink-0" 
                     style={{ backgroundColor: databaseColors["Intercellular"] }}
                   ></div>
-                  <span className="text-xs font-semibold text-gray-700">Intercellular</span>
+                  <span className="text-sm font-semibold text-gray-700">Intercellular</span>
                 </div>
               </div>
             </div>
@@ -423,31 +423,31 @@ export function DatabaseVoronoiTreemapTwoCircles() {
       </div>
       
       {/* Second circle with legend */}
-      <div className="flex items-center justify-center gap-6 max-w-5xl mx-auto">
+      <div className="flex items-center justify-center gap-3 max-w-6xl mx-auto">
         <div className="flex-shrink-0">
           <svg ref={svgRef2}></svg>
         </div>
         <div className="flex-shrink-0">
-          <div className="bg-gray-50 rounded-lg p-3 w-80">
-            <div className="space-y-2">
+          <div className="bg-gray-50 rounded-lg p-2 w-64">
+            <div className="space-y-3">
               {/* Interactions with types */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div 
-                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    className="w-4 h-4 rounded-sm border border-gray-300 flex-shrink-0" 
                     style={{ backgroundColor: "white" }}
                   ></div>
-                  <span className="text-xs font-semibold text-gray-700">Interactions</span>
+                  <span className="text-sm font-semibold text-gray-700">Interactions</span>
                 </div>
                 {/* Interaction types indented */}
-                <div className="ml-5 space-y-0.5">
+                <div className="ml-6 space-y-1">
                   {Object.entries(interactionTypeColors).map(([type, color]) => (
-                    <div key={type} className="flex items-center gap-1">
+                    <div key={type} className="flex items-center gap-2">
                       <div 
-                        className="w-2 h-2 rounded-sm border border-gray-300 flex-shrink-0" 
+                        className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
                         style={{ backgroundColor: color }}
                       ></div>
-                      <span className="text-xs text-gray-600 leading-tight">
+                      <span className="text-sm text-gray-600 leading-tight">
                         {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </span>
                     </div>
@@ -459,10 +459,10 @@ export function DatabaseVoronoiTreemapTwoCircles() {
               <div className="pt-2 border-t border-gray-200">
                 <div className="flex items-center gap-2">
                   <div 
-                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    className="w-4 h-4 rounded-sm border border-gray-300 flex-shrink-0" 
                     style={{ backgroundColor: databaseColors["Enzyme-Substrate"] }}
                   ></div>
-                  <span className="text-xs font-semibold text-gray-700">Enzyme-Substrate</span>
+                  <span className="text-sm font-semibold text-gray-700">Enzyme-Substrate</span>
                 </div>
               </div>
               
@@ -470,10 +470,10 @@ export function DatabaseVoronoiTreemapTwoCircles() {
               <div className="pt-2 border-t border-gray-200">
                 <div className="flex items-center gap-2">
                   <div 
-                    className="w-3 h-3 rounded-sm border border-gray-300 flex-shrink-0" 
+                    className="w-4 h-4 rounded-sm border border-gray-300 flex-shrink-0" 
                     style={{ backgroundColor: databaseColors["Complexes"] }}
                   ></div>
-                  <span className="text-xs font-semibold text-gray-700">Complexes</span>
+                  <span className="text-sm font-semibold text-gray-700">Complexes</span>
                 </div>
               </div>
             </div>
