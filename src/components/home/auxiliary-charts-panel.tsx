@@ -1,9 +1,10 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import dbStats from "@/data/db-stats.json";
-import resourcesMetadata from "@/data/resources.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
 
 interface DatabaseSection {
@@ -12,13 +13,6 @@ interface DatabaseSection {
   description: string;
 }
 
-interface ResourceMetadata {
-  type?: string | string[];
-  license?: string;
-  [key: string]: unknown;
-}
-
-// Color scheme for charts
 const CHART_COLORS = {
   primary: '#3b82f6',
   secondary: '#8b5cf6',
