@@ -62,7 +62,9 @@ export default function DatabaseGridVisualization({
         height,
         margin: { top: 60, right: 240, bottom: 40, left: 120 }, // More space for left labels
         gridGap: 4,
-        rowHeight: 50,
+        minRowHeight: 30,  // Minimum row height
+        maxRowHeight: 120, // Maximum row height
+        baseRowHeight: 50, // Base row height for scaling
         labelWidth: 200,
         leftLabelWidth: 100,
       },
@@ -192,17 +194,13 @@ export default function DatabaseGridVisualization({
       }
 
       setupDimensions() {
-        const { width, height, margin, rowHeight, gridGap } = this.config.dimensions;
+        const { width, height, margin } = this.config.dimensions;
         this.innerWidth = width - margin.left - margin.right;
         this.innerHeight = height - margin.top - margin.bottom;
         this.gridWidth = this.innerWidth;
         this.gridHeight = this.innerHeight;
         
-        // Calculate required height based on number of rows
-        const requiredHeight = this.data.length * (rowHeight + gridGap) - gridGap;
-        if (requiredHeight > this.gridHeight) {
-          console.warn(`Grid height (${this.gridHeight}) may be too small for ${this.data.length} rows. Need at least ${requiredHeight}px.`);
-        }
+        // Note: Height validation will be done after layout calculation since heights are now variable
       }
 
       setupSVG() {
@@ -217,7 +215,7 @@ export default function DatabaseGridVisualization({
       }
 
       calculateLayout() {
-        const { gridGap, rowHeight, labelWidth } = this.config.dimensions;
+        const { gridGap, minRowHeight, maxRowHeight, baseRowHeight, labelWidth } = this.config.dimensions;
         
         // Sort data by category and subcategory for consistent ordering
         const sortedData = [...this.data].sort((a, b) => {
@@ -234,14 +232,32 @@ export default function DatabaseGridVisualization({
           return a.subcategory.localeCompare(b.subcategory);
         });
 
-        // Calculate row layout - one row per database/subcategory
+        // Calculate proportional row heights based on resource count
+        const resourceCounts = sortedData.map(cell => cell.resources.length);
+        const maxResourceCount = Math.max(...resourceCounts);
+        const minResourceCount = Math.min(...resourceCounts);
+        
+        // Calculate heights proportional to resource count
+        const rowHeights = resourceCounts.map(count => {
+          if (maxResourceCount === minResourceCount) {
+            return baseRowHeight; // All rows same height if counts are equal
+          }
+          
+          // Scale between min and max height based on resource count
+          const ratio = (count - minResourceCount) / (maxResourceCount - minResourceCount);
+          return minRowHeight + (maxRowHeight - minRowHeight) * ratio;
+        });
+
+        // Calculate row layout with proportional heights
         const rowWidth = this.gridWidth - labelWidth - 20; // Leave space for right label
+        let currentY = 0;
         
         sortedData.forEach((cell, index) => {
           cell.x = 0;
-          cell.y = index * (rowHeight + gridGap);
+          cell.y = currentY;
           cell.width = rowWidth;
-          cell.height = rowHeight;
+          cell.height = rowHeights[index];
+          currentY += rowHeights[index] + gridGap;
         });
         
         // Update the data reference
@@ -393,7 +409,7 @@ export default function DatabaseGridVisualization({
           // Add category label with text wrapping for long labels
           if (category === 'Enzyme-Substrate') {
             // Split into two lines
-            const line1 = this.g.append("text")
+            this.g.append("text")
               .attr("class", "left-category-label")
               .attr("x", -this.config.dimensions.leftLabelWidth / 2)
               .attr("y", centerY - 6)
@@ -404,7 +420,7 @@ export default function DatabaseGridVisualization({
               .style("fill", "#1f2937")
               .text("Enzyme-");
 
-            const line2 = this.g.append("text")
+            this.g.append("text")
               .attr("class", "left-category-label")
               .attr("x", -this.config.dimensions.leftLabelWidth / 2)
               .attr("y", centerY + 6)
