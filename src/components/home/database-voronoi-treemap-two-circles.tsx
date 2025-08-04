@@ -106,8 +106,8 @@ function createCircleVisualization(
   size: number,
   title: string
 ) {
-  const margin = { top: 40, right: 20, bottom: 20, left: 20 };
-  const radius = (size - margin.left - margin.right) / 2;
+  const margin = { top: 40, right: 20, bottom: 40, left: 20 };
+  const radius = (Math.min(size - margin.left - margin.right, size - margin.top - margin.bottom)) / 2;
   
   // Create circling polygon
   const _2PI = 2 * Math.PI;
