@@ -44,7 +44,7 @@ interface GridCell {
 
 export default function DatabaseGridVisualization({
   width = 1200,
-  height = 700,
+  height = 1400, // Further increased height for all rows
 }: GridVisualizationProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -192,11 +192,17 @@ export default function DatabaseGridVisualization({
       }
 
       setupDimensions() {
-        const { width, height, margin } = this.config.dimensions;
+        const { width, height, margin, rowHeight, gridGap } = this.config.dimensions;
         this.innerWidth = width - margin.left - margin.right;
         this.innerHeight = height - margin.top - margin.bottom;
         this.gridWidth = this.innerWidth;
         this.gridHeight = this.innerHeight;
+        
+        // Calculate required height based on number of rows
+        const requiredHeight = this.data.length * (rowHeight + gridGap) - gridGap;
+        if (requiredHeight > this.gridHeight) {
+          console.warn(`Grid height (${this.gridHeight}) may be too small for ${this.data.length} rows. Need at least ${requiredHeight}px.`);
+        }
       }
 
       setupSVG() {
@@ -384,17 +390,43 @@ export default function DatabaseGridVisualization({
             .attr("stroke-width", 1)
             .attr("rx", 4);
 
-          // Add category label
-          this.g.append("text")
-            .attr("class", "left-category-label")
-            .attr("x", -this.config.dimensions.leftLabelWidth / 2)
-            .attr("y", centerY)
-            .attr("text-anchor", "middle")
-            .attr("dominant-baseline", "middle")
-            .style("font-size", "13px")
-            .style("font-weight", "700")
-            .style("fill", "#1f2937")
-            .text(category);
+          // Add category label with text wrapping for long labels
+          if (category === 'Enzyme-Substrate') {
+            // Split into two lines
+            const line1 = this.g.append("text")
+              .attr("class", "left-category-label")
+              .attr("x", -this.config.dimensions.leftLabelWidth / 2)
+              .attr("y", centerY - 6)
+              .attr("text-anchor", "middle")
+              .attr("dominant-baseline", "middle")
+              .style("font-size", "13px")
+              .style("font-weight", "700")
+              .style("fill", "#1f2937")
+              .text("Enzyme-");
+
+            const line2 = this.g.append("text")
+              .attr("class", "left-category-label")
+              .attr("x", -this.config.dimensions.leftLabelWidth / 2)
+              .attr("y", centerY + 6)
+              .attr("text-anchor", "middle")
+              .attr("dominant-baseline", "middle")
+              .style("font-size", "13px")
+              .style("font-weight", "700")
+              .style("fill", "#1f2937")
+              .text("Substrate");
+          } else {
+            // Single line for other categories
+            this.g.append("text")
+              .attr("class", "left-category-label")
+              .attr("x", -this.config.dimensions.leftLabelWidth / 2)
+              .attr("y", centerY)
+              .attr("text-anchor", "middle")
+              .attr("dominant-baseline", "middle")
+              .style("font-size", "13px")
+              .style("font-weight", "700")
+              .style("fill", "#1f2937")
+              .text(category);
+          }
         });
       }
 
