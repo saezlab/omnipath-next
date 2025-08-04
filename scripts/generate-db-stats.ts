@@ -307,58 +307,6 @@ async function generateDatabaseStats() {
     `);
     console.log(`✓ Resource overlap: ${resourceOverlap.length} combinations`);
 
-    // Examples of multi-resource entries
-    console.log('Querying multi-resource entry examples...');
-    const multiResourceExamples = await db.execute(sql`
-      WITH entry_resource_mapping AS (
-        SELECT 
-          CONCAT(source_genesymbol, '-', target_genesymbol) AS entry_id,
-          'interaction' AS entry_type,
-          unnest(sources) AS resource
-        FROM interactions
-        WHERE sources IS NOT NULL 
-          AND source_genesymbol IS NOT NULL 
-          AND target_genesymbol IS NOT NULL
-        
-        UNION ALL
-        
-        SELECT 
-          CONCAT(enzyme_genesymbol, '-', substrate_genesymbol, '-', COALESCE(modification, 'none')) AS entry_id,
-          'enzyme-substrate' AS entry_type,
-          unnest(sources) AS resource
-        FROM enzsub
-        WHERE sources IS NOT NULL 
-          AND enzyme_genesymbol IS NOT NULL 
-          AND substrate_genesymbol IS NOT NULL
-        
-        UNION ALL
-        
-        SELECT 
-          name AS entry_id,
-          'complex' AS entry_type,
-          unnest(sources) AS resource
-        FROM complexes
-        WHERE sources IS NOT NULL AND name IS NOT NULL
-      ),
-      multi_resource_entries AS (
-        SELECT 
-          entry_id,
-          entry_type,
-          COUNT(DISTINCT resource)::int AS resource_count,
-          array_agg(DISTINCT resource ORDER BY resource) AS resources
-        FROM entry_resource_mapping
-        GROUP BY entry_id, entry_type
-        HAVING COUNT(DISTINCT resource) > 1
-      )
-      SELECT 
-        entry_id,
-        entry_type,
-        resource_count,
-        resources
-      FROM multi_resource_entries
-      ORDER BY resource_count DESC, entry_type, entry_id
-      LIMIT 20
-    `);
 
     console.log('Writing results to JSON file...');
     // Combine all results
@@ -376,8 +324,7 @@ async function generateDatabaseStats() {
         literatureRefsByDatabaseAndType,
         referenceRecordPairs,
         aggregateInteractionTypes,
-        resourceOverlap,
-        multiResourceExamples
+        resourceOverlap
       },
       
       generatedAt: new Date().toISOString(),
@@ -400,7 +347,6 @@ async function generateDatabaseStats() {
     console.log(`- Reference-record pairs: ${referenceRecordPairs.length} combinations`);
     console.log(`- Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
     console.log(`- Resource overlap: ${resourceOverlap.length} combinations`);
-    console.log(`- Multi-resource examples: ${multiResourceExamples.length} examples`);
 
   } catch (error) {
     console.error('Error generating database statistics:', error);

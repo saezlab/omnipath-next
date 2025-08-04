@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import dbStats from "@/data/db-stats.json";
 import resourcesMetadata from "@/data/resources.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
@@ -36,13 +36,6 @@ interface ResourceMetadata {
   license?: string;
   full_name?: string;
   [key: string]: any;
-}
-
-interface MultiResourceExample {
-  entry_id: string;
-  entry_type: string;
-  resource_count: number;
-  resources: string[];
 }
 
 // Color schemes for different charts
@@ -93,7 +86,6 @@ export function DatabaseStats() {
   const litRefsByDb = plotData.literatureRefsByDatabaseAndType || [];
   const aggregateInteractionTypes = plotData.aggregateInteractionTypes || [];
   const resourceOverlap = plotData.resourceOverlap || [];
-  const multiResourceExamples = plotData.multiResourceExamples || [];
 
   // Generate maintenance data from JSON files
   const getAllSources = () => {
@@ -647,78 +639,73 @@ export function DatabaseStats() {
 
         {/* Overlap Tab */}
         <TabsContent value="overlap" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Resource Overlap</CardTitle>
-              <CardDescription>
-                How many entries appear in multiple resources
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={resourceOverlap}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="number_of_resources" 
-                      label={{ value: 'Number of Resources', position: 'insideBottom', offset: -5 }}
-                    />
-                    <YAxis 
-                      label={{ value: 'Number of Entries', angle: -90, position: 'insideLeft' }}
-                    />
-                    <Tooltip />
-                    <Legend />
-                    {['interaction', 'enzyme-substrate', 'complex'].map((type, index) => (
-                      <Bar 
-                        key={type}
-                        dataKey={type === resourceOverlap[0]?.entry_type ? "number_of_entries" : undefined}
-                        name={type}
-                        fill={COLORS[index]}
-                        stackId="a"
-                      />
-                    ))}
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Summary cards showing overlap statistics */}
+          <div className="grid gap-4 md:grid-cols-3">
+            {['interaction', 'enzyme-substrate', 'complex'].map((entryType, index) => {
+              const typeData = resourceOverlap.filter(item => item.entry_type === entryType);
+              const totalEntries = typeData.reduce((sum, item) => sum + item.number_of_entries, 0);
+              const multiResourceEntries = typeData.filter(item => item.number_of_resources > 1)
+                .reduce((sum, item) => sum + item.number_of_entries, 0);
+              const overlapPercentage = totalEntries > 0 ? ((multiResourceEntries / totalEntries) * 100).toFixed(1) : '0';
+              
+              return (
+                <Card key={entryType}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg capitalize">{entryType.replace('-', ' ')}</CardTitle>
+                    <CardDescription className="text-sm">Resource overlap summary</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="text-2xl font-bold">{overlapPercentage}%</div>
+                      <p className="text-xs text-muted-foreground">entries in multiple resources</p>
+                      <div className="text-sm">
+                        {multiResourceEntries.toLocaleString()} of {totalEntries.toLocaleString()} entries
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Examples of Multi-Resource Entries</CardTitle>
-              <CardDescription>
-                Specific entries that appear in multiple resources
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="max-h-96 overflow-y-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2">Entry</th>
-                      <th className="text-left py-2">Type</th>
-                      <th className="text-center py-2">Resources</th>
-                      <th className="text-left py-2">Resource List</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {multiResourceExamples.map((item: MultiResourceExample, index: number) => (
-                      <tr key={index} className="border-b">
-                        <td className="py-2 text-xs font-mono">{item.entry_id}</td>
-                        <td className="py-2">
-                          <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
-                            {item.entry_type}
-                          </span>
-                        </td>
-                        <td className="text-center py-2">{item.resource_count}</td>
-                        <td className="py-2 text-xs">{item.resources.join(', ')}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Simple bar charts for each entry type */}
+          {['interaction', 'enzyme-substrate', 'complex'].map((entryType, index) => {
+            const typeData = resourceOverlap.filter(item => item.entry_type === entryType);
+            
+            if (typeData.length === 0) return null;
+            
+            return (
+              <Card key={entryType}>
+                <CardHeader>
+                  <CardTitle className="capitalize">{entryType.replace('-', ' ')} Resource Distribution</CardTitle>
+                  <CardDescription>
+                    Number of entries by resource count
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={typeData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="number_of_resources" 
+                          label={{ value: 'Number of Resources', position: 'insideBottom', offset: -5 }}
+                        />
+                        <YAxis 
+                          label={{ value: 'Number of Entries', angle: -90, position: 'insideLeft' }}
+                        />
+                        <Tooltip />
+                        <Bar 
+                          dataKey="number_of_entries" 
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </TabsContent>
       </Tabs>
     </div>
