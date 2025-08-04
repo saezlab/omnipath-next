@@ -17,11 +17,13 @@ const resourcesMetadata = JSON.parse(
   readFileSync(join(process.cwd(), 'src/data/resources.json'), 'utf-8')
 );
 
-// Create lookup maps
+// Create lookup maps - case insensitive
 const maintenanceLookup: Record<string, string> = {};
 for (const [category, resources] of Object.entries(maintenanceCategories)) {
   for (const resource of resources as string[]) {
+    // Store both original and lowercase versions for case-insensitive lookup
     maintenanceLookup[resource] = category;
+    maintenanceLookup[resource.toLowerCase()] = category;
   }
 }
 
@@ -333,13 +335,26 @@ async function generateDatabaseStats() {
       ORDER BY database, record_type
     `);
     
-    // Enhance with license information
-    const commercialUseWithLicense = commercialUseAvailability.map((row: any) => ({
-      ...row,
-      license: resourcesMetadata[row.database]?.license || 'Unknown',
-      isCommercialUse: resourcesMetadata[row.database]?.license ? 
-        !resourcesMetadata[row.database].license.toLowerCase().includes('nc') : null
-    }));
+    // Enhance with license information - try case-insensitive lookup
+    const commercialUseWithLicense = commercialUseAvailability.map((row: any) => {
+      // Try exact match first, then case-insensitive search
+      let resourceInfo = resourcesMetadata[row.database];
+      if (!resourceInfo) {
+        // Search case-insensitively through all resources
+        const resourceKey = Object.keys(resourcesMetadata).find(key => 
+          key.toLowerCase() === row.database.toLowerCase()
+        );
+        resourceInfo = resourceKey ? resourcesMetadata[resourceKey] : null;
+      }
+      
+      return {
+        ...row,
+        license: resourceInfo?.license || 'Unknown',
+        isCommercialUse: resourceInfo?.license ? 
+          !resourceInfo.license.toLowerCase().includes('nc') && 
+          !resourceInfo.license.toLowerCase().includes('non-commercial') : null
+      };
+    });
 
     // e) Maintenance status of resources
     console.log('Querying maintenance status...');
@@ -396,10 +411,12 @@ async function generateDatabaseStats() {
       ORDER BY total_entries DESC
     `);
     
-    // Enhance with maintenance category
+    // Enhance with maintenance category - try case-insensitive lookup
     const maintenanceStatusWithCategory = maintenanceStatus.map((row: any) => ({
       ...row,
-      maintenance_category: maintenanceLookup[row.resource] || 'unknown'
+      maintenance_category: maintenanceLookup[row.resource] || 
+                           maintenanceLookup[row.resource.toLowerCase()] || 
+                           'unknown'
     }));
 
     // f) Number of entries by evidence type

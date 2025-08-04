@@ -245,13 +245,12 @@ function createCircleVisualization(
     })
     .style("fill", "white")
     .style("font-weight", "600")
-    .style("text-shadow", "0 1px 2px rgba(0,0,0,0.5)")
     .style("pointer-events", "none")
     .text((d: any) => {
       const metrics = calculatePolygonMetrics(d.polygon);
       
-      // Only show text if the cell has minimum area
-      if (metrics.area < 100) return "";
+      // Only show text if the cell has minimum area (increased threshold for article version)
+      if (metrics.area < 1000) return "";
       
       // Use shorter text for smaller cells
       if (metrics.area < 400) {
