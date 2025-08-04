@@ -2,8 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import dbStats from "@/data/db-stats.json";
+import resourcesMetadata from "@/data/resources.json";
+import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
 import { DatabaseVoronoiTreemap } from "./database-voronoi-treemap";
 
 interface SourceStat {
@@ -24,47 +26,16 @@ interface DatabaseSection {
 }
 
 interface LiteratureRefStat {
-  database: string;
+  database: string | null;
   interaction_type: string;
   unique_reference_count: number;
 }
 
-interface ReferenceRecordPairStat {
-  database: string;
-  interaction_type: string;
-  reference_record_pair_count: number;
-}
-
-interface AggregateInteractionTypeStat {
-  interaction_type: string;
-  count: number;
-}
-
-interface CommercialUseStat {
-  database: string;
-  record_type: string;
-  total_records: number;
-  license: string;
-  isCommercialUse: boolean | null;
-}
-
-interface MaintenanceStat {
-  resource: string;
-  total_entries: number;
-  maintenance_category: string;
-}
-
-interface EvidenceTypeStat {
-  database: string;
-  evidence_type: string;
-  entry_count: number;
-}
-
-
-interface ResourceOverlapStat {
-  number_of_resources: number;
-  entry_type: string;
-  number_of_entries: number;
+interface ResourceMetadata {
+  type?: string | string[];
+  license?: string;
+  full_name?: string;
+  [key: string]: any;
 }
 
 interface MultiResourceExample {
@@ -120,35 +91,142 @@ export function DatabaseStats() {
   // Process plot data
   const plotData = dbStats.plotData || {};
   const litRefsByDb = plotData.literatureRefsByDatabaseAndType || [];
-  const refRecordPairs = plotData.referenceRecordPairs || [];
   const aggregateInteractionTypes = plotData.aggregateInteractionTypes || [];
-  const commercialUse = plotData.commercialUseAvailability || [];
-  const maintenanceStatus = plotData.maintenanceStatus || [];
-  const evidenceTypes = plotData.entriesByEvidenceType || [];
   const resourceOverlap = plotData.resourceOverlap || [];
   const multiResourceExamples = plotData.multiResourceExamples || [];
 
-  // Aggregate maintenance status by category
-  const maintenanceByCategory = maintenanceStatus.reduce((acc: Record<string, number>, item: MaintenanceStat) => {
-    const category = item.maintenance_category;
-    acc[category] = (acc[category] || 0) + item.total_entries;
-    return acc;
-  }, {});
+  // Generate maintenance data from JSON files
+  const getAllSources = () => {
+    const sources = new Set<string>();
+    databases.forEach(db => {
+      db.data.forEach(item => sources.add(item.source));
+    });
+    return Array.from(sources);
+  };
+
+  const allSources = getAllSources();
+  
+  // Calculate maintenance status from maintenance categories
+  const maintenanceByCategory: Record<string, number> = {};
+  for (const [category, resources] of Object.entries(maintenanceCategories)) {
+    const resourceList = resources as string[];
+    let categoryCount = 0;
+    
+    resourceList.forEach(resource => {
+      // Find matching sources in our database stats (case-insensitive)
+      const matchingSources = allSources.filter(source => 
+        source.toLowerCase() === resource.toLowerCase()
+      );
+      
+      matchingSources.forEach(source => {
+        // Sum up records from all databases for this source
+        let sourceTotal = 0;
+        databases.forEach(db => {
+          const sourceData = db.data.find(item => item.source === source);
+          if (sourceData) {
+            sourceTotal += sourceData.record_count;
+          }
+        });
+        categoryCount += sourceTotal;
+      });
+    });
+    
+    if (categoryCount > 0) {
+      maintenanceByCategory[category] = categoryCount;
+    }
+  }
 
   const maintenancePieData = Object.entries(maintenanceByCategory).map(([category, count]) => ({
     name: category.replace('_', ' '),
     value: count
   }));
 
-  // Aggregate commercial use data
-  const commercialUseAgg = commercialUse.reduce((acc: Record<string, number>, item: CommercialUseStat) => {
-    const key = item.isCommercialUse === true ? 'Commercial Use Allowed' : 
-                item.isCommercialUse === false ? 'Non-Commercial Only' : 'Unknown License';
-    acc[key] = (acc[key] || 0) + item.total_records;
-    return acc;
-  }, {});
+  // Generate commercial use data from resources metadata
+  const commercialUseAgg: Record<string, number> = {};
+  
+  allSources.forEach(source => {
+    // Find resource metadata (case-insensitive)
+    const resourceKey = Object.keys(resourcesMetadata).find(key => 
+      key.toLowerCase() === source.toLowerCase()
+    );
+    
+    if (resourceKey) {
+      const resource = (resourcesMetadata as any)[resourceKey] as ResourceMetadata;
+      const license = resource.license || 'Unknown';
+      
+      const isCommercial = license !== 'Unknown' && 
+        !license.toLowerCase().includes('nc') && 
+        !license.toLowerCase().includes('non-commercial');
+      
+      const key = isCommercial ? 'Commercial Use Allowed' : 
+                  license === 'Unknown' ? 'Unknown License' : 'Non-Commercial Only';
+      
+      // Sum up records from all databases for this source
+      let sourceTotal = 0;
+      databases.forEach(db => {
+        const sourceData = db.data.find(item => item.source === source);
+        if (sourceData) {
+          sourceTotal += sourceData.record_count;
+        }
+      });
+      
+      commercialUseAgg[key] = (commercialUseAgg[key] || 0) + sourceTotal;
+    } else {
+      // Unknown license
+      let sourceTotal = 0;
+      databases.forEach(db => {
+        const sourceData = db.data.find(item => item.source === source);
+        if (sourceData) {
+          sourceTotal += sourceData.record_count;
+        }
+      });
+      commercialUseAgg['Unknown License'] = (commercialUseAgg['Unknown License'] || 0) + sourceTotal;
+    }
+  });
 
   const commercialPieData = Object.entries(commercialUseAgg).map(([name, value]) => ({ name, value }));
+
+  // Generate evidence type data from resources metadata
+  const evidenceTypeAgg: Record<string, number> = {};
+  
+  allSources.forEach(source => {
+    // Find resource metadata (case-insensitive)
+    const resourceKey = Object.keys(resourcesMetadata).find(key => 
+      key.toLowerCase() === source.toLowerCase()
+    );
+    
+    if (resourceKey) {
+      const resource = (resourcesMetadata as any)[resourceKey] as ResourceMetadata;
+      const typeValue = resource.type;
+      const type = (Array.isArray(typeValue) ? typeValue.join(' ') : typeValue || 'unknown').toLowerCase();
+      
+      let evidenceCategory = 'Other';
+      if (type.includes('literature curated') && type.includes('high')) {
+        evidenceCategory = 'Literature Curated & High Throughput';
+      } else if (type.includes('literature curated')) {
+        evidenceCategory = 'Literature Curated';
+      } else if (type.includes('high throughput') || type.includes('high-throughput')) {
+        evidenceCategory = 'High Throughput';
+      } else if (type.includes('prediction')) {
+        evidenceCategory = 'Predicted';
+      } else if (type.includes('combined')) {
+        evidenceCategory = 'Combined';
+      }
+      
+      // Sum up records from all databases for this source
+      let sourceTotal = 0;
+      databases.forEach(db => {
+        const sourceData = db.data.find(item => item.source === source);
+        if (sourceData) {
+          sourceTotal += sourceData.record_count;
+        }
+      });
+      
+      evidenceTypeAgg[evidenceCategory] = (evidenceTypeAgg[evidenceCategory] || 0) + sourceTotal;
+    }
+  });
+
+  const evidenceTypePieData = Object.entries(evidenceTypeAgg).map(([name, value]) => ({ name, value }));
 
   return (
     <div className="w-full space-y-6">
@@ -384,7 +462,7 @@ export function DatabaseStats() {
                   <tbody>
                     {litRefsByDb.map((item: LiteratureRefStat, index: number) => (
                       <tr key={index} className="border-b">
-                        <td className="py-2">{item.database}</td>
+                        <td className="py-2">{item.database || 'Unknown'}</td>
                         <td className="py-2">
                           <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
                             {item.interaction_type}
@@ -419,13 +497,13 @@ export function DatabaseStats() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {maintenancePieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={MAINTENANCE_COLORS[entry.name.replace(' ', '_')] || COLORS[index % COLORS.length]} />
+                        {maintenancePieData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={MAINTENANCE_COLORS[maintenancePieData[index].name.replace(' ', '_')] || COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip />
@@ -451,12 +529,12 @@ export function DatabaseStats() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {commercialPieData.map((entry, index) => (
+                        {commercialPieData.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -472,41 +550,43 @@ export function DatabaseStats() {
             <CardHeader>
               <CardTitle>Resources by Maintenance Category</CardTitle>
               <CardDescription>
-                Detailed list of resources and their maintenance status
+                Distribution of resources across maintenance categories with their total records
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="max-h-96 overflow-y-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2">Resource</th>
-                      <th className="text-left py-2">Category</th>
-                      <th className="text-right py-2">Entries</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {maintenanceStatus
-                      .sort((a: MaintenanceStat, b: MaintenanceStat) => b.total_entries - a.total_entries)
-                      .map((item: MaintenanceStat, index: number) => (
-                      <tr key={index} className="border-b">
-                        <td className="py-2">{item.resource}</td>
-                        <td className="py-2">
+              <div className="space-y-4">
+                {Object.entries(maintenanceCategories).map(([category, resources]) => {
+                  const resourceList = resources as string[];
+                  const categoryRecords = maintenanceByCategory[category] || 0;
+                  const matchingResources = resourceList.filter(resource => 
+                    allSources.some(source => source.toLowerCase() === resource.toLowerCase())
+                  );
+                  
+                  return (
+                    <div key={category} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-semibold capitalize">{category.replace('_', ' ')}</h4>
+                        <span className="text-sm text-muted-foreground">
+                          {categoryRecords.toLocaleString()} records
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {matchingResources.map((resource, idx) => (
                           <span 
+                            key={idx}
                             className="px-2 py-1 rounded-full text-xs"
                             style={{ 
-                              backgroundColor: `${MAINTENANCE_COLORS[item.maintenance_category] || '#8884d8'}20`,
-                              color: MAINTENANCE_COLORS[item.maintenance_category] || '#8884d8'
+                              backgroundColor: `${MAINTENANCE_COLORS[category] || '#8884d8'}20`,
+                              color: MAINTENANCE_COLORS[category] || '#8884d8'
                             }}
                           >
-                            {item.maintenance_category.replace('_', ' ')}
+                            {resource}
                           </span>
-                        </td>
-                        <td className="text-right py-2">{item.total_entries.toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -516,68 +596,52 @@ export function DatabaseStats() {
         <TabsContent value="evidence" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Entries by Evidence Type</CardTitle>
+              <CardTitle>Evidence Types Distribution</CardTitle>
               <CardDescription>
-                Distribution of curated, high-throughput, and predicted data across databases
+                Distribution of records by evidence type based on resource classifications
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="max-h-96 overflow-y-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2">Database</th>
-                      <th className="text-left py-2">Evidence Type</th>
-                      <th className="text-right py-2">Entries</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {evidenceTypes
-                      .sort((a: EvidenceTypeStat, b: EvidenceTypeStat) => b.entry_count - a.entry_count)
-                      .map((item: EvidenceTypeStat, index: number) => (
-                      <tr key={index} className="border-b">
-                        <td className="py-2">{item.database}</td>
-                        <td className="py-2">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            item.evidence_type === 'curated' ? 'bg-green-100 text-green-800' :
-                            item.evidence_type === 'high-throughput' ? 'bg-blue-100 text-blue-800' :
-                            item.evidence_type === 'predicted' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {item.evidence_type}
-                          </span>
-                        </td>
-                        <td className="text-right py-2">{item.entry_count.toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={evidenceTypePieData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {evidenceTypePieData.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
 
           {/* Evidence type summary */}
-          <div className="grid gap-4 md:grid-cols-3">
-            {['curated', 'high-throughput', 'predicted'].map(evidenceType => {
-              const total = evidenceTypes
-                .filter((item: EvidenceTypeStat) => item.evidence_type === evidenceType)
-                .reduce((sum: number, item: EvidenceTypeStat) => sum + item.entry_count, 0);
-              
-              return (
-                <Card key={evidenceType}>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg capitalize">{evidenceType}</CardTitle>
-                    <CardDescription className="text-sm">Total entries</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{total.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground">
-                      across {evidenceTypes.filter((item: EvidenceTypeStat) => item.evidence_type === evidenceType).length} databases
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
+            {evidenceTypePieData.map(({ name, value }) => (
+              <Card key={name}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">{name}</CardTitle>
+                  <CardDescription className="text-sm">Total records</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{value.toLocaleString()}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {((value / totalRecords) * 100).toFixed(1)}% of total
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </TabsContent>
 

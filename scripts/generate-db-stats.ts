@@ -2,30 +2,11 @@ import { config } from 'dotenv';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { sql } from 'drizzle-orm';
-import { writeFileSync, readFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { join } from 'path';
 
 // Load environment variables
 config();
-
-// Load metadata files
-const maintenanceCategories = JSON.parse(
-  readFileSync(join(process.cwd(), 'src/data/resources_by_maintenance_category.json'), 'utf-8')
-);
-
-const resourcesMetadata = JSON.parse(
-  readFileSync(join(process.cwd(), 'src/data/resources.json'), 'utf-8')
-);
-
-// Create lookup maps - case insensitive
-const maintenanceLookup: Record<string, string> = {};
-for (const [category, resources] of Object.entries(maintenanceCategories)) {
-  for (const resource of resources as string[]) {
-    // Store both original and lowercase versions for case-insensitive lookup
-    maintenanceLookup[resource] = category;
-    maintenanceLookup[resource.toLowerCase()] = category;
-  }
-}
 
 async function generateDatabaseStats() {
   console.log('Generating database statistics...');
@@ -271,188 +252,8 @@ async function generateDatabaseStats() {
     `);
     console.log(`✓ Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
 
-    // d) Availability of OmniPath data for commercial use - number of records by license and database
-    console.log('Querying commercial use availability...');
-    const commercialUseAvailability = await db.execute(sql`
-      WITH database_record_counts AS (
-        SELECT 
-          unnest(sources) AS database,
-          'interaction' AS record_type,
-          COUNT(*)::int AS record_count
-        FROM interactions
-        WHERE sources IS NOT NULL
-        GROUP BY unnest(sources)
-        
-        UNION ALL
-        
-        SELECT 
-          unnest(sources) AS database,
-          'enzyme-substrate' AS record_type,
-          COUNT(*)::int AS record_count
-        FROM enzsub
-        WHERE sources IS NOT NULL
-        GROUP BY unnest(sources)
-        
-        UNION ALL
-        
-        SELECT 
-          unnest(sources) AS database,
-          'complex' AS record_type,
-          COUNT(*)::int AS record_count
-        FROM complexes
-        WHERE sources IS NOT NULL
-        GROUP BY unnest(sources)
-        
-        UNION ALL
-        
-        SELECT 
-          source AS database,
-          'annotation' AS record_type,
-          COUNT(*)::int AS record_count
-        FROM annotations
-        WHERE source IS NOT NULL
-        GROUP BY source
-        
-        UNION ALL
-        
-        SELECT 
-          database,
-          'intercellular' AS record_type,
-          COUNT(*)::int AS record_count
-        FROM intercell
-        WHERE database IS NOT NULL
-        GROUP BY database
-      )
-      SELECT 
-        database,
-        record_type,
-        SUM(record_count)::int AS total_records
-      FROM database_record_counts
-      GROUP BY database, record_type
-      ORDER BY database, record_type
-    `);
-    
-    // Enhance with license information - try case-insensitive lookup
-    const commercialUseWithLicense = commercialUseAvailability.map((row: any) => {
-      // Try exact match first, then case-insensitive search
-      let resourceInfo = resourcesMetadata[row.database];
-      if (!resourceInfo) {
-        // Search case-insensitively through all resources
-        const resourceKey = Object.keys(resourcesMetadata).find(key => 
-          key.toLowerCase() === row.database.toLowerCase()
-        );
-        resourceInfo = resourceKey ? resourcesMetadata[resourceKey] : null;
-      }
-      
-      return {
-        ...row,
-        license: resourceInfo?.license || 'Unknown',
-        isCommercialUse: resourceInfo?.license ? 
-          !resourceInfo.license.toLowerCase().includes('nc') && 
-          !resourceInfo.license.toLowerCase().includes('non-commercial') : null
-      };
-    });
 
-    // e) Maintenance status of resources
-    console.log('Querying maintenance status...');
-    const maintenanceStatus = await db.execute(sql`
-      WITH resource_entries AS (
-        SELECT 
-          unnest(sources) AS resource,
-          COUNT(*)::int AS entry_count
-        FROM interactions
-        WHERE sources IS NOT NULL
-        GROUP BY unnest(sources)
-        
-        UNION ALL
-        
-        SELECT 
-          unnest(sources) AS resource,
-          COUNT(*)::int AS entry_count
-        FROM enzsub
-        WHERE sources IS NOT NULL
-        GROUP BY unnest(sources)
-        
-        UNION ALL
-        
-        SELECT 
-          unnest(sources) AS resource,
-          COUNT(*)::int AS entry_count
-        FROM complexes
-        WHERE sources IS NOT NULL
-        GROUP BY unnest(sources)
-        
-        UNION ALL
-        
-        SELECT 
-          source AS resource,
-          COUNT(*)::int AS entry_count
-        FROM annotations
-        WHERE source IS NOT NULL
-        GROUP BY source
-        
-        UNION ALL
-        
-        SELECT 
-          database AS resource,
-          COUNT(*)::int AS entry_count
-        FROM intercell
-        WHERE database IS NOT NULL
-        GROUP BY database
-      )
-      SELECT 
-        resource,
-        SUM(entry_count)::int AS total_entries
-      FROM resource_entries
-      GROUP BY resource
-      ORDER BY total_entries DESC
-    `);
-    
-    // Enhance with maintenance category - try case-insensitive lookup
-    const maintenanceStatusWithCategory = maintenanceStatus.map((row: any) => ({
-      ...row,
-      maintenance_category: maintenanceLookup[row.resource] || 
-                           maintenanceLookup[row.resource.toLowerCase()] || 
-                           'unknown'
-    }));
 
-    // f) Number of entries by evidence type
-    console.log('Querying entries by evidence type...');
-    const entriesByEvidenceType = await db.execute(sql`
-      WITH evidence_data AS (
-        SELECT 
-          unnest(sources) AS database,
-          CASE 
-            WHEN evidences::text ILIKE '%curated%' THEN 'curated'
-            WHEN evidences::text ILIKE '%high[_-]?throughput%' THEN 'high-throughput'
-            WHEN evidences::text ILIKE '%predicted%' THEN 'predicted'
-            WHEN curation_effort > 0 THEN 'curated'
-            ELSE 'other'
-          END AS evidence_type
-        FROM interactions
-        WHERE sources IS NOT NULL
-        
-        UNION ALL
-        
-        -- Enzyme-substrate entries (using curation_effort as proxy)
-        SELECT 
-          unnest(sources) AS database,
-          CASE 
-            WHEN curation_effort > 0 THEN 'curated'
-            ELSE 'other'
-          END AS evidence_type
-        FROM enzsub
-        WHERE sources IS NOT NULL
-      )
-      SELECT 
-        database,
-        evidence_type,
-        COUNT(*)::int AS entry_count
-      FROM evidence_data
-      GROUP BY database, evidence_type
-      ORDER BY database, evidence_type
-    `);
-    console.log(`✓ Entries by evidence type: ${entriesByEvidenceType.length} combinations`);
 
 
     // h) Overlap across resources
@@ -575,9 +376,6 @@ async function generateDatabaseStats() {
         literatureRefsByDatabaseAndType,
         referenceRecordPairs,
         aggregateInteractionTypes,
-        commercialUseAvailability: commercialUseWithLicense,
-        maintenanceStatus: maintenanceStatusWithCategory,
-        entriesByEvidenceType,
         resourceOverlap,
         multiResourceExamples
       },
@@ -601,9 +399,6 @@ async function generateDatabaseStats() {
     console.log(`- Literature refs by database/type: ${literatureRefsByDatabaseAndType.length} combinations`);
     console.log(`- Reference-record pairs: ${referenceRecordPairs.length} combinations`);
     console.log(`- Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
-    console.log(`- Commercial use availability: ${commercialUseWithLicense.length} database/type combinations`);
-    console.log(`- Maintenance status: ${maintenanceStatusWithCategory.length} resources`);
-    console.log(`- Entries by evidence type: ${entriesByEvidenceType.length} combinations`);
     console.log(`- Resource overlap: ${resourceOverlap.length} combinations`);
     console.log(`- Multi-resource examples: ${multiResourceExamples.length} examples`);
 
