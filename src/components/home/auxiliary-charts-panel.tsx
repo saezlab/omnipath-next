@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import dbStats from "@/data/db-stats.json";
 import resourcesMetadata from "@/data/resources.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
@@ -300,9 +300,65 @@ export function AuxiliaryChartsPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Combined Legend for All Charts */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+            <h4 className="text-sm font-semibold mb-3">Chart Legend</h4>
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Maintenance Categories Legend */}
+              <div>
+                <h5 className="text-xs font-medium mb-2 text-gray-700">Maintenance Categories</h5>
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.frequent}}></div>
+                    <span className="text-xs">Frequent</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.infrequent}}></div>
+                    <span className="text-xs">Infrequent</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.one_time_paper}}></div>
+                    <span className="text-xs">One Time Paper</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.discontinued}}></div>
+                    <span className="text-xs">Discontinued</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Resource Overlap Legend */}
+              <div>
+                <h5 className="text-xs font-medium mb-2 text-gray-700">Resource Overlap</h5>
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[0]}}></div>
+                    <span className="text-xs">1 resource</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[1]}}></div>
+                    <span className="text-xs">2 resources</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[2]}}></div>
+                    <span className="text-xs">3 resources</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[3]}}></div>
+                    <span className="text-xs">4 resources</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[4]}}></div>
+                    <span className="text-xs">5+ resources</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="grid gap-4">
-            {/* Row 1: Database Overview Charts */}
-            <div className="grid gap-4 md:grid-cols-3">
+            {/* Row 1: Absolute Charts (Resources and References) */}
+            <div className="grid gap-4 md:grid-cols-2">
               {/* Resources Chart */}
               <Card>
                 <CardHeader className="pb-2">
@@ -334,10 +390,6 @@ export function AuxiliaryChartsPanel() {
                             return `${label} (${data?.total} total resources)`;
                           }}
                         />
-                        <Legend 
-                          fontSize={11}
-                          formatter={(value: string) => value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        />
                         <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
                         <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
                         <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
@@ -348,6 +400,51 @@ export function AuxiliaryChartsPanel() {
                 </CardContent>
               </Card>
 
+
+              {/* References Chart */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">References per Database</CardTitle>
+                  <CardDescription className="text-xs">
+                    Unique literature references by best maintenance status (priority: frequent {'>'}  infrequent {'>'}  one-time {'>'}  discontinued)
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={referencesData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="category" 
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                          fontSize={11}
+                        />
+                        <YAxis fontSize={11} />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            `${value.toLocaleString()} references`,
+                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+                          ]}
+                          labelFormatter={(label: string) => {
+                            const data = referencesData.find(d => d.category === label);
+                            return `${label} (${data?.total?.toLocaleString()} total references)`;
+                          }}
+                        />
+                        <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
+                        <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
+                        <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
+                        <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Row 2: Percentage Charts (Records % and Resource Overlap %) */}
+            <div className="grid gap-4 md:grid-cols-2">
               {/* Records Chart with Maintenance Breakdown */}
               <Card>
                 <CardHeader className="pb-2">
@@ -383,10 +480,6 @@ export function AuxiliaryChartsPanel() {
                             return `${label} (${data?.totalRecords?.toLocaleString()} records)`;
                           }}
                         />
-                        <Legend 
-                          fontSize={11}
-                          formatter={(value: string) => value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        />
                         <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
                         <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
                         <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
@@ -397,54 +490,7 @@ export function AuxiliaryChartsPanel() {
                 </CardContent>
               </Card>
 
-              {/* References Chart */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">References per Database</CardTitle>
-                  <CardDescription className="text-xs">
-                    Unique literature references by best maintenance status (priority: frequent {'>'}  infrequent {'>'}  one-time {'>'}  discontinued)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={referencesData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="category" 
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          fontSize={11}
-                        />
-                        <YAxis fontSize={11} />
-                        <Tooltip 
-                          formatter={(value: number, name: string) => [
-                            `${value.toLocaleString()} references`,
-                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-                          ]}
-                          labelFormatter={(label: string) => {
-                            const data = referencesData.find(d => d.category === label);
-                            return `${label} (${data?.total?.toLocaleString()} total references)`;
-                          }}
-                        />
-                        <Legend 
-                          fontSize={11}
-                          formatter={(value: string) => value.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                        />
-                        <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
-                        <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
-                        <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
-                        <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Row 2: Combined Resource Overlap Chart */}
-            <div className="grid gap-4">
+              {/* Resource Overlap Chart */}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">Resource Overlap Distribution (%)</CardTitle>
@@ -453,7 +499,7 @@ export function AuxiliaryChartsPanel() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-80">
+                  <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={combinedOverlapData}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -476,7 +522,6 @@ export function AuxiliaryChartsPanel() {
                             return `${label} (${data?.totalEntries?.toLocaleString()} total entries)`;
                           }}
                         />
-                        <Legend fontSize={11} />
                         <Bar dataKey="1 resource" stackId="a" fill={CHART_COLORS.overlap[0]} />
                         <Bar dataKey="2 resources" stackId="a" fill={CHART_COLORS.overlap[1]} />
                         <Bar dataKey="3 resources" stackId="a" fill={CHART_COLORS.overlap[2]} />
