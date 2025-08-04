@@ -60,12 +60,12 @@ export default function DatabaseGridVisualization({
       dimensions: {
         width,
         height,
-        margin: { top: 60, right: 40, bottom: 40, left: 200 }, // More space for combined left labels, less on right
+        margin: { top: 60, right: 40, bottom: 40, left: 210 }, // More space for combined left labels, less on right
         gridGap: 4,
         minRowHeight: 30,  // Minimum row height
         maxRowHeight: 120, // Maximum row height
         baseRowHeight: 50, // Base row height for scaling
-        leftLabelWidth: 180, // Wider for combined labels
+        leftLabelWidth: 200, // Wider for combined labels
       },
       colors: {
         database: databaseColors,
@@ -429,7 +429,7 @@ export default function DatabaseGridVisualization({
             }
 
             // Position text based on whether it's in a multi-row category
-            let indent, fontSize, fontWeight, textColor, yOffset;
+            let indent, fontSize, fontWeight, textColor;
             
             if (isMainCategory) {
               // Single-row main categories (Intercellular, Complexes, Enzyme-Substrate)
@@ -437,21 +437,18 @@ export default function DatabaseGridVisualization({
               fontSize = "13px";
               fontWeight = "700";
               textColor = "#1f2937";
-              yOffset = 0;
             } else if (cells.length > 1) {
               // Subcategories under multi-row categories (with rotated headers)
               indent = 55; // More space for rotated header + separator
               fontSize = "12px";
               fontWeight = "600";
               textColor = "#4b5563";
-              yOffset = 0;
             } else {
               // Fallback
               indent = 15;
               fontSize = "12px";
               fontWeight = "600";
               textColor = "#4b5563";
-              yOffset = 0;
             }
             
             // For subcategories in multi-row sections, just use row center
