@@ -60,13 +60,12 @@ export default function DatabaseGridVisualization({
       dimensions: {
         width,
         height,
-        margin: { top: 60, right: 240, bottom: 40, left: 120 }, // More space for left labels
+        margin: { top: 60, right: 40, bottom: 40, left: 200 }, // More space for combined left labels, less on right
         gridGap: 4,
         minRowHeight: 30,  // Minimum row height
         maxRowHeight: 120, // Maximum row height
         baseRowHeight: 50, // Base row height for scaling
-        labelWidth: 200,
-        leftLabelWidth: 100,
+        leftLabelWidth: 180, // Wider for combined labels
       },
       colors: {
         database: databaseColors,
@@ -215,7 +214,7 @@ export default function DatabaseGridVisualization({
       }
 
       calculateLayout() {
-        const { gridGap, minRowHeight, maxRowHeight, baseRowHeight, labelWidth } = this.config.dimensions;
+        const { gridGap, minRowHeight, maxRowHeight, baseRowHeight } = this.config.dimensions;
         
         // Sort data by category and subcategory for consistent ordering
         const sortedData = [...this.data].sort((a, b) => {
@@ -249,7 +248,7 @@ export default function DatabaseGridVisualization({
         });
 
         // Calculate row layout with proportional heights
-        const rowWidth = this.gridWidth - labelWidth - 20; // Leave space for right label
+        const rowWidth = this.gridWidth; // Full width since no right labels
         let currentY = 0;
         
         sortedData.forEach((cell, index) => {
@@ -291,31 +290,8 @@ export default function DatabaseGridVisualization({
           this.renderCellTreemap(d3.select(nodes[i] as SVGGElement), d);
         });
 
-        // Add row labels on the right side (subcategories only)
-        cellGroups.append("text")
-          .attr("class", "row-label")
-          .attr("x", d => d.width + 12)
-          .attr("y", d => d.height / 2)
-          .attr("text-anchor", "start")
-          .attr("dominant-baseline", "middle")
-          .style("font-size", "12px")
-          .style("font-weight", "600")
-          .style("fill", "#4b5563")
-          .text(d => {
-            // For interaction subcategories, show clean formatted name
-            if (d.category === 'Interactions') {
-              return d.subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            }
-            // For annotation subcategories, show category name
-            if (d.category === 'Annotations') {
-              return d.subcategory;
-            }
-            // For single-row databases, show the database name
-            return d.category;
-          });
-
-        // Add left-side category labels that span multiple rows
-        this.addLeftSideLabels();
+        // Add combined hierarchical labels on the left side
+        this.addHierarchicalLeftLabels();
       }
 
       renderCellTreemap(cellGroup: d3.Selection<SVGGElement, GridCell, null, undefined>, cellData: GridCell) {
@@ -378,8 +354,8 @@ export default function DatabaseGridVisualization({
           });
       }
 
-      addLeftSideLabels() {
-        // Group rows by category to determine spans
+      addHierarchicalLeftLabels() {
+        // Group rows by category to determine category sections
         const categoryGroups = new Map<string, GridCell[]>();
         this.data.forEach(cell => {
           if (!categoryGroups.has(cell.category)) {
@@ -388,15 +364,14 @@ export default function DatabaseGridVisualization({
           categoryGroups.get(cell.category)!.push(cell);
         });
 
-        // Add spanning labels for each category
+        // Add labels for each row and category sections
         categoryGroups.forEach((cells, category) => {
           const minY = Math.min(...cells.map(c => c.y));
           const maxY = Math.max(...cells.map(c => c.y + c.height));
-          const centerY = (minY + maxY) / 2;
 
-          // Add background rectangle for better visibility
+          // Add category section background
           this.g.append("rect")
-            .attr("class", "left-label-bg")
+            .attr("class", "category-section-bg")
             .attr("x", -this.config.dimensions.leftLabelWidth + 5)
             .attr("y", minY - 2)
             .attr("width", this.config.dimensions.leftLabelWidth - 10)
@@ -406,43 +381,94 @@ export default function DatabaseGridVisualization({
             .attr("stroke-width", 1)
             .attr("rx", 4);
 
-          // Add category label with text wrapping for long labels
-          if (category === 'Enzyme-Substrate') {
-            // Split into two lines
+          // Add category header (only for multi-row categories)
+          if (cells.length > 1) {
+            const centerY = (minY + maxY) / 2;
+            
+            // Rotate headers 90 degrees for Interactions and Annotations
             this.g.append("text")
-              .attr("class", "left-category-label")
-              .attr("x", -this.config.dimensions.leftLabelWidth / 2)
-              .attr("y", centerY - 6)
-              .attr("text-anchor", "middle")
-              .attr("dominant-baseline", "middle")
-              .style("font-size", "13px")
-              .style("font-weight", "700")
-              .style("fill", "#1f2937")
-              .text("Enzyme-");
-
-            this.g.append("text")
-              .attr("class", "left-category-label")
-              .attr("x", -this.config.dimensions.leftLabelWidth / 2)
-              .attr("y", centerY + 6)
-              .attr("text-anchor", "middle")
-              .attr("dominant-baseline", "middle")
-              .style("font-size", "13px")
-              .style("font-weight", "700")
-              .style("fill", "#1f2937")
-              .text("Substrate");
-          } else {
-            // Single line for other categories
-            this.g.append("text")
-              .attr("class", "left-category-label")
-              .attr("x", -this.config.dimensions.leftLabelWidth / 2)
+              .attr("class", "category-header")
+              .attr("x", -this.config.dimensions.leftLabelWidth + 25)
               .attr("y", centerY)
               .attr("text-anchor", "middle")
               .attr("dominant-baseline", "middle")
-              .style("font-size", "13px")
+              .attr("transform", `rotate(-90, ${-this.config.dimensions.leftLabelWidth + 25}, ${centerY})`)
+              .style("font-size", "14px")
               .style("font-weight", "700")
-              .style("fill", "#1f2937")
-              .text(category);
+              .style("fill", "#374151")
+              .style("letter-spacing", "1px")
+              .text(category.toUpperCase());
+              
+            // Add vertical separator line to the right of rotated text
+            this.g.append("line")
+              .attr("class", "category-separator")
+              .attr("x1", -this.config.dimensions.leftLabelWidth + 45)
+              .attr("x2", -this.config.dimensions.leftLabelWidth + 45)
+              .attr("y1", minY + 5)
+              .attr("y2", maxY - 5)
+              .attr("stroke", "#d1d5db")
+              .attr("stroke-width", 1);
           }
+
+          // Add individual row labels
+          cells.forEach(cell => {
+            const rowCenterY = cell.y + cell.height / 2;
+            
+            // Determine the text to show
+            let labelText = '';
+            let isMainCategory = false;
+            
+            if (cell.category === 'Interactions') {
+              labelText = cell.subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            } else if (cell.category === 'Annotations') {
+              labelText = cell.subcategory;
+            } else {
+              // Single-row databases (Intercellular, Complexes, Enzyme-Substrate)
+              labelText = cell.category;
+              isMainCategory = true;
+            }
+
+            // Position text based on whether it's in a multi-row category
+            let indent, fontSize, fontWeight, textColor, yOffset;
+            
+            if (isMainCategory) {
+              // Single-row main categories (Intercellular, Complexes, Enzyme-Substrate)
+              indent = 15;
+              fontSize = "13px";
+              fontWeight = "700";
+              textColor = "#1f2937";
+              yOffset = 0;
+            } else if (cells.length > 1) {
+              // Subcategories under multi-row categories (with rotated headers)
+              indent = 55; // More space for rotated header + separator
+              fontSize = "12px";
+              fontWeight = "600";
+              textColor = "#4b5563";
+              yOffset = 0;
+            } else {
+              // Fallback
+              indent = 15;
+              fontSize = "12px";
+              fontWeight = "600";
+              textColor = "#4b5563";
+              yOffset = 0;
+            }
+            
+            // For subcategories in multi-row sections, just use row center
+            // The header and separator provide the visual grouping
+            const adjustedY = rowCenterY;
+
+            this.g.append("text")
+              .attr("class", "row-label")
+              .attr("x", -this.config.dimensions.leftLabelWidth + indent)
+              .attr("y", adjustedY)
+              .attr("text-anchor", "start")
+              .attr("dominant-baseline", "middle")
+              .style("font-size", fontSize)
+              .style("font-weight", fontWeight)
+              .style("fill", textColor)
+              .text(labelText);
+          });
         });
       }
 
