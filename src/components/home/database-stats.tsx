@@ -35,9 +35,9 @@ interface ReferenceRecordPairStat {
   reference_record_pair_count: number;
 }
 
-interface ReferenceByYearStat {
-  publication_year: string;
-  reference_count: number;
+interface AggregateInteractionTypeStat {
+  interaction_type: string;
+  count: number;
 }
 
 interface CommercialUseStat {
@@ -60,11 +60,6 @@ interface EvidenceTypeStat {
   entry_count: number;
 }
 
-interface ReferenceByInteractionStat {
-  interaction: string;
-  reference_count: number;
-  references: string;
-}
 
 interface ResourceOverlapStat {
   number_of_resources: number;
@@ -126,15 +121,10 @@ export function DatabaseStats() {
   const plotData = dbStats.plotData || {};
   const litRefsByDb = plotData.literatureRefsByDatabaseAndType || [];
   const refRecordPairs = plotData.referenceRecordPairs || [];
-  const refsByYear = (plotData.referencesByYear || []).filter((item: ReferenceByYearStat) => 
-    item.publication_year !== 'Unknown' && parseInt(item.publication_year) >= 1980
-  ).sort((a: ReferenceByYearStat, b: ReferenceByYearStat) => 
-    parseInt(a.publication_year) - parseInt(b.publication_year)
-  );
+  const aggregateInteractionTypes = plotData.aggregateInteractionTypes || [];
   const commercialUse = plotData.commercialUseAvailability || [];
   const maintenanceStatus = plotData.maintenanceStatus || [];
   const evidenceTypes = plotData.entriesByEvidenceType || [];
-  const topInteractions = plotData.referencesByInteraction || [];
   const resourceOverlap = plotData.resourceOverlap || [];
   const multiResourceExamples = plotData.multiResourceExamples || [];
 
@@ -346,69 +336,33 @@ export function DatabaseStats() {
 
         {/* References Tab */}
         <TabsContent value="references" className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Literature References by Year</CardTitle>
-                <CardDescription>
-                  Distribution of references by publication year
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={refsByYear}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="publication_year" 
-                        angle={-45}
-                        textAnchor="end"
-                        height={60}
-                        fontSize={12}
-                      />
-                      <YAxis />
-                      <Tooltip />
-                      <Line 
-                        type="monotone" 
-                        dataKey="reference_count" 
-                        stroke="#8884d8" 
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Top Referenced Interactions</CardTitle>
-                <CardDescription>
-                  Interactions with the most literature references
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="max-h-80 overflow-y-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2">Interaction</th>
-                        <th className="text-right py-2">References</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {topInteractions.slice(0, 20).map((item: ReferenceByInteractionStat, index: number) => (
-                        <tr key={index} className="border-b">
-                          <td className="py-2 text-xs">{item.interaction}</td>
-                          <td className="text-right py-2">{item.reference_count}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Aggregate Interaction Types</CardTitle>
+              <CardDescription>
+                Distribution of interactions by type (lncrna_post_transcriptional combined with post_transcriptional)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={aggregateInteractionTypes}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="interaction_type" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      fontSize={12}
+                    />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="count" className="fill-primary" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>

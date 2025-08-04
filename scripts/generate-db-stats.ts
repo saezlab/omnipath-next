@@ -240,39 +240,36 @@ async function generateDatabaseStats() {
     `);
     console.log(`✓ Reference-record pairs: ${referenceRecordPairs.length} combinations`);
 
-    // c) Literature references by year of publication
-    console.log('Querying literature references by year...');
-    const referencesByYear = await db.execute(sql`
-      WITH all_pmids AS (
-        SELECT DISTINCT unnest(string_to_array("references", ';')) AS reference
+    // c) Aggregate interaction type counts (combine lncrna_post_transcriptional with post_transcriptional)
+    console.log('Querying aggregate interaction type counts...');
+    const aggregateInteractionTypes = await db.execute(sql`
+      WITH all_interactions AS (
+        SELECT 
+          CASE 
+            WHEN type = 'lncrna_post_transcriptional' THEN 'post_transcriptional'
+            ELSE type
+          END AS interaction_type
         FROM interactions
-        WHERE "references" IS NOT NULL AND "references" != ''
+        WHERE type IS NOT NULL
         
-        UNION
+        UNION ALL
         
-        SELECT DISTINCT unnest(string_to_array("references", ';')) AS reference
+        SELECT 'enzyme-substrate' AS interaction_type
         FROM enzsub
-        WHERE "references" IS NOT NULL AND "references" != ''
         
-        UNION
+        UNION ALL
         
-        SELECT DISTINCT unnest(string_to_array("references", ';')) AS reference
+        SELECT 'complex' AS interaction_type
         FROM complexes
-        WHERE "references" IS NOT NULL AND "references" != ''
       )
       SELECT 
-        CASE 
-          WHEN reference ~ '\\b(19|20)\\d{2}\\b' 
-          THEN substring(reference from '\\b((19|20)\\d{2})\\b')
-          ELSE 'Unknown'
-        END AS publication_year,
-        COUNT(*)::int AS reference_count
-      FROM all_pmids
-      WHERE reference IS NOT NULL
-      GROUP BY publication_year
-      ORDER BY publication_year DESC
+        interaction_type,
+        COUNT(*)::int AS count
+      FROM all_interactions
+      GROUP BY interaction_type
+      ORDER BY count DESC
     `);
-    console.log(`✓ References by year: ${referencesByYear.length} years`);
+    console.log(`✓ Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
 
     // d) Availability of OmniPath data for commercial use - number of records by license and database
     console.log('Querying commercial use availability...');
@@ -457,29 +454,6 @@ async function generateDatabaseStats() {
     `);
     console.log(`✓ Entries by evidence type: ${entriesByEvidenceType.length} combinations`);
 
-    // g) References by interaction (top 50)
-    console.log('Querying references by interaction...');
-    const referencesByInteraction = await db.execute(sql`
-      WITH interaction_refs AS (
-        SELECT 
-          CONCAT(source_genesymbol, ' -> ', target_genesymbol) AS interaction,
-          array_length(string_to_array("references", ';'), 1) AS reference_count,
-          "references"
-        FROM interactions
-        WHERE source_genesymbol IS NOT NULL 
-          AND target_genesymbol IS NOT NULL
-          AND "references" IS NOT NULL 
-          AND "references" != ''
-      )
-      SELECT 
-        interaction,
-        reference_count::int,
-        "references"
-      FROM interaction_refs
-      ORDER BY reference_count DESC
-      LIMIT 50
-    `);
-    console.log(`✓ References by interaction: Top 50 interactions`);
 
     // h) Overlap across resources
     console.log('Querying resource overlap...');
@@ -600,11 +574,10 @@ async function generateDatabaseStats() {
       plotData: {
         literatureRefsByDatabaseAndType,
         referenceRecordPairs,
-        referencesByYear,
+        aggregateInteractionTypes,
         commercialUseAvailability: commercialUseWithLicense,
         maintenanceStatus: maintenanceStatusWithCategory,
         entriesByEvidenceType,
-        referencesByInteraction,
         resourceOverlap,
         multiResourceExamples
       },
@@ -627,11 +600,10 @@ async function generateDatabaseStats() {
     console.log('\nPlot data generated:');
     console.log(`- Literature refs by database/type: ${literatureRefsByDatabaseAndType.length} combinations`);
     console.log(`- Reference-record pairs: ${referenceRecordPairs.length} combinations`);
-    console.log(`- References by year: ${referencesByYear.length} years`);
+    console.log(`- Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
     console.log(`- Commercial use availability: ${commercialUseWithLicense.length} database/type combinations`);
     console.log(`- Maintenance status: ${maintenanceStatusWithCategory.length} resources`);
     console.log(`- Entries by evidence type: ${entriesByEvidenceType.length} combinations`);
-    console.log(`- References by interaction: Top 50 interactions`);
     console.log(`- Resource overlap: ${resourceOverlap.length} combinations`);
     console.log(`- Multi-resource examples: ${multiResourceExamples.length} examples`);
 
