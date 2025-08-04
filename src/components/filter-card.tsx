@@ -32,7 +32,7 @@ export function FilterCard({
         className
       )}
     >
-      <CardHeader className="sticky top-24 z-10 bg-background">
+      <CardHeader className="bg-background">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-primary" />
