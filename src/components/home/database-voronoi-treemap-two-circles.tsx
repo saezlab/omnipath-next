@@ -379,7 +379,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     combinedSvg.appendChild(g1);
     
     // Add first legend
-    const legend1Height = Object.keys(annotationCategoryColors).length * 18 + 65;
+    const legend1Height = Object.keys(annotationCategoryColors).length * 18 + 70;
     const legend1YOffset = 70 + (svgSize - legend1Height) / 2; // Center vertically
     const legend1Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     legend1Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend1YOffset})`);
@@ -443,7 +443,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     });
     
     // Intercellular
-    yOffset += 12;
+    yOffset += 16;
     const intercellularRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     intercellularRect.setAttribute("x", "8");
     intercellularRect.setAttribute("y", (yOffset - 10).toString());
@@ -476,7 +476,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     combinedSvg.appendChild(g2);
     
     // Add second legend
-    const legend2Height = Object.keys(interactionTypeColors).length * 18 + 95;
+    const legend2Height = Object.keys(interactionTypeColors).length * 18 + 100;
     const legend2YOffset = 70 + svgSize + gap + (svgSize - legend2Height) / 2; // Center vertically
     const legend2Group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     legend2Group.setAttribute("transform", `translate(${svgSize + 12}, ${legend2YOffset})`);
@@ -540,7 +540,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     });
     
     // Enzyme-Substrate
-    yOffset += 12;
+    yOffset += 16;
     const enzymeRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     enzymeRect.setAttribute("x", "8");
     enzymeRect.setAttribute("y", (yOffset - 10).toString());
@@ -562,7 +562,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
     legend2Group.appendChild(enzymeText);
     
     // Complexes
-    yOffset += 12;
+    yOffset += 20;
     const complexRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     complexRect.setAttribute("x", "8");
     complexRect.setAttribute("y", (yOffset - 10).toString());
