@@ -424,7 +424,7 @@ export default function DatabaseGridVisualization({
               labelText = cell.subcategory;
             } else {
               // Single-row databases (Intercellular, Complexes, Enzyme-Substrate)
-              labelText = cell.category;
+              labelText = cell.category.toUpperCase();
               isMainCategory = true;
             }
 
@@ -467,6 +467,7 @@ export default function DatabaseGridVisualization({
               .style("font-size", fontSize)
               .style("font-weight", fontWeight)
               .style("fill", textColor)
+              .style("letter-spacing", isMainCategory ? "1px" : "0px") // Add letter spacing for main categories
               .text(labelText);
           });
         });
