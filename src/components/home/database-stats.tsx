@@ -7,6 +7,7 @@ import dbStats from "@/data/db-stats.json";
 import resourcesMetadata from "@/data/resources.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
 import { DatabaseVoronoiTreemap } from "./database-voronoi-treemap";
+import { AuxiliaryChartsPanel } from "./auxiliary-charts-panel";
 
 interface SourceStat {
   source: string;
@@ -275,6 +276,9 @@ export function DatabaseStats() {
           <DatabaseVoronoiTreemap />
         </CardContent>
       </Card>
+
+      {/* Auxiliary Charts Panel for Paper */}
+      <AuxiliaryChartsPanel />
 
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5">
