@@ -10,6 +10,7 @@ import { DatabasePrintTreemapsAlternative } from "../home/database-print-treemap
 import { DatabasePrintTreemaps } from "../home/database-print-treemaps"
 import { DatabaseVoronoiTreemapLinear } from "../home/database-voronoi-treemap-linear"
 import { DatabaseVoronoiTreemapTwoCircles } from "@/components/home/database-voronoi-treemap-two-circles";
+import DatabaseGridVisualization from "@/components/home/database-grid-visualization";
 export function HomePage() {
   return (
     <SiteLayout>
@@ -87,6 +88,9 @@ export function HomePage() {
         </div>
         <div className="mt-12">
           <DatabaseVoronoiTreemapTwoCircles />
+        </div>
+        <div className="mt-12">
+          <DatabaseGridVisualization />
         </div>
 
         <AboutSection />
