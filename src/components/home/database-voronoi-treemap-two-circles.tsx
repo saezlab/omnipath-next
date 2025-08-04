@@ -333,7 +333,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
 
     // Get container dimensions
     const containerWidth = containerRef.current.offsetWidth;
-    const svgSize = Math.min(containerWidth * 0.5, 500);
+    const svgSize = Math.min(containerWidth * 0.6, 600);
     
     // Setup SVGs
     const svg1 = d3.select(svgRef1.current)
@@ -382,7 +382,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
           <svg ref={svgRef1}></svg>
         </div>
         <div className="flex-shrink-0">
-          <div className="bg-gray-50 rounded-lg p-2 w-64">
+          <div className="bg-white rounded-lg p-2 w-64">
             <div className="space-y-3">
               {/* Annotations with categories */}
               <div className="space-y-2">
@@ -428,7 +428,7 @@ export function DatabaseVoronoiTreemapTwoCircles() {
           <svg ref={svgRef2}></svg>
         </div>
         <div className="flex-shrink-0">
-          <div className="bg-gray-50 rounded-lg p-2 w-64">
+          <div className="bg-white rounded-lg p-2 w-64">
             <div className="space-y-3">
               {/* Interactions with types */}
               <div className="space-y-2">
