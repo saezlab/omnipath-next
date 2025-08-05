@@ -47,7 +47,6 @@ export default function DatabaseGridVisualization({
   height = 1400, // Further increased height for all rows
 }: GridVisualizationProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
 
   const downloadSVG = () => {
     if (!svgRef.current) return;
@@ -79,7 +78,7 @@ export default function DatabaseGridVisualization({
   };
 
   useEffect(() => {
-    if (!svgRef.current || !tooltipRef.current) return;
+    if (!svgRef.current) return;
 
     // Clear previous visualization
     d3.select(svgRef.current).selectAll("*").remove();
@@ -197,7 +196,6 @@ export default function DatabaseGridVisualization({
     class DatabaseGridVisualizationD3 {
       config: typeof CONFIG;
       data: GridCell[];
-      tooltip: d3.Selection<HTMLDivElement, unknown, null, undefined>;
       svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
       g!: d3.Selection<SVGGElement, unknown, null, undefined>;
       innerWidth!: number;
@@ -207,12 +205,10 @@ export default function DatabaseGridVisualization({
 
       constructor(
         config: typeof CONFIG,
-        svg: SVGSVGElement,
-        tooltip: HTMLDivElement
+        svg: SVGSVGElement
       ) {
         this.config = config;
         this.data = generateGridData();
-        this.tooltip = d3.select(tooltip);
         this.svg = d3.select(svg);
 
         this.setupDimensions();
@@ -351,8 +347,27 @@ export default function DatabaseGridVisualization({
           .attr("stroke", "white")
           .attr("stroke-width", 0.5)
           .style("cursor", "pointer")
-          .on("mouseover", (event: any, d: any) => this.handlePartitionHover(event, d))
-          .on("mouseout", () => this.handlePartitionHoverOut());
+          .append("title")
+          .text((d: any) => {
+            const resource = d.data;
+            let tooltip = `${resource.name}\nDatabase: ${resource.database}\nCategory: ${resource.category}`;
+            
+            if (resource.subcategory && resource.subcategory !== resource.category) {
+              tooltip += `\nSubcategory: ${resource.subcategory}`;
+            }
+            
+            tooltip += `\nRecords: ${resource.size.toLocaleString()}`;
+            
+            if (resource.interactionType) {
+              tooltip += `\nType: ${resource.interactionType.replace(/_/g, ' ')}`;
+            }
+            
+            if (resource.originalName && resource.originalName !== resource.name) {
+              tooltip += `\nOriginal: ${resource.originalName}`;
+            }
+            
+            return tooltip;
+          });
 
         // Add labels for larger partitions
         partitions.append("text")
@@ -627,43 +642,10 @@ export default function DatabaseGridVisualization({
           .text("Database Resource Grid");
       }
 
-      handlePartitionHover(event: any, d: any) {
-        const resource = d.data;
-        const tooltipContent = `
-          <strong>${resource.name}</strong><br/>
-          Database: ${resource.database}<br/>
-          Category: ${resource.category}<br/>
-          ${resource.subcategory ? `Subcategory: ${resource.subcategory}<br/>` : ''}
-          Records: ${resource.size.toLocaleString()}<br/>
-          ${resource.interactionType ? `Type: ${resource.interactionType.replace(/_/g, ' ')}<br/>` : ''}
-          ${resource.originalName && resource.originalName !== resource.name ? `Original: ${resource.originalName}` : ''}
-        `;
-        
-        this.tooltip
-          .style("opacity", 0.9)
-          .html(tooltipContent)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 10) + "px");
-
-        // Highlight effect
-        d3.select(event.currentTarget.parentNode)
-          .select("rect")
-          .style("stroke", "#374151")
-          .style("stroke-width", 2);
-      }
-
-      handlePartitionHoverOut() {
-        this.tooltip.style("opacity", 0);
-        
-        // Remove highlight
-        d3.selectAll(".partition rect")
-          .style("stroke", "white")
-          .style("stroke-width", 0.5);
-      }
     }
 
     // Initialize visualization
-    new DatabaseGridVisualizationD3(CONFIG, svgRef.current, tooltipRef.current);
+    new DatabaseGridVisualizationD3(CONFIG, svgRef.current);
 
   }, [width, height]);
 
@@ -677,13 +659,6 @@ export default function DatabaseGridVisualization({
           Download SVG
         </button>
         <svg ref={svgRef} />
-        <div
-          ref={tooltipRef}
-          className="fixed text-left p-2 text-xs bg-white text-black pointer-events-none opacity-0 z-[1000] font-medium border border-gray-300 rounded shadow-lg"
-          style={{
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-          }}
-        />
       </div>
     </>
   );
