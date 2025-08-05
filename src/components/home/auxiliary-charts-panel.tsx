@@ -739,122 +739,6 @@ export function AuxiliaryChartsPanel() {
       }
     };
 
-    // Create license chart
-    const createLicenseChart = (
-      container: d3.Selection<SVGGElement, unknown, null, undefined>,
-      data: D3ChartData[],
-      x: number,
-      y: number,
-      width: number,
-      height: number,
-      yAxisLabel: string = "",
-      isPercentage: boolean = false
-    ) => {
-      const chartG = container.append("g")
-        .attr("transform", `translate(${x},${y})`);
-
-      const margin = { top: 10, right: 20, bottom: 60, left: 60 };
-      const innerWidth = width - margin.left - margin.right;
-      const innerHeight = height - margin.top - margin.bottom;
-
-      const innerG = chartG.append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
-
-      // Scales
-      const xScale = d3.scaleBand()
-        .domain(data.map(d => d.category))
-        .range([0, innerWidth])
-        .padding(0.1);
-
-      const yScale = d3.scaleLinear()
-        .domain([0, isPercentage ? 100 : d3.max(data, d => 
-          (d.academic_nonprofit || 0) + (d.commercial || 0)) || 0])
-        .range([innerHeight, 0]);
-
-      // Stack data for licenses
-      const stack = d3.stack<D3ChartData>()
-        .keys(['academic_nonprofit', 'commercial'])
-        .order(d3.stackOrderNone)
-        .offset(d3.stackOffsetNone);
-
-      const series = stack(data);
-
-      // Stack keys for license chart
-      const licenseKeys = ['academic_nonprofit', 'commercial'];
-
-      // Draw bars
-      const seriesGroups = innerG.selectAll(".series")
-        .data(series)
-        .enter().append("g")
-        .attr("class", "series")
-        .attr("fill", (_, i) => {
-          const colors = [
-            CHART_COLORS.license.academic_nonprofit,
-            CHART_COLORS.license.commercial
-          ];
-          return colors[i];
-        });
-
-      seriesGroups.each(function(seriesData, seriesIndex) {
-        d3.select(this).selectAll("rect")
-          .data(seriesData)
-          .enter().append("rect")
-          .attr("x", d => xScale(d.data.category)!)
-          .attr("y", d => yScale(d[1]))
-          .attr("height", d => yScale(d[0]) - yScale(d[1]))
-          .attr("width", xScale.bandwidth())
-          .append("title")
-          .text(d => {
-            const seriesName = licenseKeys[seriesIndex] || 'unknown';
-            const value = d[1] - d[0];
-            const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
-            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
-            
-            let totalText = '';
-            if (d.data.total !== undefined) {
-              totalText = `\nTotal: ${d.data.total.toLocaleString()} resources`;
-            } else if (d.data.totalRecords !== undefined) {
-              totalText = `\nTotal: ${d.data.totalRecords.toLocaleString()} records`;
-            }
-            
-            return `${d.data.category}\n${categoryName}: ${displayValue}${totalText}`;
-          });
-      });
-
-      // X axis
-      innerG.append("g")
-        .attr("transform", `translate(0,${innerHeight})`)
-        .call(d3.axisBottom(xScale))
-        .selectAll("text")
-        .attr("transform", "rotate(-45)")
-        .style("text-anchor", "end")
-        .style("font-size", "10px");
-
-      // Y axis with formatting
-      const yAxis = d3.axisLeft(yScale);
-      
-      // Format numbers for non-percentage charts
-      if (!isPercentage) {
-        yAxis.tickFormat(d3.format(".0s"));
-      }
-      
-      innerG.append("g")
-        .call(yAxis)
-        .selectAll("text")
-        .style("font-size", "10px");
-
-      // Y axis label
-      if (yAxisLabel) {
-        innerG.append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 0 - margin.left)
-          .attr("x", 0 - (innerHeight / 2))
-          .attr("dy", "1em")
-          .style("text-anchor", "middle")
-          .style("font-size", "11px")
-          .text(yAxisLabel);
-      }
-    };
 
     // Create overlap chart
     const createOverlapChart = (
@@ -1026,17 +910,18 @@ export function AuxiliaryChartsPanel() {
           .style("fill", "#374151")
           .text(item.name);
       });
-    };
 
-
-    // Create overlap legend (for lower row)
-    const createOverlapLegend = (
-      container: d3.Selection<SVGGElement, unknown, null, undefined>,
-      x: number,
-      y: number
-    ) => {
-      const legendG = container.append("g")
-        .attr("transform", `translate(${x},${y})`);
+      // Overlap section
+      const overlapYOffset = licenseYOffset + 15 + licenseItems.length * 20 + 15;
+      
+      legendG.append("text")
+        .attr("x", 0)
+        .attr("y", overlapYOffset)
+        .attr("class", "legend-title")
+        .style("font-size", "13px")
+        .style("font-weight", "600")
+        .style("fill", "#374151")
+        .text("Resource Overlap");
 
       const overlapItems = [
         { name: "1 resource", color: CHART_COLORS.overlap[0] },
@@ -1048,22 +933,24 @@ export function AuxiliaryChartsPanel() {
 
       overlapItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${i * 22})`);
+          .attr("transform", `translate(0, ${overlapYOffset + 15 + i * 20})`);
 
         itemG.append("rect")
-          .attr("width", 14)
-          .attr("height", 14)
+          .attr("width", 12)
+          .attr("height", 12)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 20)
-          .attr("y", 10)
+          .attr("x", 18)
+          .attr("y", 9)
           .attr("class", "legend-text")
-          .style("font-size", "12px")
+          .style("font-size", "11px")
           .style("fill", "#374151")
           .text(item.name);
       });
     };
+
+
 
     // Layout charts in a grid
     const chartX = CONFIG.gap;
@@ -1088,16 +975,10 @@ export function AuxiliaryChartsPanel() {
       chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
       "Resources per entry (%)");
 
-    // Add legends on the right side
+    // Add combined legend on the right side
     const legendX = (CONFIG.chartWidth + CONFIG.gap) * 2 + CONFIG.gap;
-    
-    // Combined legend for grouped charts
     const combinedLegendY = chartY + 20;
     createCombinedLegend(g, legendX, combinedLegendY);
-    
-    // Overlap legend for the overlap chart
-    const overlapLegendY = chartY + CONFIG.chartHeight + CONFIG.gap + 20;
-    createOverlapLegend(g, legendX, overlapLegendY);
 
   }, []);
 
