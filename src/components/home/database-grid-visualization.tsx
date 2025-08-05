@@ -305,7 +305,7 @@ export default function DatabaseGridVisualization({
           .attr("class", "cell-background")
           .attr("width", d => d.width)
           .attr("height", d => d.height)
-          .attr("fill", "#f8f9fa")
+          .attr("fill", "none")
           .attr("stroke", "none");
 
         // Create treemap for each cell
@@ -452,6 +452,34 @@ export default function DatabaseGridVisualization({
           categoryGroups.get(cell.category)!.push(cell);
         });
 
+        // Add borders between main database categories
+        const categoryOrder = ['Interactions', 'Annotations', 'Intercellular', 'Complexes', 'Enzyme-Substrate'];
+        const orderedCategories = categoryOrder.filter(cat => categoryGroups.has(cat));
+        
+        orderedCategories.forEach((category, index) => {
+          if (index > 0) { // Skip first category, no border above it
+            const prevCategory = orderedCategories[index - 1];
+            const prevCells = categoryGroups.get(prevCategory)!;
+            const currentCells = categoryGroups.get(category)!;
+            
+            const prevMaxY = Math.max(...prevCells.map(c => c.y + c.height));
+            const currentMinY = Math.min(...currentCells.map(c => c.y));
+            
+            // Center the border in the gap between categories
+            const borderY = (prevMaxY + currentMinY) / 2;
+            
+            // Add horizontal border line centered in the gap
+            this.g.append("line")
+              .attr("class", "category-border")
+              .attr("x1", -this.config.dimensions.leftLabelWidth + 5)
+              .attr("x2", -10)
+              .attr("y1", borderY)
+              .attr("y2", borderY)
+              .attr("stroke", "#d1d5db")
+              .attr("stroke-width", 1);
+          }
+        });
+
         // Add labels for each row and category sections
         categoryGroups.forEach((cells, category) => {
           const minY = Math.min(...cells.map(c => c.y));
@@ -464,9 +492,8 @@ export default function DatabaseGridVisualization({
             .attr("y", minY - 2)
             .attr("width", this.config.dimensions.leftLabelWidth - 10)
             .attr("height", maxY - minY + 4)
-            .attr("fill", "rgba(249, 250, 251, 0.8)")
-            .attr("stroke", "#e5e7eb")
-            .attr("stroke-width", 1)
+            .attr("fill", "none")
+            .attr("stroke", "none")
             .attr("rx", 4);
 
           // Add category header (only for multi-row categories)
