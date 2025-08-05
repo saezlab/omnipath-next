@@ -6,6 +6,8 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import dbStats from "@/data/db-stats.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
+import resourcesByLicense from "@/data/resources_by_license.json";
+import { cleanSourceName } from "@/utils/database-treemap-data";
 
 interface DatabaseSection {
   title: string;
@@ -24,6 +26,10 @@ const CHART_COLORS = {
     discontinued: '#5b205f',   // Dark purple - problematic
     unknown: '#6b7280'
   },
+  license: {
+    academic_nonprofit: '#9333ea', // Purple - academic/nonprofit
+    commercial: '#059669'          // Green - commercial
+  },
   overlap: ['#176fc1', '#00acc1', '#5e35b1', '#f89d0e', '#d22027']
 };
 
@@ -36,6 +42,8 @@ interface D3ChartData {
   discontinued: number;
   total?: number;
   totalRecords?: number;
+  academic_nonprofit?: number;
+  commercial?: number;
 }
 
 interface OverlapData {
@@ -48,33 +56,64 @@ interface OverlapData {
   totalEntries: number;
 }
 
+// Deduplicate sources by cleaned name (same logic as treemap)
+function deduplicateSources(sources: Array<{ source: string; record_count: number }>): Array<{ source: string; record_count: number }> {
+  const deduplicatedMap = new Map<string, { source: string; record_count: number }>();
+  sources.forEach(item => {
+    const cleanedName = cleanSourceName(item.source);
+    const existing = deduplicatedMap.get(cleanedName);
+    
+    if (!existing) {
+      // First occurrence of this cleaned name
+      deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
+    } else {
+      // Check if current item is the original (matches cleaned name exactly)
+      const isCurrentOriginal = item.source === cleanedName;
+      const isExistingOriginal = existing.source === cleanedName;
+      
+      if (isCurrentOriginal && !isExistingOriginal) {
+        // Current is original, existing is secondary - replace
+        deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
+      } else if (!isCurrentOriginal && !isExistingOriginal) {
+        // Both are secondary sources - keep the one with higher record count, but aggregate
+        existing.record_count += item.record_count;
+      } else if (!isCurrentOriginal && isExistingOriginal) {
+        // Existing is original, add current record count to it
+        existing.record_count += item.record_count;
+      }
+      // If existing is original, keep it and add record count
+    }
+  });
+  return Array.from(deduplicatedMap.values());
+}
+
 export function AuxiliaryChartsPanel() {
   const svgRef = useRef<SVGSVGElement>(null);
 
   const databases: DatabaseSection[] = [
     {
       title: "Interactions",
-      data: dbStats.interactions,
+      data: deduplicateSources(dbStats.interactions),
       description: "Molecular interactions between proteins"
     },
     {
       title: "Enzyme-Substrate",
-      data: dbStats.enzsub,
+      data: deduplicateSources(dbStats.enzsub),
       description: "Enzyme-substrate relationships"
     },
     {
       title: "Complexes",
-      data: dbStats.complexes,
+      data: deduplicateSources(dbStats.complexes),
       description: "Protein complex compositions"
     },
     {
       title: "Annotations",
-      data: dbStats.annotations,
+      data: deduplicateSources(dbStats.annotations),
       description: "Functional annotations and properties"
     },
     {
       title: "Intercellular",
-      data: dbStats.intercell,
+      data: deduplicateSources(dbStats.intercell),
       description: "Intercellular communication molecules"
     }
   ];
@@ -137,13 +176,13 @@ export function AuxiliaryChartsPanel() {
 
     // Configuration
     const CONFIG = {
-      width: 1000,
+      width: 1400,
       height: 580,
       margin: { top: 20, right: 160, bottom: 60, left: 40 },
-      chartWidth: 280,
+      chartWidth: 240,
       chartHeight: 240,
       legendWidth: 140,
-      gap: 20
+      gap: 15
     };
 
     // Helper function to create data mappings
@@ -154,12 +193,16 @@ export function AuxiliaryChartsPanel() {
       });
 
       const sourceMaintenanceMap: Record<string, string> = {};
-      const unmappedSources: string[] = [];
+      const sourceLicenseMap: Record<string, string> = {};
+      const unmappedMaintenanceSources: string[] = [];
+      const unmappedLicenseSources: string[] = [];
       
+      // Map maintenance categories (using cleaned names for matching)
       Object.entries(maintenanceCategories).forEach(([category, resources]) => {
         (resources as string[]).forEach(resource => {
+          const cleanedResource = cleanSourceName(resource);
           const matchingSource = Array.from(allSources).find(source => 
-            source.toLowerCase() === resource.toLowerCase()
+            cleanSourceName(source).toLowerCase() === cleanedResource.toLowerCase()
           );
           if (matchingSource) {
             sourceMaintenanceMap[matchingSource] = category;
@@ -167,16 +210,51 @@ export function AuxiliaryChartsPanel() {
         });
       });
 
-      Array.from(allSources).forEach(source => {
-        if (!sourceMaintenanceMap[source]) {
-          unmappedSources.push(source);
+      // Map license categories (using cleaned names for matching)
+      resourcesByLicense.academic_nonprofit.forEach(resource => {
+        const cleanedResource = cleanSourceName(resource);
+        const matchingSource = Array.from(allSources).find(source => 
+          cleanSourceName(source).toLowerCase() === cleanedResource.toLowerCase()
+        );
+        if (matchingSource) {
+          sourceLicenseMap[matchingSource] = 'academic_nonprofit';
         }
       });
 
-      return { sourceMaintenanceMap, unmappedSources };
+      resourcesByLicense.commercial.forEach(resource => {
+        const cleanedResource = cleanSourceName(resource);
+        const matchingSource = Array.from(allSources).find(source => 
+          cleanSourceName(source).toLowerCase() === cleanedResource.toLowerCase()
+        );
+        if (matchingSource) {
+          sourceLicenseMap[matchingSource] = 'commercial';
+        }
+      });
+
+      // Find unmapped sources
+      Array.from(allSources).forEach(source => {
+        if (!sourceMaintenanceMap[source]) {
+          unmappedMaintenanceSources.push(source);
+        }
+        if (!sourceLicenseMap[source]) {
+          unmappedLicenseSources.push(source);
+        }
+      });
+
+      // Log unmapped license sources to console for later mapping
+      if (unmappedLicenseSources.length > 0) {
+        console.log('Resources without license mapping:', unmappedLicenseSources);
+      }
+
+      return { 
+        sourceMaintenanceMap, 
+        sourceLicenseMap,
+        unmappedSources: unmappedMaintenanceSources,
+        unmappedLicenseSources 
+      };
     };
 
-    const { sourceMaintenanceMap } = createDataMappings();
+    const { sourceMaintenanceMap, sourceLicenseMap } = createDataMappings();
 
     // Prepare chart data
     const prepareChartData = () => {
@@ -189,10 +267,20 @@ export function AuxiliaryChartsPanel() {
           discontinued: 0
         };
 
+        const licenseBreakdown: Record<string, number> = {
+          academic_nonprofit: 0,
+          commercial: 0
+        };
+
         db.data.forEach(source => {
-          const category = sourceMaintenanceMap[source.source];
-          if (category) {
-            maintenanceBreakdown[category]++;
+          const maintenanceCategory = sourceMaintenanceMap[source.source];
+          if (maintenanceCategory) {
+            maintenanceBreakdown[maintenanceCategory]++;
+          }
+
+          const licenseCategory = sourceLicenseMap[source.source];
+          if (licenseCategory) {
+            licenseBreakdown[licenseCategory]++;
           }
         });
 
@@ -202,6 +290,8 @@ export function AuxiliaryChartsPanel() {
           infrequent: maintenanceBreakdown.infrequent,
           one_time_paper: maintenanceBreakdown.one_time_paper,
           discontinued: maintenanceBreakdown.discontinued,
+          academic_nonprofit: licenseBreakdown.academic_nonprofit,
+          commercial: licenseBreakdown.commercial,
           total: db.data.length
         };
       });
@@ -215,10 +305,20 @@ export function AuxiliaryChartsPanel() {
           discontinued: 0
         };
 
+        const licenseBreakdown: Record<string, number> = {
+          academic_nonprofit: 0,
+          commercial: 0
+        };
+
         db.data.forEach(source => {
-          const category = sourceMaintenanceMap[source.source];
-          if (category) {
-            maintenanceBreakdown[category] += source.record_count;
+          const maintenanceCategory = sourceMaintenanceMap[source.source];
+          if (maintenanceCategory) {
+            maintenanceBreakdown[maintenanceCategory] += source.record_count;
+          }
+
+          const licenseCategory = sourceLicenseMap[source.source];
+          if (licenseCategory) {
+            licenseBreakdown[licenseCategory] += source.record_count;
           }
         });
 
@@ -230,6 +330,8 @@ export function AuxiliaryChartsPanel() {
           infrequent: total > 0 ? ((maintenanceBreakdown.infrequent / total) * 100) : 0,
           one_time_paper: total > 0 ? ((maintenanceBreakdown.one_time_paper / total) * 100) : 0,
           discontinued: total > 0 ? ((maintenanceBreakdown.discontinued / total) * 100) : 0,
+          academic_nonprofit: total > 0 ? ((licenseBreakdown.academic_nonprofit / total) * 100) : 0,
+          commercial: total > 0 ? ((licenseBreakdown.commercial / total) * 100) : 0,
           totalRecords: total
         };
       });
@@ -470,6 +572,123 @@ export function AuxiliaryChartsPanel() {
       }
     };
 
+    // Create license chart
+    const createLicenseChart = (
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
+      data: D3ChartData[],
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      yAxisLabel: string = "",
+      isPercentage: boolean = false
+    ) => {
+      const chartG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
+
+      const margin = { top: 10, right: 20, bottom: 60, left: 60 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      const innerG = chartG.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Scales
+      const xScale = d3.scaleBand()
+        .domain(data.map(d => d.category))
+        .range([0, innerWidth])
+        .padding(0.1);
+
+      const yScale = d3.scaleLinear()
+        .domain([0, isPercentage ? 100 : d3.max(data, d => 
+          (d.academic_nonprofit || 0) + (d.commercial || 0)) || 0])
+        .range([innerHeight, 0]);
+
+      // Stack data for licenses
+      const stack = d3.stack<D3ChartData>()
+        .keys(['academic_nonprofit', 'commercial'])
+        .order(d3.stackOrderNone)
+        .offset(d3.stackOffsetNone);
+
+      const series = stack(data);
+
+      // Stack keys for license chart
+      const licenseKeys = ['academic_nonprofit', 'commercial'];
+
+      // Draw bars
+      const seriesGroups = innerG.selectAll(".series")
+        .data(series)
+        .enter().append("g")
+        .attr("class", "series")
+        .attr("fill", (_, i) => {
+          const colors = [
+            CHART_COLORS.license.academic_nonprofit,
+            CHART_COLORS.license.commercial
+          ];
+          return colors[i];
+        });
+
+      seriesGroups.each(function(seriesData, seriesIndex) {
+        d3.select(this).selectAll("rect")
+          .data(seriesData)
+          .enter().append("rect")
+          .attr("x", d => xScale(d.data.category)!)
+          .attr("y", d => yScale(d[1]))
+          .attr("height", d => yScale(d[0]) - yScale(d[1]))
+          .attr("width", xScale.bandwidth())
+          .append("title")
+          .text(d => {
+            const seriesName = licenseKeys[seriesIndex] || 'unknown';
+            const value = d[1] - d[0];
+            const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
+            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            
+            let totalText = '';
+            if (d.data.total !== undefined) {
+              totalText = `\nTotal: ${d.data.total.toLocaleString()} resources`;
+            } else if (d.data.totalRecords !== undefined) {
+              totalText = `\nTotal: ${d.data.totalRecords.toLocaleString()} records`;
+            }
+            
+            return `${d.data.category}\n${categoryName}: ${displayValue}${totalText}`;
+          });
+      });
+
+      // X axis
+      innerG.append("g")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(xScale))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end")
+        .style("font-size", "10px");
+
+      // Y axis with formatting
+      const yAxis = d3.axisLeft(yScale);
+      
+      // Format numbers for non-percentage charts
+      if (!isPercentage) {
+        yAxis.tickFormat(d3.format(".0s"));
+      }
+      
+      innerG.append("g")
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", "10px");
+
+      // Y axis label
+      if (yAxisLabel) {
+        innerG.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x", 0 - (innerHeight / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .style("font-size", "11px")
+          .text(yAxisLabel);
+      }
+    };
+
     // Create overlap chart
     const createOverlapChart = (
       container: d3.Selection<SVGGElement, unknown, null, undefined>,
@@ -597,6 +816,39 @@ export function AuxiliaryChartsPanel() {
       });
     };
 
+    // Create license legend
+    const createLicenseLegend = (
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
+      x: number,
+      y: number
+    ) => {
+      const legendG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
+
+      const licenseItems = [
+        { name: "Academic/Nonprofit", color: CHART_COLORS.license.academic_nonprofit },
+        { name: "Commercial", color: CHART_COLORS.license.commercial }
+      ];
+
+      licenseItems.forEach((item, i) => {
+        const itemG = legendG.append("g")
+          .attr("transform", `translate(0, ${i * 22})`);
+
+        itemG.append("rect")
+          .attr("width", 14)
+          .attr("height", 14)
+          .attr("fill", item.color);
+
+        itemG.append("text")
+          .attr("x", 20)
+          .attr("y", 10)
+          .attr("class", "legend-text")
+          .style("font-size", "12px")
+          .style("fill", "#374151")
+          .text(item.name);
+      });
+    };
+
     // Create overlap legend (for lower row)
     const createOverlapLegend = (
       container: d3.Selection<SVGGElement, unknown, null, undefined>,
@@ -637,29 +889,41 @@ export function AuxiliaryChartsPanel() {
     const chartX = CONFIG.gap;
     const chartY = CONFIG.gap;
 
-    // Row 1: Resources and References (absolute values)
+    // Row 1: Resources (maintenance) and Resources (license)
     createStackedBarChart(g, resourcesData, chartX, chartY, CONFIG.chartWidth, CONFIG.chartHeight,
-      "Number of resources", false);
+      "Resources by maintenance", false);
     
-    createStackedBarChart(g, referencesData, chartX + CONFIG.chartWidth + CONFIG.gap, chartY, 
+    createLicenseChart(g, resourcesData, chartX + CONFIG.chartWidth + CONFIG.gap, chartY, 
       CONFIG.chartWidth, CONFIG.chartHeight,
-      "Number of references", false);
+      "Resources by license", false);
 
-    // Row 2: Records % and Resource Overlap %
+    // Row 1 continued: References and Resource Overlap %
+    createStackedBarChart(g, referencesData, chartX + (CONFIG.chartWidth + CONFIG.gap) * 2, chartY, 
+      CONFIG.chartWidth, CONFIG.chartHeight,
+      "References by maintenance", false);
+    
+    createOverlapChart(g, combinedOverlapData, chartX + (CONFIG.chartWidth + CONFIG.gap) * 3, 
+      chartY, CONFIG.chartWidth, CONFIG.chartHeight,
+      "Resources per entry (%)");
+
+    // Row 2: Records % (maintenance) and Records % (license)
     createStackedBarChart(g, recordsData, chartX, chartY + CONFIG.chartHeight + CONFIG.gap, 
       CONFIG.chartWidth, CONFIG.chartHeight,
       "Records by maintenance (%)", true);
     
-    createOverlapChart(g, combinedOverlapData, chartX + CONFIG.chartWidth + CONFIG.gap, 
+    createLicenseChart(g, recordsData, chartX + CONFIG.chartWidth + CONFIG.gap, 
       chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
-      "Resources per entry (%)");
+      "Records by license (%)", true);
 
-    // Add legends on the right side, centered with each row
-    const legendX = (CONFIG.chartWidth + CONFIG.gap) * 2 + CONFIG.gap;
+    // Add legends on the right side
+    const legendX = (CONFIG.chartWidth + CONFIG.gap) * 4 + CONFIG.gap;
     
-    // Upper legend (maintenance) - centered vertically with upper row
+    // Upper legends - maintenance and license side by side
     const upperLegendY = chartY + (CONFIG.chartHeight / 2) - (4 * 22 / 2); // 4 items * 22px spacing
     createMaintenanceLegend(g, legendX, upperLegendY);
+    
+    const licenseLegendY = chartY + (CONFIG.chartHeight / 2) - (2 * 22 / 2); // 2 items * 22px spacing
+    createLicenseLegend(g, legendX, licenseLegendY + 110); // Offset below maintenance legend
     
     // Lower legend (overlap) - centered vertically with lower row
     const lowerLegendY = chartY + CONFIG.chartHeight + CONFIG.gap + (CONFIG.chartHeight / 2) - (5 * 22 / 2); // 5 items * 22px spacing

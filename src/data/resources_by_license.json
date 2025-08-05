@@ -1,298 +1,232 @@
 {
-  "AFL 3.0": [
-    "GEREDB"
+  "academic_nonprofit": [
+    "Adrecs",
+    "Baccin2019",
+    "BioCarta",
+    "Biocarta",
+    "CORUM",
+    "COSMIC",
+    "CTD",
+    "CancerDrugsDB",
+    "CancerGeneCensus",
+    "CancerSEA",
+    "CellCellInteractions",
+    "Cellinker",
+    "Clinvar",
+    "CytoSig",
+    "DDInter",
+    "DEPOD",
+    "DLRP",
+    "DisGeNet",
+    "DrugBank",
+    "ELM",
+    "GEREDB",
+    "HPMR",
+    "HPO",
+    "HPRD",
+    "HPRD-phos",
+    "I2D",
+    "KEA",
+    "KEGG-PC",
+    "KEGG",
+    "Kirouac2010",
+    "LMPID",
+    "Lambert2018",
+    "Li2012",
+    "LncRNADisease",
+    "MCAM",
+    "Matrisome",
+    "OpenTargets",
+    "PDZBase",
+    "PathwayCommons",
+    "Pharos",
+    "PhosphoNetworks",
+    "PhosphoSite",
+    "RaMP",
+    "SIDER",
+    "TRIP",
+    "TopDB",
+    "TransmiR",
+    "Wang",
+    "iPTMnet",
+    "iTALK",
+    "kinase.com",
+    "lncRNADisease",
+    "miR2Disease",
+    "miRDeathDB",
+    "miRTarBase",
+    "ncRDeathDB",
+    "phospho.ELM",
+    "phosphoELM"
   ],
-  "Apache 2.0": [
-    "Membranome",
-    "OPM",
-    "PROGENy"
-  ],
-  "Artistic-2.0": [
-    "CellCall"
-  ],
-  "BSD": [
-    "NCI-PID"
-  ],
-  "BioCarta": [
-    "BioCarta"
-  ],
-  "CC BY 2.5": [
-    "Ataxia",
-    "CancerCellMap",
-    "DOMINO",
-    "IMEx",
-    "NetPath"
-  ],
-  "CC BY 3.0": [
-    "AlzPathway",
-    "CellTypist",
-    "WikiPathways"
-  ],
-  "CC BY 4.0": [
+  "commercial": [
+    "ABS",
     "ACSN",
     "ARACNe-GTEx",
+    "ARN",
     "Adhesome",
     "Almen2009",
+    "AlzPathway",
+    "Ataxia",
     "Awan2007",
+    "BEL-Large-Corpus",
+    "BioGRID",
     "CA1",
     "CARFMAP",
     "CFinder",
+    "COMPLEAT",
     "CSPA",
+    "CancerCellMap",
+    "CellCall",
+    "CellChatDB",
+    "CellChatDB-cofactors",
+    "CellPhoneDB",
+    "CellTalkDB",
+    "CellTypist",
+    "ChEMBL",
+    "ComPPI",
     "Compath",
+    "Compleat",
     "ComplexPortal",
     "Cui2007",
     "CytReg",
+    "DGIdb",
+    "DIP",
     "DISEASES",
+    "DOMINO",
+    "DeathDomain",
     "Dinarello2013",
+    "DoRothEA-A",
     "DoRothEA-reviews",
+    "DrugCentral",
     "EMBRACE",
     "ENCODE",
+    "ENCODE-distal",
+    "ENCODE-proximal",
     "ExPASy",
     "ExTRI",
     "Exocarta",
+    "FANTOM",
+    "FANTOM4",
+    "FANTOM5",
+    "Fantom",
     "Fantom4",
+    "Fantom5",
     "GO",
+    "GO-lig-rec",
     "GOA",
     "GPCRdb",
+    "Guide to Pharmacology",
+    "Guide2Pharma",
+    "GuideToPharmacology",
+    "HGNC",
+    "HI-II",
+    "HI-III",
     "HIPPIE",
     "HOCOMOCO",
+    "HOCOMOCO-v11",
+    "HPA",
+    "HTRI",
+    "HTRIdb",
+    "HU-union",
     "Havugimana2012",
     "HuRI",
     "HuRI Lit-BM",
     "HumanCellMap",
     "Humsavar",
+    "ICELLNET",
+    "IMEx",
+    "InnateDB",
+    "InnateDB-All",
     "IntAct",
+    "IntOGen",
     "Integrins",
+    "InterPro",
     "JASPAR",
+    "JASPAR-v2018",
+    "KEGG-MEDICUS",
     "Kinexus",
+    "LOCATE",
+    "LRdb",
     "Laudanna",
     "LipidMAPS",
+    "Lit-BM-13",
+    "Lit-BM-17",
+    "MIMP",
     "MINT",
+    "MPPI",
     "MSigDB",
     "Macrophage",
     "MatrixDB",
+    "Membranome",
+    "NCI-PID",
+    "NFIRegulomeDB",
+    "NRF2ome",
+    "NTNU.Curated",
     "NTNUcuration",
+    "NetPath",
     "NetworKIN",
     "NetworkBlast",
+    "OMA",
+    "OPM",
+    "ORegAnno",
     "OmniPath",
+    "PANTHER",
+    "PAZAR",
+    "PDB",
+    "PROGENy",
+    "PanglaoDB",
     "Pavlidis",
+    "Pavlidis2021",
     "Phobius",
     "Phosphatome",
+    "PhosphoPoint",
     "ProtMapper",
     "REACH",
     "RLIMS-P",
+    "Ramilowski",
     "Ramilowski2015",
     "ReMap",
+    "Reactome",
+    "RegNetwork",
     "SIGNOR",
     "SPIKE",
     "STRING",
+    "SignaLink",
+    "SignaLink2",
+    "SignaLink3",
+    "Signor",
     "Sparser",
     "Surfaceome",
     "SwissLipids",
+    "TCDB",
+    "TCRcuration",
+    "TFactS",
     "TFcensus",
+    "TFe",
+    "TRED",
     "TRRD",
+    "TRRUST",
+    "Tfact",
     "TfactS",
     "UniProt",
     "Vesiclepedia",
+    "WikiPathways",
     "Wojtowicz2020",
+    "Yang2016",
+    "Yu2011",
     "Zaman2013",
     "Zhong2015",
+    "connectomeDB2020",
+    "dbPTM",
+    "guidetopharmacology",
     "hu.MAP",
     "hu.MAP2",
-    "iMEX"
-  ],
-  "CC BY-NC 2.0": [
-    "LMPID",
-    "miR2Disease"
-  ],
-  "CC BY-NC 3.0": [
-    "Li2012",
-    "Wang"
-  ],
-  "CC BY-NC 4.0": [
-    "Adrecs",
-    "Baccin2019",
-    "CORUM",
-    "CancerSEA",
-    "Cellinker",
-    "DEPOD",
-    "DrugBank",
-    "HPMR",
-    "Matrisome",
-    "TopDB",
-    "TransmiR",
-    "lncRNADisease",
-    "miRDeathDB",
-    "ncRDeathDB"
-  ],
-  "CC BY-NC-ND 3.0": [
-    "Kirouac2010"
-  ],
-  "CC BY-NC-SA 3.0": [
-    "PhosphoSite",
-    "TRIP",
-    "iTALK"
-  ],
-  "CC BY-NC-SA 4.0": [
-    "DDInter",
-    "DisGeNet",
-    "SIDER",
-    "iPTMnet"
-  ],
-  "CC BY-ND 3.0": [
-    "DIP"
-  ],
-  "CC BY-SA 2.5": [
-    "OMA"
-  ],
-  "CC BY-SA 3.0": [
-    "ARN",
-    "ChEMBL",
-    "Guide2Pharma",
-    "HPA",
-    "NRF2ome",
-    "SignaLink3",
-    "TCDB",
-    "TFe"
-  ],
-  "CC BY-SA 4.0": [
-    "ComPPI",
-    "Compleat",
-    "DrugCentral",
-    "KEGG-MEDICUS",
-    "PhosphoPoint",
-    "TRRUST"
-  ],
-  "CC0 1.0": [
-    "IntOGen",
-    "InterPro",
-    "Reactome",
-    "miRBase"
-  ],
-  "COSMIC": [
-    "COSMIC"
-  ],
-  "CellCellInteractions": [
-    "CellCellInteractions"
-  ],
-  "Composite": [
-    "CollecTRI",
-    "ConsensusPathDB",
-    "DoRothEA"
-  ],
-  "CytoSig": [
-    "CytoSig"
-  ],
-  "DSL": [
-    "InnateDB"
-  ],
-  "ELM": [
-    "ELM",
-    "phosphoELM"
-  ],
-  "EMBL-EBI": [
-    "Clinvar"
-  ],
-  "EUL": [
-    "Lambert2018"
-  ],
-  "GPLv2": [
-    "ABS",
-    "PANTHER"
-  ],
-  "GPLv3": [
-    "CellChatDB",
-    "CellTalkDB",
-    "ICELLNET",
-    "LRdb",
+    "iMEX",
+    "lncrnadb",
+    "miRBase",
+    "miRecords",
+    "scConnect",
     "talklr"
-  ],
-  "HGNC": [
-    "HGNC"
-  ],
-  "HPO": [
-    "HPO"
-  ],
-  "HPRD": [
-    "HPRD"
-  ],
-  "I2D": [
-    "I2D"
-  ],
-  "Informal": [
-    "DoRothEA-A",
-    "PanglaoDB"
-  ],
-  "KEGG": [
-    "KEGG"
-  ],
-  "Kinase.com": [
-    "kinase.com"
-  ],
-  "LGPLv3": [
-    "HTRIdb",
-    "MIMP",
-    "NFIRegulomeDB",
-    "ORegAnno",
-    "PAZAR",
-    "RegNetwork"
-  ],
-  "MIT": [
-    "BioGRID",
-    "CellPhoneDB",
-    "DGIdb",
-    "connectomeDB2020",
-    "scConnect"
-  ],
-  "MPPI": [
-    "MPPI"
-  ],
-  "NAR Open Access": [
-    "BEL-Large-Corpus",
-    "DeathDomain",
-    "LOCATE",
-    "TRED",
-    "dbPTM",
-    "lncrnadb"
-  ],
-  "No license": [
-    "CPAD",
-    "CST",
-    "HuPho",
-    "Negatome",
-    "Offsides",
-    "PathoPhenoDB",
-    "TLR",
-    "Twosides",
-    "cellsignal.com",
-    "gutMGene"
-  ],
-  "OpenTargets": [
-    "OpenTargets"
-  ],
-  "PDB": [
-    "PDB"
-  ],
-  "PathwayCommons": [
-    "PathwayCommons"
-  ],
-  "PhosphoNetworks": [
-    "PhosphoNetworks"
-  ],
-  "Unspecified NC-SA": [
-    "CTD",
-    "CancerDrugsDB",
-    "DLRP",
-    "KEA",
-    "MCAM",
-    "PDZBase",
-    "Pharos",
-    "RaMP"
-  ],
-  "miRTarBase": [
-    "miRTarBase"
-  ],
-  "miRecords": [
-    "miRecords"
   ]
 }
