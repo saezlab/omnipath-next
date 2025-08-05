@@ -27,10 +27,6 @@ const CHART_COLORS = {
   overlap: ['#176fc1', '#00acc1', '#5e35b1', '#f89d0e', '#d22027']
 };
 
-interface ChartProps {
-  width?: number;
-  height?: number;
-}
 
 interface D3ChartData {
   category: string;
@@ -54,7 +50,6 @@ interface OverlapData {
 
 export function AuxiliaryChartsPanel() {
   const svgRef = useRef<SVGSVGElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
 
   const databases: DatabaseSection[] = [
     {
@@ -135,13 +130,10 @@ export function AuxiliaryChartsPanel() {
   };
 
   useEffect(() => {
-    if (!svgRef.current || !tooltipRef.current) return;
+    if (!svgRef.current) return;
 
     // Clear previous visualization
     d3.select(svgRef.current).selectAll("*").remove();
-
-    // Set up tooltip
-    const tooltip = d3.select(tooltipRef.current);
 
     // Configuration
     const CONFIG = {
@@ -399,12 +391,15 @@ export function AuxiliaryChartsPanel() {
 
       const series = stack(data);
 
+      // Stack keys for reference
+      const stackKeys = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
+
       // Draw bars
-      innerG.selectAll(".series")
+      const seriesGroups = innerG.selectAll(".series")
         .data(series)
         .enter().append("g")
         .attr("class", "series")
-        .attr("fill", (d, i) => {
+        .attr("fill", (_, i) => {
           const colors = [
             CHART_COLORS.maintenance.frequent,
             CHART_COLORS.maintenance.infrequent,
@@ -412,36 +407,33 @@ export function AuxiliaryChartsPanel() {
             CHART_COLORS.maintenance.discontinued
           ];
           return colors[i];
-        })
-        .selectAll("rect")
-        .data(d => d)
-        .enter().append("rect")
-        .attr("x", d => xScale(d.data.category)!)
-        .attr("y", d => yScale(d[1]))
-        .attr("height", d => yScale(d[0]) - yScale(d[1]))
-        .attr("width", xScale.bandwidth())
-        .on("mouseover", function(event, d) {
-          const seriesName = (this.parentNode as any).__data__.key;
-          const value = d[1] - d[0];
-          const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
-          const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
-          
-          let totalText = '';
-          if (d.data.total !== undefined) {
-            totalText = `<br/>Total: ${d.data.total.toLocaleString()} resources`;
-          } else if (d.data.totalRecords !== undefined) {
-            totalText = `<br/>Total: ${d.data.totalRecords.toLocaleString()} records`;
-          }
-          
-          tooltip
-            .style("opacity", 0.9)
-            .html(`<strong>${d.data.category}</strong><br/>${categoryName}: ${displayValue}${totalText}`)
-            .style("left", (event.pageX + 10) + "px")
-            .style("top", (event.pageY - 10) + "px");
-        })
-        .on("mouseout", () => {
-          tooltip.style("opacity", 0);
         });
+
+      seriesGroups.each(function(seriesData, seriesIndex) {
+        d3.select(this).selectAll("rect")
+          .data(seriesData)
+          .enter().append("rect")
+          .attr("x", d => xScale(d.data.category)!)
+          .attr("y", d => yScale(d[1]))
+          .attr("height", d => yScale(d[0]) - yScale(d[1]))
+          .attr("width", xScale.bandwidth())
+          .append("title")
+          .text(d => {
+            const seriesName = stackKeys[seriesIndex] || 'unknown';
+            const value = d[1] - d[0];
+            const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
+            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            
+            let totalText = '';
+            if (d.data.total !== undefined) {
+              totalText = `\nTotal: ${d.data.total.toLocaleString()} resources`;
+            } else if (d.data.totalRecords !== undefined) {
+              totalText = `\nTotal: ${d.data.totalRecords.toLocaleString()} records`;
+            }
+            
+            return `${d.data.category}\n${categoryName}: ${displayValue}${totalText}`;
+          });
+      });
 
       // X axis
       innerG.append("g")
@@ -516,32 +508,31 @@ export function AuxiliaryChartsPanel() {
 
       const series = stack(data);
 
+      // Stack keys for overlap chart
+      const overlapKeys = ['1 resource', '2 resources', '3 resources', '4 resources', '5+ resources'];
+
       // Draw bars
-      innerG.selectAll(".series")
+      const overlapSeriesGroups = innerG.selectAll(".series")
         .data(series)
         .enter().append("g")
         .attr("class", "series")
-        .attr("fill", (d, i) => CHART_COLORS.overlap[i])
-        .selectAll("rect")
-        .data(d => d)
-        .enter().append("rect")
-        .attr("x", d => xScale(d.data.entryType)!)
-        .attr("y", d => yScale(d[1]))
-        .attr("height", d => yScale(d[0]) - yScale(d[1]))
-        .attr("width", xScale.bandwidth())
-        .on("mouseover", function(event, d) {
-          const seriesName = (this.parentNode as any).__data__.key;
-          const value = d[1] - d[0];
-          
-          tooltip
-            .style("opacity", 0.9)
-            .html(`<strong>${d.data.entryType}</strong><br/>${seriesName}: ${value.toFixed(1)}%<br/>Total entries: ${d.data.totalEntries.toLocaleString()}`)
-            .style("left", (event.pageX + 10) + "px")
-            .style("top", (event.pageY - 10) + "px");
-        })
-        .on("mouseout", () => {
-          tooltip.style("opacity", 0);
-        });
+        .attr("fill", (_, i) => CHART_COLORS.overlap[i]);
+
+      overlapSeriesGroups.each(function(seriesData, seriesIndex) {
+        d3.select(this).selectAll("rect")
+          .data(seriesData)
+          .enter().append("rect")
+          .attr("x", d => xScale(d.data.entryType)!)
+          .attr("y", d => yScale(d[1]))
+          .attr("height", d => yScale(d[0]) - yScale(d[1]))
+          .attr("width", xScale.bandwidth())
+          .append("title")
+          .text(d => {
+            const seriesName = overlapKeys[seriesIndex] || 'Unknown';
+            const value = d[1] - d[0];
+            return `${d.data.entryType}\n${seriesName}: ${value.toFixed(1)}%\nTotal entries: ${d.data.totalEntries.toLocaleString()}`;
+          });
+      });
 
       // X axis
       innerG.append("g")
@@ -685,13 +676,6 @@ export function AuxiliaryChartsPanel() {
         Download SVG
       </button>
       <svg ref={svgRef} />
-      <div
-        ref={tooltipRef}
-        className="fixed text-left p-2 text-xs bg-white text-black pointer-events-none opacity-0 z-[1000] font-medium border border-gray-300 rounded shadow-lg"
-        style={{
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-        }}
-      />
     </div>
   );
 }
