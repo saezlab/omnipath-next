@@ -12,8 +12,8 @@ export function HomePage() {
     <SiteLayout>
       <HeroSection />
 
-      <div className="container py-8 mx-auto px-2">
-        <div className="grid gap-6 lg:grid-cols-2">
+      <div className="container py-8 mx-auto px-4 sm:px-6">
+        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
           <FeatureCard
             icon={<Network className="h-6 w-6 text-primary" />}
             title="Interactions Browser"
@@ -69,12 +69,33 @@ export function HomePage() {
           <AIAssistantCard />
         </div>
 
-        <div className="mt-12">
-          <DatabaseGridVisualization />
-        </div>
-        <div className="mt-12">
-          <AuxiliaryChartsPanel />
-        </div>
+        {/* Database Resource Overview Section */}
+        <section className="mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Database Resource Overview</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Explore our comprehensive collection of biological databases organized by category. 
+              Each visualization shows the relative size and scope of different data sources.
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <DatabaseGridVisualization />
+          </div>
+        </section>
+
+        {/* Database Statistics Section */}
+        <section className="mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Database Statistics</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Detailed statistics about resource maintenance, record distribution, and data overlap 
+              across different database categories and interaction types.
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <AuxiliaryChartsPanel />
+          </div>
+        </section>
 
         <AboutSection />
       </div>
