@@ -4,7 +4,6 @@
 
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import dbStats from "@/data/db-stats.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
 
@@ -54,10 +53,7 @@ interface OverlapData {
 }
 
 export function AuxiliaryChartsPanel() {
-  const resourcesChartRef = useRef<SVGSVGElement>(null);
-  const referencesChartRef = useRef<SVGSVGElement>(null);
-  const recordsChartRef = useRef<SVGSVGElement>(null);
-  const overlapChartRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   const databases: DatabaseSection[] = [
@@ -89,8 +85,10 @@ export function AuxiliaryChartsPanel() {
   ];
 
   // Download SVG function
-  const downloadSVG = (svgElement: SVGSVGElement, filename: string) => {
-    const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
+  const downloadSVG = () => {
+    if (!svgRef.current) return;
+
+    const svgElement = svgRef.current.cloneNode(true) as SVGSVGElement;
     
     const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const styleTag = document.createElementNS('http://www.w3.org/2000/svg', 'style');
@@ -98,17 +96,38 @@ export function AuxiliaryChartsPanel() {
       text {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       }
+      .chart-title {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .chart-subtitle {
+        font-size: 11px;
+        fill: #6b7280;
+      }
+      .legend-title {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .legend-subtitle {
+        font-size: 11px;
+        font-weight: 500;
+        fill: #4b5563;
+      }
+      .legend-text {
+        font-size: 10px;
+        fill: #374151;
+      }
     `;
     styleElement.appendChild(styleTag);
-    svgClone.insertBefore(styleElement, svgClone.firstChild);
+    svgElement.insertBefore(styleElement, svgElement.firstChild);
     
-    const svgData = new XMLSerializer().serializeToString(svgClone);
+    const svgData = new XMLSerializer().serializeToString(svgElement);
     const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
     const svgUrl = URL.createObjectURL(svgBlob);
     
     const downloadLink = document.createElement('a');
     downloadLink.href = svgUrl;
-    downloadLink.download = filename;
+    downloadLink.download = 'auxiliary-database-statistics.svg';
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
@@ -116,16 +135,24 @@ export function AuxiliaryChartsPanel() {
   };
 
   useEffect(() => {
-    if (!resourcesChartRef.current || !referencesChartRef.current || 
-        !recordsChartRef.current || !overlapChartRef.current || !tooltipRef.current) return;
+    if (!svgRef.current || !tooltipRef.current) return;
 
-    // Clear previous visualizations
-    [resourcesChartRef, referencesChartRef, recordsChartRef, overlapChartRef].forEach(ref => {
-      d3.select(ref.current).selectAll("*").remove();
-    });
+    // Clear previous visualization
+    d3.select(svgRef.current).selectAll("*").remove();
 
     // Set up tooltip
     const tooltip = d3.select(tooltipRef.current);
+
+    // Configuration
+    const CONFIG = {
+      width: 1200,
+      height: 650,
+      margin: { top: 20, right: 40, bottom: 120, left: 40 },
+      chartWidth: 280,
+      chartHeight: 240,
+      legendHeight: 70,
+      gap: 20
+    };
 
     // Helper function to create data mappings
     const createDataMappings = () => {
@@ -322,32 +349,49 @@ export function AuxiliaryChartsPanel() {
 
     const { resourcesData, recordsData, referencesData, combinedOverlapData } = prepareChartData();
 
+    // Set up main SVG
+    const svg = d3.select(svgRef.current)
+      .attr("width", CONFIG.width)
+      .attr("height", CONFIG.height);
+
+    // Add background
+    svg.append("rect")
+      .attr("width", CONFIG.width)
+      .attr("height", CONFIG.height)
+      .attr("fill", "#fafafa");
+
+    // Main group for content
+    const g = svg.append("g")
+      .attr("transform", `translate(${CONFIG.margin.left},${CONFIG.margin.top})`);
+
     // D3 Chart creation function
     const createStackedBarChart = (
-      svg: SVGSVGElement,
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
       data: D3ChartData[],
+      x: number,
+      y: number,
       width: number,
       height: number,
+      yAxisLabel: string = "",
       isPercentage: boolean = false
     ) => {
-      const margin = { top: 20, right: 30, bottom: 60, left: 50 };
+      const chartG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
+
+      const margin = { top: 10, right: 20, bottom: 60, left: 60 };
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
-      const svgSelection = d3.select(svg)
-        .attr("width", width)
-        .attr("height", height);
-
-      const g = svgSelection.append("g")
+      const innerG = chartG.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       // Scales
-      const x = d3.scaleBand()
+      const xScale = d3.scaleBand()
         .domain(data.map(d => d.category))
         .range([0, innerWidth])
         .padding(0.1);
 
-      const y = d3.scaleLinear()
+      const yScale = d3.scaleLinear()
         .domain([0, isPercentage ? 100 : d3.max(data, d => 
           (d.frequent + d.infrequent + d.one_time_paper + d.discontinued)) || 0])
         .range([innerHeight, 0]);
@@ -361,7 +405,7 @@ export function AuxiliaryChartsPanel() {
       const series = stack(data);
 
       // Draw bars
-      g.selectAll(".series")
+      innerG.selectAll(".series")
         .data(series)
         .enter().append("g")
         .attr("class", "series")
@@ -377,10 +421,10 @@ export function AuxiliaryChartsPanel() {
         .selectAll("rect")
         .data(d => d)
         .enter().append("rect")
-        .attr("x", d => x(d.data.category)!)
-        .attr("y", d => y(d[1]))
-        .attr("height", d => y(d[0]) - y(d[1]))
-        .attr("width", x.bandwidth())
+        .attr("x", d => xScale(d.data.category)!)
+        .attr("y", d => yScale(d[1]))
+        .attr("height", d => yScale(d[0]) - yScale(d[1]))
+        .attr("width", xScale.bandwidth())
         .on("mouseover", function(event, d) {
           const seriesName = (this.parentNode as any).__data__.key;
           const value = d[1] - d[0];
@@ -405,55 +449,67 @@ export function AuxiliaryChartsPanel() {
         });
 
       // X axis
-      g.append("g")
+      innerG.append("g")
         .attr("transform", `translate(0,${innerHeight})`)
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(xScale))
         .selectAll("text")
         .attr("transform", "rotate(-45)")
-        .style("text-anchor", "end");
+        .style("text-anchor", "end")
+        .style("font-size", "10px");
 
-      // Y axis
-      g.append("g")
-        .call(d3.axisLeft(y));
+      // Y axis with formatting
+      const yAxis = d3.axisLeft(yScale);
+      
+      // Format numbers for non-percentage charts
+      if (!isPercentage) {
+        yAxis.tickFormat(d3.format(".0s"));
+      }
+      
+      innerG.append("g")
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", "10px");
 
-      // Y axis label for percentage charts
-      if (isPercentage) {
-        g.append("text")
+      // Y axis label
+      if (yAxisLabel) {
+        innerG.append("text")
           .attr("transform", "rotate(-90)")
           .attr("y", 0 - margin.left)
           .attr("x", 0 - (innerHeight / 2))
           .attr("dy", "1em")
           .style("text-anchor", "middle")
-          .style("font-size", "12px")
-          .text("Percentage (%)");
+          .style("font-size", "11px")
+          .text(yAxisLabel);
       }
     };
 
     // Create overlap chart
     const createOverlapChart = (
-      svg: SVGSVGElement,
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
       data: OverlapData[],
+      x: number,
+      y: number,
       width: number,
-      height: number
+      height: number,
+      yAxisLabel: string = ""
     ) => {
-      const margin = { top: 20, right: 30, bottom: 60, left: 50 };
+      const chartG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
+
+      const margin = { top: 10, right: 20, bottom: 60, left: 60 };
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
-      const svgSelection = d3.select(svg)
-        .attr("width", width)
-        .attr("height", height);
-
-      const g = svgSelection.append("g")
+      const innerG = chartG.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
       // Scales
-      const x = d3.scaleBand()
+      const xScale = d3.scaleBand()
         .domain(data.map(d => d.entryType))
         .range([0, innerWidth])
         .padding(0.1);
 
-      const y = d3.scaleLinear()
+      const yScale = d3.scaleLinear()
         .domain([0, 100])
         .range([innerHeight, 0]);
 
@@ -466,7 +522,7 @@ export function AuxiliaryChartsPanel() {
       const series = stack(data);
 
       // Draw bars
-      g.selectAll(".series")
+      innerG.selectAll(".series")
         .data(series)
         .enter().append("g")
         .attr("class", "series")
@@ -474,10 +530,10 @@ export function AuxiliaryChartsPanel() {
         .selectAll("rect")
         .data(d => d)
         .enter().append("rect")
-        .attr("x", d => x(d.data.entryType)!)
-        .attr("y", d => y(d[1]))
-        .attr("height", d => y(d[0]) - y(d[1]))
-        .attr("width", x.bandwidth())
+        .attr("x", d => xScale(d.data.entryType)!)
+        .attr("y", d => yScale(d[1]))
+        .attr("height", d => yScale(d[0]) - yScale(d[1]))
+        .attr("width", xScale.bandwidth())
         .on("mouseover", function(event, d) {
           const seriesName = (this.parentNode as any).__data__.key;
           const value = d[1] - d[0];
@@ -493,194 +549,141 @@ export function AuxiliaryChartsPanel() {
         });
 
       // X axis
-      g.append("g")
+      innerG.append("g")
         .attr("transform", `translate(0,${innerHeight})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(xScale))
+        .selectAll("text")
+        .style("font-size", "10px");
 
       // Y axis
-      g.append("g")
-        .call(d3.axisLeft(y));
+      innerG.append("g")
+        .call(d3.axisLeft(yScale))
+        .selectAll("text")
+        .style("font-size", "10px");
 
       // Y axis label
-      g.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-        .attr("x", 0 - (innerHeight / 2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .style("font-size", "12px")
-        .text("Percentage (%)");
+      if (yAxisLabel) {
+        innerG.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x", 0 - (innerHeight / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .style("font-size", "11px")
+          .text(yAxisLabel);
+      }
     };
 
-    // Create all charts
-    createStackedBarChart(resourcesChartRef.current, resourcesData, 400, 300, false);
-    createStackedBarChart(referencesChartRef.current, referencesData, 400, 300, false);
-    createStackedBarChart(recordsChartRef.current, recordsData, 400, 300, true);
-    createOverlapChart(overlapChartRef.current, combinedOverlapData, 400, 300);
+    // Create horizontal legend
+    const createLegend = (
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
+      x: number,
+      y: number
+    ) => {
+      const legendG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
+
+      // Legend background
+      const legendWidth = CONFIG.chartWidth * 2 + CONFIG.gap;
+      legendG.append("rect")
+        .attr("width", legendWidth)
+        .attr("height", CONFIG.legendHeight)
+        .attr("fill", "#f3f4f6")
+        .attr("stroke", "#e5e7eb")
+        .attr("rx", 4);
+
+      // Maintenance Categories - left side
+      const maintenanceG = legendG.append("g")
+        .attr("transform", "translate(20, 25)");
+
+      const maintenanceItems = [
+        { name: "Frequent", color: CHART_COLORS.maintenance.frequent },
+        { name: "Infrequent", color: CHART_COLORS.maintenance.infrequent },
+        { name: "One Time Paper", color: CHART_COLORS.maintenance.one_time_paper },
+        { name: "Discontinued", color: CHART_COLORS.maintenance.discontinued }
+      ];
+
+      maintenanceItems.forEach((item, i) => {
+        const itemG = maintenanceG.append("g")
+          .attr("transform", `translate(${i * 140}, 0)`);
+
+        itemG.append("rect")
+          .attr("width", 12)
+          .attr("height", 12)
+          .attr("fill", item.color);
+
+        itemG.append("text")
+          .attr("x", 18)
+          .attr("y", 9)
+          .attr("class", "legend-text")
+          .text(item.name);
+      });
+
+      // Resource Overlap - right side
+      const overlapG = legendG.append("g")
+        .attr("transform", "translate(20, 45)");
+
+      const overlapItems = [
+        { name: "1 resource", color: CHART_COLORS.overlap[0] },
+        { name: "2 resources", color: CHART_COLORS.overlap[1] },
+        { name: "3 resources", color: CHART_COLORS.overlap[2] },
+        { name: "4 resources", color: CHART_COLORS.overlap[3] },
+        { name: "5+ resources", color: CHART_COLORS.overlap[4] }
+      ];
+
+      overlapItems.forEach((item, i) => {
+        const itemG = overlapG.append("g")
+          .attr("transform", `translate(${i * 112}, 0)`);
+
+        itemG.append("rect")
+          .attr("width", 12)
+          .attr("height", 12)
+          .attr("fill", item.color);
+
+        itemG.append("text")
+          .attr("x", 18)
+          .attr("y", 9)
+          .attr("class", "legend-text")
+          .text(item.name);
+      });
+    };
+
+    // Layout charts in a grid
+    const chartX = CONFIG.gap;
+    const chartY = CONFIG.gap;
+
+    // Row 1: Resources and References (absolute values)
+    createStackedBarChart(g, resourcesData, chartX, chartY, CONFIG.chartWidth, CONFIG.chartHeight,
+      "Number of resources", false);
+    
+    createStackedBarChart(g, referencesData, chartX + CONFIG.chartWidth + CONFIG.gap, chartY, 
+      CONFIG.chartWidth, CONFIG.chartHeight,
+      "Number of references", false);
+
+    // Row 2: Records % and Resource Overlap %
+    createStackedBarChart(g, recordsData, chartX, chartY + CONFIG.chartHeight + CONFIG.gap, 
+      CONFIG.chartWidth, CONFIG.chartHeight,
+      "Records by maintenance (%)", true);
+    
+    createOverlapChart(g, combinedOverlapData, chartX + CONFIG.chartWidth + CONFIG.gap, 
+      chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
+      "Resources per entry (%)");
+
+    // Add legend at the bottom, centered
+    const legendX = (CONFIG.chartWidth * 2 + CONFIG.gap * 3) / 2 - ((CONFIG.chartWidth * 2 + CONFIG.gap) / 2);
+    createLegend(g, legendX, chartY + (CONFIG.chartHeight + CONFIG.gap) * 2 + 10);
 
   }, []);
 
   return (
-    <div className="w-full space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Auxiliary Database Statistics</CardTitle>
-          <CardDescription>
-            Comprehensive overview of database characteristics for publication
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Combined Legend for All Charts */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="text-sm font-semibold mb-3">Chart Legend</h4>
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Maintenance Categories Legend */}
-              <div>
-                <h5 className="text-xs font-medium mb-2 text-gray-700">Maintenance Categories</h5>
-                <div className="flex flex-wrap gap-3">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.frequent}}></div>
-                    <span className="text-xs">Frequent</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.infrequent}}></div>
-                    <span className="text-xs">Infrequent</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.one_time_paper}}></div>
-                    <span className="text-xs">One Time Paper</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.maintenance.discontinued}}></div>
-                    <span className="text-xs">Discontinued</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Resource Overlap Legend */}
-              <div>
-                <h5 className="text-xs font-medium mb-2 text-gray-700">Resource Overlap</h5>
-                <div className="flex flex-wrap gap-3">
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[0]}}></div>
-                    <span className="text-xs">1 resource</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[1]}}></div>
-                    <span className="text-xs">2 resources</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[2]}}></div>
-                    <span className="text-xs">3 resources</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[3]}}></div>
-                    <span className="text-xs">4 resources</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded" style={{backgroundColor: CHART_COLORS.overlap[4]}}></div>
-                    <span className="text-xs">5+ resources</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-4">
-            {/* Row 1: Absolute Charts (Resources and References) */}
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Resources Chart */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Resources per Database</CardTitle>
-                  <CardDescription className="text-xs">
-                    Number of unique data sources by maintenance status
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative">
-                  <button
-                    onClick={() => resourcesChartRef.current && downloadSVG(resourcesChartRef.current, 'resources-per-database.svg')}
-                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
-                  >
-                    Download SVG
-                  </button>
-                  <div className="h-64 flex items-center justify-center">
-                    <svg ref={resourcesChartRef} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* References Chart */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">References per Database</CardTitle>
-                  <CardDescription className="text-xs">
-                    Unique literature references by best maintenance status
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative">
-                  <button
-                    onClick={() => referencesChartRef.current && downloadSVG(referencesChartRef.current, 'references-per-database.svg')}
-                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
-                  >
-                    Download SVG
-                  </button>
-                  <div className="h-64 flex items-center justify-center">
-                    <svg ref={referencesChartRef} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Row 2: Percentage Charts (Records % and Resource Overlap %) */}
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Records Chart with Maintenance Breakdown */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Records per Database (%)</CardTitle>
-                  <CardDescription className="text-xs">
-                    Maintenance status breakdown as percentages
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative">
-                  <button
-                    onClick={() => recordsChartRef.current && downloadSVG(recordsChartRef.current, 'records-percentage.svg')}
-                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
-                  >
-                    Download SVG
-                  </button>
-                  <div className="h-64 flex items-center justify-center">
-                    <svg ref={recordsChartRef} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Resource Overlap Chart */}
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Resource Overlap Distribution (%)</CardTitle>
-                  <CardDescription className="text-xs">
-                    Percentage of entries by number of resources across entry types
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="relative">
-                  <button
-                    onClick={() => overlapChartRef.current && downloadSVG(overlapChartRef.current, 'resource-overlap.svg')}
-                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
-                  >
-                    Download SVG
-                  </button>
-                  <div className="h-64 flex items-center justify-center">
-                    <svg ref={overlapChartRef} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Tooltip */}
+    <div className="relative">
+      <button
+        onClick={downloadSVG}
+        className="absolute top-2 right-2 z-10 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+      >
+        Download SVG
+      </button>
+      <svg ref={svgRef} />
       <div
         ref={tooltipRef}
         className="fixed text-left p-2 text-xs bg-white text-black pointer-events-none opacity-0 z-[1000] font-medium border border-gray-300 rounded shadow-lg"
