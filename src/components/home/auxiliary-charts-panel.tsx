@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import { useEffect, useRef } from "react";
+import * as d3 from "d3";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import dbStats from "@/data/db-stats.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
 
@@ -14,20 +15,51 @@ interface DatabaseSection {
 }
 
 const CHART_COLORS = {
-  primary: '#3b82f6',
-  secondary: '#8b5cf6',
-  tertiary: '#10b981',
+  primary: '#176fc1',
+  secondary: '#d22027',
+  tertiary: '#4cbd38',
   maintenance: {
-    frequent: '#10b981',
-    infrequent: '#f59e0b',
-    one_time_paper: '#ef4444',
-    discontinued: '#991b1b',
+    frequent: '#4cbd38',    // Green - active/good
+    infrequent: '#f89d0e',  // Orange - caution
+    one_time_paper: '#d22027', // Red - concerning
+    discontinued: '#5b205f',   // Dark purple - problematic
     unknown: '#6b7280'
   },
-  overlap: ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444']
+  overlap: ['#176fc1', '#00acc1', '#5e35b1', '#f89d0e', '#d22027']
 };
 
+interface ChartProps {
+  width?: number;
+  height?: number;
+}
+
+interface D3ChartData {
+  category: string;
+  frequent: number;
+  infrequent: number;
+  one_time_paper: number;
+  discontinued: number;
+  total?: number;
+  totalRecords?: number;
+}
+
+interface OverlapData {
+  entryType: string;
+  '1 resource': number;
+  '2 resources': number;
+  '3 resources': number;
+  '4 resources': number;
+  '5+ resources': number;
+  totalEntries: number;
+}
+
 export function AuxiliaryChartsPanel() {
+  const resourcesChartRef = useRef<SVGSVGElement>(null);
+  const referencesChartRef = useRef<SVGSVGElement>(null);
+  const recordsChartRef = useRef<SVGSVGElement>(null);
+  const overlapChartRef = useRef<SVGSVGElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
   const databases: DatabaseSection[] = [
     {
       title: "Interactions",
@@ -56,236 +88,440 @@ export function AuxiliaryChartsPanel() {
     }
   ];
 
-  // Get all unique sources
-  const allSources = new Set<string>();
-  databases.forEach(db => {
-    db.data.forEach(item => allSources.add(item.source));
-  });
-
-  // Create a mapping of sources to their maintenance category
-  const sourceMaintenanceMap: Record<string, string> = {};
-  const unmappedSources: string[] = [];
-  
-  Object.entries(maintenanceCategories).forEach(([category, resources]) => {
-    (resources as string[]).forEach(resource => {
-      const matchingSource = Array.from(allSources).find(source => 
-        source.toLowerCase() === resource.toLowerCase()
-      );
-      if (matchingSource) {
-        sourceMaintenanceMap[matchingSource] = category;
+  // Download SVG function
+  const downloadSVG = (svgElement: SVGSVGElement, filename: string) => {
+    const svgClone = svgElement.cloneNode(true) as SVGSVGElement;
+    
+    const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const styleTag = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    styleTag.textContent = `
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       }
-    });
-  });
-
-  // Find unmapped sources
-  Array.from(allSources).forEach(source => {
-    if (!sourceMaintenanceMap[source]) {
-      unmappedSources.push(source);
-    }
-  });
-
-  // Log unmapped sources for debugging
-  if (unmappedSources.length > 0) {
-    console.log('Unmapped sources:', unmappedSources.sort());
-    console.log('Unmapped sources JSON:', JSON.stringify(unmappedSources.sort(), null, 2));
-  }
-
-  // Prepare data for charts
-  
-  // 1. Resources per database with maintenance breakdown
-  const resourcesData = databases.map(db => {
-    // Calculate resources by maintenance category for this database
-    const maintenanceBreakdown: Record<string, number> = {
-      frequent: 0,
-      infrequent: 0,
-      one_time_paper: 0,
-      discontinued: 0
-    };
-
-    db.data.forEach(source => {
-      const category = sourceMaintenanceMap[source.source];
-      if (category) {
-        maintenanceBreakdown[category]++;
-      }
-    });
-
-    return {
-      category: db.title,
-      frequent: maintenanceBreakdown.frequent,
-      infrequent: maintenanceBreakdown.infrequent,
-      one_time_paper: maintenanceBreakdown.one_time_paper,
-      discontinued: maintenanceBreakdown.discontinued,
-      total: db.data.length
-    };
-  });
-
-  // 2. Records per database with maintenance status breakdown (as percentages)
-  const recordsData = databases.map(db => {
-    // Calculate records by maintenance category for this database
-    const maintenanceBreakdown: Record<string, number> = {
-      frequent: 0,
-      infrequent: 0,
-      one_time_paper: 0,
-      discontinued: 0
-    };
-
-    db.data.forEach(source => {
-      const category = sourceMaintenanceMap[source.source];
-      if (category) {
-        maintenanceBreakdown[category] += source.record_count;
-      }
-    });
-
-    const total = db.data.reduce((sum, item) => sum + item.record_count, 0);
+    `;
+    styleElement.appendChild(styleTag);
+    svgClone.insertBefore(styleElement, svgClone.firstChild);
     
-    // Convert to percentages
-    return {
-      category: db.title,
-      frequent: total > 0 ? ((maintenanceBreakdown.frequent / total) * 100) : 0,
-      infrequent: total > 0 ? ((maintenanceBreakdown.infrequent / total) * 100) : 0,
-      one_time_paper: total > 0 ? ((maintenanceBreakdown.one_time_paper / total) * 100) : 0,
-      discontinued: total > 0 ? ((maintenanceBreakdown.discontinued / total) * 100) : 0,
-      totalRecords: total // Keep for tooltip display
-    };
-  });
-
-  // 3. References per database with maintenance breakdown (reference-centric with priority)
-  const referencesData = databases.map(db => {
-    const dbNames = db.data.map(d => d.source);
-    const literatureRefs = (dbStats.plotData?.literatureRefsByDatabaseAndType || [])
-      .filter((ref: any) => dbNames.includes(ref.database));
+    const svgData = new XMLSerializer().serializeToString(svgClone);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
     
-    // Group references by unique reference, tracking all databases they appear in
-    const referenceMap: Record<string, { count: number; databases: string[] }> = {};
-    
-    literatureRefs.forEach((ref: any) => {
-      // Create unique key for each reference (could be improved with actual reference ID if available)
-      const refKey = `${ref.interaction_type}_${ref.unique_reference_count}`;
-      
-      if (!referenceMap[refKey]) {
-        referenceMap[refKey] = { count: ref.unique_reference_count, databases: [] };
-      }
-      referenceMap[refKey].databases.push(ref.database);
-    });
-
-    // Maintenance priority order: frequent > infrequent > one_time_paper > discontinued
-    const priorityOrder = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
-    
-    const maintenanceBreakdown: Record<string, number> = {
-      frequent: 0,
-      infrequent: 0,
-      one_time_paper: 0,
-      discontinued: 0
-    };
-
-    // Assign each reference to the best maintenance category it appears in
-    Object.values(referenceMap).forEach(refInfo => {
-      // Find the best maintenance category among all databases this reference appears in
-      let bestCategory = 'discontinued'; // Start with lowest priority
-      
-      refInfo.databases.forEach(database => {
-        const category = sourceMaintenanceMap[database];
-        if (category) {
-          const currentPriority = priorityOrder.indexOf(category);
-          const bestPriority = priorityOrder.indexOf(bestCategory);
-          
-          // Lower index = higher priority
-          if (currentPriority < bestPriority) {
-            bestCategory = category;
-          }
-        }
-      });
-      
-      maintenanceBreakdown[bestCategory] += refInfo.count;
-    });
-
-    const totalReferences = Object.values(referenceMap).reduce((sum, refInfo) => sum + refInfo.count, 0);
-
-    return {
-      category: db.title,
-      frequent: maintenanceBreakdown.frequent,
-      infrequent: maintenanceBreakdown.infrequent,
-      one_time_paper: maintenanceBreakdown.one_time_paper,
-      discontinued: maintenanceBreakdown.discontinued,
-      total: totalReferences
-    };
-  });
-
-  // 4. Resource overlap data - combined as percentages
-  const overlapData = dbStats.plotData?.resourceOverlap || [];
-  
-  // Helper function to group overlap data into percentages by entry type
-  const createOverlapPercentageData = () => {
-    const entryTypes = ['interaction', 'enzyme-substrate', 'complex'];
-    
-    return entryTypes.map(entryType => {
-      const typeData = overlapData.filter((item: any) => item.entry_type === entryType);
-      
-      // Group by number of resources
-      const grouped: Record<string, number> = {
-        '1': 0,
-        '2': 0,
-        '3': 0,
-        '4': 0,
-        '5+': 0
-      };
-
-      typeData.forEach((item: any) => {
-        if (item.number_of_resources === 1) {
-          grouped['1'] += item.number_of_entries;
-        } else if (item.number_of_resources === 2) {
-          grouped['2'] += item.number_of_entries;
-        } else if (item.number_of_resources === 3) {
-          grouped['3'] += item.number_of_entries;
-        } else if (item.number_of_resources === 4) {
-          grouped['4'] += item.number_of_entries;
-        } else if (item.number_of_resources >= 5) {
-          grouped['5+'] += item.number_of_entries;
-        }
-      });
-
-      const total = Object.values(grouped).reduce((sum, count) => sum + count, 0);
-      
-      return {
-        entryType: entryType.charAt(0).toUpperCase() + entryType.slice(1).replace('-', ' '),
-        '1 resource': total > 0 ? ((grouped['1'] / total) * 100) : 0,
-        '2 resources': total > 0 ? ((grouped['2'] / total) * 100) : 0,
-        '3 resources': total > 0 ? ((grouped['3'] / total) * 100) : 0,
-        '4 resources': total > 0 ? ((grouped['4'] / total) * 100) : 0,
-        '5+ resources': total > 0 ? ((grouped['5+'] / total) * 100) : 0,
-        totalEntries: total
-      };
-    });
+    const downloadLink = document.createElement('a');
+    downloadLink.href = svgUrl;
+    downloadLink.download = filename;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(svgUrl);
   };
 
-  const combinedOverlapData = createOverlapPercentageData();
+  useEffect(() => {
+    if (!resourcesChartRef.current || !referencesChartRef.current || 
+        !recordsChartRef.current || !overlapChartRef.current || !tooltipRef.current) return;
+
+    // Clear previous visualizations
+    [resourcesChartRef, referencesChartRef, recordsChartRef, overlapChartRef].forEach(ref => {
+      d3.select(ref.current).selectAll("*").remove();
+    });
+
+    // Set up tooltip
+    const tooltip = d3.select(tooltipRef.current);
+
+    // Helper function to create data mappings
+    const createDataMappings = () => {
+      const allSources = new Set<string>();
+      databases.forEach(db => {
+        db.data.forEach(item => allSources.add(item.source));
+      });
+
+      const sourceMaintenanceMap: Record<string, string> = {};
+      const unmappedSources: string[] = [];
+      
+      Object.entries(maintenanceCategories).forEach(([category, resources]) => {
+        (resources as string[]).forEach(resource => {
+          const matchingSource = Array.from(allSources).find(source => 
+            source.toLowerCase() === resource.toLowerCase()
+          );
+          if (matchingSource) {
+            sourceMaintenanceMap[matchingSource] = category;
+          }
+        });
+      });
+
+      Array.from(allSources).forEach(source => {
+        if (!sourceMaintenanceMap[source]) {
+          unmappedSources.push(source);
+        }
+      });
+
+      return { sourceMaintenanceMap, unmappedSources };
+    };
+
+    const { sourceMaintenanceMap } = createDataMappings();
+
+    // Prepare chart data
+    const prepareChartData = () => {
+      // 1. Resources per database
+      const resourcesData: D3ChartData[] = databases.map(db => {
+        const maintenanceBreakdown: Record<string, number> = {
+          frequent: 0,
+          infrequent: 0,
+          one_time_paper: 0,
+          discontinued: 0
+        };
+
+        db.data.forEach(source => {
+          const category = sourceMaintenanceMap[source.source];
+          if (category) {
+            maintenanceBreakdown[category]++;
+          }
+        });
+
+        return {
+          category: db.title,
+          frequent: maintenanceBreakdown.frequent,
+          infrequent: maintenanceBreakdown.infrequent,
+          one_time_paper: maintenanceBreakdown.one_time_paper,
+          discontinued: maintenanceBreakdown.discontinued,
+          total: db.data.length
+        };
+      });
+
+      // 2. Records per database (percentages)
+      const recordsData: D3ChartData[] = databases.map(db => {
+        const maintenanceBreakdown: Record<string, number> = {
+          frequent: 0,
+          infrequent: 0,
+          one_time_paper: 0,
+          discontinued: 0
+        };
+
+        db.data.forEach(source => {
+          const category = sourceMaintenanceMap[source.source];
+          if (category) {
+            maintenanceBreakdown[category] += source.record_count;
+          }
+        });
+
+        const total = db.data.reduce((sum, item) => sum + item.record_count, 0);
+        
+        return {
+          category: db.title,
+          frequent: total > 0 ? ((maintenanceBreakdown.frequent / total) * 100) : 0,
+          infrequent: total > 0 ? ((maintenanceBreakdown.infrequent / total) * 100) : 0,
+          one_time_paper: total > 0 ? ((maintenanceBreakdown.one_time_paper / total) * 100) : 0,
+          discontinued: total > 0 ? ((maintenanceBreakdown.discontinued / total) * 100) : 0,
+          totalRecords: total
+        };
+      });
+
+      // 3. References per database
+      const referencesData: D3ChartData[] = databases.map(db => {
+        const dbNames = db.data.map(d => d.source);
+        const literatureRefs = (dbStats.plotData?.literatureRefsByDatabaseAndType || [])
+          .filter((ref: any) => dbNames.includes(ref.database));
+        
+        const referenceMap: Record<string, { count: number; databases: string[] }> = {};
+        
+        literatureRefs.forEach((ref: any) => {
+          const refKey = `${ref.interaction_type}_${ref.unique_reference_count}`;
+          
+          if (!referenceMap[refKey]) {
+            referenceMap[refKey] = { count: ref.unique_reference_count, databases: [] };
+          }
+          referenceMap[refKey].databases.push(ref.database);
+        });
+
+        const priorityOrder = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
+        const maintenanceBreakdown: Record<string, number> = {
+          frequent: 0,
+          infrequent: 0,
+          one_time_paper: 0,
+          discontinued: 0
+        };
+
+        Object.values(referenceMap).forEach(refInfo => {
+          let bestCategory = 'discontinued';
+          
+          refInfo.databases.forEach(database => {
+            const category = sourceMaintenanceMap[database];
+            if (category) {
+              const currentPriority = priorityOrder.indexOf(category);
+              const bestPriority = priorityOrder.indexOf(bestCategory);
+              
+              if (currentPriority < bestPriority) {
+                bestCategory = category;
+              }
+            }
+          });
+          
+          maintenanceBreakdown[bestCategory] += refInfo.count;
+        });
+
+        const totalReferences = Object.values(referenceMap).reduce((sum, refInfo) => sum + refInfo.count, 0);
+
+        return {
+          category: db.title,
+          frequent: maintenanceBreakdown.frequent,
+          infrequent: maintenanceBreakdown.infrequent,
+          one_time_paper: maintenanceBreakdown.one_time_paper,
+          discontinued: maintenanceBreakdown.discontinued,
+          total: totalReferences
+        };
+      });
+
+      // 4. Resource overlap data
+      const overlapData = dbStats.plotData?.resourceOverlap || [];
+      
+      const createOverlapPercentageData = (): OverlapData[] => {
+        const entryTypes = ['interaction', 'enzyme-substrate', 'complex'];
+        
+        return entryTypes.map(entryType => {
+          const typeData = overlapData.filter((item: any) => item.entry_type === entryType);
+          
+          const grouped: Record<string, number> = {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5+': 0
+          };
+
+          typeData.forEach((item: any) => {
+            if (item.number_of_resources === 1) {
+              grouped['1'] += item.number_of_entries;
+            } else if (item.number_of_resources === 2) {
+              grouped['2'] += item.number_of_entries;
+            } else if (item.number_of_resources === 3) {
+              grouped['3'] += item.number_of_entries;
+            } else if (item.number_of_resources === 4) {
+              grouped['4'] += item.number_of_entries;
+            } else if (item.number_of_resources >= 5) {
+              grouped['5+'] += item.number_of_entries;
+            }
+          });
+
+          const total = Object.values(grouped).reduce((sum, count) => sum + count, 0);
+          
+          return {
+            entryType: entryType.charAt(0).toUpperCase() + entryType.slice(1).replace('-', ' '),
+            '1 resource': total > 0 ? ((grouped['1'] / total) * 100) : 0,
+            '2 resources': total > 0 ? ((grouped['2'] / total) * 100) : 0,
+            '3 resources': total > 0 ? ((grouped['3'] / total) * 100) : 0,
+            '4 resources': total > 0 ? ((grouped['4'] / total) * 100) : 0,
+            '5+ resources': total > 0 ? ((grouped['5+'] / total) * 100) : 0,
+            totalEntries: total
+          };
+        });
+      };
+
+      const combinedOverlapData = createOverlapPercentageData();
+
+      return { resourcesData, recordsData, referencesData, combinedOverlapData };
+    };
+
+    const { resourcesData, recordsData, referencesData, combinedOverlapData } = prepareChartData();
+
+    // D3 Chart creation function
+    const createStackedBarChart = (
+      svg: SVGSVGElement,
+      data: D3ChartData[],
+      width: number,
+      height: number,
+      isPercentage: boolean = false
+    ) => {
+      const margin = { top: 20, right: 30, bottom: 60, left: 50 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      const svgSelection = d3.select(svg)
+        .attr("width", width)
+        .attr("height", height);
+
+      const g = svgSelection.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Scales
+      const x = d3.scaleBand()
+        .domain(data.map(d => d.category))
+        .range([0, innerWidth])
+        .padding(0.1);
+
+      const y = d3.scaleLinear()
+        .domain([0, isPercentage ? 100 : d3.max(data, d => 
+          (d.frequent + d.infrequent + d.one_time_paper + d.discontinued)) || 0])
+        .range([innerHeight, 0]);
+
+      // Stack data
+      const stack = d3.stack<D3ChartData>()
+        .keys(['frequent', 'infrequent', 'one_time_paper', 'discontinued'])
+        .order(d3.stackOrderNone)
+        .offset(d3.stackOffsetNone);
+
+      const series = stack(data);
+
+      // Draw bars
+      g.selectAll(".series")
+        .data(series)
+        .enter().append("g")
+        .attr("class", "series")
+        .attr("fill", (d, i) => {
+          const colors = [
+            CHART_COLORS.maintenance.frequent,
+            CHART_COLORS.maintenance.infrequent,
+            CHART_COLORS.maintenance.one_time_paper,
+            CHART_COLORS.maintenance.discontinued
+          ];
+          return colors[i];
+        })
+        .selectAll("rect")
+        .data(d => d)
+        .enter().append("rect")
+        .attr("x", d => x(d.data.category)!)
+        .attr("y", d => y(d[1]))
+        .attr("height", d => y(d[0]) - y(d[1]))
+        .attr("width", x.bandwidth())
+        .on("mouseover", function(event, d) {
+          const seriesName = (this.parentNode as any).__data__.key;
+          const value = d[1] - d[0];
+          const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
+          const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+          
+          let totalText = '';
+          if (d.data.total !== undefined) {
+            totalText = `<br/>Total: ${d.data.total.toLocaleString()} resources`;
+          } else if (d.data.totalRecords !== undefined) {
+            totalText = `<br/>Total: ${d.data.totalRecords.toLocaleString()} records`;
+          }
+          
+          tooltip
+            .style("opacity", 0.9)
+            .html(`<strong>${d.data.category}</strong><br/>${categoryName}: ${displayValue}${totalText}`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mouseout", () => {
+          tooltip.style("opacity", 0);
+        });
+
+      // X axis
+      g.append("g")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end");
+
+      // Y axis
+      g.append("g")
+        .call(d3.axisLeft(y));
+
+      // Y axis label for percentage charts
+      if (isPercentage) {
+        g.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x", 0 - (innerHeight / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .style("font-size", "12px")
+          .text("Percentage (%)");
+      }
+    };
+
+    // Create overlap chart
+    const createOverlapChart = (
+      svg: SVGSVGElement,
+      data: OverlapData[],
+      width: number,
+      height: number
+    ) => {
+      const margin = { top: 20, right: 30, bottom: 60, left: 50 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      const svgSelection = d3.select(svg)
+        .attr("width", width)
+        .attr("height", height);
+
+      const g = svgSelection.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Scales
+      const x = d3.scaleBand()
+        .domain(data.map(d => d.entryType))
+        .range([0, innerWidth])
+        .padding(0.1);
+
+      const y = d3.scaleLinear()
+        .domain([0, 100])
+        .range([innerHeight, 0]);
+
+      // Stack data
+      const stack = d3.stack<OverlapData>()
+        .keys(['1 resource', '2 resources', '3 resources', '4 resources', '5+ resources'])
+        .order(d3.stackOrderNone)
+        .offset(d3.stackOffsetNone);
+
+      const series = stack(data);
+
+      // Draw bars
+      g.selectAll(".series")
+        .data(series)
+        .enter().append("g")
+        .attr("class", "series")
+        .attr("fill", (d, i) => CHART_COLORS.overlap[i])
+        .selectAll("rect")
+        .data(d => d)
+        .enter().append("rect")
+        .attr("x", d => x(d.data.entryType)!)
+        .attr("y", d => y(d[1]))
+        .attr("height", d => y(d[0]) - y(d[1]))
+        .attr("width", x.bandwidth())
+        .on("mouseover", function(event, d) {
+          const seriesName = (this.parentNode as any).__data__.key;
+          const value = d[1] - d[0];
+          
+          tooltip
+            .style("opacity", 0.9)
+            .html(`<strong>${d.data.entryType}</strong><br/>${seriesName}: ${value.toFixed(1)}%<br/>Total entries: ${d.data.totalEntries.toLocaleString()}`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mouseout", () => {
+          tooltip.style("opacity", 0);
+        });
+
+      // X axis
+      g.append("g")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(x));
+
+      // Y axis
+      g.append("g")
+        .call(d3.axisLeft(y));
+
+      // Y axis label
+      g.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (innerHeight / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .style("font-size", "12px")
+        .text("Percentage (%)");
+    };
+
+    // Create all charts
+    createStackedBarChart(resourcesChartRef.current, resourcesData, 400, 300, false);
+    createStackedBarChart(referencesChartRef.current, referencesData, 400, 300, false);
+    createStackedBarChart(recordsChartRef.current, recordsData, 400, 300, true);
+    createOverlapChart(overlapChartRef.current, combinedOverlapData, 400, 300);
+
+  }, []);
 
   return (
     <div className="w-full space-y-6">
-      {/* Debug: Show unmapped sources */}
-      {unmappedSources.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base text-orange-800">Unmapped Sources ({unmappedSources.length})</CardTitle>
-            <CardDescription className="text-xs text-orange-600">
-              Sources that need maintenance category mapping
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {unmappedSources.sort().map((source, idx) => (
-                <span 
-                  key={idx}
-                  className="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-mono"
-                >
-                  {source}
-                </span>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       <Card>
         <CardHeader>
           <CardTitle>Auxiliary Database Statistics</CardTitle>
@@ -361,77 +597,36 @@ export function AuxiliaryChartsPanel() {
                     Number of unique data sources by maintenance status
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={resourcesData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="category" 
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          fontSize={11}
-                        />
-                        <YAxis fontSize={11} />
-                        <Tooltip 
-                          formatter={(value: number, name: string) => [
-                            `${value} resources`,
-                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-                          ]}
-                          labelFormatter={(label: string) => {
-                            const data = resourcesData.find(d => d.category === label);
-                            return `${label} (${data?.total} total resources)`;
-                          }}
-                        />
-                        <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
-                        <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
-                        <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
-                        <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                <CardContent className="relative">
+                  <button
+                    onClick={() => resourcesChartRef.current && downloadSVG(resourcesChartRef.current, 'resources-per-database.svg')}
+                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                  >
+                    Download SVG
+                  </button>
+                  <div className="h-64 flex items-center justify-center">
+                    <svg ref={resourcesChartRef} />
                   </div>
                 </CardContent>
               </Card>
-
 
               {/* References Chart */}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">References per Database</CardTitle>
                   <CardDescription className="text-xs">
-                    Unique literature references by best maintenance status (priority: frequent {'>'}  infrequent {'>'}  one-time {'>'}  discontinued)
+                    Unique literature references by best maintenance status
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={referencesData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="category" 
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          fontSize={11}
-                        />
-                        <YAxis fontSize={11} />
-                        <Tooltip 
-                          formatter={(value: number, name: string) => [
-                            `${value.toLocaleString()} references`,
-                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-                          ]}
-                          labelFormatter={(label: string) => {
-                            const data = referencesData.find(d => d.category === label);
-                            return `${label} (${data?.total?.toLocaleString()} total references)`;
-                          }}
-                        />
-                        <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
-                        <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
-                        <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
-                        <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                <CardContent className="relative">
+                  <button
+                    onClick={() => referencesChartRef.current && downloadSVG(referencesChartRef.current, 'references-per-database.svg')}
+                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                  >
+                    Download SVG
+                  </button>
+                  <div className="h-64 flex items-center justify-center">
+                    <svg ref={referencesChartRef} />
                   </div>
                 </CardContent>
               </Card>
@@ -447,39 +642,15 @@ export function AuxiliaryChartsPanel() {
                     Maintenance status breakdown as percentages
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={recordsData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="category" 
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          fontSize={11}
-                        />
-                        <YAxis 
-                          fontSize={11}
-                          label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }}
-                          domain={[0, 100]}
-                        />
-                        <Tooltip 
-                          formatter={(value: number, name: string) => [
-                            `${value.toFixed(1)}%`,
-                            name.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-                          ]}
-                          labelFormatter={(label: string) => {
-                            const data = recordsData.find(d => d.category === label);
-                            return `${label} (${data?.totalRecords?.toLocaleString()} records)`;
-                          }}
-                        />
-                        <Bar dataKey="frequent" stackId="a" fill={CHART_COLORS.maintenance.frequent} />
-                        <Bar dataKey="infrequent" stackId="a" fill={CHART_COLORS.maintenance.infrequent} />
-                        <Bar dataKey="one_time_paper" stackId="a" fill={CHART_COLORS.maintenance.one_time_paper} />
-                        <Bar dataKey="discontinued" stackId="a" fill={CHART_COLORS.maintenance.discontinued} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                <CardContent className="relative">
+                  <button
+                    onClick={() => recordsChartRef.current && downloadSVG(recordsChartRef.current, 'records-percentage.svg')}
+                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                  >
+                    Download SVG
+                  </button>
+                  <div className="h-64 flex items-center justify-center">
+                    <svg ref={recordsChartRef} />
                   </div>
                 </CardContent>
               </Card>
@@ -492,37 +663,15 @@ export function AuxiliaryChartsPanel() {
                     Percentage of entries by number of resources across entry types
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={combinedOverlapData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="entryType" 
-                          fontSize={11}
-                        />
-                        <YAxis 
-                          fontSize={11}
-                          label={{ value: 'Percentage (%)', angle: -90, position: 'insideLeft' }}
-                          domain={[0, 100]}
-                        />
-                        <Tooltip 
-                          formatter={(value: number, name: string) => [
-                            `${value.toFixed(1)}%`,
-                            name
-                          ]}
-                          labelFormatter={(label: string) => {
-                            const data = combinedOverlapData.find(d => d.entryType === label);
-                            return `${label} (${data?.totalEntries?.toLocaleString()} total entries)`;
-                          }}
-                        />
-                        <Bar dataKey="1 resource" stackId="a" fill={CHART_COLORS.overlap[0]} />
-                        <Bar dataKey="2 resources" stackId="a" fill={CHART_COLORS.overlap[1]} />
-                        <Bar dataKey="3 resources" stackId="a" fill={CHART_COLORS.overlap[2]} />
-                        <Bar dataKey="4 resources" stackId="a" fill={CHART_COLORS.overlap[3]} />
-                        <Bar dataKey="5+ resources" stackId="a" fill={CHART_COLORS.overlap[4]} />
-                      </BarChart>
-                    </ResponsiveContainer>
+                <CardContent className="relative">
+                  <button
+                    onClick={() => overlapChartRef.current && downloadSVG(overlapChartRef.current, 'resource-overlap.svg')}
+                    className="absolute top-0 right-2 z-10 px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50"
+                  >
+                    Download SVG
+                  </button>
+                  <div className="h-64 flex items-center justify-center">
+                    <svg ref={overlapChartRef} />
                   </div>
                 </CardContent>
               </Card>
@@ -530,6 +679,15 @@ export function AuxiliaryChartsPanel() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Tooltip */}
+      <div
+        ref={tooltipRef}
+        className="fixed text-left p-2 text-xs bg-white text-black pointer-events-none opacity-0 z-[1000] font-medium border border-gray-300 rounded shadow-lg"
+        style={{
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+        }}
+      />
     </div>
   );
 }
