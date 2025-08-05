@@ -145,12 +145,12 @@ export function AuxiliaryChartsPanel() {
 
     // Configuration
     const CONFIG = {
-      width: 1200,
-      height: 550,
-      margin: { top: 20, right: 200, bottom: 40, left: 40 },
+      width: 1000,
+      height: 580,
+      margin: { top: 20, right: 160, bottom: 60, left: 40 },
       chartWidth: 280,
       chartHeight: 240,
-      legendWidth: 180,
+      legendWidth: 140,
       gap: 20
     };
 
@@ -354,11 +354,6 @@ export function AuxiliaryChartsPanel() {
       .attr("width", CONFIG.width)
       .attr("height", CONFIG.height);
 
-    // Add background
-    svg.append("rect")
-      .attr("width", CONFIG.width)
-      .attr("height", CONFIG.height)
-      .attr("fill", "#fafafa");
 
     // Main group for content
     const g = svg.append("g")
