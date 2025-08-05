@@ -58,9 +58,18 @@ interface OverlapData {
 
 // Deduplicate sources by cleaned name (same logic as treemap)
 function deduplicateSources(sources: Array<{ source: string; record_count: number }>): Array<{ source: string; record_count: number }> {
+  // Resources to exclude from plots (composite databases or no licenses)
+  const excludedResources = new Set(['CPAD', 'CollecTRI', 'DoRothEA', 'cellsignal.com']);
+  
   const deduplicatedMap = new Map<string, { source: string; record_count: number }>();
   sources.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
+    
+    // Skip excluded resources
+    if (excludedResources.has(cleanedName)) {
+      return;
+    }
+    
     const existing = deduplicatedMap.get(cleanedName);
     
     if (!existing) {
