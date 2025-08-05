@@ -576,8 +576,8 @@ export function AuxiliaryChartsPanel() {
       }
     };
 
-    // Create vertical legend
-    const createLegend = (
+    // Create maintenance legend (for upper row)
+    const createMaintenanceLegend = (
       container: d3.Selection<SVGGElement, unknown, null, undefined>,
       x: number,
       y: number
@@ -585,12 +585,42 @@ export function AuxiliaryChartsPanel() {
       const legendG = container.append("g")
         .attr("transform", `translate(${x},${y})`);
 
-      // All legend items in one vertical stack
-      const allItems = [
+      const maintenanceItems = [
         { name: "Frequent", color: CHART_COLORS.maintenance.frequent },
         { name: "Infrequent", color: CHART_COLORS.maintenance.infrequent },
         { name: "One Time Paper", color: CHART_COLORS.maintenance.one_time_paper },
-        { name: "Discontinued", color: CHART_COLORS.maintenance.discontinued },
+        { name: "Discontinued", color: CHART_COLORS.maintenance.discontinued }
+      ];
+
+      maintenanceItems.forEach((item, i) => {
+        const itemG = legendG.append("g")
+          .attr("transform", `translate(0, ${i * 22})`);
+
+        itemG.append("rect")
+          .attr("width", 14)
+          .attr("height", 14)
+          .attr("fill", item.color);
+
+        itemG.append("text")
+          .attr("x", 20)
+          .attr("y", 10)
+          .attr("class", "legend-text")
+          .style("font-size", "12px")
+          .style("fill", "#374151")
+          .text(item.name);
+      });
+    };
+
+    // Create overlap legend (for lower row)
+    const createOverlapLegend = (
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
+      x: number,
+      y: number
+    ) => {
+      const legendG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
+
+      const overlapItems = [
         { name: "1 resource", color: CHART_COLORS.overlap[0] },
         { name: "2 resources", color: CHART_COLORS.overlap[1] },
         { name: "3 resources", color: CHART_COLORS.overlap[2] },
@@ -598,9 +628,9 @@ export function AuxiliaryChartsPanel() {
         { name: "5+ resources", color: CHART_COLORS.overlap[4] }
       ];
 
-      allItems.forEach((item, i) => {
+      overlapItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${i * 20})`);
+          .attr("transform", `translate(0, ${i * 22})`);
 
         itemG.append("rect")
           .attr("width", 14)
@@ -638,10 +668,16 @@ export function AuxiliaryChartsPanel() {
       chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
       "Resources per entry (%)");
 
-    // Add legend on the right side
+    // Add legends on the right side, centered with each row
     const legendX = (CONFIG.chartWidth + CONFIG.gap) * 2 + CONFIG.gap;
-    const legendY = chartY + 20;
-    createLegend(g, legendX, legendY);
+    
+    // Upper legend (maintenance) - centered vertically with upper row
+    const upperLegendY = chartY + (CONFIG.chartHeight / 2) - (4 * 22 / 2); // 4 items * 22px spacing
+    createMaintenanceLegend(g, legendX, upperLegendY);
+    
+    // Lower legend (overlap) - centered vertically with lower row
+    const lowerLegendY = chartY + CONFIG.chartHeight + CONFIG.gap + (CONFIG.chartHeight / 2) - (5 * 22 / 2); // 5 items * 22px spacing
+    createOverlapLegend(g, legendX, lowerLegendY);
 
   }, []);
 
