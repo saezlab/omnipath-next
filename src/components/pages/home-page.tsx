@@ -78,7 +78,7 @@ export function HomePage() {
               Each visualization shows the relative size and scope of different data sources.
             </p>
           </div>
-          <div className="overflow-x-auto">
+          <div className="flex justify-center overflow-x-auto">
             <DatabaseGridVisualization />
           </div>
         </section>
@@ -92,7 +92,7 @@ export function HomePage() {
               across different database categories and interaction types.
             </p>
           </div>
-          <div className="overflow-x-auto">
+          <div className="flex justify-center overflow-x-auto">
             <AuxiliaryChartsPanel />
           </div>
         </section>
