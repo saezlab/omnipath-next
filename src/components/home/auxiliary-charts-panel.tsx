@@ -185,13 +185,13 @@ export function AuxiliaryChartsPanel() {
 
     // Configuration
     const CONFIG = {
-      width: 1400,
+      width: 1200,
       height: 580,
-      margin: { top: 20, right: 160, bottom: 60, left: 40 },
-      chartWidth: 240,
+      margin: { top: 20, right: 200, bottom: 60, left: 40 },
+      chartWidth: 320,
       chartHeight: 240,
       legendWidth: 140,
-      gap: 15
+      gap: 20
     };
 
     // Helper function to create data mappings
@@ -461,6 +461,164 @@ export function AuxiliaryChartsPanel() {
     // Main group for content
     const g = svg.append("g")
       .attr("transform", `translate(${CONFIG.margin.left},${CONFIG.margin.top})`);
+
+    // Create grouped bar chart with maintenance and license side by side
+    const createGroupedBarChart = (
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
+      data: D3ChartData[],
+      x: number,
+      y: number,
+      width: number,
+      height: number,
+      yAxisLabel: string = "",
+      isPercentage: boolean = false
+    ) => {
+      const chartG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
+
+      const margin = { top: 10, right: 20, bottom: 60, left: 60 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      const innerG = chartG.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Scales
+      const xScale = d3.scaleBand()
+        .domain(data.map(d => d.category))
+        .range([0, innerWidth])
+        .padding(0.2);
+
+      // Create sub-scale for grouped bars (maintenance vs license)
+      const xSubScale = d3.scaleBand()
+        .domain(['maintenance', 'license'])
+        .range([0, xScale.bandwidth()])
+        .padding(0.1);
+
+      const maxMaintenanceValue = d3.max(data, d => 
+        d.frequent + d.infrequent + d.one_time_paper + d.discontinued) || 0;
+      const maxLicenseValue = d3.max(data, d => 
+        (d.academic_nonprofit || 0) + (d.commercial || 0)) || 0;
+      
+      const yScale = d3.scaleLinear()
+        .domain([0, isPercentage ? 100 : Math.max(maxMaintenanceValue, maxLicenseValue)])
+        .range([innerHeight, 0]);
+
+      // Maintenance stacks
+      const maintenanceStack = d3.stack<D3ChartData>()
+        .keys(['frequent', 'infrequent', 'one_time_paper', 'discontinued'])
+        .order(d3.stackOrderNone)
+        .offset(d3.stackOffsetNone);
+
+      const maintenanceSeries = maintenanceStack(data);
+
+      // License stacks
+      const licenseStack = d3.stack<D3ChartData>()
+        .keys(['academic_nonprofit', 'commercial'])
+        .order(d3.stackOrderNone)
+        .offset(d3.stackOffsetNone);
+
+      const licenseSeries = licenseStack(data);
+
+      // Draw maintenance bars
+      const maintenanceGroups = innerG.selectAll(".maintenance-series")
+        .data(maintenanceSeries)
+        .enter().append("g")
+        .attr("class", "maintenance-series")
+        .attr("fill", (_, i) => {
+          const colors = [
+            CHART_COLORS.maintenance.frequent,
+            CHART_COLORS.maintenance.infrequent,
+            CHART_COLORS.maintenance.one_time_paper,
+            CHART_COLORS.maintenance.discontinued
+          ];
+          return colors[i];
+        });
+
+      maintenanceGroups.each(function(seriesData, seriesIndex) {
+        d3.select(this).selectAll("rect")
+          .data(seriesData)
+          .enter().append("rect")
+          .attr("x", d => xScale(d.data.category)! + xSubScale('maintenance')!)
+          .attr("y", d => yScale(d[1]))
+          .attr("height", d => yScale(d[0]) - yScale(d[1]))
+          .attr("width", xSubScale.bandwidth())
+          .append("title")
+          .text(d => {
+            const keys = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
+            const seriesName = keys[seriesIndex] || 'unknown';
+            const value = d[1] - d[0];
+            const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
+            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            return `${d.data.category} - Maintenance\\n${categoryName}: ${displayValue}`;
+          });
+      });
+
+      // Draw license bars
+      const licenseGroups = innerG.selectAll(".license-series")
+        .data(licenseSeries)
+        .enter().append("g")
+        .attr("class", "license-series")
+        .attr("fill", (_, i) => {
+          const colors = [
+            CHART_COLORS.license.academic_nonprofit,
+            CHART_COLORS.license.commercial
+          ];
+          return colors[i];
+        });
+
+      licenseGroups.each(function(seriesData, seriesIndex) {
+        d3.select(this).selectAll("rect")
+          .data(seriesData)
+          .enter().append("rect")
+          .attr("x", d => xScale(d.data.category)! + xSubScale('license')!)
+          .attr("y", d => yScale(d[1]))
+          .attr("height", d => yScale(d[0]) - yScale(d[1]))
+          .attr("width", xSubScale.bandwidth())
+          .append("title")
+          .text(d => {
+            const keys = ['academic_nonprofit', 'commercial'];
+            const seriesName = keys[seriesIndex] || 'unknown';
+            const value = d[1] - d[0];
+            const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
+            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            return `${d.data.category} - License\\n${categoryName}: ${displayValue}`;
+          });
+      });
+
+      // X axis
+      innerG.append("g")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(xScale))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end")
+        .style("font-size", "10px");
+
+      // Y axis with formatting
+      const yAxis = d3.axisLeft(yScale);
+      if (!isPercentage) {
+        yAxis.tickFormat(d3.format(".0s"));
+      }
+      
+      innerG.append("g")
+        .call(yAxis)
+        .selectAll("text")
+        .style("font-size", "10px");
+
+      // Y axis label
+      if (yAxisLabel) {
+        innerG.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x", 0 - (innerHeight / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .style("font-size", "11px")
+          .text(yAxisLabel);
+      }
+
+    };
 
     // D3 Chart creation function
     const createStackedBarChart = (
@@ -790,14 +948,24 @@ export function AuxiliaryChartsPanel() {
       }
     };
 
-    // Create maintenance legend (for upper row)
-    const createMaintenanceLegend = (
+    // Create combined legend for maintenance and license
+    const createCombinedLegend = (
       container: d3.Selection<SVGGElement, unknown, null, undefined>,
       x: number,
       y: number
     ) => {
       const legendG = container.append("g")
         .attr("transform", `translate(${x},${y})`);
+
+      // Maintenance section
+      legendG.append("text")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("class", "legend-title")
+        .style("font-size", "13px")
+        .style("font-weight", "600")
+        .style("fill", "#374151")
+        .text("Maintenance");
 
       const maintenanceItems = [
         { name: "Frequent", color: CHART_COLORS.maintenance.frequent },
@@ -808,31 +976,33 @@ export function AuxiliaryChartsPanel() {
 
       maintenanceItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${i * 22})`);
+          .attr("transform", `translate(0, ${15 + i * 20})`);
 
         itemG.append("rect")
-          .attr("width", 14)
-          .attr("height", 14)
+          .attr("width", 12)
+          .attr("height", 12)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 20)
-          .attr("y", 10)
+          .attr("x", 18)
+          .attr("y", 9)
           .attr("class", "legend-text")
-          .style("font-size", "12px")
+          .style("font-size", "11px")
           .style("fill", "#374151")
           .text(item.name);
       });
-    };
 
-    // Create license legend
-    const createLicenseLegend = (
-      container: d3.Selection<SVGGElement, unknown, null, undefined>,
-      x: number,
-      y: number
-    ) => {
-      const legendG = container.append("g")
-        .attr("transform", `translate(${x},${y})`);
+      // License section
+      const licenseYOffset = 15 + maintenanceItems.length * 20 + 15;
+      
+      legendG.append("text")
+        .attr("x", 0)
+        .attr("y", licenseYOffset)
+        .attr("class", "legend-title")
+        .style("font-size", "13px")
+        .style("font-weight", "600")
+        .style("fill", "#374151")
+        .text("License");
 
       const licenseItems = [
         { name: "Academic/Nonprofit", color: CHART_COLORS.license.academic_nonprofit },
@@ -841,22 +1011,23 @@ export function AuxiliaryChartsPanel() {
 
       licenseItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${i * 22})`);
+          .attr("transform", `translate(0, ${licenseYOffset + 15 + i * 20})`);
 
         itemG.append("rect")
-          .attr("width", 14)
-          .attr("height", 14)
+          .attr("width", 12)
+          .attr("height", 12)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 20)
-          .attr("y", 10)
+          .attr("x", 18)
+          .attr("y", 9)
           .attr("class", "legend-text")
-          .style("font-size", "12px")
+          .style("font-size", "11px")
           .style("fill", "#374151")
           .text(item.name);
       });
     };
+
 
     // Create overlap legend (for lower row)
     const createOverlapLegend = (
@@ -898,45 +1069,35 @@ export function AuxiliaryChartsPanel() {
     const chartX = CONFIG.gap;
     const chartY = CONFIG.gap;
 
-    // Row 1: Resources (maintenance) and Resources (license)
-    createStackedBarChart(g, resourcesData, chartX, chartY, CONFIG.chartWidth, CONFIG.chartHeight,
-      "Resources by maintenance", false);
+    // Row 1: Resources with grouped bars (maintenance + license)
+    createGroupedBarChart(g, resourcesData, chartX, chartY, CONFIG.chartWidth, CONFIG.chartHeight,
+      "Resources by Category", false);
     
-    createLicenseChart(g, resourcesData, chartX + CONFIG.chartWidth + CONFIG.gap, chartY, 
-      CONFIG.chartWidth, CONFIG.chartHeight,
-      "Resources by license", false);
-
-    // Row 1 continued: References and Resource Overlap %
-    createStackedBarChart(g, referencesData, chartX + (CONFIG.chartWidth + CONFIG.gap) * 2, chartY, 
+    // Row 1: References (maintenance only)
+    createStackedBarChart(g, referencesData, chartX + CONFIG.chartWidth + CONFIG.gap, chartY, 
       CONFIG.chartWidth, CONFIG.chartHeight,
       "References by maintenance", false);
+
+    // Row 2: Records % with grouped bars (maintenance + license)
+    createGroupedBarChart(g, recordsData, chartX, chartY + CONFIG.chartHeight + CONFIG.gap, 
+      CONFIG.chartWidth, CONFIG.chartHeight,
+      "Records by Category (%)", true);
     
-    createOverlapChart(g, combinedOverlapData, chartX + (CONFIG.chartWidth + CONFIG.gap) * 3, 
-      chartY, CONFIG.chartWidth, CONFIG.chartHeight,
+    // Row 2: Resource Overlap %
+    createOverlapChart(g, combinedOverlapData, chartX + CONFIG.chartWidth + CONFIG.gap, 
+      chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
       "Resources per entry (%)");
 
-    // Row 2: Records % (maintenance) and Records % (license)
-    createStackedBarChart(g, recordsData, chartX, chartY + CONFIG.chartHeight + CONFIG.gap, 
-      CONFIG.chartWidth, CONFIG.chartHeight,
-      "Records by maintenance (%)", true);
-    
-    createLicenseChart(g, recordsData, chartX + CONFIG.chartWidth + CONFIG.gap, 
-      chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
-      "Records by license (%)", true);
-
     // Add legends on the right side
-    const legendX = (CONFIG.chartWidth + CONFIG.gap) * 4 + CONFIG.gap;
+    const legendX = (CONFIG.chartWidth + CONFIG.gap) * 2 + CONFIG.gap;
     
-    // Upper legends - maintenance and license side by side
-    const upperLegendY = chartY + (CONFIG.chartHeight / 2) - (4 * 22 / 2); // 4 items * 22px spacing
-    createMaintenanceLegend(g, legendX, upperLegendY);
+    // Combined legend for grouped charts
+    const combinedLegendY = chartY + 20;
+    createCombinedLegend(g, legendX, combinedLegendY);
     
-    const licenseLegendY = chartY + (CONFIG.chartHeight / 2) - (2 * 22 / 2); // 2 items * 22px spacing
-    createLicenseLegend(g, legendX, licenseLegendY + 110); // Offset below maintenance legend
-    
-    // Lower legend (overlap) - centered vertically with lower row
-    const lowerLegendY = chartY + CONFIG.chartHeight + CONFIG.gap + (CONFIG.chartHeight / 2) - (5 * 22 / 2); // 5 items * 22px spacing
-    createOverlapLegend(g, legendX, lowerLegendY);
+    // Overlap legend for the overlap chart
+    const overlapLegendY = chartY + CONFIG.chartHeight + CONFIG.gap + 20;
+    createOverlapLegend(g, legendX, overlapLegendY);
 
   }, []);
 
