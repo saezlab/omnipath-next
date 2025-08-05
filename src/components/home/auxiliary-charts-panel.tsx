@@ -471,7 +471,8 @@ export function AuxiliaryChartsPanel() {
       width: number,
       height: number,
       yAxisLabel: string = "",
-      isPercentage: boolean = false
+      isPercentage: boolean = false,
+      label: string = ""
     ) => {
       const chartG = container.append("g")
         .attr("transform", `translate(${x},${y})`);
@@ -618,6 +619,17 @@ export function AuxiliaryChartsPanel() {
           .text(yAxisLabel);
       }
 
+      // Add chart label (a, b, c, d)
+      if (label) {
+        chartG.append("text")
+          .attr("x", -5)
+          .attr("y", 15)
+          .style("font-size", "16px")
+          .style("font-weight", "bold")
+          .style("fill", "#374151")
+          .text(label);
+      }
+
     };
 
     // D3 Chart creation function
@@ -629,7 +641,8 @@ export function AuxiliaryChartsPanel() {
       width: number,
       height: number,
       yAxisLabel: string = "",
-      isPercentage: boolean = false
+      isPercentage: boolean = false,
+      label: string = ""
     ) => {
       const chartG = container.append("g")
         .attr("transform", `translate(${x},${y})`);
@@ -737,6 +750,17 @@ export function AuxiliaryChartsPanel() {
           .style("font-size", "11px")
           .text(yAxisLabel);
       }
+
+      // Add chart label (a, b, c, d)
+      if (label) {
+        chartG.append("text")
+          .attr("x", -5)
+          .attr("y", 15)
+          .style("font-size", "16px")
+          .style("font-weight", "bold")
+          .style("fill", "#374151")
+          .text(label);
+      }
     };
 
 
@@ -748,7 +772,8 @@ export function AuxiliaryChartsPanel() {
       y: number,
       width: number,
       height: number,
-      yAxisLabel: string = ""
+      yAxisLabel: string = "",
+      label: string = ""
     ) => {
       const chartG = container.append("g")
         .attr("transform", `translate(${x},${y})`);
@@ -829,6 +854,17 @@ export function AuxiliaryChartsPanel() {
           .style("text-anchor", "middle")
           .style("font-size", "11px")
           .text(yAxisLabel);
+      }
+
+      // Add chart label (a, b, c, d)
+      if (label) {
+        chartG.append("text")
+          .attr("x", -5)
+          .attr("y", 15)
+          .style("font-size", "16px")
+          .style("font-weight", "bold")
+          .style("fill", "#374151")
+          .text(label);
       }
     };
 
@@ -958,22 +994,22 @@ export function AuxiliaryChartsPanel() {
 
     // Row 1: Resources with grouped bars (maintenance + license)
     createGroupedBarChart(g, resourcesData, chartX, chartY, CONFIG.chartWidth, CONFIG.chartHeight,
-      "Resources by Category", false);
+      "Resources by Category", false, "a)");
     
     // Row 1: References (maintenance only)
     createStackedBarChart(g, referencesData, chartX + CONFIG.chartWidth + CONFIG.gap, chartY, 
       CONFIG.chartWidth, CONFIG.chartHeight,
-      "References by maintenance", false);
+      "References by maintenance", false, "b)");
 
     // Row 2: Records % with grouped bars (maintenance + license)
     createGroupedBarChart(g, recordsData, chartX, chartY + CONFIG.chartHeight + CONFIG.gap, 
       CONFIG.chartWidth, CONFIG.chartHeight,
-      "Records by Category (%)", true);
+      "Records by Category (%)", true, "c)");
     
     // Row 2: Resource Overlap %
     createOverlapChart(g, combinedOverlapData, chartX + CONFIG.chartWidth + CONFIG.gap, 
       chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
-      "Resources per entry (%)");
+      "Resources per entry (%)", "d)");
 
     // Add combined legend on the right side
     const legendX = (CONFIG.chartWidth + CONFIG.gap) * 2 + CONFIG.gap;
