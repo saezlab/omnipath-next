@@ -146,11 +146,11 @@ export function AuxiliaryChartsPanel() {
     // Configuration
     const CONFIG = {
       width: 1200,
-      height: 650,
-      margin: { top: 20, right: 40, bottom: 120, left: 40 },
+      height: 550,
+      margin: { top: 20, right: 200, bottom: 40, left: 40 },
       chartWidth: 280,
       chartHeight: 240,
-      legendHeight: 70,
+      legendWidth: 180,
       gap: 20
     };
 
@@ -576,7 +576,7 @@ export function AuxiliaryChartsPanel() {
       }
     };
 
-    // Create horizontal legend
+    // Create vertical legend
     const createLegend = (
       container: d3.Selection<SVGGElement, unknown, null, undefined>,
       x: number,
@@ -585,47 +585,12 @@ export function AuxiliaryChartsPanel() {
       const legendG = container.append("g")
         .attr("transform", `translate(${x},${y})`);
 
-      // Legend background
-      const legendWidth = CONFIG.chartWidth * 2 + CONFIG.gap;
-      legendG.append("rect")
-        .attr("width", legendWidth)
-        .attr("height", CONFIG.legendHeight)
-        .attr("fill", "#f3f4f6")
-        .attr("stroke", "#e5e7eb")
-        .attr("rx", 4);
-
-      // Maintenance Categories - left side
-      const maintenanceG = legendG.append("g")
-        .attr("transform", "translate(20, 25)");
-
-      const maintenanceItems = [
+      // All legend items in one vertical stack
+      const allItems = [
         { name: "Frequent", color: CHART_COLORS.maintenance.frequent },
         { name: "Infrequent", color: CHART_COLORS.maintenance.infrequent },
         { name: "One Time Paper", color: CHART_COLORS.maintenance.one_time_paper },
-        { name: "Discontinued", color: CHART_COLORS.maintenance.discontinued }
-      ];
-
-      maintenanceItems.forEach((item, i) => {
-        const itemG = maintenanceG.append("g")
-          .attr("transform", `translate(${i * 140}, 0)`);
-
-        itemG.append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
-          .attr("fill", item.color);
-
-        itemG.append("text")
-          .attr("x", 18)
-          .attr("y", 9)
-          .attr("class", "legend-text")
-          .text(item.name);
-      });
-
-      // Resource Overlap - right side
-      const overlapG = legendG.append("g")
-        .attr("transform", "translate(20, 45)");
-
-      const overlapItems = [
+        { name: "Discontinued", color: CHART_COLORS.maintenance.discontinued },
         { name: "1 resource", color: CHART_COLORS.overlap[0] },
         { name: "2 resources", color: CHART_COLORS.overlap[1] },
         { name: "3 resources", color: CHART_COLORS.overlap[2] },
@@ -633,19 +598,21 @@ export function AuxiliaryChartsPanel() {
         { name: "5+ resources", color: CHART_COLORS.overlap[4] }
       ];
 
-      overlapItems.forEach((item, i) => {
-        const itemG = overlapG.append("g")
-          .attr("transform", `translate(${i * 112}, 0)`);
+      allItems.forEach((item, i) => {
+        const itemG = legendG.append("g")
+          .attr("transform", `translate(0, ${i * 20})`);
 
         itemG.append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
+          .attr("width", 14)
+          .attr("height", 14)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 18)
-          .attr("y", 9)
+          .attr("x", 20)
+          .attr("y", 10)
           .attr("class", "legend-text")
+          .style("font-size", "12px")
+          .style("fill", "#374151")
           .text(item.name);
       });
     };
@@ -671,9 +638,10 @@ export function AuxiliaryChartsPanel() {
       chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
       "Resources per entry (%)");
 
-    // Add legend at the bottom, centered
-    const legendX = (CONFIG.chartWidth * 2 + CONFIG.gap * 3) / 2 - ((CONFIG.chartWidth * 2 + CONFIG.gap) / 2);
-    createLegend(g, legendX, chartY + (CONFIG.chartHeight + CONFIG.gap) * 2 + 10);
+    // Add legend on the right side
+    const legendX = (CONFIG.chartWidth + CONFIG.gap) * 2 + CONFIG.gap;
+    const legendY = chartY + 20;
+    createLegend(g, legendX, legendY);
 
   }, []);
 
