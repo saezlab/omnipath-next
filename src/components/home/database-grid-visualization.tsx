@@ -49,6 +49,35 @@ export default function DatabaseGridVisualization({
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
+  const downloadSVG = () => {
+    if (!svgRef.current) return;
+
+    const svgElement = svgRef.current.cloneNode(true) as SVGSVGElement;
+    
+    const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const styleTag = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    styleTag.textContent = `
+      text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+    `;
+    styleElement.appendChild(styleTag);
+    svgElement.insertBefore(styleElement, svgElement.firstChild);
+    
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    const downloadLink = document.createElement('a');
+    downloadLink.href = svgUrl;
+    downloadLink.download = 'database-grid-visualization.svg';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(svgUrl);
+  };
+
   useEffect(() => {
     if (!svgRef.current || !tooltipRef.current) return;
 
@@ -265,7 +294,6 @@ export default function DatabaseGridVisualization({
 
       render() {
         this.renderGrid();
-        this.renderTitle();
       }
 
       renderGrid() {
@@ -642,6 +670,12 @@ export default function DatabaseGridVisualization({
   return (
     <>
       <div className="relative">
+        <button
+          onClick={downloadSVG}
+          className="absolute top-2 right-2 z-10 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        >
+          Download SVG
+        </button>
         <svg ref={svgRef} />
         <div
           ref={tooltipRef}
