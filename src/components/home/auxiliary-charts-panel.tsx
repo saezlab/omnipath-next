@@ -553,6 +553,8 @@ export function AuxiliaryChartsPanel() {
         .attr("transform", `translate(0,${innerHeight})`)
         .call(d3.axisBottom(xScale))
         .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end")
         .style("font-size", "10px");
 
       // Y axis
