@@ -185,13 +185,13 @@ export function AuxiliaryChartsPanel() {
 
     // Configuration
     const CONFIG = {
-      width: 1200,
-      height: 580,
-      margin: { top: 20, right: 200, bottom: 60, left: 40 },
-      chartWidth: 320,
-      chartHeight: 240,
-      legendWidth: 140,
-      gap: 20
+      width: 1600,
+      height: 800,
+      margin: { top: 30, right: 250, bottom: 80, left: 50 },
+      chartWidth: 420,
+      chartHeight: 320,
+      legendWidth: 180,
+      gap: 30
     };
 
     // Helper function to create data mappings
@@ -846,7 +846,7 @@ export function AuxiliaryChartsPanel() {
         .attr("x", 0)
         .attr("y", 0)
         .attr("class", "legend-title")
-        .style("font-size", "13px")
+        .style("font-size", "16px")
         .style("font-weight", "600")
         .style("fill", "#374151")
         .text("Maintenance");
@@ -860,30 +860,30 @@ export function AuxiliaryChartsPanel() {
 
       maintenanceItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${15 + i * 20})`);
+          .attr("transform", `translate(0, ${20 + i * 26})`);
 
         itemG.append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
+          .attr("width", 16)
+          .attr("height", 16)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 18)
-          .attr("y", 9)
+          .attr("x", 22)
+          .attr("y", 11)
           .attr("class", "legend-text")
-          .style("font-size", "11px")
+          .style("font-size", "14px")
           .style("fill", "#374151")
           .text(item.name);
       });
 
       // License section
-      const licenseYOffset = 15 + maintenanceItems.length * 20 + 15;
+      const licenseYOffset = 20 + maintenanceItems.length * 26 + 20;
       
       legendG.append("text")
         .attr("x", 0)
         .attr("y", licenseYOffset)
         .attr("class", "legend-title")
-        .style("font-size", "13px")
+        .style("font-size", "16px")
         .style("font-weight", "600")
         .style("fill", "#374151")
         .text("License");
@@ -895,30 +895,30 @@ export function AuxiliaryChartsPanel() {
 
       licenseItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${licenseYOffset + 15 + i * 20})`);
+          .attr("transform", `translate(0, ${licenseYOffset + 20 + i * 26})`);
 
         itemG.append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
+          .attr("width", 16)
+          .attr("height", 16)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 18)
-          .attr("y", 9)
+          .attr("x", 22)
+          .attr("y", 11)
           .attr("class", "legend-text")
-          .style("font-size", "11px")
+          .style("font-size", "14px")
           .style("fill", "#374151")
           .text(item.name);
       });
 
       // Overlap section
-      const overlapYOffset = licenseYOffset + 15 + licenseItems.length * 20 + 15;
+      const overlapYOffset = licenseYOffset + 20 + licenseItems.length * 26 + 20;
       
       legendG.append("text")
         .attr("x", 0)
         .attr("y", overlapYOffset)
         .attr("class", "legend-title")
-        .style("font-size", "13px")
+        .style("font-size", "16px")
         .style("font-weight", "600")
         .style("fill", "#374151")
         .text("Resource Overlap");
@@ -933,18 +933,18 @@ export function AuxiliaryChartsPanel() {
 
       overlapItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${overlapYOffset + 15 + i * 20})`);
+          .attr("transform", `translate(0, ${overlapYOffset + 20 + i * 26})`);
 
         itemG.append("rect")
-          .attr("width", 12)
-          .attr("height", 12)
+          .attr("width", 16)
+          .attr("height", 16)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 18)
-          .attr("y", 9)
+          .attr("x", 22)
+          .attr("y", 11)
           .attr("class", "legend-text")
-          .style("font-size", "11px")
+          .style("font-size", "14px")
           .style("fill", "#374151")
           .text(item.name);
       });
