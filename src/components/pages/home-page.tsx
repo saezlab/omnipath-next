@@ -1,16 +1,12 @@
 "use client"
 import { AboutSection } from "@/components/home/about-section"
 import { AIAssistantCard } from "@/components/home/ai-assistant-card"
-import { DatabaseStats } from "@/components/home/database-stats"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { SiteLayout } from "@/components/layout/main-layout"
 import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
-import { DatabasePrintTreemapsAlternative } from "../home/database-print-treemaps-alternative"
-import { DatabasePrintTreemaps } from "../home/database-print-treemaps"
-import { DatabaseVoronoiTreemapLinear } from "../home/database-voronoi-treemap-linear"
-import { DatabaseVoronoiTreemapTwoCircles } from "@/components/home/database-voronoi-treemap-two-circles";
 import DatabaseGridVisualization from "@/components/home/database-grid-visualization";
+import { AuxiliaryChartsPanel } from "@/components/home/auxiliary-charts-panel";
 export function HomePage() {
   return (
     <SiteLayout>
@@ -74,23 +70,10 @@ export function HomePage() {
         </div>
 
         <div className="mt-12">
-          <DatabaseStats />
-        </div>
-        <div className="mt-12">
-          <DatabasePrintTreemaps />
-        </div>
-        <div className="mt-12">
-          <DatabasePrintTreemapsAlternative />
-        </div>
-
-        <div className="mt-12">
-          <DatabaseVoronoiTreemapLinear />
-        </div>
-        <div className="mt-12">
-          <DatabaseVoronoiTreemapTwoCircles />
-        </div>
-        <div className="mt-12">
           <DatabaseGridVisualization />
+        </div>
+        <div className="mt-12">
+          <AuxiliaryChartsPanel />
         </div>
 
         <AboutSection />
