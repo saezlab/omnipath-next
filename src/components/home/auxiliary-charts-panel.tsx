@@ -597,7 +597,8 @@ export function AuxiliaryChartsPanel() {
         .style("font-size", "10px");
 
       // Y axis with formatting
-      const yAxis = d3.axisLeft(yScale);
+      const yAxis = d3.axisLeft(yScale)
+        .ticks(5);
       if (!isPercentage) {
         yAxis.tickFormat(d3.format(".0s"));
       }
@@ -605,7 +606,8 @@ export function AuxiliaryChartsPanel() {
       innerG.append("g")
         .call(yAxis)
         .selectAll("text")
-        .style("font-size", "10px");
+        .style("font-size", "12px")
+        .style("font-weight", "500");
 
       // Y axis label
       if (yAxisLabel) {
@@ -727,7 +729,8 @@ export function AuxiliaryChartsPanel() {
         .style("font-size", "10px");
 
       // Y axis with formatting
-      const yAxis = d3.axisLeft(yScale);
+      const yAxis = d3.axisLeft(yScale)
+        .ticks(5);
       
       // Format numbers for non-percentage charts
       if (!isPercentage) {
@@ -737,7 +740,8 @@ export function AuxiliaryChartsPanel() {
       innerG.append("g")
         .call(yAxis)
         .selectAll("text")
-        .style("font-size", "10px");
+        .style("font-size", "12px")
+        .style("font-weight", "500");
 
       // Y axis label
       if (yAxisLabel) {
@@ -840,9 +844,10 @@ export function AuxiliaryChartsPanel() {
 
       // Y axis
       innerG.append("g")
-        .call(d3.axisLeft(yScale))
+        .call(d3.axisLeft(yScale).ticks(5))
         .selectAll("text")
-        .style("font-size", "10px");
+        .style("font-size", "12px")
+        .style("font-weight", "500");
 
       // Y axis label
       if (yAxisLabel) {
