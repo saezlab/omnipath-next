@@ -7,6 +7,7 @@ import { SiteLayout } from "@/components/layout/main-layout"
 import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
 import DatabaseGridVisualization from "@/components/home/database-grid-visualization";
 import { AuxiliaryChartsPanel } from "@/components/home/auxiliary-charts-panel";
+import CombinedDatabaseVisualization from '@/components/home/combined-database-visualization';
 export function HomePage() {
   return (
     <SiteLayout>
@@ -94,6 +95,18 @@ export function HomePage() {
           </div>
           <div className="flex justify-center overflow-x-auto">
             <AuxiliaryChartsPanel />
+          </div>
+        </section>
+        {/* Combined Database Visualization Section */}
+        <section className="mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Combined Database Visualization</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Visualize the combined data from multiple databases to see how they interconnect and overlap.
+            </p>
+          </div>
+          <div className="flex justify-center overflow-x-auto">
+            <CombinedDatabaseVisualization />
           </div>
         </section>
 
