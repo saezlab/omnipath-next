@@ -230,7 +230,7 @@ export function processAnnotationsByCategory(): VoronoiNode[] {
 
 // Process enzyme-substrate data with deduplication
 export function processEnzymeSubstrate(): VoronoiNode[] {
-  const deduplicatedSources = deduplicateSources(dbStats.enzsub);
+  const deduplicatedSources = deduplicateSources(dbStats.enz_sub);
   return deduplicatedSources.map(d => {
     const cleanedName = cleanSourceName(d.source);
     return {
@@ -277,7 +277,7 @@ export function getResourceCounts() {
     annotations: new Set(dbStats.annotations.map(item => cleanSourceName(item.source))).size,
     intercellular: new Set(dbStats.intercell.map(item => cleanSourceName(item.source))).size,
     complexes: new Set(dbStats.complexes.map(item => cleanSourceName(item.source))).size,
-    enzymeSubstrate: new Set(dbStats.enzsub.map(item => cleanSourceName(item.source))).size
+    enzymeSubstrate: new Set(dbStats.enz_sub.map(item => cleanSourceName(item.source))).size
   };
   
   return counts;

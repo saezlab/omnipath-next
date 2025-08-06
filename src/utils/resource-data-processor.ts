@@ -75,7 +75,7 @@ export function getDatabaseSections(): DatabaseSection[] {
     },
     {
       title: "Enzyme-Substrate",
-      data: deduplicateSources(dbStats.enzsub),
+      data: deduplicateSources(dbStats.enz_sub),
       description: "Enzyme-substrate relationships"
     },
     {

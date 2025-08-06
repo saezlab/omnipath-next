@@ -27,14 +27,15 @@ async function generateDatabaseStats() {
     console.log('Querying interactions table...');
     const interactionsStats = await db.execute(sql`
       WITH unnested_sources AS (
-        SELECT unnest(sources) AS source
+        SELECT unnest(string_to_array(sources, ';')) AS source
         FROM interactions
-        WHERE sources IS NOT NULL
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
       )
       SELECT 
         source,
         COUNT(*)::int AS record_count
       FROM unnested_sources
+      WHERE source IS NOT NULL AND source != ''
       GROUP BY source
       ORDER BY record_count DESC
     `);
@@ -45,50 +46,53 @@ async function generateDatabaseStats() {
     const interactionsSourceTypeStats = await db.execute(sql`
       WITH unnested_sources AS (
         SELECT 
-          unnest(sources) AS source,
+          unnest(string_to_array(sources, ';')) AS source,
           type
         FROM interactions
-        WHERE sources IS NOT NULL AND type IS NOT NULL
+        WHERE sources IS NOT NULL AND sources != '' AND sources != '' AND type IS NOT NULL
       )
       SELECT 
         source,
         type,
         COUNT(*)::int AS record_count
       FROM unnested_sources
+      WHERE source IS NOT NULL AND source != ''
       GROUP BY source, type
       ORDER BY source, record_count DESC
     `);
     console.log(`✓ Interactions source-type: Found ${interactionsSourceTypeStats.length} unique combinations`);
 
-    // 2. Enzsub table - sources array
-    console.log('Querying enzsub table...');
-    const enzsubStats = await db.execute(sql`
+    // 2. enz_sub table - sources array
+    console.log('Querying enz_sub table...');
+    const enz_subStats = await db.execute(sql`
       WITH unnested_sources AS (
-        SELECT unnest(sources) AS source
-        FROM enzsub
-        WHERE sources IS NOT NULL
+        SELECT unnest(string_to_array(sources, ';')) AS source
+        FROM enz_sub
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
       )
       SELECT 
         source,
         COUNT(*)::int AS record_count
       FROM unnested_sources
+      WHERE source IS NOT NULL AND source != ''
       GROUP BY source
       ORDER BY record_count DESC
     `);
-    console.log(`✓ Enzsub: Found ${enzsubStats.length} unique sources`);
+    console.log(`✓ enz_sub: Found ${enz_subStats.length} unique sources`);
 
     // 3. Complexes table - sources array
     console.log('Querying complexes table...');
     const complexesStats = await db.execute(sql`
       WITH unnested_sources AS (
-        SELECT unnest(sources) AS source
+        SELECT unnest(string_to_array(sources, ';')) AS source
         FROM complexes
-        WHERE sources IS NOT NULL
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
       )
       SELECT 
         source,
         COUNT(*)::int AS record_count
       FROM unnested_sources
+      WHERE source IS NOT NULL AND source != ''
       GROUP BY source
       ORDER BY record_count DESC
     `);
@@ -128,11 +132,11 @@ async function generateDatabaseStats() {
       WITH all_refs AS (
         -- Interactions table
         SELECT 
-          unnest(sources) AS source,
+          unnest(string_to_array(sources, ';')) AS source,
           type AS interaction_type,
           unnest(string_to_array("references", ';')) AS reference
         FROM interactions
-        WHERE sources IS NOT NULL 
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
           AND "references" IS NOT NULL 
           AND "references" != ''
         
@@ -140,11 +144,11 @@ async function generateDatabaseStats() {
         
         -- Enzyme-substrate relationships
         SELECT 
-          unnest(sources) AS source,
+          unnest(string_to_array(sources, ';')) AS source,
           'enzyme-substrate' AS interaction_type,
           unnest(string_to_array("references", ';')) AS reference
-        FROM enzsub
-        WHERE sources IS NOT NULL 
+        FROM enz_sub
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
           AND "references" IS NOT NULL 
           AND "references" != ''
         
@@ -152,11 +156,11 @@ async function generateDatabaseStats() {
         
         -- Complexes
         SELECT 
-          unnest(sources) AS source,
+          unnest(string_to_array(sources, ';')) AS source,
           'complex' AS interaction_type,
           unnest(string_to_array("references", ';')) AS reference
         FROM complexes
-        WHERE sources IS NOT NULL 
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
           AND "references" IS NOT NULL 
           AND "references" != ''
       )
@@ -176,11 +180,11 @@ async function generateDatabaseStats() {
       WITH all_refs AS (
         -- Interactions table
         SELECT 
-          unnest(sources) AS source,
+          unnest(string_to_array(sources, ';')) AS source,
           type AS interaction_type,
           unnest(string_to_array("references", ';')) AS reference
         FROM interactions
-        WHERE sources IS NOT NULL 
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
           AND "references" IS NOT NULL 
           AND "references" != ''
         
@@ -188,11 +192,11 @@ async function generateDatabaseStats() {
         
         -- Enzyme-substrate relationships
         SELECT 
-          unnest(sources) AS source,
+          unnest(string_to_array(sources, ';')) AS source,
           'enzyme-substrate' AS interaction_type,
           unnest(string_to_array("references", ';')) AS reference
-        FROM enzsub
-        WHERE sources IS NOT NULL 
+        FROM enz_sub
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
           AND "references" IS NOT NULL 
           AND "references" != ''
         
@@ -200,11 +204,11 @@ async function generateDatabaseStats() {
         
         -- Complexes
         SELECT 
-          unnest(sources) AS source,
+          unnest(string_to_array(sources, ';')) AS source,
           'complex' AS interaction_type,
           unnest(string_to_array("references", ';')) AS reference
         FROM complexes
-        WHERE sources IS NOT NULL 
+        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
           AND "references" IS NOT NULL 
           AND "references" != ''
       )
@@ -233,7 +237,7 @@ async function generateDatabaseStats() {
         UNION ALL
         
         SELECT 'enzyme-substrate' AS interaction_type
-        FROM enzsub
+        FROM enz_sub
         
         UNION ALL
         
@@ -261,9 +265,9 @@ async function generateDatabaseStats() {
         SELECT 
           CONCAT(source, '-', target) AS entry_id,
           'interaction' AS entry_type,
-          unnest(sources) AS resource
+          unnest(string_to_array(sources, ';')) AS resource
         FROM interactions
-        WHERE sources IS NOT NULL
+        WHERE sources IS NOT NULL AND sources != ''
         
         UNION ALL
         
@@ -271,9 +275,9 @@ async function generateDatabaseStats() {
         SELECT 
           CONCAT(enzyme, '-', substrate, '-', COALESCE(modification, 'none')) AS entry_id,
           'enzyme-substrate' AS entry_type,
-          unnest(sources) AS resource
-        FROM enzsub
-        WHERE sources IS NOT NULL
+          unnest(string_to_array(sources, ';')) AS resource
+        FROM enz_sub
+        WHERE sources IS NOT NULL AND sources != ''
         
         UNION ALL
         
@@ -281,9 +285,9 @@ async function generateDatabaseStats() {
         SELECT 
           name AS entry_id,
           'complex' AS entry_type,
-          unnest(sources) AS resource
+          unnest(string_to_array(sources, ';')) AS resource
         FROM complexes
-        WHERE sources IS NOT NULL AND name IS NOT NULL
+        WHERE sources IS NOT NULL AND sources != '' AND name IS NOT NULL
       ),
       entry_resource_counts AS (
         SELECT 
@@ -311,7 +315,7 @@ async function generateDatabaseStats() {
       // Original stats
       interactions: interactionsStats,
       interactionsSourceType: interactionsSourceTypeStats,
-      enzsub: enzsubStats,
+      enz_sub: enz_subStats,
       complexes: complexesStats,
       annotations: annotationsStats,
       intercell: intercellStats,
@@ -335,7 +339,7 @@ async function generateDatabaseStats() {
     console.log('Summary:');
     console.log(`- Interactions: ${interactionsStats.length} unique sources`);
     console.log(`- Interactions source-type: ${interactionsSourceTypeStats.length} unique combinations`);
-    console.log(`- Enzsub: ${enzsubStats.length} unique sources`);
+    console.log(`- enz_sub: ${enz_subStats.length} unique sources`);
     console.log(`- Complexes: ${complexesStats.length} unique sources`);
     console.log(`- Annotations: ${annotationsStats.length} unique sources`);
     console.log(`- Intercell: ${intercellStats.length} unique sources`);
