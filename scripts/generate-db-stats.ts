@@ -170,15 +170,14 @@ async function generateDatabaseStats() {
     `);
     console.log(`✓ Literature references by database and type: ${literatureRefsByDatabaseAndType.length} combinations`);
 
-    // b) Number of reference-record pairs by database and interaction types
-    console.log('Querying reference-record pairs...');
-    const referenceRecordPairs = await db.execute(sql`
-      WITH reference_record_pairs AS (
+    // b) Number of unique references by database and interaction types
+    console.log('Querying unique references by database and interaction type...');
+    const uniqueRefsByDatabaseAndType = await db.execute(sql`
+      WITH all_refs AS (
         -- Interactions table
         SELECT 
           unnest(sources) AS source,
           type AS interaction_type,
-          id AS record_id,
           unnest(string_to_array("references", ';')) AS reference
         FROM interactions
         WHERE sources IS NOT NULL 
@@ -191,7 +190,6 @@ async function generateDatabaseStats() {
         SELECT 
           unnest(sources) AS source,
           'enzyme-substrate' AS interaction_type,
-          id AS record_id,
           unnest(string_to_array("references", ';')) AS reference
         FROM enzsub
         WHERE sources IS NOT NULL 
@@ -204,7 +202,6 @@ async function generateDatabaseStats() {
         SELECT 
           unnest(sources) AS source,
           'complex' AS interaction_type,
-          id AS record_id,
           unnest(string_to_array("references", ';')) AS reference
         FROM complexes
         WHERE sources IS NOT NULL 
@@ -214,12 +211,12 @@ async function generateDatabaseStats() {
       SELECT 
         source AS database,
         interaction_type,
-        COUNT(*)::int AS reference_record_pair_count
-      FROM reference_record_pairs
+        COUNT(DISTINCT reference)::int AS unique_reference_count
+      FROM all_refs
       GROUP BY source, interaction_type
       ORDER BY source, interaction_type
     `);
-    console.log(`✓ Reference-record pairs: ${referenceRecordPairs.length} combinations`);
+    console.log(`✓ Unique references by database and type: ${uniqueRefsByDatabaseAndType.length} combinations`);
 
     // c) Aggregate interaction type counts (combine lncrna_post_transcriptional with post_transcriptional)
     console.log('Querying aggregate interaction type counts...');
@@ -322,7 +319,7 @@ async function generateDatabaseStats() {
       // New plot data
       plotData: {
         literatureRefsByDatabaseAndType,
-        referenceRecordPairs,
+        uniqueRefsByDatabaseAndType,
         aggregateInteractionTypes,
         resourceOverlap
       },
@@ -344,7 +341,7 @@ async function generateDatabaseStats() {
     console.log(`- Intercell: ${intercellStats.length} unique sources`);
     console.log('\nPlot data generated:');
     console.log(`- Literature refs by database/type: ${literatureRefsByDatabaseAndType.length} combinations`);
-    console.log(`- Reference-record pairs: ${referenceRecordPairs.length} combinations`);
+    console.log(`- Unique refs by database/type: ${uniqueRefsByDatabaseAndType.length} combinations`);
     console.log(`- Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
     console.log(`- Resource overlap: ${resourceOverlap.length} combinations`);
 
