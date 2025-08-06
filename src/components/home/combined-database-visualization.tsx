@@ -966,7 +966,7 @@ export default function CombinedDatabaseVisualization({
         };
       });
 
-      // 3. References per database (exclude Annotations and Intercellular - they don't have references)
+      // 3. References per database - simplified approach
       const referencesData: D3ChartData[] = databases
         .filter(db => !['Annotations', 'Intercellular'].includes(db.title))
         .map(db => {
@@ -974,18 +974,6 @@ export default function CombinedDatabaseVisualization({
         const literatureRefs = (dbStats.plotData?.literatureRefsByDatabaseAndType || [])
           .filter((ref: any) => dbNames.includes(ref.database));
         
-        const referenceMap: Record<string, { count: number; databases: string[] }> = {};
-        
-        literatureRefs.forEach((ref: any) => {
-          const refKey = `${ref.interaction_type}_${ref.unique_reference_count}`;
-          
-          if (!referenceMap[refKey]) {
-            referenceMap[refKey] = { count: ref.unique_reference_count, databases: [] };
-          }
-          referenceMap[refKey].databases.push(ref.database);
-        });
-
-        const priorityOrder = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
         const maintenanceBreakdown: Record<string, number> = {
           frequent: 0,
           infrequent: 0,
@@ -993,25 +981,15 @@ export default function CombinedDatabaseVisualization({
           discontinued: 0
         };
 
-        Object.values(referenceMap).forEach(refInfo => {
-          let bestCategory = 'discontinued';
-          
-          refInfo.databases.forEach(database => {
-            const category = sourceMaintenanceMap[database];
-            if (category) {
-              const currentPriority = priorityOrder.indexOf(category);
-              const bestPriority = priorityOrder.indexOf(bestCategory);
-              
-              if (currentPriority < bestPriority) {
-                bestCategory = category;
-              }
-            }
-          });
-          
-          maintenanceBreakdown[bestCategory] += refInfo.count;
+        // Simply aggregate reference counts by database maintenance category
+        literatureRefs.forEach((ref: any) => {
+          const category = sourceMaintenanceMap[ref.database];
+          if (category) {
+            maintenanceBreakdown[category] += ref.unique_reference_count;
+          }
         });
 
-        const totalReferences = Object.values(referenceMap).reduce((sum, refInfo) => sum + refInfo.count, 0);
+        const totalReferences = Object.values(maintenanceBreakdown).reduce((sum, count) => sum + count, 0);
 
         return {
           category: db.title,
