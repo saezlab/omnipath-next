@@ -130,31 +130,27 @@ async function generateDatabaseStats() {
     console.log('Querying literature references by database and interaction type...');
     const literatureRefsByDatabaseAndType = await db.execute(sql`
       WITH all_refs AS (
-        -- Interactions table
+        -- Interactions table - extract source from reference format "SOURCE:ID"
         SELECT 
-          unnest(string_to_array(sources, ';')) AS source,
+          split_part(unnest(string_to_array("references", ';')), ':', 1) AS source,
           type AS interaction_type,
-          unnest(string_to_array("references", ';')) AS reference
+          split_part(unnest(string_to_array("references", ';')), ':', 2) AS reference
         FROM interactions
-        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
-          AND "references" IS NOT NULL 
-          AND "references" != ''
+        WHERE "references" IS NOT NULL AND "references" != ''
         
         UNION ALL
         
-        -- Enzyme-substrate relationships
+        -- Enzyme-substrate relationships - extract source from reference format "SOURCE:ID"
         SELECT 
-          unnest(string_to_array(sources, ';')) AS source,
+          split_part(unnest(string_to_array("references", ';')), ':', 1) AS source,
           'enzyme-substrate' AS interaction_type,
-          unnest(string_to_array("references", ';')) AS reference
+          split_part(unnest(string_to_array("references", ';')), ':', 2) AS reference
         FROM enz_sub
-        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
-          AND "references" IS NOT NULL 
-          AND "references" != ''
+        WHERE "references" IS NOT NULL AND "references" != ''
         
         UNION ALL
         
-        -- Complexes
+        -- Complexes - cartesian product of sources and plain reference IDs
         SELECT 
           unnest(string_to_array(sources, ';')) AS source,
           'complex' AS interaction_type,
@@ -169,6 +165,7 @@ async function generateDatabaseStats() {
         interaction_type,
         COUNT(DISTINCT reference)::int AS unique_reference_count
       FROM all_refs
+      WHERE source != '' AND reference != ''
       GROUP BY source, interaction_type
       ORDER BY source, interaction_type
     `);
@@ -178,31 +175,27 @@ async function generateDatabaseStats() {
     console.log('Querying unique references by database and interaction type...');
     const uniqueRefsByDatabaseAndType = await db.execute(sql`
       WITH all_refs AS (
-        -- Interactions table
+        -- Interactions table - extract source from reference format "SOURCE:ID"
         SELECT 
-          unnest(string_to_array(sources, ';')) AS source,
+          split_part(unnest(string_to_array("references", ';')), ':', 1) AS source,
           type AS interaction_type,
-          unnest(string_to_array("references", ';')) AS reference
+          split_part(unnest(string_to_array("references", ';')), ':', 2) AS reference
         FROM interactions
-        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
-          AND "references" IS NOT NULL 
-          AND "references" != ''
+        WHERE "references" IS NOT NULL AND "references" != ''
         
         UNION ALL
         
-        -- Enzyme-substrate relationships
+        -- Enzyme-substrate relationships - extract source from reference format "SOURCE:ID"
         SELECT 
-          unnest(string_to_array(sources, ';')) AS source,
+          split_part(unnest(string_to_array("references", ';')), ':', 1) AS source,
           'enzyme-substrate' AS interaction_type,
-          unnest(string_to_array("references", ';')) AS reference
+          split_part(unnest(string_to_array("references", ';')), ':', 2) AS reference
         FROM enz_sub
-        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
-          AND "references" IS NOT NULL 
-          AND "references" != ''
+        WHERE "references" IS NOT NULL AND "references" != ''
         
         UNION ALL
         
-        -- Complexes
+        -- Complexes - cartesian product of sources and plain reference IDs
         SELECT 
           unnest(string_to_array(sources, ';')) AS source,
           'complex' AS interaction_type,
@@ -217,6 +210,7 @@ async function generateDatabaseStats() {
         interaction_type,
         COUNT(DISTINCT reference)::int AS unique_reference_count
       FROM all_refs
+      WHERE source != '' AND reference != ''
       GROUP BY source, interaction_type
       ORDER BY source, interaction_type
     `);

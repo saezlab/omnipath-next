@@ -2034,64 +2034,39 @@
   "plotData": {
     "literatureRefsByDatabaseAndType": [
       {
-        "database": "ABS",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 36
-      },
-      {
         "database": "ACSN",
         "interaction_type": "post_translational",
-        "unique_reference_count": 535
-      },
-      {
-        "database": "ACSN_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 25
-      },
-      {
-        "database": "ARACNe-GTEx_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 985
+        "unique_reference_count": 1653
       },
       {
         "database": "ARN",
         "interaction_type": "post_translational",
-        "unique_reference_count": 54
+        "unique_reference_count": 120
       },
       {
         "database": "Adhesome",
         "interaction_type": "post_translational",
-        "unique_reference_count": 834
+        "unique_reference_count": 1823
       },
       {
         "database": "AlzPathway",
         "interaction_type": "post_translational",
-        "unique_reference_count": 25
-      },
-      {
-        "database": "BEL-Large-Corpus_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 378
-      },
-      {
-        "database": "BEL-Large-Corpus_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 326
+        "unique_reference_count": 28
       },
       {
         "database": "Baccin2019",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1160
+        "unique_reference_count": 1516
       },
       {
         "database": "BioGRID",
         "interaction_type": "post_translational",
-        "unique_reference_count": 3834
+        "unique_reference_count": 5775
       },
       {
         "database": "CA1",
         "interaction_type": "post_translational",
-        "unique_reference_count": 747
+        "unique_reference_count": 950
       },
       {
         "database": "CFinder",
@@ -2106,17 +2081,7 @@
       {
         "database": "CancerCellMap",
         "interaction_type": "post_translational",
-        "unique_reference_count": 539
-      },
-      {
-        "database": "CancerDrugsDB",
-        "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 75
-      },
-      {
-        "database": "CellCall",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 552
+        "unique_reference_count": 533
       },
       {
         "database": "CellChatDB",
@@ -2126,12 +2091,7 @@
       {
         "database": "CellChatDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 652
-      },
-      {
-        "database": "CellChatDB-cofactors",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 48
+        "unique_reference_count": 163
       },
       {
         "database": "CellPhoneDB",
@@ -2139,19 +2099,9 @@
         "unique_reference_count": 35
       },
       {
-        "database": "CellPhoneDB",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 740
-      },
-      {
-        "database": "CellPhoneDB_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 217
-      },
-      {
         "database": "CellTalkDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1827
+        "unique_reference_count": 1447
       },
       {
         "database": "Cellinker",
@@ -2161,17 +2111,17 @@
       {
         "database": "Cellinker",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1594
+        "unique_reference_count": 2321
       },
       {
         "database": "Cellinker",
         "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 166
+        "unique_reference_count": 298
       },
       {
         "database": "CollecTRI",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 24461
+        "unique_reference_count": 38028
       },
       {
         "database": "Compleat",
@@ -2184,119 +2134,39 @@
         "unique_reference_count": 365
       },
       {
-        "database": "Cui2007",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1933
-      },
-      {
-        "database": "CytReg_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 622
-      },
-      {
         "database": "DEPOD",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 180
+        "unique_reference_count": 242
       },
       {
         "database": "DEPOD",
         "interaction_type": "post_translational",
-        "unique_reference_count": 480
+        "unique_reference_count": 586
       },
       {
         "database": "DIP",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1532
-      },
-      {
-        "database": "DLRP_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 227
-      },
-      {
-        "database": "DLRP_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 294
+        "unique_reference_count": 1674
       },
       {
         "database": "DOMINO",
         "interaction_type": "post_translational",
-        "unique_reference_count": 533
+        "unique_reference_count": 395
       },
       {
         "database": "DeathDomain",
         "interaction_type": "post_translational",
-        "unique_reference_count": 24
+        "unique_reference_count": 55
       },
       {
         "database": "DoRothEA",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 6932
-      },
-      {
-        "database": "DoRothEA-A_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1221
-      },
-      {
-        "database": "DoRothEA-reviews_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 65
+        "unique_reference_count": 4337
       },
       {
         "database": "ELM",
         "interaction_type": "post_translational",
-        "unique_reference_count": 487
-      },
-      {
-        "database": "EMBRACE",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1033
-      },
-      {
-        "database": "ENCODE-distal",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 105
-      },
-      {
-        "database": "ENCODE-proximal",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 242
-      },
-      {
-        "database": "ENCODE_tf-mirna",
-        "interaction_type": "mirna_transcriptional",
-        "unique_reference_count": 18
-      },
-      {
-        "database": "ENCODE_tf-mirna",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 2
-      },
-      {
-        "database": "ExTRI_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 7189
-      },
-      {
-        "database": "FANTOM4_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 128
-      },
-      {
-        "database": "Fantom5_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1520
-      },
-      {
-        "database": "GEREDB_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1782
-      },
-      {
-        "database": "GOA_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 187
+        "unique_reference_count": 579
       },
       {
         "database": "Guide2Pharma",
@@ -2306,107 +2176,32 @@
       {
         "database": "Guide2Pharma",
         "interaction_type": "post_translational",
-        "unique_reference_count": 430
-      },
-      {
-        "database": "Guide2Pharma_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 235
-      },
-      {
-        "database": "Guide2Pharma_Cellinker",
-        "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 82
-      },
-      {
-        "database": "Guide2Pharma_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 275
-      },
-      {
-        "database": "Guide2Pharma_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 264
-      },
-      {
-        "database": "HOCOMOCO_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 179
+        "unique_reference_count": 343
       },
       {
         "database": "HPMR",
         "interaction_type": "post_translational",
-        "unique_reference_count": 402
-      },
-      {
-        "database": "HPMR_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 475
-      },
-      {
-        "database": "HPMR_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 518
-      },
-      {
-        "database": "HPMR_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 476
+        "unique_reference_count": 352
       },
       {
         "database": "HPRD",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1301
+        "unique_reference_count": 1786
       },
       {
         "database": "HPRD",
         "interaction_type": "post_translational",
-        "unique_reference_count": 14370
+        "unique_reference_count": 16328
       },
       {
         "database": "HPRD-phos",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1092
-      },
-      {
-        "database": "HPRD_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1235
-      },
-      {
-        "database": "HPRD_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 644
-      },
-      {
-        "database": "HPRD_MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 2268
-      },
-      {
-        "database": "HPRD_MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2482
-      },
-      {
-        "database": "HPRD_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 503
-      },
-      {
-        "database": "HTRI_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 575
+        "unique_reference_count": 1797
       },
       {
         "database": "HTRIdb",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 374
-      },
-      {
-        "database": "HTRIdb_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 249
+        "unique_reference_count": 896
       },
       {
         "database": "Havugimana2012",
@@ -2414,11 +2209,6 @@
         "unique_reference_count": 10
       },
       {
-        "database": "HuRI",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 697
-      },
-      {
         "database": "ICELLNET",
         "interaction_type": "complex",
         "unique_reference_count": 58
@@ -2426,57 +2216,27 @@
       {
         "database": "ICELLNET",
         "interaction_type": "post_translational",
-        "unique_reference_count": 356
+        "unique_reference_count": 360
       },
       {
         "database": "InnateDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 2769
-      },
-      {
-        "database": "InnateDB_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 33
+        "unique_reference_count": 2547
       },
       {
         "database": "IntAct",
         "interaction_type": "post_translational",
-        "unique_reference_count": 3690
-      },
-      {
-        "database": "IntAct_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 45
-      },
-      {
-        "database": "IntAct_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 122
-      },
-      {
-        "database": "JASPAR_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 117
+        "unique_reference_count": 5226
       },
       {
         "database": "KEA",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 2665
+        "unique_reference_count": 3296
       },
       {
         "database": "KEA",
         "interaction_type": "post_translational",
-        "unique_reference_count": 2506
-      },
-      {
-        "database": "KEGG",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1639
-      },
-      {
-        "database": "KEGG",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 258
+        "unique_reference_count": 3438
       },
       {
         "database": "KEGG-MEDICUS",
@@ -2484,129 +2244,49 @@
         "unique_reference_count": 64
       },
       {
-        "database": "KEGG-MEDICUS",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 535
-      },
-      {
-        "database": "KEGG-MEDICUS",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 74
-      },
-      {
-        "database": "KEGG_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 351
-      },
-      {
-        "database": "Kinexus_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 658
-      },
-      {
-        "database": "Kirouac2010",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 63
-      },
-      {
         "database": "LRdb",
         "interaction_type": "post_translational",
-        "unique_reference_count": 713
-      },
-      {
-        "database": "Li2012",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 124
-      },
-      {
-        "database": "Li2012",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 221
+        "unique_reference_count": 1816
       },
       {
         "database": "Lit-BM-17",
         "interaction_type": "post_translational",
-        "unique_reference_count": 6136
+        "unique_reference_count": 14002
       },
       {
         "database": "LncRNADisease",
         "interaction_type": "lncrna_post_transcriptional",
-        "unique_reference_count": 36
-      },
-      {
-        "database": "MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 3285
-      },
-      {
-        "database": "MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 3585
+        "unique_reference_count": 59
       },
       {
         "database": "MPPI",
         "interaction_type": "post_translational",
-        "unique_reference_count": 251
+        "unique_reference_count": 175
       },
       {
         "database": "Macrophage",
         "interaction_type": "post_translational",
-        "unique_reference_count": 375
+        "unique_reference_count": 437
       },
       {
         "database": "MatrixDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 70
-      },
-      {
-        "database": "NCI-PID_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 579
-      },
-      {
-        "database": "NCI-PID_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 570
-      },
-      {
-        "database": "NFIRegulomeDB_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 10
+        "unique_reference_count": 54
       },
       {
         "database": "NRF2ome",
         "interaction_type": "post_translational",
-        "unique_reference_count": 72
-      },
-      {
-        "database": "NTNU.Curated_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1425
+        "unique_reference_count": 63
       },
       {
         "database": "NetPath",
         "interaction_type": "post_translational",
-        "unique_reference_count": 2070
-      },
-      {
-        "database": "NetworKIN_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 438
+        "unique_reference_count": 1333
       },
       {
         "database": "ORegAnno",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 58
-      },
-      {
-        "database": "ORegAnno_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 39
-      },
-      {
-        "database": "PAZAR_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 260
+        "unique_reference_count": 68
       },
       {
         "database": "PDB",
@@ -2616,137 +2296,27 @@
       {
         "database": "PDZBase",
         "interaction_type": "post_translational",
-        "unique_reference_count": 75
-      },
-      {
-        "database": "Pavlidis2021_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 198
-      },
-      {
-        "database": "PhosphoNetworks",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 478
-      },
-      {
-        "database": "PhosphoNetworks",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 518
-      },
-      {
-        "database": "PhosphoPoint",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 3097
-      },
-      {
-        "database": "PhosphoSite",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 4105
+        "unique_reference_count": 68
       },
       {
         "database": "PhosphoSite",
         "interaction_type": "post_translational",
-        "unique_reference_count": 3363
-      },
-      {
-        "database": "PhosphoSite_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1611
-      },
-      {
-        "database": "PhosphoSite_MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 2075
-      },
-      {
-        "database": "PhosphoSite_MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2739
-      },
-      {
-        "database": "PhosphoSite_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1560
-      },
-      {
-        "database": "PhosphoSite_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2696
-      },
-      {
-        "database": "PhosphoSite_noref",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 897
+        "unique_reference_count": 12347
       },
       {
         "database": "ProtMapper",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 6964
+        "unique_reference_count": 14511
       },
       {
         "database": "ProtMapper",
         "interaction_type": "post_translational",
-        "unique_reference_count": 6419
-      },
-      {
-        "database": "REACH_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1319
-      },
-      {
-        "database": "REACH_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1581
-      },
-      {
-        "database": "RLIMS-P_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 786
-      },
-      {
-        "database": "RLIMS-P_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 868
+        "unique_reference_count": 13205
       },
       {
         "database": "Ramilowski2015",
         "interaction_type": "post_translational",
-        "unique_reference_count": 456
-      },
-      {
-        "database": "Ramilowski2015_Baccin2019",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 266
-      },
-      {
-        "database": "ReMap_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 152
-      },
-      {
-        "database": "Reactome_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 29
-      },
-      {
-        "database": "Reactome_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 207
-      },
-      {
-        "database": "Reactome_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 236
-      },
-      {
-        "database": "Reactome_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 28
-      },
-      {
-        "database": "RegNetwork_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 533
+        "unique_reference_count": 186
       },
       {
         "database": "SIGNOR",
@@ -2756,7 +2326,7 @@
       {
         "database": "SIGNOR",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 3389
+        "unique_reference_count": 3909
       },
       {
         "database": "SIGNOR",
@@ -2766,32 +2336,17 @@
       {
         "database": "SIGNOR",
         "interaction_type": "post_translational",
-        "unique_reference_count": 6257
+        "unique_reference_count": 7443
       },
       {
         "database": "SIGNOR",
         "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 387
+        "unique_reference_count": 469
       },
       {
         "database": "SIGNOR",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 435
-      },
-      {
-        "database": "SIGNOR_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 386
-      },
-      {
-        "database": "SIGNOR_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1205
-      },
-      {
-        "database": "SIGNOR_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1597
+        "unique_reference_count": 577
       },
       {
         "database": "SPIKE",
@@ -2801,122 +2356,47 @@
       {
         "database": "SPIKE",
         "interaction_type": "post_translational",
-        "unique_reference_count": 4665
+        "unique_reference_count": 4528
       },
       {
         "database": "SPIKE_LC",
         "interaction_type": "post_translational",
-        "unique_reference_count": 7886
-      },
-      {
-        "database": "STRING_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 200
+        "unique_reference_count": 6301
       },
       {
         "database": "SignaLink3",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1014
-      },
-      {
-        "database": "Sparser_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 977
-      },
-      {
-        "database": "Sparser_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1214
-      },
-      {
-        "database": "TCRcuration_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 115
-      },
-      {
-        "database": "TFactS_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 512
-      },
-      {
-        "database": "TFactS_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 175
-      },
-      {
-        "database": "TFe_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 49
-      },
-      {
-        "database": "TRED_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 368
+        "unique_reference_count": 2394
       },
       {
         "database": "TRIP",
         "interaction_type": "post_translational",
-        "unique_reference_count": 109
-      },
-      {
-        "database": "TRRD_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 33
-      },
-      {
-        "database": "TRRUST_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1102
-      },
-      {
-        "database": "TRRUST_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 577
+        "unique_reference_count": 224
       },
       {
         "database": "TransmiR",
         "interaction_type": "mirna_transcriptional",
-        "unique_reference_count": 853
+        "unique_reference_count": 1004
       },
       {
         "database": "TransmiR",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 19
-      },
-      {
-        "database": "UniProt_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 47
-      },
-      {
-        "database": "Wang",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 4370
-      },
-      {
-        "database": "Wojtowicz2020",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 31
-      },
-      {
-        "database": "cellsignal.com_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2
+        "unique_reference_count": 101
       },
       {
         "database": "connectomeDB2020",
         "interaction_type": "post_translational",
-        "unique_reference_count": 426
+        "unique_reference_count": 2225
       },
       {
         "database": "dbPTM",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 418
+        "unique_reference_count": 960
       },
       {
         "database": "dbPTM",
         "interaction_type": "post_translational",
-        "unique_reference_count": 589
+        "unique_reference_count": 1123
       },
       {
         "database": "hu.MAP",
@@ -2931,179 +2411,89 @@
       {
         "database": "iPTMnet",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1878
-      },
-      {
-        "database": "iTALK",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 189
-      },
-      {
-        "database": "miR2Disease",
-        "interaction_type": "post_transcriptional",
-        "unique_reference_count": 258
+        "unique_reference_count": 5755
       },
       {
         "database": "miRDeathDB",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 130
+        "unique_reference_count": 102
       },
       {
         "database": "miRTarBase",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 5257
+        "unique_reference_count": 6780
       },
       {
         "database": "miRecords",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 527
+        "unique_reference_count": 472
       },
       {
         "database": "ncRDeathDB",
         "interaction_type": "lncrna_post_transcriptional",
-        "unique_reference_count": 79
+        "unique_reference_count": 84
       },
       {
         "database": "ncRDeathDB",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 1025
+        "unique_reference_count": 956
       },
       {
         "database": "phosphoELM",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 483
+        "unique_reference_count": 1191
       },
       {
         "database": "phosphoELM",
         "interaction_type": "post_translational",
-        "unique_reference_count": 511
-      },
-      {
-        "database": "phosphoELM_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 558
-      },
-      {
-        "database": "phosphoELM_MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 661
-      },
-      {
-        "database": "phosphoELM_MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 896
+        "unique_reference_count": 1205
       },
       {
         "database": "scConnect",
         "interaction_type": "post_translational",
-        "unique_reference_count": 117
+        "unique_reference_count": 370
       },
       {
         "database": "talklr",
         "interaction_type": "post_translational",
-        "unique_reference_count": 148
-      },
-      {
-        "database": null,
-        "interaction_type": "complex",
-        "unique_reference_count": 1798
-      },
-      {
-        "database": null,
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 6580
-      },
-      {
-        "database": null,
-        "interaction_type": "lncrna_post_transcriptional",
-        "unique_reference_count": 39
-      },
-      {
-        "database": null,
-        "interaction_type": "mirna_transcriptional",
-        "unique_reference_count": 266
-      },
-      {
-        "database": null,
-        "interaction_type": "post_transcriptional",
-        "unique_reference_count": 2272
-      },
-      {
-        "database": null,
-        "interaction_type": "post_translational",
-        "unique_reference_count": 43015
-      },
-      {
-        "database": null,
-        "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 150
-      },
-      {
-        "database": null,
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 10231
+        "unique_reference_count": 186
       }
     ],
     "uniqueRefsByDatabaseAndType": [
       {
-        "database": "ABS",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 36
-      },
-      {
         "database": "ACSN",
         "interaction_type": "post_translational",
-        "unique_reference_count": 535
-      },
-      {
-        "database": "ACSN_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 25
-      },
-      {
-        "database": "ARACNe-GTEx_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 985
+        "unique_reference_count": 1653
       },
       {
         "database": "ARN",
         "interaction_type": "post_translational",
-        "unique_reference_count": 54
+        "unique_reference_count": 120
       },
       {
         "database": "Adhesome",
         "interaction_type": "post_translational",
-        "unique_reference_count": 834
+        "unique_reference_count": 1823
       },
       {
         "database": "AlzPathway",
         "interaction_type": "post_translational",
-        "unique_reference_count": 25
-      },
-      {
-        "database": "BEL-Large-Corpus_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 378
-      },
-      {
-        "database": "BEL-Large-Corpus_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 326
+        "unique_reference_count": 28
       },
       {
         "database": "Baccin2019",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1160
+        "unique_reference_count": 1516
       },
       {
         "database": "BioGRID",
         "interaction_type": "post_translational",
-        "unique_reference_count": 3834
+        "unique_reference_count": 5775
       },
       {
         "database": "CA1",
         "interaction_type": "post_translational",
-        "unique_reference_count": 747
+        "unique_reference_count": 950
       },
       {
         "database": "CFinder",
@@ -3118,17 +2508,7 @@
       {
         "database": "CancerCellMap",
         "interaction_type": "post_translational",
-        "unique_reference_count": 539
-      },
-      {
-        "database": "CancerDrugsDB",
-        "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 75
-      },
-      {
-        "database": "CellCall",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 552
+        "unique_reference_count": 533
       },
       {
         "database": "CellChatDB",
@@ -3138,12 +2518,7 @@
       {
         "database": "CellChatDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 652
-      },
-      {
-        "database": "CellChatDB-cofactors",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 48
+        "unique_reference_count": 163
       },
       {
         "database": "CellPhoneDB",
@@ -3151,19 +2526,9 @@
         "unique_reference_count": 35
       },
       {
-        "database": "CellPhoneDB",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 740
-      },
-      {
-        "database": "CellPhoneDB_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 217
-      },
-      {
         "database": "CellTalkDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1827
+        "unique_reference_count": 1447
       },
       {
         "database": "Cellinker",
@@ -3173,17 +2538,17 @@
       {
         "database": "Cellinker",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1594
+        "unique_reference_count": 2321
       },
       {
         "database": "Cellinker",
         "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 166
+        "unique_reference_count": 298
       },
       {
         "database": "CollecTRI",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 24461
+        "unique_reference_count": 38028
       },
       {
         "database": "Compleat",
@@ -3196,119 +2561,39 @@
         "unique_reference_count": 365
       },
       {
-        "database": "Cui2007",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1933
-      },
-      {
-        "database": "CytReg_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 622
-      },
-      {
         "database": "DEPOD",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 180
+        "unique_reference_count": 242
       },
       {
         "database": "DEPOD",
         "interaction_type": "post_translational",
-        "unique_reference_count": 480
+        "unique_reference_count": 586
       },
       {
         "database": "DIP",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1532
-      },
-      {
-        "database": "DLRP_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 227
-      },
-      {
-        "database": "DLRP_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 294
+        "unique_reference_count": 1674
       },
       {
         "database": "DOMINO",
         "interaction_type": "post_translational",
-        "unique_reference_count": 533
+        "unique_reference_count": 395
       },
       {
         "database": "DeathDomain",
         "interaction_type": "post_translational",
-        "unique_reference_count": 24
+        "unique_reference_count": 55
       },
       {
         "database": "DoRothEA",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 6932
-      },
-      {
-        "database": "DoRothEA-A_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1221
-      },
-      {
-        "database": "DoRothEA-reviews_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 65
+        "unique_reference_count": 4337
       },
       {
         "database": "ELM",
         "interaction_type": "post_translational",
-        "unique_reference_count": 487
-      },
-      {
-        "database": "EMBRACE",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1033
-      },
-      {
-        "database": "ENCODE-distal",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 105
-      },
-      {
-        "database": "ENCODE-proximal",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 242
-      },
-      {
-        "database": "ENCODE_tf-mirna",
-        "interaction_type": "mirna_transcriptional",
-        "unique_reference_count": 18
-      },
-      {
-        "database": "ENCODE_tf-mirna",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 2
-      },
-      {
-        "database": "ExTRI_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 7189
-      },
-      {
-        "database": "FANTOM4_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 128
-      },
-      {
-        "database": "Fantom5_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1520
-      },
-      {
-        "database": "GEREDB_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1782
-      },
-      {
-        "database": "GOA_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 187
+        "unique_reference_count": 579
       },
       {
         "database": "Guide2Pharma",
@@ -3318,107 +2603,32 @@
       {
         "database": "Guide2Pharma",
         "interaction_type": "post_translational",
-        "unique_reference_count": 430
-      },
-      {
-        "database": "Guide2Pharma_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 235
-      },
-      {
-        "database": "Guide2Pharma_Cellinker",
-        "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 82
-      },
-      {
-        "database": "Guide2Pharma_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 275
-      },
-      {
-        "database": "Guide2Pharma_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 264
-      },
-      {
-        "database": "HOCOMOCO_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 179
+        "unique_reference_count": 343
       },
       {
         "database": "HPMR",
         "interaction_type": "post_translational",
-        "unique_reference_count": 402
-      },
-      {
-        "database": "HPMR_Cellinker",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 475
-      },
-      {
-        "database": "HPMR_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 518
-      },
-      {
-        "database": "HPMR_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 476
+        "unique_reference_count": 352
       },
       {
         "database": "HPRD",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1301
+        "unique_reference_count": 1786
       },
       {
         "database": "HPRD",
         "interaction_type": "post_translational",
-        "unique_reference_count": 14370
+        "unique_reference_count": 16328
       },
       {
         "database": "HPRD-phos",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1092
-      },
-      {
-        "database": "HPRD_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1235
-      },
-      {
-        "database": "HPRD_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 644
-      },
-      {
-        "database": "HPRD_MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 2268
-      },
-      {
-        "database": "HPRD_MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2482
-      },
-      {
-        "database": "HPRD_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 503
-      },
-      {
-        "database": "HTRI_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 575
+        "unique_reference_count": 1797
       },
       {
         "database": "HTRIdb",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 374
-      },
-      {
-        "database": "HTRIdb_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 249
+        "unique_reference_count": 896
       },
       {
         "database": "Havugimana2012",
@@ -3426,11 +2636,6 @@
         "unique_reference_count": 10
       },
       {
-        "database": "HuRI",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 697
-      },
-      {
         "database": "ICELLNET",
         "interaction_type": "complex",
         "unique_reference_count": 58
@@ -3438,57 +2643,27 @@
       {
         "database": "ICELLNET",
         "interaction_type": "post_translational",
-        "unique_reference_count": 356
+        "unique_reference_count": 360
       },
       {
         "database": "InnateDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 2769
-      },
-      {
-        "database": "InnateDB_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 33
+        "unique_reference_count": 2547
       },
       {
         "database": "IntAct",
         "interaction_type": "post_translational",
-        "unique_reference_count": 3690
-      },
-      {
-        "database": "IntAct_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 45
-      },
-      {
-        "database": "IntAct_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 122
-      },
-      {
-        "database": "JASPAR_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 117
+        "unique_reference_count": 5226
       },
       {
         "database": "KEA",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 2665
+        "unique_reference_count": 3296
       },
       {
         "database": "KEA",
         "interaction_type": "post_translational",
-        "unique_reference_count": 2506
-      },
-      {
-        "database": "KEGG",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1639
-      },
-      {
-        "database": "KEGG",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 258
+        "unique_reference_count": 3438
       },
       {
         "database": "KEGG-MEDICUS",
@@ -3496,129 +2671,49 @@
         "unique_reference_count": 64
       },
       {
-        "database": "KEGG-MEDICUS",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 535
-      },
-      {
-        "database": "KEGG-MEDICUS",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 74
-      },
-      {
-        "database": "KEGG_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 351
-      },
-      {
-        "database": "Kinexus_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 658
-      },
-      {
-        "database": "Kirouac2010",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 63
-      },
-      {
         "database": "LRdb",
         "interaction_type": "post_translational",
-        "unique_reference_count": 713
-      },
-      {
-        "database": "Li2012",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 124
-      },
-      {
-        "database": "Li2012",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 221
+        "unique_reference_count": 1816
       },
       {
         "database": "Lit-BM-17",
         "interaction_type": "post_translational",
-        "unique_reference_count": 6136
+        "unique_reference_count": 14002
       },
       {
         "database": "LncRNADisease",
         "interaction_type": "lncrna_post_transcriptional",
-        "unique_reference_count": 36
-      },
-      {
-        "database": "MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 3285
-      },
-      {
-        "database": "MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 3585
+        "unique_reference_count": 59
       },
       {
         "database": "MPPI",
         "interaction_type": "post_translational",
-        "unique_reference_count": 251
+        "unique_reference_count": 175
       },
       {
         "database": "Macrophage",
         "interaction_type": "post_translational",
-        "unique_reference_count": 375
+        "unique_reference_count": 437
       },
       {
         "database": "MatrixDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 70
-      },
-      {
-        "database": "NCI-PID_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 579
-      },
-      {
-        "database": "NCI-PID_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 570
-      },
-      {
-        "database": "NFIRegulomeDB_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 10
+        "unique_reference_count": 54
       },
       {
         "database": "NRF2ome",
         "interaction_type": "post_translational",
-        "unique_reference_count": 72
-      },
-      {
-        "database": "NTNU.Curated_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1425
+        "unique_reference_count": 63
       },
       {
         "database": "NetPath",
         "interaction_type": "post_translational",
-        "unique_reference_count": 2070
-      },
-      {
-        "database": "NetworKIN_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 438
+        "unique_reference_count": 1333
       },
       {
         "database": "ORegAnno",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 58
-      },
-      {
-        "database": "ORegAnno_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 39
-      },
-      {
-        "database": "PAZAR_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 260
+        "unique_reference_count": 68
       },
       {
         "database": "PDB",
@@ -3628,137 +2723,27 @@
       {
         "database": "PDZBase",
         "interaction_type": "post_translational",
-        "unique_reference_count": 75
-      },
-      {
-        "database": "Pavlidis2021_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 198
-      },
-      {
-        "database": "PhosphoNetworks",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 478
-      },
-      {
-        "database": "PhosphoNetworks",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 518
-      },
-      {
-        "database": "PhosphoPoint",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 3097
-      },
-      {
-        "database": "PhosphoSite",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 4105
+        "unique_reference_count": 68
       },
       {
         "database": "PhosphoSite",
         "interaction_type": "post_translational",
-        "unique_reference_count": 3363
-      },
-      {
-        "database": "PhosphoSite_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1611
-      },
-      {
-        "database": "PhosphoSite_MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 2075
-      },
-      {
-        "database": "PhosphoSite_MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2739
-      },
-      {
-        "database": "PhosphoSite_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1560
-      },
-      {
-        "database": "PhosphoSite_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2696
-      },
-      {
-        "database": "PhosphoSite_noref",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 897
+        "unique_reference_count": 12347
       },
       {
         "database": "ProtMapper",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 6964
+        "unique_reference_count": 14511
       },
       {
         "database": "ProtMapper",
         "interaction_type": "post_translational",
-        "unique_reference_count": 6419
-      },
-      {
-        "database": "REACH_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1319
-      },
-      {
-        "database": "REACH_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1581
-      },
-      {
-        "database": "RLIMS-P_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 786
-      },
-      {
-        "database": "RLIMS-P_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 868
+        "unique_reference_count": 13205
       },
       {
         "database": "Ramilowski2015",
         "interaction_type": "post_translational",
-        "unique_reference_count": 456
-      },
-      {
-        "database": "Ramilowski2015_Baccin2019",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 266
-      },
-      {
-        "database": "ReMap_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 152
-      },
-      {
-        "database": "Reactome_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 29
-      },
-      {
-        "database": "Reactome_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 207
-      },
-      {
-        "database": "Reactome_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 236
-      },
-      {
-        "database": "Reactome_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 28
-      },
-      {
-        "database": "RegNetwork_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 533
+        "unique_reference_count": 186
       },
       {
         "database": "SIGNOR",
@@ -3768,7 +2753,7 @@
       {
         "database": "SIGNOR",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 3389
+        "unique_reference_count": 3909
       },
       {
         "database": "SIGNOR",
@@ -3778,32 +2763,17 @@
       {
         "database": "SIGNOR",
         "interaction_type": "post_translational",
-        "unique_reference_count": 6257
+        "unique_reference_count": 7443
       },
       {
         "database": "SIGNOR",
         "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 387
+        "unique_reference_count": 469
       },
       {
         "database": "SIGNOR",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 435
-      },
-      {
-        "database": "SIGNOR_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 386
-      },
-      {
-        "database": "SIGNOR_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1205
-      },
-      {
-        "database": "SIGNOR_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1597
+        "unique_reference_count": 577
       },
       {
         "database": "SPIKE",
@@ -3813,122 +2783,47 @@
       {
         "database": "SPIKE",
         "interaction_type": "post_translational",
-        "unique_reference_count": 4665
+        "unique_reference_count": 4528
       },
       {
         "database": "SPIKE_LC",
         "interaction_type": "post_translational",
-        "unique_reference_count": 7886
-      },
-      {
-        "database": "STRING_talklr",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 200
+        "unique_reference_count": 6301
       },
       {
         "database": "SignaLink3",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1014
-      },
-      {
-        "database": "Sparser_ProtMapper",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 977
-      },
-      {
-        "database": "Sparser_ProtMapper",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 1214
-      },
-      {
-        "database": "TCRcuration_SignaLink3",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 115
-      },
-      {
-        "database": "TFactS_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 512
-      },
-      {
-        "database": "TFactS_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 175
-      },
-      {
-        "database": "TFe_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 49
-      },
-      {
-        "database": "TRED_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 368
+        "unique_reference_count": 2394
       },
       {
         "database": "TRIP",
         "interaction_type": "post_translational",
-        "unique_reference_count": 109
-      },
-      {
-        "database": "TRRD_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 33
-      },
-      {
-        "database": "TRRUST_CollecTRI",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 1102
-      },
-      {
-        "database": "TRRUST_DoRothEA",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 577
+        "unique_reference_count": 224
       },
       {
         "database": "TransmiR",
         "interaction_type": "mirna_transcriptional",
-        "unique_reference_count": 853
+        "unique_reference_count": 1004
       },
       {
         "database": "TransmiR",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 19
-      },
-      {
-        "database": "UniProt_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 47
-      },
-      {
-        "database": "Wang",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 4370
-      },
-      {
-        "database": "Wojtowicz2020",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 31
-      },
-      {
-        "database": "cellsignal.com_LRdb",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 2
+        "unique_reference_count": 101
       },
       {
         "database": "connectomeDB2020",
         "interaction_type": "post_translational",
-        "unique_reference_count": 426
+        "unique_reference_count": 2225
       },
       {
         "database": "dbPTM",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 418
+        "unique_reference_count": 960
       },
       {
         "database": "dbPTM",
         "interaction_type": "post_translational",
-        "unique_reference_count": 589
+        "unique_reference_count": 1123
       },
       {
         "database": "hu.MAP",
@@ -3943,117 +2838,52 @@
       {
         "database": "iPTMnet",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1878
-      },
-      {
-        "database": "iTALK",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 189
-      },
-      {
-        "database": "miR2Disease",
-        "interaction_type": "post_transcriptional",
-        "unique_reference_count": 258
+        "unique_reference_count": 5755
       },
       {
         "database": "miRDeathDB",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 130
+        "unique_reference_count": 102
       },
       {
         "database": "miRTarBase",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 5257
+        "unique_reference_count": 6780
       },
       {
         "database": "miRecords",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 527
+        "unique_reference_count": 472
       },
       {
         "database": "ncRDeathDB",
         "interaction_type": "lncrna_post_transcriptional",
-        "unique_reference_count": 79
+        "unique_reference_count": 84
       },
       {
         "database": "ncRDeathDB",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 1025
+        "unique_reference_count": 956
       },
       {
         "database": "phosphoELM",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 483
+        "unique_reference_count": 1191
       },
       {
         "database": "phosphoELM",
         "interaction_type": "post_translational",
-        "unique_reference_count": 511
-      },
-      {
-        "database": "phosphoELM_KEA",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 558
-      },
-      {
-        "database": "phosphoELM_MIMP",
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 661
-      },
-      {
-        "database": "phosphoELM_MIMP",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 896
+        "unique_reference_count": 1205
       },
       {
         "database": "scConnect",
         "interaction_type": "post_translational",
-        "unique_reference_count": 117
+        "unique_reference_count": 370
       },
       {
         "database": "talklr",
         "interaction_type": "post_translational",
-        "unique_reference_count": 148
-      },
-      {
-        "database": null,
-        "interaction_type": "complex",
-        "unique_reference_count": 1798
-      },
-      {
-        "database": null,
-        "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 6580
-      },
-      {
-        "database": null,
-        "interaction_type": "lncrna_post_transcriptional",
-        "unique_reference_count": 39
-      },
-      {
-        "database": null,
-        "interaction_type": "mirna_transcriptional",
-        "unique_reference_count": 266
-      },
-      {
-        "database": null,
-        "interaction_type": "post_transcriptional",
-        "unique_reference_count": 2272
-      },
-      {
-        "database": null,
-        "interaction_type": "post_translational",
-        "unique_reference_count": 43015
-      },
-      {
-        "database": null,
-        "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 150
-      },
-      {
-        "database": null,
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 10231
+        "unique_reference_count": 186
       }
     ],
     "aggregateInteractionTypes": [
@@ -4479,5 +3309,5 @@
       }
     ]
   },
-  "generatedAt": "2025-08-06T14:52:39.991Z"
+  "generatedAt": "2025-08-06T15:03:13.110Z"
 }
