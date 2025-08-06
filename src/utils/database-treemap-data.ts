@@ -112,7 +112,7 @@ export function cleanSourceName(sourceName: string): string {
   return sourceName;
 }
 
-// Deduplicate sources by cleaned name
+// Deduplicate sources by cleaned name (treemap specific logic)
 function deduplicateSources(sources: any[]): any[] {
   const deduplicatedMap = new Map<string, any>();
   sources.forEach(item => {

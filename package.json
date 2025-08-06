@@ -11,7 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
-    "db:stats": "tsx scripts/generate-db-stats.ts"
+    "db:stats": "tsx scripts/generate-db-stats.ts",
+    "db:stats-unified": "tsx scripts/generate-db-stats-unified.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.11",

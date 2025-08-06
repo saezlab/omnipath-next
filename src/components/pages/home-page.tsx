@@ -5,9 +5,8 @@ import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { SiteLayout } from "@/components/layout/main-layout"
 import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
-import DatabaseGridVisualization from "@/components/home/database-grid-visualization";
-import { AuxiliaryChartsPanel } from "@/components/home/auxiliary-charts-panel";
 import CombinedDatabaseVisualization from '@/components/home/combined-database-visualization';
+import CombinedDatabaseVisualizationUnified from "@/components/home/combined-database-visualization-unified";
 export function HomePage() {
   return (
     <SiteLayout>
@@ -70,33 +69,7 @@ export function HomePage() {
           <AIAssistantCard />
         </div>
 
-        {/* Database Resource Overview Section */}
-        <section className="mt-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Database Resource Overview</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore our comprehensive collection of biological databases organized by category. 
-              Each visualization shows the relative size and scope of different data sources.
-            </p>
-          </div>
-          <div className="flex justify-center overflow-x-auto">
-            <DatabaseGridVisualization />
-          </div>
-        </section>
-
-        {/* Database Statistics Section */}
-        <section className="mt-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Database Statistics</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Detailed statistics about resource maintenance, record distribution, and data overlap 
-              across different database categories and interaction types.
-            </p>
-          </div>
-          <div className="flex justify-center overflow-x-auto">
-            <AuxiliaryChartsPanel />
-          </div>
-        </section>
+    
         {/* Combined Database Visualization Section */}
         <section className="mt-16">
           <div className="text-center mb-8">
@@ -107,6 +80,19 @@ export function HomePage() {
           </div>
           <div className="flex justify-center overflow-x-auto">
             <CombinedDatabaseVisualization />
+          </div>
+        </section>
+
+        {/* Combined Database Visualization Unified Section */}
+        <section className="mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Unified Database Visualization</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Explore the unified view of all databases, showing how they relate to each other in a single visualization.
+            </p>
+          </div>
+          <div className="flex justify-center overflow-x-auto">
+            <CombinedDatabaseVisualizationUnified />
           </div>
         </section>
 

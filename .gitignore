@@ -30,7 +30,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
+unified-db-stats.json
 # env files (can opt-in for committing if needed)
 .env*
 
