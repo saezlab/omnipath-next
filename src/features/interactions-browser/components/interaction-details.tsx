@@ -16,9 +16,9 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
     <div className="p-4">
       <div className="rounded-lg border border-primary/20 hover:border-primary/40 bg-card p-4 transition-all duration-200">
         {selectedInteraction ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Interaction Type Indicator */}
-            <div className="flex items-center justify-center gap-4 py-4">
+            <div className="flex items-center justify-center gap-6 py-2">
               <EntityBadge 
                 geneSymbol={selectedInteraction.sourceGenesymbol || ''} 
                 uniprotId={selectedInteraction.source || ''} 
@@ -49,12 +49,13 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
 
             {/* Interaction Type Badge */}
             <div className="flex justify-center">
-              <Badge variant="secondary" className={cn("text-sm", getInteractionColor(selectedInteraction))}>
+              <Badge variant="outline" className={cn("text-sm font-medium border-2", getInteractionColor(selectedInteraction))}>
                 {selectedInteraction.type}
               </Badge>
             </div>
 
-            <h4 className="text-sm font-semibold text-foreground">References</h4>
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-semibold text-foreground mb-3">References</h4>
             {selectedInteraction.references ? (
               <div className="text-sm space-y-4">
                 {Object.entries(
@@ -95,6 +96,7 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
                 <p className="text-sm text-muted-foreground">No references available for this interaction</p>
               </div>
             )}
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">

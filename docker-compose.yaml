@@ -27,6 +27,7 @@ services:
         # Pass core variables for build-time configuration
         NEXT_PUBLIC_ENVIRONMENT: ${ENVIRONMENT}
         NEXT_PUBLIC_DOMAIN: ${DOMAIN}
+        GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     restart: unless-stopped
     environment:
       NODE_ENV: production
