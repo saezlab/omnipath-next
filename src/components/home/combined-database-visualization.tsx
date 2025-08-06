@@ -214,10 +214,10 @@ export default function CombinedDatabaseVisualization({
       charts: {
         height: 400,  // Height for charts section
         yPosition: 980,  // Y position for charts (below grid)
-        chartWidth: 260,
+        chartWidth: 230,  // Increased to better use available space
         chartHeight: 280,
         legendWidth: 140,
-        gap: 20,
+        gap: 5,  // Increased gap for better spacing
         margin: { top: 30, right: 140, bottom: 60, left: 210 }  // Match grid left margin
       },
       colors: {
@@ -1637,14 +1637,18 @@ export default function CombinedDatabaseVisualization({
 
     // Calculate total width of all charts
     const totalChartsWidth = CONFIG.charts.chartWidth * 4 + CONFIG.charts.gap * 3;
-
-    // Add maintenance & license legend on the LEFT side (same row as charts)
-    const leftLegendX = -CONFIG.charts.legendWidth - 20;
+    
+    // Calculate available width (grid inner width)
+    const gridInnerWidth = CONFIG.dimensions.width - CONFIG.dimensions.margin.left - CONFIG.dimensions.margin.right;
+    
+    // Position legends closer to charts to reduce wasted space
+    // Left legend positioned closer to first chart
+    const leftLegendX = -CONFIG.charts.legendWidth - 40;
     const leftLegendY = chartY + 20;
     createMaintenanceLicenseLegend(chartsG, leftLegendX, leftLegendY);
 
-    // Add resource overlap legend on the RIGHT side (same row as charts)
-    const rightLegendX = totalChartsWidth + CONFIG.charts.gap;
+    // Right legend positioned closer to last chart
+    const rightLegendX = totalChartsWidth + 40;
     const rightLegendY = chartY + 20;
     createOverlapLegend(chartsG, rightLegendX, rightLegendY);
 
