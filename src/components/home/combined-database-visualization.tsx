@@ -209,16 +209,16 @@ export default function CombinedDatabaseVisualization({
       },
       grid: {
         height: 900,  // Height for Figure A (grid)
-        yPosition: 80  // Y position for grid
+        yPosition: 60  // Y position for grid
       },
       charts: {
         height: 400,  // Height for charts section
-        yPosition: 1000,  // Y position for charts (below grid)
+        yPosition: 980,  // Y position for charts (below grid)
         chartWidth: 260,
         chartHeight: 280,
         legendWidth: 140,
         gap: 20,
-        margin: { top: 30, right: 140, bottom: 60, left: 180 }
+        margin: { top: 30, right: 140, bottom: 60, left: 210 }  // Match grid left margin
       },
       colors: {
         database: databaseColors,
@@ -245,14 +245,6 @@ export default function CombinedDatabaseVisualization({
       .style("fill", "#1f2937")
       .text("OmniPath Database Resources");
 
-    // Figure A label and title
-    svg.append("text")
-      .attr("x", 30)
-      .attr("y", CONFIG.grid.yPosition - 20)
-      .style("font-size", "20px")
-      .style("font-weight", "bold")
-      .style("fill", "#374151")
-      .text("A) Database Resource Grid");
 
     // Create group for grid visualization
     const gridG = svg.append("g")
@@ -800,18 +792,18 @@ export default function CombinedDatabaseVisualization({
       }
     }
 
+    // Add Figure A label to grid
+    gridG.append("text")
+      .attr("x", -200)
+      .attr("y", 15)
+      .style("font-size", "16px")
+      .style("font-weight", "bold")
+      .style("fill", "#374151")
+      .text("A)");
+
     // Initialize grid visualization
     new DatabaseGridVisualizationD3(CONFIG, gridG);
 
-    // AUXILIARY CHARTS SECTION
-    // Add section label for charts
-    svg.append("text")
-      .attr("x", 30)
-      .attr("y", CONFIG.charts.yPosition - 20)
-      .style("font-size", "18px")
-      .style("font-weight", "600")
-      .style("fill", "#374151")
-      .text("Database Statistics");
 
     // Create group for charts
     const chartsG = svg.append("g")
@@ -1241,10 +1233,10 @@ export default function CombinedDatabaseVisualization({
           .text(yAxisLabel);
       }
 
-      // Add chart label (b, c, d, e)
+      // Add chart label (A, B, C, D, E)
       if (label) {
         chartG.append("text")
-          .attr("x", -5)
+          .attr("x", -15)
           .attr("y", 15)
           .style("font-size", "16px")
           .style("font-weight", "bold")
@@ -1375,10 +1367,10 @@ export default function CombinedDatabaseVisualization({
           .text(yAxisLabel);
       }
 
-      // Add chart label (b, c, d, e)
+      // Add chart label (A, B, C, D, E)
       if (label) {
         chartG.append("text")
-          .attr("x", -5)
+          .attr("x", -15)
           .attr("y", 15)
           .style("font-size", "16px")
           .style("font-weight", "bold")
@@ -1480,10 +1472,10 @@ export default function CombinedDatabaseVisualization({
           .text(yAxisLabel);
       }
 
-      // Add chart label (b, c, d, e)
+      // Add chart label (A, B, C, D, E)
       if (label) {
         chartG.append("text")
-          .attr("x", -5)
+          .attr("x", -15)
           .attr("y", 15)
           .style("font-size", "16px")
           .style("font-weight", "bold")
@@ -1549,7 +1541,7 @@ export default function CombinedDatabaseVisualization({
         .text("License");
 
       const licenseItems = [
-        { name: "Academic/Nonprofit", color: CHART_COLORS.license.academic_nonprofit },
+        { name: "Academic", color: CHART_COLORS.license.academic_nonprofit },
         { name: "Commercial", color: CHART_COLORS.license.commercial }
       ];
 
