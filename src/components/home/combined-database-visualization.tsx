@@ -1205,7 +1205,7 @@ export default function CombinedDatabaseVisualization({
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end")
-        .style("font-size", "10px");
+        .style("font-size", "12px");
 
       // Y axis with formatting
       const yAxis = d3.axisLeft(yScale)
@@ -1217,7 +1217,7 @@ export default function CombinedDatabaseVisualization({
       innerG.append("g")
         .call(yAxis)
         .selectAll("text")
-        .style("font-size", "12px")
+        .style("font-size", "14px")
         .style("font-weight", "500");
 
       // Y axis label
@@ -1228,7 +1228,7 @@ export default function CombinedDatabaseVisualization({
           .attr("x", 0 - (innerHeight / 2))
           .attr("dy", "1em")
           .style("text-anchor", "middle")
-          .style("font-size", "11px")
+          .style("font-size", "13px")
           .text(yAxisLabel);
       }
 
@@ -1337,7 +1337,7 @@ export default function CombinedDatabaseVisualization({
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end")
-        .style("font-size", "10px");
+        .style("font-size", "12px");
 
       // Y axis with formatting
       const yAxis = d3.axisLeft(yScale)
@@ -1351,7 +1351,7 @@ export default function CombinedDatabaseVisualization({
       innerG.append("g")
         .call(yAxis)
         .selectAll("text")
-        .style("font-size", "12px")
+        .style("font-size", "14px")
         .style("font-weight", "500");
 
       // Y axis label
@@ -1362,7 +1362,7 @@ export default function CombinedDatabaseVisualization({
           .attr("x", 0 - (innerHeight / 2))
           .attr("dy", "1em")
           .style("text-anchor", "middle")
-          .style("font-size", "11px")
+          .style("font-size", "13px")
           .text(yAxisLabel);
       }
 
@@ -1450,13 +1450,13 @@ export default function CombinedDatabaseVisualization({
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end")
-        .style("font-size", "10px");
+        .style("font-size", "12px");
 
       // Y axis
       innerG.append("g")
         .call(d3.axisLeft(yScale).ticks(5))
         .selectAll("text")
-        .style("font-size", "12px")
+        .style("font-size", "14px")
         .style("font-weight", "500");
 
       // Y axis label
@@ -1467,7 +1467,7 @@ export default function CombinedDatabaseVisualization({
           .attr("x", 0 - (innerHeight / 2))
           .attr("dy", "1em")
           .style("text-anchor", "middle")
-          .style("font-size", "11px")
+          .style("font-size", "13px")
           .text(yAxisLabel);
       }
 
@@ -1649,9 +1649,7 @@ export default function CombinedDatabaseVisualization({
     createOverlapLegend(chartsG, rightLegendX, rightLegendY);
 
     // Add horizontal separator line between grid and charts, extending to legends
-    const gridBottom = CONFIG.grid.yPosition + CONFIG.grid.height;
-    const chartsTop = CONFIG.charts.yPosition;
-    const separatorY = 940
+    const separatorY = 940;
     
     svg.append("line")
       .attr("x1", CONFIG.charts.margin.left + leftLegendX - 20)
