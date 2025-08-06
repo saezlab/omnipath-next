@@ -213,7 +213,7 @@ export default function CombinedDatabaseVisualization({
       },
       charts: {
         height: 400,  // Height for charts section
-        yPosition: 980,  // Y position for charts (below grid)
+        yPosition: 950,  // Y position for charts with some spacing from grid
         chartWidth: 230,  // Increased to better use available space
         chartHeight: 280,
         legendWidth: 140,
@@ -803,7 +803,6 @@ export default function CombinedDatabaseVisualization({
 
     // Initialize grid visualization
     new DatabaseGridVisualizationD3(CONFIG, gridG);
-
 
     // Create group for charts
     const chartsG = svg.append("g")
@@ -1638,9 +1637,6 @@ export default function CombinedDatabaseVisualization({
     // Calculate total width of all charts
     const totalChartsWidth = CONFIG.charts.chartWidth * 4 + CONFIG.charts.gap * 3;
     
-    // Calculate available width (grid inner width)
-    const gridInnerWidth = CONFIG.dimensions.width - CONFIG.dimensions.margin.left - CONFIG.dimensions.margin.right;
-    
     // Position legends closer to charts to reduce wasted space
     // Left legend positioned closer to first chart
     const leftLegendX = -CONFIG.charts.legendWidth - 40;
@@ -1651,6 +1647,20 @@ export default function CombinedDatabaseVisualization({
     const rightLegendX = totalChartsWidth + 40;
     const rightLegendY = chartY + 20;
     createOverlapLegend(chartsG, rightLegendX, rightLegendY);
+
+    // Add horizontal separator line between grid and charts, extending to legends
+    const gridBottom = CONFIG.grid.yPosition + CONFIG.grid.height;
+    const chartsTop = CONFIG.charts.yPosition;
+    const separatorY = 940
+    
+    svg.append("line")
+      .attr("x1", CONFIG.charts.margin.left + leftLegendX - 20)
+      .attr("x2", CONFIG.charts.margin.left + rightLegendX + CONFIG.charts.legendWidth + 20)
+      .attr("y1", separatorY)
+      .attr("y2", separatorY)
+      .attr("stroke", "#d1d5db")
+      .attr("stroke-width", 1.5)
+      .attr("opacity", 0.7);
 
   }, [width, height]);
 
