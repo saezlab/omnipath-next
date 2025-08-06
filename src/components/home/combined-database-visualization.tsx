@@ -1323,7 +1323,7 @@ export default function CombinedDatabaseVisualization({
             
             let totalText = '';
             if (d.data.total !== undefined) {
-              totalText = `\nTotal: ${d.data.total.toLocaleString()} resources`;
+              totalText = `\nTotal: ${d.data.total.toLocaleString()} references`;
             } else if (d.data.totalRecords !== undefined) {
               totalText = `\nTotal: ${d.data.totalRecords.toLocaleString()} records`;
             }
@@ -1619,16 +1619,16 @@ export default function CombinedDatabaseVisualization({
       "Resources by Category", false, "B)");
     currentX += CONFIG.charts.chartWidth + CONFIG.charts.gap;
     
-    // Chart C: References (maintenance only)
-    createStackedBarChart(chartsG, referencesData, currentX, chartY, 
-      CONFIG.charts.chartWidth, CONFIG.charts.chartHeight,
-      "References by maintenance", false, "C)");
-    currentX += CONFIG.charts.chartWidth + CONFIG.charts.gap;
-
-    // Chart D: Records % with grouped bars (maintenance + license)
+    // Chart C: Records % with grouped bars (maintenance + license)
     createGroupedBarChart(chartsG, recordsData, currentX, chartY, 
       CONFIG.charts.chartWidth, CONFIG.charts.chartHeight,
-      "Records by Category (%)", true, "D)");
+      "Records by Category (%)", true, "C)");
+    currentX += CONFIG.charts.chartWidth + CONFIG.charts.gap;
+
+    // Chart D: References (maintenance only)
+    createStackedBarChart(chartsG, referencesData, currentX, chartY, 
+      CONFIG.charts.chartWidth, CONFIG.charts.chartHeight,
+      "References by maintenance", false, "D)");
     currentX += CONFIG.charts.chartWidth + CONFIG.charts.gap;
     
     // Chart E: Resource Overlap %
