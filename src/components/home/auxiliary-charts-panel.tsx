@@ -185,9 +185,9 @@ export function AuxiliaryChartsPanel() {
 
     // Configuration
     const CONFIG = {
-      width: 1600,
+      width: 1450,
       height: 400,
-      margin: { top: 30, right: 160, bottom: 60, left: 160 },
+      margin: { top: 30, right: 140, bottom: 60, left: 180 },
       chartWidth: 260,
       chartHeight: 280,
       legendWidth: 140,
@@ -1025,7 +1025,7 @@ export function AuxiliaryChartsPanel() {
     const totalChartsWidth = CONFIG.chartWidth * 4 + CONFIG.gap * 3;
 
     // Add maintenance & license legend on the LEFT side (same row as charts)
-    const leftLegendX = -CONFIG.legendWidth - 10;
+    const leftLegendX = -CONFIG.legendWidth - 20;
     const leftLegendY = chartY + 20;
     createMaintenanceLicenseLegend(g, leftLegendX, leftLegendY);
 
