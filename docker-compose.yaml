@@ -35,6 +35,8 @@ services:
       DOCKERIZED: "true"
       # Database URL with Docker service names
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@omnipath-next-postgres:5432/omnipath
+      # API Keys for runtime
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     depends_on:
       - omnipath-next-postgres
     ports:
