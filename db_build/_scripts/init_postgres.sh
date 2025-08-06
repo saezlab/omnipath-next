@@ -20,4 +20,13 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
     
     -- Grant privileges to omnipathuser
     GRANT ALL PRIVILEGES ON DATABASE omnipath TO omnipathuser;
+    
+    -- Grant schema usage and creation privileges
+    GRANT USAGE, CREATE ON SCHEMA public TO omnipathuser;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO omnipathuser;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO omnipathuser;
+    GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO omnipathuser;
+    
+    -- Make omnipathuser owner of the omnipath database for full control
+    ALTER DATABASE omnipath OWNER TO omnipathuser;
 EOSQL

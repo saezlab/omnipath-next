@@ -16,7 +16,7 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
-INPUT_FILE = "../out/uniprotkb_taxonomy_id_9606_OR_taxonomy_2025_07_18.tsv"
+INPUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "uniprotkb_taxonomy_id_9606_OR_taxonomy_2025_07_18.tsv")
 BATCH_SIZE = 1000  # Insert rows in batches for better performance
 
 # Table names
