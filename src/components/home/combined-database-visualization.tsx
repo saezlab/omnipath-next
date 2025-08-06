@@ -966,8 +966,10 @@ export default function CombinedDatabaseVisualization({
         };
       });
 
-      // 3. References per database
-      const referencesData: D3ChartData[] = databases.map(db => {
+      // 3. References per database (exclude Annotations and Intercellular - they don't have references)
+      const referencesData: D3ChartData[] = databases
+        .filter(db => !['Annotations', 'Intercellular'].includes(db.title))
+        .map(db => {
         const dbNames = db.data.map(d => d.source);
         const literatureRefs = (dbStats.plotData?.literatureRefsByDatabaseAndType || [])
           .filter((ref: any) => dbNames.includes(ref.database));
