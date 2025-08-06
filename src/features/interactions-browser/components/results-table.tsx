@@ -120,7 +120,8 @@ export function InteractionResultsTable({
       headerClassName: 'hidden lg:table-cell',
       cellClassName: 'hidden lg:table-cell max-w-[200px]',
       cell: ({ row }) => {
-        const sources = row.sources || [];
+        const sourcesString = row.sources || '';
+        const sources = sourcesString ? sourcesString.split(';').filter(s => s.trim().length > 0) : [];
         if (sources.length === 0) return <span className="text-muted-foreground">-</span>;
         return (
           <TooltipProvider>
