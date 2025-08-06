@@ -186,12 +186,12 @@ export function AuxiliaryChartsPanel() {
     // Configuration
     const CONFIG = {
       width: 1600,
-      height: 800,
-      margin: { top: 30, right: 250, bottom: 80, left: 50 },
-      chartWidth: 420,
-      chartHeight: 320,
-      legendWidth: 180,
-      gap: 30
+      height: 400,
+      margin: { top: 30, right: 160, bottom: 60, left: 160 },
+      chartWidth: 260,
+      chartHeight: 280,
+      legendWidth: 140,
+      gap: 20
     };
 
     // Helper function to create data mappings
@@ -868,8 +868,8 @@ export function AuxiliaryChartsPanel() {
       }
     };
 
-    // Create combined legend for maintenance and license
-    const createCombinedLegend = (
+    // Create maintenance and license legend (left side)
+    const createMaintenanceLicenseLegend = (
       container: d3.Selection<SVGGElement, unknown, null, undefined>,
       x: number,
       y: number
@@ -882,7 +882,7 @@ export function AuxiliaryChartsPanel() {
         .attr("x", 0)
         .attr("y", 0)
         .attr("class", "legend-title")
-        .style("font-size", "16px")
+        .style("font-size", "14px")
         .style("font-weight", "600")
         .style("fill", "#374151")
         .text("Maintenance");
@@ -896,30 +896,30 @@ export function AuxiliaryChartsPanel() {
 
       maintenanceItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${20 + i * 26})`);
+          .attr("transform", `translate(0, ${18 + i * 22})`);
 
         itemG.append("rect")
-          .attr("width", 16)
-          .attr("height", 16)
+          .attr("width", 14)
+          .attr("height", 14)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 22)
-          .attr("y", 11)
+          .attr("x", 18)
+          .attr("y", 10)
           .attr("class", "legend-text")
-          .style("font-size", "14px")
+          .style("font-size", "12px")
           .style("fill", "#374151")
           .text(item.name);
       });
 
       // License section
-      const licenseYOffset = 20 + maintenanceItems.length * 26 + 20;
+      const licenseYOffset = 18 + maintenanceItems.length * 22 + 16;
       
       legendG.append("text")
         .attr("x", 0)
         .attr("y", licenseYOffset)
         .attr("class", "legend-title")
-        .style("font-size", "16px")
+        .style("font-size", "14px")
         .style("font-weight", "600")
         .style("fill", "#374151")
         .text("License");
@@ -931,30 +931,37 @@ export function AuxiliaryChartsPanel() {
 
       licenseItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${licenseYOffset + 20 + i * 26})`);
+          .attr("transform", `translate(0, ${licenseYOffset + 18 + i * 22})`);
 
         itemG.append("rect")
-          .attr("width", 16)
-          .attr("height", 16)
+          .attr("width", 14)
+          .attr("height", 14)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 22)
-          .attr("y", 11)
+          .attr("x", 18)
+          .attr("y", 10)
           .attr("class", "legend-text")
-          .style("font-size", "14px")
+          .style("font-size", "12px")
           .style("fill", "#374151")
           .text(item.name);
       });
+    };
 
-      // Overlap section
-      const overlapYOffset = licenseYOffset + 20 + licenseItems.length * 26 + 20;
+    // Create resource overlap legend (right side)
+    const createOverlapLegend = (
+      container: d3.Selection<SVGGElement, unknown, null, undefined>,
+      x: number,
+      y: number
+    ) => {
+      const legendG = container.append("g")
+        .attr("transform", `translate(${x},${y})`);
       
       legendG.append("text")
         .attr("x", 0)
-        .attr("y", overlapYOffset)
+        .attr("y", 0)
         .attr("class", "legend-title")
-        .style("font-size", "16px")
+        .style("font-size", "14px")
         .style("font-weight", "600")
         .style("fill", "#374151")
         .text("Resource Overlap");
@@ -969,18 +976,18 @@ export function AuxiliaryChartsPanel() {
 
       overlapItems.forEach((item, i) => {
         const itemG = legendG.append("g")
-          .attr("transform", `translate(0, ${overlapYOffset + 20 + i * 26})`);
+          .attr("transform", `translate(0, ${18 + i * 22})`);
 
         itemG.append("rect")
-          .attr("width", 16)
-          .attr("height", 16)
+          .attr("width", 14)
+          .attr("height", 14)
           .attr("fill", item.color);
 
         itemG.append("text")
-          .attr("x", 22)
-          .attr("y", 11)
+          .attr("x", 18)
+          .attr("y", 10)
           .attr("class", "legend-text")
-          .style("font-size", "14px")
+          .style("font-size", "12px")
           .style("fill", "#374151")
           .text(item.name);
       });
@@ -988,33 +995,44 @@ export function AuxiliaryChartsPanel() {
 
 
 
-    // Layout charts in a grid
-    const chartX = CONFIG.gap;
+    // Layout charts in a single row
     const chartY = CONFIG.gap;
+    let currentX = 0;
 
-    // Row 1: Resources with grouped bars (maintenance + license)
-    createGroupedBarChart(g, resourcesData, chartX, chartY, CONFIG.chartWidth, CONFIG.chartHeight,
+    // Chart 1: Resources with grouped bars (maintenance + license)
+    createGroupedBarChart(g, resourcesData, currentX, chartY, CONFIG.chartWidth, CONFIG.chartHeight,
       "Resources by Category", false, "a)");
+    currentX += CONFIG.chartWidth + CONFIG.gap;
     
-    // Row 1: References (maintenance only)
-    createStackedBarChart(g, referencesData, chartX + CONFIG.chartWidth + CONFIG.gap, chartY, 
+    // Chart 2: References (maintenance only)
+    createStackedBarChart(g, referencesData, currentX, chartY, 
       CONFIG.chartWidth, CONFIG.chartHeight,
       "References by maintenance", false, "b)");
+    currentX += CONFIG.chartWidth + CONFIG.gap;
 
-    // Row 2: Records % with grouped bars (maintenance + license)
-    createGroupedBarChart(g, recordsData, chartX, chartY + CONFIG.chartHeight + CONFIG.gap, 
+    // Chart 3: Records % with grouped bars (maintenance + license)
+    createGroupedBarChart(g, recordsData, currentX, chartY, 
       CONFIG.chartWidth, CONFIG.chartHeight,
       "Records by Category (%)", true, "c)");
+    currentX += CONFIG.chartWidth + CONFIG.gap;
     
-    // Row 2: Resource Overlap %
-    createOverlapChart(g, combinedOverlapData, chartX + CONFIG.chartWidth + CONFIG.gap, 
-      chartY + CONFIG.chartHeight + CONFIG.gap, CONFIG.chartWidth, CONFIG.chartHeight,
+    // Chart 4: Resource Overlap %
+    createOverlapChart(g, combinedOverlapData, currentX, chartY, 
+      CONFIG.chartWidth, CONFIG.chartHeight,
       "Resources per entry (%)", "d)");
 
-    // Add combined legend on the right side
-    const legendX = (CONFIG.chartWidth + CONFIG.gap) * 2 + CONFIG.gap;
-    const combinedLegendY = chartY + 20;
-    createCombinedLegend(g, legendX, combinedLegendY);
+    // Calculate total width of all charts
+    const totalChartsWidth = CONFIG.chartWidth * 4 + CONFIG.gap * 3;
+
+    // Add maintenance & license legend on the LEFT side (same row as charts)
+    const leftLegendX = -CONFIG.legendWidth - 10;
+    const leftLegendY = chartY + 20;
+    createMaintenanceLicenseLegend(g, leftLegendX, leftLegendY);
+
+    // Add resource overlap legend on the RIGHT side (same row as charts)
+    const rightLegendX = totalChartsWidth + CONFIG.gap;
+    const rightLegendY = chartY + 20;
+    createOverlapLegend(g, rightLegendX, rightLegendY);
 
   }, []);
 
