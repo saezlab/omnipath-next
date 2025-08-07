@@ -40,7 +40,7 @@ services:
     depends_on:
       - omnipath-next-postgres
     ports:
-      - "3000:3000"
+      - "3003:3000"
 
 volumes:
   postgres_data:
