@@ -304,11 +304,6 @@ export function ResourcesTable() {
                   <TableRow key={`${resource.name}-${index}`}>
                     <TableCell className="font-medium">
                       {resource.name}
-                      {resource.originalNames.length > 1 && (
-                        <span className="text-xs text-muted-foreground ml-2" title={resource.originalNames.join(", ")}>
-                          ({resource.originalNames.length} variants)
-                        </span>
-                      )}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
