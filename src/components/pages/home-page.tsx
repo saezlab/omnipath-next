@@ -3,6 +3,7 @@ import { AboutSection } from "@/components/home/about-section"
 import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
+import { ResourcesTable } from "@/components/home/resources-table"
 import { SiteLayout } from "@/components/layout/main-layout"
 import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
 import CombinedDatabaseVisualization from '@/components/home/combined-database-visualization';
@@ -82,6 +83,17 @@ export function HomePage() {
               <CombinedDatabaseVisualization />
             </div>
           </div>
+        </section>
+
+        {/* Resources Table Section */}
+        <section className="mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Resources Database</h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Explore all available resources with detailed information about categories, licenses, maintenance status, and record counts.
+            </p>
+          </div>
+          <ResourcesTable />
         </section>
 
         <AboutSection />

@@ -1,0 +1,216 @@
+import dbStats from "@/data/db-stats.json";
+import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
+import resourcesByLicense from "@/data/resources_by_license.json";
+import { cleanSourceName } from "@/utils/database-treemap-data";
+
+export interface ResourceData {
+  name: string;
+  originalName: string;
+  category: string;
+  subcategory: string;
+  recordCount: number;
+  license: "academic_nonprofit" | "commercial" | "unknown";
+  maintenance: "frequent" | "infrequent" | "one_time_paper" | "discontinued" | "unknown";
+}
+
+const ANNOTATION_SOURCE_GROUPS = {
+  "Cell-cell communication": ["Baccin2019", "CellCall", "CellCellInteractions", "CellChatDB", "CellChatDB_complex", "Cellinker", "Cellinker_complex", "CellPhoneDB", "CellPhoneDB_complex", "CellTalkDB", "connectomeDB2020", "EMBRACE", "Guide2Pharma", "iTALK", "HPMR", "ICELLNET", "ICELLNET_complex", "Kirouac2010", "LRdb", "Ramilowski2015", "scConnect", "scConnect_complex", "SignaLink_function", "Surfaceome", "talklr"],
+  "Localization (subcellular)": ["ComPPI", "Exocarta", "HPA_subcellular", "HPA_secretome", "HumanCellMap", "LOCATE", "Ramilowski_location", "UniProt_location", "Vesiclepedia", "Wang"],
+  "Membrane localization & topology": ["Almen2009", "CellPhoneDB", "CSPA", "LOCATE", "Membranome", "OPM", "Phobius", "Ramilowski_location", "TopDB", "UniProt_topology"],
+  "Extracellular matrix, adhesion": ["Matrisome", "MatrixDB", "Integrins", "MCAM", "Zhong2015"],
+  "Vesicles, secretome": ["Almen2009", "Exocarta", "Vesiclepedia"],
+  "Function, pathway": ["CellChatDB", "GO_Intercell", "KEGG", "KEGG-PC", "NetPath", "SignaLink_pathway", "SignaLink_function", "CORUM_Funcat", "CORUM_GO", "SIGNOR", "PROGENy", "MSigDB", "UniProt_keyword", "Wang"],
+  "Signatures": ["CytoSig", "PanglaoDB", "PROGENy"],
+  "Disease, cancer": ["DisGeNet", "CancerGeneCensus", "IntOGen", "CancerSEA", "CancerDrugsDB", "DGIdb", "CPAD"],
+  "Protein classes & families": ["Adhesome", "DGIdb", "UniProt_family", "GPCRdb", "HPMR", "kinase.com", "Phosphatome", "TFcensus", "TCDB", "InterPro", "HGNC", "OPM"],
+  "Cell type, tissue": ["HPA_tissue", "CSPA_celltype", "CellTypist", "UniProt_tissue", "EMBRACE"],
+  "Transcription factors": ["Lambert2018", "TFcensus"]
+};
+
+const sourceToAnnotationCategory = new Map<string, string>();
+Object.entries(ANNOTATION_SOURCE_GROUPS).forEach(([category, sources]) => {
+  sources.forEach(source => {
+    sourceToAnnotationCategory.set(source.toLowerCase(), category);
+  });
+});
+
+function getMaintenanceStatus(resourceName: string): ResourceData["maintenance"] {
+  const lowerName = resourceName.toLowerCase();
+  
+  if ((maintenanceCategories.frequent as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "frequent";
+  }
+  if ((maintenanceCategories.infrequent as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "infrequent";
+  }
+  if ((maintenanceCategories.one_time_paper as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "one_time_paper";
+  }
+  if ((maintenanceCategories.discontinued as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "discontinued";
+  }
+  return "unknown";
+}
+
+function getLicenseType(resourceName: string): ResourceData["license"] {
+  const lowerName = resourceName.toLowerCase();
+  
+  if ((resourcesByLicense.academic_nonprofit as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "academic_nonprofit";
+  }
+  if ((resourcesByLicense.commercial as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "commercial";
+  }
+  return "unknown";
+}
+
+function getInteractionType(type: string): string {
+  switch(type) {
+    case "transcriptional": return "Transcriptional";
+    case "post_translational": return "Post-translational";
+    case "mirna_transcriptional": return "miRNA Transcriptional";
+    case "post_transcriptional": return "Post-transcriptional";
+    case "lncrna_post_transcriptional": return "Post-transcriptional";
+    case "small_molecule_protein": return "Small Molecule-Protein";
+    default: return "Other";
+  }
+}
+
+export function getAllResources(): ResourceData[] {
+  const resourcesMap = new Map<string, ResourceData>();
+  
+  // Process interactions by type
+  dbStats.interactionsSourceType.forEach(item => {
+    const cleanedName = cleanSourceName(item.source);
+    const key = `${cleanedName}_interactions_${item.type}`;
+    
+    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
+      resourcesMap.set(key, {
+        name: cleanedName,
+        originalName: item.source,
+        category: "Interactions",
+        subcategory: getInteractionType(item.type),
+        recordCount: item.record_count,
+        license: getLicenseType(cleanedName),
+        maintenance: getMaintenanceStatus(cleanedName)
+      });
+    }
+  });
+  
+  // Process annotations
+  dbStats.annotations.forEach(item => {
+    const cleanedName = cleanSourceName(item.source);
+    const subcategory = sourceToAnnotationCategory.get(item.source.toLowerCase()) || "Other";
+    const key = `${cleanedName}_annotations`;
+    
+    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
+      resourcesMap.set(key, {
+        name: cleanedName,
+        originalName: item.source,
+        category: "Annotations",
+        subcategory: subcategory,
+        recordCount: item.record_count,
+        license: getLicenseType(cleanedName),
+        maintenance: getMaintenanceStatus(cleanedName)
+      });
+    }
+  });
+  
+  // Process enzyme-substrate
+  dbStats.enz_sub.forEach(item => {
+    const cleanedName = cleanSourceName(item.source);
+    const key = `${cleanedName}_enzsub`;
+    
+    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
+      resourcesMap.set(key, {
+        name: cleanedName,
+        originalName: item.source,
+        category: "Enzyme-Substrate",
+        subcategory: "",
+        recordCount: item.record_count,
+        license: getLicenseType(cleanedName),
+        maintenance: getMaintenanceStatus(cleanedName)
+      });
+    }
+  });
+  
+  // Process complexes
+  dbStats.complexes.forEach(item => {
+    const cleanedName = cleanSourceName(item.source);
+    const key = `${cleanedName}_complexes`;
+    
+    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
+      resourcesMap.set(key, {
+        name: cleanedName,
+        originalName: item.source,
+        category: "Complexes",
+        subcategory: "",
+        recordCount: item.record_count,
+        license: getLicenseType(cleanedName),
+        maintenance: getMaintenanceStatus(cleanedName)
+      });
+    }
+  });
+  
+  // Process intercellular
+  dbStats.intercell.forEach(item => {
+    const cleanedName = cleanSourceName(item.source);
+    const key = `${cleanedName}_intercell`;
+    
+    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
+      resourcesMap.set(key, {
+        name: cleanedName,
+        originalName: item.source,
+        category: "Intercellular",
+        subcategory: "",
+        recordCount: item.record_count,
+        license: getLicenseType(cleanedName),
+        maintenance: getMaintenanceStatus(cleanedName)
+      });
+    }
+  });
+  
+  return Array.from(resourcesMap.values());
+}
+
+export function getResourceStats() {
+  const resources = getAllResources();
+  
+  const stats = {
+    total: resources.length,
+    byCategory: {} as Record<string, number>,
+    byLicense: {} as Record<string, number>,
+    byMaintenance: {} as Record<string, number>,
+    totalRecords: 0
+  };
+  
+  resources.forEach(resource => {
+    // Count by category
+    stats.byCategory[resource.category] = (stats.byCategory[resource.category] || 0) + 1;
+    
+    // Count by license
+    stats.byLicense[resource.license] = (stats.byLicense[resource.license] || 0) + 1;
+    
+    // Count by maintenance
+    stats.byMaintenance[resource.maintenance] = (stats.byMaintenance[resource.maintenance] || 0) + 1;
+    
+    // Total records
+    stats.totalRecords += resource.recordCount;
+  });
+  
+  return stats;
+}
+
+export const maintenanceColors = {
+  frequent: "#4cbd38",       // Green - actively maintained
+  infrequent: "#f89d0e",     // Orange - occasionally updated
+  one_time_paper: "#d22027", // Red - one-time publication
+  discontinued: "#5b205f",   // Purple - no longer maintained
+  unknown: "#6b7280"         // Gray - unknown status
+};
+
+export const licenseColors = {
+  academic_nonprofit: "#176fc1", // Blue - academic/non-profit
+  commercial: "#059669",         // Green - commercial
+  unknown: "#6b7280"            // Gray - unknown
+};
