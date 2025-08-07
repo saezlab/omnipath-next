@@ -22,20 +22,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        # Pass core variables for build-time configuration
-        NEXT_PUBLIC_ENVIRONMENT: ${ENVIRONMENT}
-        NEXT_PUBLIC_DOMAIN: ${DOMAIN}
-        GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      # Mark as dockerized for auto-configuration
-      DOCKERIZED: "true"
-      # Database URL with Docker service names
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@omnipath-next-postgres:5432/omnipath
+      # Production Database URL (using Docker service name)
+      DATABASE_URL_PROD: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@omnipath-next-postgres:5432/omnipath
+      # Development Database URL (not used in Docker, but included for consistency)
+      DATABASE_URL_DEV: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/omnipath
       # API Keys for runtime
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
     depends_on:
       - omnipath-next-postgres
 

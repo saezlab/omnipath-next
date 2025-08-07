@@ -16,12 +16,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set environment variables for build
-ARG NEXT_PUBLIC_ENVIRONMENT
-ARG NEXT_PUBLIC_DOMAIN
-ENV NEXT_PUBLIC_ENVIRONMENT=$NEXT_PUBLIC_ENVIRONMENT
-ENV NEXT_PUBLIC_DOMAIN=$NEXT_PUBLIC_DOMAIN
-
 # Build the application
 RUN corepack enable pnpm && pnpm build
 
