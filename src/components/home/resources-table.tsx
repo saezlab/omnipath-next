@@ -107,18 +107,16 @@ export function ResourcesTable() {
 
   const getMaintenanceBadge = (maintenance: ResourceData["maintenance"]) => {
     const colors = {
-      frequent: "bg-green-100 text-green-800 border-green-200",
-      infrequent: "bg-orange-100 text-orange-800 border-orange-200",
-      one_time_paper: "bg-red-100 text-red-800 border-red-200",
-      discontinued: "bg-purple-100 text-purple-800 border-purple-200",
+      "frequent updates": "bg-green-100 text-green-800 border-green-200",
+      "infrequent updates": "bg-orange-100 text-orange-800 border-orange-200",
+      "no updates": "bg-red-100 text-red-800 border-red-200",
       unknown: "bg-gray-100 text-gray-800 border-gray-200",
     };
 
     const labels = {
-      frequent: "Frequent Updates",
-      infrequent: "Infrequent Updates",
-      one_time_paper: "One-time Paper",
-      discontinued: "Discontinued",
+      "frequent updates": "Frequent Updates",
+      "infrequent updates": "Infrequent Updates",
+      "no updates": "No Updates",
       unknown: "Unknown",
     };
 
@@ -218,10 +216,9 @@ export function ResourcesTable() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="frequent">Frequent Updates</SelectItem>
-                <SelectItem value="infrequent">Infrequent Updates</SelectItem>
-                <SelectItem value="one_time_paper">One-time Paper</SelectItem>
-                <SelectItem value="discontinued">Discontinued</SelectItem>
+                <SelectItem value="frequent updates">Frequent Updates</SelectItem>
+                <SelectItem value="infrequent updates">Infrequent Updates</SelectItem>
+                <SelectItem value="no updates">No Updates</SelectItem>
                 <SelectItem value="unknown">Unknown</SelectItem>
               </SelectContent>
             </Select>
@@ -369,19 +366,15 @@ export function ResourcesTable() {
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Frequent:</span>
-                    <span className="font-medium">{stats.byMaintenance.frequent || 0}</span>
+                    <span className="font-medium">{stats.byMaintenance["frequent updates"] || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Infrequent:</span>
-                    <span className="font-medium">{stats.byMaintenance.infrequent || 0}</span>
+                    <span className="font-medium">{stats.byMaintenance["infrequent updates"] || 0}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">One-time:</span>
-                    <span className="font-medium">{stats.byMaintenance.one_time_paper || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Discontinued:</span>
-                    <span className="font-medium">{stats.byMaintenance.discontinued || 0}</span>
+                    <span className="text-muted-foreground">No Updates:</span>
+                    <span className="font-medium">{stats.byMaintenance["no updates"] || 0}</span>
                   </div>
                 </div>
               </CardContent>

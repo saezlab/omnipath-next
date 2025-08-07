@@ -49,10 +49,9 @@ interface GridCell {
 
 interface D3ChartData {
   category: string;
-  frequent: number;
-  infrequent: number;
-  one_time_paper: number;
-  discontinued: number;
+  'frequent updates': number;
+  'infrequent updates': number;
+  'no updates': number;
   total?: number;
   totalRecords?: number;
   academic_nonprofit?: number;
@@ -80,10 +79,9 @@ const CHART_COLORS = {
   secondary: '#d22027',
   tertiary: '#4cbd38',
   maintenance: {
-    frequent: '#4cbd38',    // Green - active/good
-    infrequent: '#f89d0e',  // Orange - caution
-    one_time_paper: '#d22027', // Red - concerning
-    discontinued: '#5b205f',   // Dark purple - problematic
+    'frequent updates': '#4cbd38',    // Green - active/good
+    'infrequent updates': '#f89d0e',  // Orange - caution  
+    'no updates': '#d22027', // Red - no updates
     unknown: '#6b7280'
   },
   license: {
@@ -891,10 +889,9 @@ export default function CombinedDatabaseVisualization({
       // 1. Resources per database
       const resourcesData: D3ChartData[] = databases.map(db => {
         const maintenanceBreakdown: Record<string, number> = {
-          frequent: 0,
-          infrequent: 0,
-          one_time_paper: 0,
-          discontinued: 0
+          'frequent updates': 0,
+          'infrequent updates': 0,
+          'no updates': 0
         };
 
         const licenseBreakdown: Record<string, number> = {
@@ -916,10 +913,9 @@ export default function CombinedDatabaseVisualization({
 
         return {
           category: db.title,
-          frequent: maintenanceBreakdown.frequent,
-          infrequent: maintenanceBreakdown.infrequent,
-          one_time_paper: maintenanceBreakdown.one_time_paper,
-          discontinued: maintenanceBreakdown.discontinued,
+          'frequent updates': maintenanceBreakdown['frequent updates'],
+          'infrequent updates': maintenanceBreakdown['infrequent updates'],
+          'no updates': maintenanceBreakdown['no updates'],
           academic_nonprofit: licenseBreakdown.academic_nonprofit,
           commercial: licenseBreakdown.commercial,
           total: db.data.length
@@ -929,10 +925,9 @@ export default function CombinedDatabaseVisualization({
       // 2. Records per database (percentages)
       const recordsData: D3ChartData[] = databases.map(db => {
         const maintenanceBreakdown: Record<string, number> = {
-          frequent: 0,
-          infrequent: 0,
-          one_time_paper: 0,
-          discontinued: 0
+          'frequent updates': 0,
+          'infrequent updates': 0,
+          'no updates': 0
         };
 
         const licenseBreakdown: Record<string, number> = {
@@ -956,10 +951,9 @@ export default function CombinedDatabaseVisualization({
         
         return {
           category: db.title,
-          frequent: total > 0 ? ((maintenanceBreakdown.frequent / total) * 100) : 0,
-          infrequent: total > 0 ? ((maintenanceBreakdown.infrequent / total) * 100) : 0,
-          one_time_paper: total > 0 ? ((maintenanceBreakdown.one_time_paper / total) * 100) : 0,
-          discontinued: total > 0 ? ((maintenanceBreakdown.discontinued / total) * 100) : 0,
+          'frequent updates': total > 0 ? ((maintenanceBreakdown['frequent updates'] / total) * 100) : 0,
+          'infrequent updates': total > 0 ? ((maintenanceBreakdown['infrequent updates'] / total) * 100) : 0,
+          'no updates': total > 0 ? ((maintenanceBreakdown['no updates'] / total) * 100) : 0,
           academic_nonprofit: total > 0 ? ((licenseBreakdown.academic_nonprofit / total) * 100) : 0,
           commercial: total > 0 ? ((licenseBreakdown.commercial / total) * 100) : 0,
           totalRecords: total
@@ -975,10 +969,9 @@ export default function CombinedDatabaseVisualization({
           .filter((ref: any) => dbNames.includes(ref.database));
         
         const maintenanceBreakdown: Record<string, number> = {
-          frequent: 0,
-          infrequent: 0,
-          one_time_paper: 0,
-          discontinued: 0
+          'frequent updates': 0,
+          'infrequent updates': 0,
+          'no updates': 0
         };
 
         // Simply aggregate reference counts by database maintenance category
@@ -993,10 +986,9 @@ export default function CombinedDatabaseVisualization({
 
         return {
           category: db.title,
-          frequent: maintenanceBreakdown.frequent,
-          infrequent: maintenanceBreakdown.infrequent,
-          one_time_paper: maintenanceBreakdown.one_time_paper,
-          discontinued: maintenanceBreakdown.discontinued,
+          'frequent updates': maintenanceBreakdown['frequent updates'],
+          'infrequent updates': maintenanceBreakdown['infrequent updates'],
+          'no updates': maintenanceBreakdown['no updates'],
           total: totalReferences
         };
       });
@@ -1088,7 +1080,7 @@ export default function CombinedDatabaseVisualization({
         .padding(0.1);
 
       const maxMaintenanceValue = d3.max(data, d => 
-        d.frequent + d.infrequent + d.one_time_paper + d.discontinued) || 0;
+        d['frequent updates'] + d['infrequent updates'] + d['no updates']) || 0;
       const maxLicenseValue = d3.max(data, d => 
         (d.academic_nonprofit || 0) + (d.commercial || 0)) || 0;
       
@@ -1098,7 +1090,7 @@ export default function CombinedDatabaseVisualization({
 
       // Maintenance stacks
       const maintenanceStack = d3.stack<D3ChartData>()
-        .keys(['frequent', 'infrequent', 'one_time_paper', 'discontinued'])
+        .keys(['frequent updates', 'infrequent updates', 'no updates'])
         .order(d3.stackOrderNone)
         .offset(d3.stackOffsetNone);
 
@@ -1119,10 +1111,9 @@ export default function CombinedDatabaseVisualization({
         .attr("class", "maintenance-series")
         .attr("fill", (_, i) => {
           const colors = [
-            CHART_COLORS.maintenance.frequent,
-            CHART_COLORS.maintenance.infrequent,
-            CHART_COLORS.maintenance.one_time_paper,
-            CHART_COLORS.maintenance.discontinued
+            CHART_COLORS.maintenance['frequent updates'],
+            CHART_COLORS.maintenance['infrequent updates'],
+            CHART_COLORS.maintenance['no updates']
           ];
           return colors[i];
         });
@@ -1137,11 +1128,11 @@ export default function CombinedDatabaseVisualization({
           .attr("width", xSubScale.bandwidth())
           .append("title")
           .text(d => {
-            const keys = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
+            const keys = ['frequent updates', 'infrequent updates', 'no updates'];
             const seriesName = keys[seriesIndex] || 'unknown';
             const value = d[1] - d[0];
             const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
-            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            const categoryName = seriesName.replace(/\b\w/g, (l: string) => l.toUpperCase());
             return `${d.data.category} - Maintenance\n${categoryName}: ${displayValue}`;
           });
       });
@@ -1173,7 +1164,7 @@ export default function CombinedDatabaseVisualization({
             const seriesName = keys[seriesIndex] || 'unknown';
             const value = d[1] - d[0];
             const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
-            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            const categoryName = seriesName.replace(/\b\w/g, (l: string) => l.toUpperCase());
             return `${d.data.category} - License\n${categoryName}: ${displayValue}`;
           });
       });
@@ -1255,19 +1246,19 @@ export default function CombinedDatabaseVisualization({
 
       const yScale = d3.scaleLinear()
         .domain([0, isPercentage ? 100 : d3.max(data, d => 
-          (d.frequent + d.infrequent + d.one_time_paper + d.discontinued)) || 0])
+          (d['frequent updates'] + d['infrequent updates'] + d['no updates'])) || 0])
         .range([innerHeight, 0]);
 
       // Stack data
       const stack = d3.stack<D3ChartData>()
-        .keys(['frequent', 'infrequent', 'one_time_paper', 'discontinued'])
+        .keys(['frequent updates', 'infrequent updates', 'no updates'])
         .order(d3.stackOrderNone)
         .offset(d3.stackOffsetNone);
 
       const series = stack(data);
 
       // Stack keys for reference
-      const stackKeys = ['frequent', 'infrequent', 'one_time_paper', 'discontinued'];
+      const stackKeys = ['frequent updates', 'infrequent updates', 'no updates'];
 
       // Draw bars
       const seriesGroups = innerG.selectAll(".series")
@@ -1276,10 +1267,9 @@ export default function CombinedDatabaseVisualization({
         .attr("class", "series")
         .attr("fill", (_, i) => {
           const colors = [
-            CHART_COLORS.maintenance.frequent,
-            CHART_COLORS.maintenance.infrequent,
-            CHART_COLORS.maintenance.one_time_paper,
-            CHART_COLORS.maintenance.discontinued
+            CHART_COLORS.maintenance['frequent updates'],
+            CHART_COLORS.maintenance['infrequent updates'],
+            CHART_COLORS.maintenance['no updates']
           ];
           return colors[i];
         });
@@ -1297,7 +1287,7 @@ export default function CombinedDatabaseVisualization({
             const seriesName = stackKeys[seriesIndex] || 'unknown';
             const value = d[1] - d[0];
             const displayValue = isPercentage ? `${value.toFixed(1)}%` : value.toLocaleString();
-            const categoryName = seriesName.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
+            const categoryName = seriesName.replace(/\b\w/g, (l: string) => l.toUpperCase());
             
             let totalText = '';
             if (d.data.total !== undefined) {
@@ -1483,10 +1473,9 @@ export default function CombinedDatabaseVisualization({
         .text("Maintenance");
 
       const maintenanceItems = [
-        { name: "Frequent", color: CHART_COLORS.maintenance.frequent },
-        { name: "Infrequent", color: CHART_COLORS.maintenance.infrequent },
-        { name: "One Time Paper", color: CHART_COLORS.maintenance.one_time_paper },
-        { name: "Discontinued", color: CHART_COLORS.maintenance.discontinued }
+        { name: "Frequent Updates", color: CHART_COLORS.maintenance['frequent updates'] },
+        { name: "Infrequent Updates", color: CHART_COLORS.maintenance['infrequent updates'] },
+        { name: "No Updates", color: CHART_COLORS.maintenance['no updates'] }
       ];
 
       maintenanceItems.forEach((item, i) => {

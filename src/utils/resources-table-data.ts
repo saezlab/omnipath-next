@@ -11,7 +11,7 @@ export interface ResourceData {
   recordCount: number;
   recordsByCategory: Record<string, number>;
   license: "academic_nonprofit" | "commercial" | "unknown";
-  maintenance: "frequent" | "infrequent" | "one_time_paper" | "discontinued" | "unknown";
+  maintenance: "frequent updates" | "infrequent updates" | "no updates" | "unknown";
 }
 
 const ANNOTATION_SOURCE_GROUPS = {
@@ -38,17 +38,14 @@ Object.entries(ANNOTATION_SOURCE_GROUPS).forEach(([category, sources]) => {
 function getMaintenanceStatus(resourceName: string): ResourceData["maintenance"] {
   const lowerName = resourceName.toLowerCase();
   
-  if ((maintenanceCategories.frequent as string[]).some(r => r.toLowerCase() === lowerName)) {
-    return "frequent";
+  if ((maintenanceCategories["frequent updates"] as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "frequent updates";
   }
-  if ((maintenanceCategories.infrequent as string[]).some(r => r.toLowerCase() === lowerName)) {
-    return "infrequent";
+  if ((maintenanceCategories["infrequent updates"] as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "infrequent updates";
   }
-  if ((maintenanceCategories.one_time_paper as string[]).some(r => r.toLowerCase() === lowerName)) {
-    return "one_time_paper";
-  }
-  if ((maintenanceCategories.discontinued as string[]).some(r => r.toLowerCase() === lowerName)) {
-    return "discontinued";
+  if ((maintenanceCategories["no updates"] as string[]).some(r => r.toLowerCase() === lowerName)) {
+    return "no updates";
   }
   return "unknown";
 }
@@ -248,11 +245,10 @@ export function getResourceStats() {
 }
 
 export const maintenanceColors = {
-  frequent: "#4cbd38",       // Green - actively maintained
-  infrequent: "#f89d0e",     // Orange - occasionally updated
-  one_time_paper: "#d22027", // Red - one-time publication
-  discontinued: "#5b205f",   // Purple - no longer maintained
-  unknown: "#6b7280"         // Gray - unknown status
+  "frequent updates": "#4cbd38",       // Green - actively maintained
+  "infrequent updates": "#f89d0e",     // Orange - occasionally updated
+  "no updates": "#d22027",             // Red - no updates
+  unknown: "#6b7280"                   // Gray - unknown status
 };
 
 export const licenseColors = {
