@@ -39,8 +39,6 @@ services:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     depends_on:
       - omnipath-next-postgres
-    ports:
-      - "3003:3000"
 
 volumes:
   postgres_data:
