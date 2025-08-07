@@ -42,7 +42,7 @@ export function ResourcesTable() {
   const stats = useMemo(() => getResourceStats(), []);
 
   const filteredAndSortedResources = useMemo(() => {
-    let filtered = resources.filter((resource) => {
+    const filtered = resources.filter((resource) => {
       const matchesSearch =
         searchTerm === "" ||
         resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,8 +63,8 @@ export function ResourcesTable() {
     });
 
     filtered.sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: string | number;
+      let bValue: string | number;
 
       if (sortField === "categories") {
         aValue = a.categories.join(", ");
