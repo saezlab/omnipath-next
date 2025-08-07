@@ -1,16 +1,21 @@
 import 'dotenv/config';
 import { defineConfig } from 'drizzle-kit';
 
+// Select DATABASE_URL based on NODE_ENV
+const nodeEnv = process.env.NODE_ENV || 'development';
+const databaseUrl = nodeEnv === 'production' 
+  ? process.env.DATABASE_URL_PROD 
+  : process.env.DATABASE_URL_DEV;
+
+if (!databaseUrl) {
+  throw new Error(`DATABASE_URL_${nodeEnv === 'production' ? 'PROD' : 'DEV'} is not set`);
+}
+
 export default defineConfig({
   out: './src/db/drizzle',
   schema: './src/db/drizzle/schema.ts',
   dialect: 'postgresql',
   dbCredentials: {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    user: process.env.DB_USER || 'omnipath',
-    password: process.env.DB_PASSWORD || 'omnipath123',
-    database: process.env.DB_NAME || 'omnipath',
-    ssl: false,
+    url: databaseUrl,
   },
 });

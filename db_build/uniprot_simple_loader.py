@@ -6,15 +6,28 @@ import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import execute_values
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 # --- Configuration ---
 load_dotenv()  # Load variables from .env file
 
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
+# Select DATABASE_URL based on NODE_ENV
+NODE_ENV = os.getenv("NODE_ENV", "development")
+if NODE_ENV == "production":
+    DATABASE_URL = os.getenv("DATABASE_URL_PROD")
+else:
+    DATABASE_URL = os.getenv("DATABASE_URL_DEV")
+
+# Parse the DATABASE_URL
+if DATABASE_URL:
+    parsed = urlparse(DATABASE_URL)
+    DB_HOST = parsed.hostname
+    DB_PORT = parsed.port or 5432
+    DB_USER = parsed.username
+    DB_PASSWORD = parsed.password
+    DB_NAME = parsed.path[1:]  # Remove leading '/'
+else:
+    DB_HOST = DB_PORT = DB_USER = DB_PASSWORD = DB_NAME = None
 
 INPUT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "uniprotkb_taxonomy_id_9606_OR_taxonomy_2025_07_18.tsv")
 BATCH_SIZE = 1000  # Insert rows in batches for better performance
@@ -24,10 +37,13 @@ PROTEINS_TABLE = "uniprot_proteins"
 IDENTIFIERS_TABLE = "uniprot_identifiers"
 
 # --- Check Environment Variables ---
-if not all([DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME]):
-    print("Error: Database configuration is missing in the .env file.")
-    print("Please ensure DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME are set.")
+if not DATABASE_URL:
+    print(f"Error: DATABASE_URL{'_PROD' if NODE_ENV == 'production' else '_DEV'} is not set in .env file.")
+    print(f"Current NODE_ENV: {NODE_ENV}")
     sys.exit(1)
+
+print(f"Environment: {NODE_ENV}")
+print(f"Connecting to: {DB_HOST}:{DB_PORT}/{DB_NAME} as {DB_USER}")
 
 # --- Database Operations ---
 

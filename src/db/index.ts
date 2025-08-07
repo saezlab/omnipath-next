@@ -2,16 +2,18 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import * as schema from '@/db/drizzle/schema';
 import postgres from 'postgres';
 
-// Create a PostgreSQL client with Docker-aware configuration
-const isDockerized = process.env.DOCKERIZED === 'true';
+// Select DATABASE_URL based on NODE_ENV
+const nodeEnv = process.env.NODE_ENV || 'development';
+const databaseUrl = nodeEnv === 'production' 
+  ? process.env.DATABASE_URL_PROD 
+  : process.env.DATABASE_URL_DEV;
 
-const client = postgres({
-  host: isDockerized ? 'omnipath-next-postgres' : (process.env.DB_HOST || 'localhost'),
-  port: parseInt(process.env.DB_PORT || '5432'),
-  user: isDockerized ? (process.env.POSTGRES_USER || 'postgres') : (process.env.DB_USER || 'omnipathuser'),
-  password: isDockerized ? (process.env.POSTGRES_PASSWORD || 'postgres') : (process.env.DB_PASSWORD || 'omnipath123'),
-  database: 'omnipath', // Always use 'omnipath' database name
-});
+if (!databaseUrl) {
+  throw new Error(`DATABASE_URL_${nodeEnv === 'production' ? 'PROD' : 'DEV'} is not set`);
+}
+
+// Create a PostgreSQL client using the database URL
+const client = postgres(databaseUrl);
 
 // Create a Drizzle ORM instance
 export const db = drizzle(client, { schema });

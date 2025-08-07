@@ -11,15 +11,20 @@ config();
 async function generateDatabaseStats() {
   console.log('Generating database statistics...');
 
-  // Create database connection
-  const client = postgres({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    user: process.env.DB_USER || 'omnipath',
-    password: process.env.DB_PASSWORD || 'omnipath123',
-    database: process.env.DB_NAME || 'omnipath',
-  });
+  // Select DATABASE_URL based on NODE_ENV
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  const databaseUrl = nodeEnv === 'production' 
+    ? process.env.DATABASE_URL_PROD 
+    : process.env.DATABASE_URL_DEV;
+  
+  if (!databaseUrl) {
+    console.error(`Error: DATABASE_URL_${nodeEnv === 'production' ? 'PROD' : 'DEV'} is not set`);
+    console.error(`Current NODE_ENV: ${nodeEnv}`);
+    process.exit(1);
+  }
 
+  console.log(`Environment: ${nodeEnv}`);
+  const client = postgres(databaseUrl);
   const db = drizzle(client);
 
   try {
