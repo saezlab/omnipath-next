@@ -20,16 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, ChevronUp, ChevronDown, Filter } from "lucide-react";
+import { Search, ChevronUp, ChevronDown } from "lucide-react";
 import {
   getAllResources,
   getResourceStats,
-  maintenanceColors,
-  licenseColors,
   type ResourceData,
 } from "@/utils/resources-table-data";
 
-type SortField = "name" | "category" | "subcategory" | "recordCount" | "license" | "maintenance";
+type SortField = "name" | "categories" | "recordCount" | "license" | "maintenance";
 type SortDirection = "asc" | "desc";
 
 export function ResourcesTable() {
@@ -48,12 +46,12 @@ export function ResourcesTable() {
       const matchesSearch =
         searchTerm === "" ||
         resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.originalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        resource.subcategory.toLowerCase().includes(searchTerm.toLowerCase());
+        resource.originalNames.some(name => name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        resource.categories.some(cat => cat.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        resource.subcategories.some(sub => sub.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchesCategory =
-        categoryFilter === "all" || resource.category === categoryFilter;
+        categoryFilter === "all" || resource.categories.includes(categoryFilter);
 
       const matchesLicense =
         licenseFilter === "all" || resource.license === licenseFilter;
@@ -65,12 +63,18 @@ export function ResourcesTable() {
     });
 
     filtered.sort((a, b) => {
-      let aValue: any = a[sortField];
-      let bValue: any = b[sortField];
+      let aValue: any;
+      let bValue: any;
 
-      if (sortField === "recordCount") {
-        aValue = Number(aValue);
-        bValue = Number(bValue);
+      if (sortField === "categories") {
+        aValue = a.categories.join(", ");
+        bValue = b.categories.join(", ");
+      } else if (sortField === "recordCount") {
+        aValue = Number(a.recordCount);
+        bValue = Number(b.recordCount);
+      } else {
+        aValue = a[sortField];
+        bValue = b[sortField];
       }
 
       if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
@@ -126,26 +130,28 @@ export function ResourcesTable() {
   };
 
   const getLicenseBadge = (license: ResourceData["license"]) => {
+    if (license === "unknown") {
+      return <span className="text-muted-foreground">—</span>;
+    }
+
     const colors = {
       academic_nonprofit: "bg-blue-100 text-blue-800 border-blue-200",
       commercial: "bg-green-100 text-green-800 border-green-200",
-      unknown: "bg-gray-100 text-gray-800 border-gray-200",
     };
 
     const labels = {
       academic_nonprofit: "Academic/Non-profit",
       commercial: "Commercial",
-      unknown: "Unknown",
     };
 
     return (
-      <Badge variant="outline" className={colors[license]}>
-        {labels[license]}
+      <Badge variant="outline" className={colors[license as keyof typeof colors]}>
+        {labels[license as keyof typeof labels]}
       </Badge>
     );
   };
 
-  const getCategoryBadge = (category: string) => {
+  const getCategoryBadges = (categories: string[]) => {
     const colors: Record<string, string> = {
       Interactions: "bg-blue-100 text-blue-800 border-blue-200",
       Annotations: "bg-orange-100 text-orange-800 border-orange-200",
@@ -154,11 +160,11 @@ export function ResourcesTable() {
       Intercellular: "bg-purple-100 text-purple-800 border-purple-200",
     };
 
-    return (
-      <Badge variant="outline" className={colors[category] || "bg-gray-100 text-gray-800 border-gray-200"}>
+    return categories.map((category, idx) => (
+      <Badge key={idx} variant="outline" className={colors[category] || "bg-gray-100 text-gray-800 border-gray-200"}>
         {category}
       </Badge>
-    );
+    ));
   };
 
   return (
@@ -247,23 +253,11 @@ export function ResourcesTable() {
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
-                      onClick={() => handleSort("category")}
+                      onClick={() => handleSort("categories")}
                     >
                       <div className="flex items-center gap-1">
-                        Category
-                        <SortIcon field="category" />
-                      </div>
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button
-                      variant="ghost"
-                      className="h-auto p-0 font-medium hover:bg-transparent"
-                      onClick={() => handleSort("subcategory")}
-                    >
-                      <div className="flex items-center gap-1">
-                        Subcategory
-                        <SortIcon field="subcategory" />
+                        Categories
+                        <SortIcon field="categories" />
                       </div>
                     </Button>
                   </TableHead>
@@ -307,20 +301,19 @@ export function ResourcesTable() {
               </TableHeader>
               <TableBody>
                 {filteredAndSortedResources.map((resource, index) => (
-                  <TableRow key={`${resource.name}-${resource.category}-${index}`}>
+                  <TableRow key={`${resource.name}-${index}`}>
                     <TableCell className="font-medium">
                       {resource.name}
-                      {resource.originalName !== resource.name && (
-                        <span className="text-xs text-muted-foreground ml-2">
-                          ({resource.originalName})
+                      {resource.originalNames.length > 1 && (
+                        <span className="text-xs text-muted-foreground ml-2" title={resource.originalNames.join(", ")}>
+                          ({resource.originalNames.length} variants)
                         </span>
                       )}
                     </TableCell>
-                    <TableCell>{getCategoryBadge(resource.category)}</TableCell>
                     <TableCell>
-                      {resource.subcategory || (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                      <div className="flex flex-wrap gap-1">
+                        {getCategoryBadges(resource.categories)}
+                      </div>
                     </TableCell>
                     <TableCell>{getLicenseBadge(resource.license)}</TableCell>
                     <TableCell>{getMaintenanceBadge(resource.maintenance)}</TableCell>

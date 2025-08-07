@@ -5,10 +5,11 @@ import { cleanSourceName } from "@/utils/database-treemap-data";
 
 export interface ResourceData {
   name: string;
-  originalName: string;
-  category: string;
-  subcategory: string;
+  originalNames: string[];
+  categories: string[];
+  subcategories: string[];
   recordCount: number;
+  recordsByCategory: Record<string, number>;
   license: "academic_nonprofit" | "commercial" | "unknown";
   maintenance: "frequent" | "infrequent" | "one_time_paper" | "discontinued" | "unknown";
 }
@@ -77,100 +78,143 @@ function getInteractionType(type: string): string {
 }
 
 export function getAllResources(): ResourceData[] {
-  const resourcesMap = new Map<string, ResourceData>();
+  const resourcesMap = new Map<string, {
+    originalNames: Set<string>;
+    categories: Set<string>;
+    subcategories: Set<string>;
+    recordsByCategory: Record<string, number>;
+    totalRecords: number;
+  }>();
   
   // Process interactions by type
   dbStats.interactionsSourceType.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
-    const key = `${cleanedName}_interactions_${item.type}`;
     
-    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
-      resourcesMap.set(key, {
-        name: cleanedName,
-        originalName: item.source,
-        category: "Interactions",
-        subcategory: getInteractionType(item.type),
-        recordCount: item.record_count,
-        license: getLicenseType(cleanedName),
-        maintenance: getMaintenanceStatus(cleanedName)
+    if (!resourcesMap.has(cleanedName)) {
+      resourcesMap.set(cleanedName, {
+        originalNames: new Set(),
+        categories: new Set(),
+        subcategories: new Set(),
+        recordsByCategory: {},
+        totalRecords: 0
       });
     }
+    
+    const resource = resourcesMap.get(cleanedName)!;
+    resource.originalNames.add(item.source);
+    resource.categories.add("Interactions");
+    const subcategory = getInteractionType(item.type);
+    if (subcategory !== "Other") {
+      resource.subcategories.add(subcategory);
+    }
+    resource.recordsByCategory["Interactions"] = (resource.recordsByCategory["Interactions"] || 0) + item.record_count;
+    resource.totalRecords += item.record_count;
   });
   
   // Process annotations
   dbStats.annotations.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
-    const subcategory = sourceToAnnotationCategory.get(item.source.toLowerCase()) || "Other";
-    const key = `${cleanedName}_annotations`;
     
-    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
-      resourcesMap.set(key, {
-        name: cleanedName,
-        originalName: item.source,
-        category: "Annotations",
-        subcategory: subcategory,
-        recordCount: item.record_count,
-        license: getLicenseType(cleanedName),
-        maintenance: getMaintenanceStatus(cleanedName)
+    if (!resourcesMap.has(cleanedName)) {
+      resourcesMap.set(cleanedName, {
+        originalNames: new Set(),
+        categories: new Set(),
+        subcategories: new Set(),
+        recordsByCategory: {},
+        totalRecords: 0
       });
     }
+    
+    const resource = resourcesMap.get(cleanedName)!;
+    resource.originalNames.add(item.source);
+    resource.categories.add("Annotations");
+    const subcategory = sourceToAnnotationCategory.get(item.source.toLowerCase()) || "Other";
+    if (subcategory !== "Other") {
+      resource.subcategories.add(subcategory);
+    }
+    resource.recordsByCategory["Annotations"] = (resource.recordsByCategory["Annotations"] || 0) + item.record_count;
+    resource.totalRecords += item.record_count;
   });
   
   // Process enzyme-substrate
   dbStats.enz_sub.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
-    const key = `${cleanedName}_enzsub`;
     
-    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
-      resourcesMap.set(key, {
-        name: cleanedName,
-        originalName: item.source,
-        category: "Enzyme-Substrate",
-        subcategory: "",
-        recordCount: item.record_count,
-        license: getLicenseType(cleanedName),
-        maintenance: getMaintenanceStatus(cleanedName)
+    if (!resourcesMap.has(cleanedName)) {
+      resourcesMap.set(cleanedName, {
+        originalNames: new Set(),
+        categories: new Set(),
+        subcategories: new Set(),
+        recordsByCategory: {},
+        totalRecords: 0
       });
     }
+    
+    const resource = resourcesMap.get(cleanedName)!;
+    resource.originalNames.add(item.source);
+    resource.categories.add("Enzyme-Substrate");
+    resource.recordsByCategory["Enzyme-Substrate"] = (resource.recordsByCategory["Enzyme-Substrate"] || 0) + item.record_count;
+    resource.totalRecords += item.record_count;
   });
   
   // Process complexes
   dbStats.complexes.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
-    const key = `${cleanedName}_complexes`;
     
-    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
-      resourcesMap.set(key, {
-        name: cleanedName,
-        originalName: item.source,
-        category: "Complexes",
-        subcategory: "",
-        recordCount: item.record_count,
-        license: getLicenseType(cleanedName),
-        maintenance: getMaintenanceStatus(cleanedName)
+    if (!resourcesMap.has(cleanedName)) {
+      resourcesMap.set(cleanedName, {
+        originalNames: new Set(),
+        categories: new Set(),
+        subcategories: new Set(),
+        recordsByCategory: {},
+        totalRecords: 0
       });
     }
+    
+    const resource = resourcesMap.get(cleanedName)!;
+    resource.originalNames.add(item.source);
+    resource.categories.add("Complexes");
+    resource.recordsByCategory["Complexes"] = (resource.recordsByCategory["Complexes"] || 0) + item.record_count;
+    resource.totalRecords += item.record_count;
   });
   
   // Process intercellular
   dbStats.intercell.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
-    const key = `${cleanedName}_intercell`;
     
-    if (!resourcesMap.has(key) || item.record_count > (resourcesMap.get(key)?.recordCount || 0)) {
-      resourcesMap.set(key, {
-        name: cleanedName,
-        originalName: item.source,
-        category: "Intercellular",
-        subcategory: "",
-        recordCount: item.record_count,
-        license: getLicenseType(cleanedName),
-        maintenance: getMaintenanceStatus(cleanedName)
+    if (!resourcesMap.has(cleanedName)) {
+      resourcesMap.set(cleanedName, {
+        originalNames: new Set(),
+        categories: new Set(),
+        subcategories: new Set(),
+        recordsByCategory: {},
+        totalRecords: 0
       });
     }
+    
+    const resource = resourcesMap.get(cleanedName)!;
+    resource.originalNames.add(item.source);
+    resource.categories.add("Intercellular");
+    resource.recordsByCategory["Intercellular"] = (resource.recordsByCategory["Intercellular"] || 0) + item.record_count;
+    resource.totalRecords += item.record_count;
   });
   
-  return Array.from(resourcesMap.values());
+  // Convert to final format
+  const results: ResourceData[] = [];
+  resourcesMap.forEach((data, name) => {
+    results.push({
+      name,
+      originalNames: Array.from(data.originalNames),
+      categories: Array.from(data.categories).sort(),
+      subcategories: Array.from(data.subcategories).sort(),
+      recordCount: data.totalRecords,
+      recordsByCategory: data.recordsByCategory,
+      license: getLicenseType(name),
+      maintenance: getMaintenanceStatus(name)
+    });
+  });
+  
+  return results.sort((a, b) => b.recordCount - a.recordCount);
 }
 
 export function getResourceStats() {
@@ -185,8 +229,10 @@ export function getResourceStats() {
   };
   
   resources.forEach(resource => {
-    // Count by category
-    stats.byCategory[resource.category] = (stats.byCategory[resource.category] || 0) + 1;
+    // Count by categories (a resource can be in multiple categories)
+    resource.categories.forEach(category => {
+      stats.byCategory[category] = (stats.byCategory[category] || 0) + 1;
+    });
     
     // Count by license
     stats.byLicense[resource.license] = (stats.byLicense[resource.license] || 0) + 1;
