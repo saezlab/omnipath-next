@@ -16,6 +16,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Set build-time environment variables
+# These are needed because Next.js evaluates some code during build
+ARG DATABASE_URL_PROD
+ARG DATABASE_URL_DEV
+ENV NODE_ENV=production
+ENV DATABASE_URL_PROD=${DATABASE_URL_PROD}
+ENV DATABASE_URL_DEV=${DATABASE_URL_DEV}
+
 # Build the application
 RUN corepack enable pnpm && pnpm build
 

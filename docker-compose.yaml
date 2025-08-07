@@ -22,13 +22,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Pass database URLs for build time (from .env file)
+        DATABASE_URL_PROD: ${DATABASE_URL_PROD}
+        DATABASE_URL_DEV: ${DATABASE_URL_DEV}
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      # Production Database URL (using Docker service name)
-      DATABASE_URL_PROD: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@omnipath-next-postgres:5432/omnipath
-      # Development Database URL (not used in Docker, but included for consistency)
-      DATABASE_URL_DEV: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/omnipath
+      # Database URLs from .env file
+      DATABASE_URL_PROD: ${DATABASE_URL_PROD}
+      DATABASE_URL_DEV: ${DATABASE_URL_DEV}
       # API Keys for runtime
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GROQ_API_KEY: ${GROQ_API_KEY}
