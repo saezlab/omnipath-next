@@ -77,8 +77,10 @@ export function HomePage() {
               Visualize the combined data from multiple databases to see how they interconnect and overlap.
             </p>
           </div>
-          <div className="flex justify-center overflow-x-auto">
-            <CombinedDatabaseVisualization />
+          <div className="w-full overflow-x-auto">
+            <div className="min-w-[1250px] flex justify-center">
+              <CombinedDatabaseVisualization />
+            </div>
           </div>
         </section>
 

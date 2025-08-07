@@ -134,7 +134,7 @@ function deduplicateSources(sources: Array<{ source: string; record_count: numbe
 }
 
 export default function CombinedDatabaseVisualization({
-  width = 1450,
+  width = 1250,
   height = 1400,
 }: CombinedVisualizationProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -200,7 +200,7 @@ export default function CombinedDatabaseVisualization({
       dimensions: {
         width,
         height,
-        margin: { top: 60, right: 140, bottom: 40, left: 210 },
+        margin: { top: 60, right: 40, bottom: 40, left: 210 },
         gridGap: 0,
         minRowHeight: 30,
         maxRowHeight: 120,
@@ -214,11 +214,11 @@ export default function CombinedDatabaseVisualization({
       charts: {
         height: 400,  // Height for charts section
         yPosition: 950,  // Y position for charts with some spacing from grid
-        chartWidth: 230,  // Increased to better use available space
+        chartWidth: 200,  // Adjusted for better fit
         chartHeight: 280,
         legendWidth: 140,
-        gap: 5,  // Increased gap for better spacing
-        margin: { top: 30, right: 140, bottom: 60, left: 210 }  // Match grid left margin
+        gap: 5,  // Gap for better spacing
+        margin: { top: 30, right: 40, bottom: 60, left: 210 }  // Match grid left margin
       },
       colors: {
         database: databaseColors,
