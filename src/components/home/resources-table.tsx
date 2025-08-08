@@ -340,11 +340,11 @@ export function ResourcesTable() {
           </div>
 
           {/* Table */}
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>
+                  <TableHead className="w-[30%]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -356,7 +356,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[25%]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -368,7 +368,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[20%]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -380,7 +380,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[15%]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -392,7 +392,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead className="text-right">
+                  <TableHead className="w-[10%] text-right">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent ml-auto"
@@ -448,7 +448,7 @@ export function ResourcesTable() {
                       {isExpanded && hasDetails && (
                         <TableRow>
                           <TableCell colSpan={5} className="bg-gray-50 border-t-0 p-0">
-                            <div className="px-6 py-4 space-y-4 max-w-none">
+                            <div className="px-6 py-4 space-y-4 overflow-hidden">
                               {resource.recommend && (
                                 <div className="max-w-full">
                                   <h4 className="font-medium text-sm text-gray-700 mb-2">Recommendation</h4>
