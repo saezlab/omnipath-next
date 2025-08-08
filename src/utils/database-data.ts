@@ -35,66 +35,74 @@ export interface ResourceData {
 // COLOR SCHEMES
 // ============================================================================
 
-export const databaseColors = {
-  Interactions: "#176fc1",      // Havelock blue
-  "Enzyme-Substrate": "#d22027", // Tomato
-  Complexes: "#4cbd38",          // Forest green
-  Annotations: "#f89d0e",        // Orange
-  Intercellular: "#5b205f"       // Seance
+export const colorSchemes = {
+  default: {
+    databases: {
+      Interactions: "#176fc1",      // Havelock blue
+      "Enzyme-Substrate": "#d22027", // Tomato
+      Complexes: "#4cbd38",          // Forest green
+      Annotations: "#f89d0e",        // Orange
+      Intercellular: "#5b205f"       // Seance
+    },
+    interactionTypes: {
+      "transcriptional": "#176fc1",      // Havelock blue
+      "post_translational": "#00acc1",   // Cyan
+      "mirna_transcriptional": "#5e35b1", // Deep purple
+      "post_transcriptional": "#1e88e5",  // Bright blue
+      "small_molecule_protein": "#00897b" // Teal
+    },
+    annotationCategories: {
+      "Cell-cell communication": "#f89d0e",    // Orange
+      "Localization (subcellular)": "#ef5350", // Red
+      "Membrane localization & topology": "#ab47bc", // Purple
+      "Extracellular matrix, adhesion": "#42a5f5",   // Light blue
+      "Vesicles, secretome": "#66bb6a",       // Green
+      "Function, pathway": "#ffa726",         // Amber
+      "Signatures": "#8d6e63",               // Brown
+      "Disease, cancer": "#ec407a",          // Pink
+      "Protein classes & families": "#5c6bc0", // Indigo
+      "Cell type, tissue": "#26a69a",        // Teal
+      "Transcription factors": "#d4e157"     // Lime
+    }
+  },
+  alternative: {
+    databases: {
+      Interactions: "#2563eb",      // Bright blue
+      "Enzyme-Substrate": "#dc2626", // Red
+      Complexes: "#16a34a",          // Green
+      Annotations: "#ea580c",        // Orange
+      Intercellular: "#7c3aed"       // Purple
+    },
+    interactionTypes: {
+      "transcriptional": "#1e40af",
+      "post_translational": "#2563eb",
+      "mirna_transcriptional": "#3b82f6",
+      "post_transcriptional": "#60a5fa",
+      "small_molecule_protein": "#93bbfc"
+    },
+    annotationCategories: {
+      "Cell-cell communication": "#dc2626",
+      "Localization (subcellular)": "#ef4444",
+      "Membrane localization & topology": "#f97316",
+      "Extracellular matrix, adhesion": "#fb923c",
+      "Vesicles, secretome": "#fbbf24",
+      "Function, pathway": "#84cc16",
+      "Signatures": "#22c55e",
+      "Disease, cancer": "#06b6d4",
+      "Protein classes & families": "#3b82f6",
+      "Cell type, tissue": "#8b5cf6",
+      "Transcription factors": "#ec4899"
+    }
+  }
 };
 
-export const interactionTypeColors = {
-  "transcriptional": "#176fc1",      // Havelock blue
-  "post_translational": "#00acc1",   // Cyan
-  "mirna_transcriptional": "#5e35b1", // Deep purple
-  "post_transcriptional": "#1e88e5",  // Bright blue
-  "small_molecule_protein": "#00897b" // Teal
-};
-
-export const annotationCategoryColors = {
-  "Cell-cell communication": "#f89d0e",    // Orange
-  "Localization (subcellular)": "#ef5350", // Red
-  "Membrane localization & topology": "#ab47bc", // Purple
-  "Extracellular matrix, adhesion": "#42a5f5",   // Light blue
-  "Vesicles, secretome": "#66bb6a",       // Green
-  "Function, pathway": "#ffa726",         // Amber
-  "Signatures": "#8d6e63",               // Brown
-  "Disease, cancer": "#ec407a",          // Pink
-  "Protein classes & families": "#5c6bc0", // Indigo
-  "Cell type, tissue": "#26a69a",        // Teal
-  "Transcription factors": "#d4e157"     // Lime
-};
-
-// Alternative color schemes for the alternative visualization
-export const databaseColorsAlt = {
-  Interactions: "#2563eb",      // Bright blue
-  "Enzyme-Substrate": "#dc2626", // Red
-  Complexes: "#16a34a",          // Green
-  Annotations: "#ea580c",        // Orange
-  Intercellular: "#7c3aed"       // Purple
-};
-
-export const interactionTypeColorsAlt = {
-  "transcriptional": "#1e40af",
-  "post_translational": "#2563eb",
-  "mirna_transcriptional": "#3b82f6",
-  "post_transcriptional": "#60a5fa",
-  "small_molecule_protein": "#93bbfc"
-};
-
-export const annotationCategoryColorsAlt = {
-  "Cell-cell communication": "#dc2626",
-  "Localization (subcellular)": "#ef4444",
-  "Membrane localization & topology": "#f97316",
-  "Extracellular matrix, adhesion": "#fb923c",
-  "Vesicles, secretome": "#fbbf24",
-  "Function, pathway": "#84cc16",
-  "Signatures": "#22c55e",
-  "Disease, cancer": "#06b6d4",
-  "Protein classes & families": "#3b82f6",
-  "Cell type, tissue": "#8b5cf6",
-  "Transcription factors": "#ec4899"
-};
+// Backward compatibility exports
+export const databaseColors = colorSchemes.default.databases;
+export const interactionTypeColors = colorSchemes.default.interactionTypes;
+export const annotationCategoryColors = colorSchemes.default.annotationCategories;
+export const databaseColorsAlt = colorSchemes.alternative.databases;
+export const interactionTypeColorsAlt = colorSchemes.alternative.interactionTypes;
+export const annotationCategoryColorsAlt = colorSchemes.alternative.annotationCategories;
 
 // ============================================================================
 // ANNOTATION SOURCE GROUPS
@@ -165,47 +173,26 @@ function createLicenseMaintenanceMaps() {
   return { sourceMaintenanceMap, sourceLicenseMap };
 }
 
-// Deduplicate sources by cleaned name (treemap specific logic)
-function deduplicateSources(sources: any[]): any[] {
-  const deduplicatedMap = new Map<string, any>();
-  sources.forEach(item => {
-    const cleanedName = cleanSourceName(item.source);
-    const existing = deduplicatedMap.get(cleanedName);
-    
-    if (!existing) {
-      // First occurrence of this cleaned name
-      deduplicatedMap.set(cleanedName, item);
-    } else {
-      // Check if current item is the original (matches cleaned name exactly)
-      const isCurrentOriginal = item.source === cleanedName;
-      const isExistingOriginal = existing.source === cleanedName;
-      
-      if (isCurrentOriginal && !isExistingOriginal) {
-        // Current is original, existing is secondary - replace
-        deduplicatedMap.set(cleanedName, item);
-      } else if (!isCurrentOriginal && !isExistingOriginal) {
-        // Both are secondary sources - keep the one with higher record count
-        if (item.record_count > existing.record_count) {
-          deduplicatedMap.set(cleanedName, item);
-        }
-      }
-      // If existing is original, keep it regardless of record count
-    }
-  });
-  return Array.from(deduplicatedMap.values());
-}
-
-// Deduplicate sources for table (aggregates record counts)
-function deduplicateSourcesForTable(sources: Array<{ source: string; record_count: number }>): Array<{ source: string; record_count: number }> {
-  // Resources to exclude from plots (composite databases or no licenses)
-  const excludedResources = new Set(['CPAD', 'CollecTRI', 'DoRothEA', 'cellsignal.com']);
+// Simplified deduplication function - always uses highest count logic
+function deduplicateSources(
+  sources: Array<{ source: string; record_count: number }>, 
+  options: {
+    excludeResources?: Set<string>;
+    preserveOriginalItem?: boolean;
+  } = {}
+): any[] {
+  const { 
+    excludeResources = new Set(),
+    preserveOriginalItem = false 
+  } = options;
   
-  const deduplicatedMap = new Map<string, { source: string; record_count: number }>();
+  const deduplicatedMap = new Map<string, any>();
+  
   sources.forEach(item => {
     const cleanedName = cleanSourceName(item.source);
     
     // Skip excluded resources
-    if (excludedResources.has(cleanedName)) {
+    if (excludeResources.has(cleanedName)) {
       return;
     }
     
@@ -213,25 +200,22 @@ function deduplicateSourcesForTable(sources: Array<{ source: string; record_coun
     
     if (!existing) {
       // First occurrence of this cleaned name
-      deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
+      const newItem = preserveOriginalItem ? item : { source: cleanedName, record_count: item.record_count };
+      deduplicatedMap.set(cleanedName, newItem);
     } else {
-      // Check if current item is the original (matches cleaned name exactly)
+      // Always keep the one with higher record count
+      // If counts are equal, prefer the original name (matches cleaned name exactly)
       const isCurrentOriginal = item.source === cleanedName;
       const isExistingOriginal = existing.source === cleanedName;
       
-      if (isCurrentOriginal && !isExistingOriginal) {
-        // Current is original, existing is secondary - replace
-        deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
-      } else if (!isCurrentOriginal && !isExistingOriginal) {
-        // Both are secondary sources - keep the one with higher record count, but aggregate
-        existing.record_count += item.record_count;
-      } else if (!isCurrentOriginal && isExistingOriginal) {
-        // Existing is original, add current record count to it
-        existing.record_count += item.record_count;
+      if (item.record_count > existing.record_count || 
+          (item.record_count === existing.record_count && isCurrentOriginal && !isExistingOriginal)) {
+        const newItem = preserveOriginalItem ? item : { source: cleanedName, record_count: item.record_count };
+        deduplicatedMap.set(cleanedName, newItem);
       }
-      // If existing is original, keep it and add record count
     }
   });
+  
   return Array.from(deduplicatedMap.values());
 }
 
@@ -261,7 +245,7 @@ export function processInteractionTypes(): VoronoiNode[] {
   for (const type of targetTypes) {
     const sources = typeGroups.get(type) || [];
     if (sources.length > 0) {
-      const deduplicatedSources = deduplicateSources(sources);
+      const deduplicatedSources = deduplicateSources(sources, { preserveOriginalItem: true });
       const sortedSources = deduplicatedSources.sort((a, b) => b.record_count - a.record_count);
       
       interactionSubsections.push({
@@ -300,7 +284,7 @@ export function processAnnotationsByCategory(): VoronoiNode[] {
   
   for (const [category, sources] of categoryGroups.entries()) {
     if (sources.length > 0 && category !== "Other") {
-      const deduplicatedSources = deduplicateSources(sources);
+      const deduplicatedSources = deduplicateSources(sources, { preserveOriginalItem: true });
       const sortedSources = deduplicatedSources.sort((a, b) => b.record_count - a.record_count);
       
       annotationSubsections.push({
@@ -327,7 +311,7 @@ export function processAnnotationsByCategory(): VoronoiNode[] {
 
 // Process enzyme-substrate data with deduplication
 export function processEnzymeSubstrate(): VoronoiNode[] {
-  const deduplicatedSources = deduplicateSources(dbStats.enz_sub);
+  const deduplicatedSources = deduplicateSources(dbStats.enz_sub, { preserveOriginalItem: true });
   return deduplicatedSources.map(d => {
     const cleanedName = cleanSourceName(d.source);
     return {
@@ -341,7 +325,7 @@ export function processEnzymeSubstrate(): VoronoiNode[] {
 
 // Process complexes data with deduplication
 export function processComplexes(): VoronoiNode[] {
-  const deduplicatedSources = deduplicateSources(dbStats.complexes);
+  const deduplicatedSources = deduplicateSources(dbStats.complexes, { preserveOriginalItem: true });
   return deduplicatedSources.map(d => {
     const cleanedName = cleanSourceName(d.source);
     return {
@@ -355,7 +339,7 @@ export function processComplexes(): VoronoiNode[] {
 
 // Process intercellular data with deduplication
 export function processIntercellular(): VoronoiNode[] {
-  const deduplicatedSources = deduplicateSources(dbStats.intercell);
+  const deduplicatedSources = deduplicateSources(dbStats.intercell, { preserveOriginalItem: true });
   return deduplicatedSources.map(d => {
     const cleanedName = cleanSourceName(d.source);
     return {
@@ -433,26 +417,27 @@ export function getAllDatabaseData() {
 // Get all database data with alternative colors
 export function getAllDatabaseDataAlt() {
   const data = getAllDatabaseData();
+  const altScheme = colorSchemes.alternative;
   
   // Apply alternative colors
-  data.interactions.color = databaseColorsAlt.Interactions;
-  data.enzymeSubstrate.color = databaseColorsAlt["Enzyme-Substrate"];
-  data.complexes.color = databaseColorsAlt.Complexes;
-  data.annotations.color = databaseColorsAlt.Annotations;
-  data.intercellular.color = databaseColorsAlt.Intercellular;
+  data.interactions.color = altScheme.databases.Interactions;
+  data.enzymeSubstrate.color = altScheme.databases["Enzyme-Substrate"];
+  data.complexes.color = altScheme.databases.Complexes;
+  data.annotations.color = altScheme.databases.Annotations;
+  data.intercellular.color = altScheme.databases.Intercellular;
   
   // Apply alternative interaction type colors
   data.interactions.children.forEach(child => {
     const type = child.name.toLowerCase().replace(/ /g, '_').replace('mirna_transcriptional', 'mirna_transcriptional');
-    if (type in interactionTypeColorsAlt) {
-      child.color = interactionTypeColorsAlt[type as keyof typeof interactionTypeColorsAlt];
+    if (type in altScheme.interactionTypes) {
+      child.color = altScheme.interactionTypes[type as keyof typeof altScheme.interactionTypes];
     }
   });
   
   // Apply alternative annotation category colors
   data.annotations.children.forEach(child => {
-    if (child.name in annotationCategoryColorsAlt) {
-      child.color = annotationCategoryColorsAlt[child.name as keyof typeof annotationCategoryColorsAlt];
+    if (child.name in altScheme.annotationCategories) {
+      child.color = altScheme.annotationCategories[child.name as keyof typeof altScheme.annotationCategories];
     }
   });
   
@@ -571,7 +556,8 @@ export function getResourceStats() {
 // CHART DATA PROCESSING (for combined-database-visualization.tsx charts)
 // ============================================================================
 
-// Deduplicate sources for chart usage (same as visualization component)
+// Deduplicate sources for chart usage 
 export function deduplicateSourcesForCharts(sources: Array<{ source: string; record_count: number }>): Array<{ source: string; record_count: number }> {
-  return deduplicateSourcesForTable(sources);
+  const excludedResources = new Set(['CPAD', 'CollecTRI', 'DoRothEA', 'cellsignal.com']);
+  return deduplicateSources(sources, { excludeResources: excludedResources });
 }

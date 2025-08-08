@@ -131,7 +131,7 @@ async function generateDatabaseStats() {
 
     // NEW QUERIES FOR PLOTS
 
-    // a) Number of literature references by combined database and interaction type
+    // Literature references by database and interaction type
     console.log('Querying literature references by database and interaction type...');
     const literatureRefsByDatabaseAndType = await db.execute(sql`
       WITH all_refs AS (
@@ -175,84 +175,6 @@ async function generateDatabaseStats() {
       ORDER BY source, interaction_type
     `);
     console.log(`✓ Literature references by database and type: ${literatureRefsByDatabaseAndType.length} combinations`);
-
-    // b) Number of unique references by database and interaction types
-    console.log('Querying unique references by database and interaction type...');
-    const uniqueRefsByDatabaseAndType = await db.execute(sql`
-      WITH all_refs AS (
-        -- Interactions table - extract source from reference format "SOURCE:ID"
-        SELECT 
-          split_part(unnest(string_to_array("references", ';')), ':', 1) AS source,
-          type AS interaction_type,
-          split_part(unnest(string_to_array("references", ';')), ':', 2) AS reference
-        FROM interactions
-        WHERE "references" IS NOT NULL AND "references" != ''
-        
-        UNION ALL
-        
-        -- Enzyme-substrate relationships - extract source from reference format "SOURCE:ID"
-        SELECT 
-          split_part(unnest(string_to_array("references", ';')), ':', 1) AS source,
-          'enzyme-substrate' AS interaction_type,
-          split_part(unnest(string_to_array("references", ';')), ':', 2) AS reference
-        FROM enz_sub
-        WHERE "references" IS NOT NULL AND "references" != ''
-        
-        UNION ALL
-        
-        -- Complexes - cartesian product of sources and plain reference IDs
-        SELECT 
-          unnest(string_to_array(sources, ';')) AS source,
-          'complex' AS interaction_type,
-          unnest(string_to_array("references", ';')) AS reference
-        FROM complexes
-        WHERE sources IS NOT NULL AND sources != '' AND sources != ''
-          AND "references" IS NOT NULL 
-          AND "references" != ''
-      )
-      SELECT 
-        source AS database,
-        interaction_type,
-        COUNT(DISTINCT reference)::int AS unique_reference_count
-      FROM all_refs
-      WHERE source != '' AND reference != ''
-      GROUP BY source, interaction_type
-      ORDER BY source, interaction_type
-    `);
-    console.log(`✓ Unique references by database and type: ${uniqueRefsByDatabaseAndType.length} combinations`);
-
-    // c) Aggregate interaction type counts (combine lncrna_post_transcriptional with post_transcriptional)
-    console.log('Querying aggregate interaction type counts...');
-    const aggregateInteractionTypes = await db.execute(sql`
-      WITH all_interactions AS (
-        SELECT 
-          CASE 
-            WHEN type = 'lncrna_post_transcriptional' THEN 'post_transcriptional'
-            ELSE type
-          END AS interaction_type
-        FROM interactions
-        WHERE type IS NOT NULL
-        
-        UNION ALL
-        
-        SELECT 'enzyme-substrate' AS interaction_type
-        FROM enz_sub
-        
-        UNION ALL
-        
-        SELECT 'complex' AS interaction_type
-        FROM complexes
-      )
-      SELECT 
-        interaction_type,
-        COUNT(*)::int AS count
-      FROM all_interactions
-      GROUP BY interaction_type
-      ORDER BY count DESC
-    `);
-    console.log(`✓ Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
-
-
 
 
 
@@ -322,8 +244,6 @@ async function generateDatabaseStats() {
       // New plot data
       plotData: {
         literatureRefsByDatabaseAndType,
-        uniqueRefsByDatabaseAndType,
-        aggregateInteractionTypes,
         resourceOverlap
       },
       
@@ -344,8 +264,6 @@ async function generateDatabaseStats() {
     console.log(`- Intercell: ${intercellStats.length} unique sources`);
     console.log('\nPlot data generated:');
     console.log(`- Literature refs by database/type: ${literatureRefsByDatabaseAndType.length} combinations`);
-    console.log(`- Unique refs by database/type: ${uniqueRefsByDatabaseAndType.length} combinations`);
-    console.log(`- Aggregate interaction types: ${aggregateInteractionTypes.length} types`);
     console.log(`- Resource overlap: ${resourceOverlap.length} combinations`);
 
   } catch (error) {
