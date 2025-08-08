@@ -152,8 +152,9 @@ export default function CombinedDatabaseVisualization({
   useEffect(() => {
     if (!svgRef.current) return;
 
-    // Clear previous visualization
-    d3.select(svgRef.current).selectAll("*").remove();
+    const renderVisualization = () => {
+      // Clear previous visualization
+      d3.select(svgRef.current).selectAll("*").remove();
 
     // Configuration
     const CONFIG = {
@@ -202,7 +203,10 @@ export default function CombinedDatabaseVisualization({
       .attr("text-anchor", "middle")
       .style("font-size", "24px")
       .style("font-weight", "700")
-      .style("fill", "#1f2937")
+      .style("fill", () => {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        return isDarkMode ? "white" : "black";
+      })
       .text("OmniPath Database Resources");
 
 
@@ -1628,20 +1632,44 @@ export default function CombinedDatabaseVisualization({
       .attr("stroke", "#d1d5db")
       .attr("stroke-width", 1.5)
       .attr("opacity", 0.7);
+    };
 
+    // Initial render
+    renderVisualization();
+
+    // Create an observer to watch for theme changes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          // Re-render visualization when theme changes
+          renderVisualization();
+        }
+      });
+    });
+
+    // Start observing the document element for class changes
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    // Cleanup observer on unmount
+    return () => {
+      observer.disconnect();
+    };
   }, [width, height]);
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-4">
+      <svg ref={svgRef} />
+      <div className="mt-4">
         <button
           onClick={downloadSVG}
-          className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          className="px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300 dark:focus:ring-gray-600 transition-colors"
         >
-          Download SVG
+          Download as SVG
         </button>
       </div>
-      <svg ref={svgRef} />
     </div>
   );
 }
