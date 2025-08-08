@@ -42,7 +42,10 @@
       "full_name": "Creative Commons Attribution 4.0 International",
       "attribution": "attrib",
       "url": "https://creativecommons.org/licenses/by/4.0/"
-    }
+    },
+    "pubmeds": [
+      22955616
+    ]
   },
   "HTRIdb": {
     "name": "HTRIdb",
@@ -119,7 +122,10 @@
       "full_name": "Constituting databases carry their own licenses",
       "attribution": "attrib",
       "url": null
-    }
+    },
+    "pubmeds": [
+      31340985
+    ]
   },
   "RegNetwork": {
     "name": "RegNetwork",
@@ -262,7 +268,10 @@
       "full_name": "Creative Commons Attribution 4.0 International",
       "attribution": "attrib",
       "url": "https://creativecommons.org/licenses/by/4.0/"
-    }
+    },
+    "pubmeds": [
+      14681372
+    ]
   },
   "CA1": {
     "name": "CA1",
@@ -299,7 +308,10 @@
       "full_name": "COSMIC License",
       "attribution": "attrib",
       "url": "https://cancer.sanger.ac.uk/cosmic/license"
-    }
+    },
+    "pubmeds": [
+      15188009
+    ]
   },
   "Dinarello2013": {
     "name": "Dinarello2013",
@@ -533,7 +545,11 @@
       "full_name": "PDB License",
       "attribution": "attrib",
       "url": "https://www.wwpdb.org/about/privacy"
-    }
+    },
+    "pubmeds": [
+      14634627,
+      18156675
+    ]
   },
   "DoRothEA-reviews": {
     "name": "DoRothEA-reviews",
@@ -574,7 +590,10 @@
       "articles": [
         "https://www.embopress.org/doi/10.1038/msb4100057"
       ]
-    }
+    },
+    "pubmeds": [
+      16738560
+    ]
   },
   "IntOGen": {
     "name": "IntOGen",
@@ -768,7 +787,10 @@
       "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
       "attribution": "attrib",
       "url": "https://creativecommons.org/licenses/by-sa/3.0/"
-    }
+    },
+    "pubmeds": [
+      21948594
+    ]
   },
   "Vesiclepedia": {
     "name": "Vesiclepedia",
@@ -914,7 +936,11 @@
       "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
       "attribution": "attrib",
       "url": "https://creativecommons.org/licenses/by-nc/4.0/"
-    }
+    },
+    "pubmeds": [
+      16381955,
+      18048412
+    ]
   },
   "NFIRegulomeDB": {
     "name": "NFIRegulomeDB",
@@ -1297,6 +1323,9 @@
     "recommend": "process description resource developed in a community effort; high proportion of specific proteins",
     "descriptions": [
       "The goal of WikiPathways is to capture knowledge about biological pathways (the elements, their interactions and layout) in a form that is both human readable and amenable to computational analysis."
+    ],
+    "pubmeds": [
+      18651794
     ]
   },
   "GO-lig-rec": {
@@ -1402,7 +1431,11 @@
       "full_name": "Creative Commons Attribution 4.0 International",
       "attribution": "attrib",
       "url": "https://creativecommons.org/licenses/by/4.0/"
-    }
+    },
+    "pubmeds": [
+      11217851,
+      12466851
+    ]
   },
   "RaMP": {
     "name": "RaMP",
@@ -1793,6 +1826,9 @@
         "livia.perfetto@live.it",
         "Livia Perfetto"
       ]
+    ],
+    "pubmeds": [
+      11911893
     ]
   },
   "Macrophage": {
@@ -2495,6 +2531,9 @@
     ],
     "descriptions": [
       "In order to expand the interaction dataset, we added relevant direct protein–protein interactions from currently available human protein–protein interaction networks (Rual et al., 2005; Stelzl et al., 2005). We also searched public databases, including BIND (Bader et al., 2003), DIP (Xenarios et al., 2002), HPRD (Peri et al., 2003), MINT (Zanzoni et al., 2002), and MIPS (Pagel et al., 2005), to identify literature-based binary interactions involving the 54 ataxia-associated baits and the 561 interacting prey proteins. We identified 4796 binary protein–protein interactions for our Y2H baits and prey proteins (Table S4) and incorporated them in the Y2H protein–protein interaction map (Figures 4A–4C)."
+    ],
+    "pubmeds": [
+      16713569
     ]
   },
   "HIPPIE": {
@@ -2643,7 +2682,10 @@
       "full_name": "Creative Commons Attribution 4.0 International",
       "attribution": "attrib",
       "url": "https://creativecommons.org/licenses/by/4.0/"
-    }
+    },
+    "pubmeds": [
+      14681366
+    ]
   },
   "SIDER": {
     "name": "SIDER",
@@ -2746,6 +2788,9 @@
     ],
     "descriptions": [
       "Composed from multiple manually curated datasets, and contains own manual cuartion effort. Methods are unclear, and the dataset has not been published in reviewed paper. Based on the Cui et al 2007. Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction Database, iHOP, and many review papers. The contents are updated every year. iHOP is not literature curated, but is a literature mining platform."
+    ],
+    "pubmeds": [
+      18091723
     ]
   },
   "Yu2011": {
@@ -3122,6 +3167,10 @@
         "kanehisa@kuicr.kyoto-u.ac.jp",
         "Minoru Kaneshia"
       ]
+    ],
+    "pubmeds": [
+      9847135,
+      10592173
     ]
   },
   "JASPAR-v2018": {
@@ -3420,6 +3469,9 @@
     ],
     "descriptions": [
       "On these resource pages you can find signaling pathway diagrams, research overviews, relevant antibody products, publications, and other research resources organized by topic. The pathway diagrams associated with these topics have been assembled by CST scientists and outside experts to provide succinct and current overviews of selected signaling pathways."
+    ],
+    "pubmeds": [
+      22135298
     ]
   },
   "CellTalkDB": {
