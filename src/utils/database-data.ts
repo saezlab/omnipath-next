@@ -155,19 +155,25 @@ function createLicenseMaintenanceMaps() {
   Object.entries(maintenanceCategories).forEach(([category, resources]) => {
     (resources as string[]).forEach(resource => {
       const cleanedResource = cleanSourceName(resource);
-      sourceMaintenanceMap[cleanedResource] = category as ResourceData["maintenance"];
+      // Store mapping for both original and cleaned names, using lowercase keys for case-insensitive lookup
+      sourceMaintenanceMap[resource.toLowerCase()] = category as ResourceData["maintenance"];
+      sourceMaintenanceMap[cleanedResource.toLowerCase()] = category as ResourceData["maintenance"];
     });
   });
 
   // Map license categories
   resourcesByLicense.academic_nonprofit.forEach(resource => {
     const cleanedResource = cleanSourceName(resource);
-    sourceLicenseMap[cleanedResource] = 'academic_nonprofit';
+    // Store mapping for both original and cleaned names, using lowercase keys for case-insensitive lookup
+    sourceLicenseMap[resource.toLowerCase()] = 'academic_nonprofit';
+    sourceLicenseMap[cleanedResource.toLowerCase()] = 'academic_nonprofit';
   });
 
   resourcesByLicense.commercial.forEach(resource => {
     const cleanedResource = cleanSourceName(resource);
-    sourceLicenseMap[cleanedResource] = 'commercial';
+    // Store mapping for both original and cleaned names, using lowercase keys for case-insensitive lookup
+    sourceLicenseMap[resource.toLowerCase()] = 'commercial';
+    sourceLicenseMap[cleanedResource.toLowerCase()] = 'commercial';
   });
 
   return { sourceMaintenanceMap, sourceLicenseMap };
@@ -483,8 +489,8 @@ export function getAllResources(): ResourceData[] {
         subcategories: subcategory ? [subcategory] : [],
         recordCount,
         recordsByCategory: { [category]: recordCount },
-        license: sourceLicenseMap[cleanedName] || "unknown",
-        maintenance: sourceMaintenanceMap[cleanedName] || "unknown"
+        license: sourceLicenseMap[cleanedName.toLowerCase()] || "unknown",
+        maintenance: sourceMaintenanceMap[cleanedName.toLowerCase()] || "unknown"
       });
     }
   };
