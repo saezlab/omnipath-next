@@ -72,12 +72,6 @@ export function HomePage() {
     
         {/* Combined Database Visualization Section */}
         <section className="mt-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Combined Database Visualization</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Visualize the combined data from multiple databases to see how they interconnect and overlap.
-            </p>
-          </div>
           <div className="w-full overflow-x-auto">
             <div className="min-w-[1250px] flex justify-center">
               <CombinedDatabaseVisualization />
@@ -87,12 +81,6 @@ export function HomePage() {
 
         {/* Resources Table Section */}
         <section className="mt-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Resources Database</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore all available resources with detailed information about categories, licenses, maintenance status, and record counts.
-            </p>
-          </div>
           <ResourcesTable />
         </section>
 
