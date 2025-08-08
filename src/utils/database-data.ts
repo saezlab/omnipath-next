@@ -4,6 +4,7 @@
 import dbStats from "@/data/db-stats.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
 import resourcesByLicense from "@/data/resources_by_license.json";
+import resourcesDetails from "@/data/resources-details.json";
 
 // ============================================================================
 // SHARED TYPES AND INTERFACES
@@ -20,6 +21,18 @@ export interface VoronoiNode {
   interactionType?: string;
 }
 
+export interface LicenseDetails {
+  name: string;
+  fullName: string;
+  attribution: string;
+  url?: string;
+}
+
+export interface ResourceUrls {
+  articles?: string[];
+  webpages?: string[];
+}
+
 export interface ResourceData {
   name: string;
   originalNames: string[];
@@ -29,6 +42,14 @@ export interface ResourceData {
   recordsByCategory: Record<string, number>;
   license: "academic_nonprofit" | "commercial" | "unknown";
   maintenance: "frequent updates" | "infrequent updates" | "no updates" | "unknown";
+  
+  // Enhanced fields from YAML data
+  licenseDetails?: LicenseDetails;
+  urls?: ResourceUrls;
+  pubmeds?: number[];
+  emails?: Array<[string, string]>; // [email, name] tuples
+  recommend?: string;
+  descriptions?: string[];
 }
 
 // ============================================================================
@@ -144,6 +165,23 @@ export function cleanSourceName(sourceName: string): string {
     }
   }
   return sourceName;
+}
+
+// Load resource details from YAML data
+function loadResourceDetails(): Map<string, any> {
+  const resourceDetailsMap = new Map<string, any>();
+  
+  // Load from consolidated JSON file
+  Object.entries(resourcesDetails).forEach(([resourceName, data]) => {
+    // Store with both original name and cleaned name for flexible lookup
+    resourceDetailsMap.set(resourceName, data);
+    const cleanedName = cleanSourceName(resourceName);
+    if (cleanedName !== resourceName) {
+      resourceDetailsMap.set(cleanedName, data);
+    }
+  });
+  
+  return resourceDetailsMap;
 }
 
 // Shared license/maintenance mapping functions
@@ -456,6 +494,7 @@ export function getAllDatabaseDataAlt() {
 
 export function getAllResources(): ResourceData[] {
   const { sourceMaintenanceMap, sourceLicenseMap } = createLicenseMaintenanceMaps();
+  const resourceDetailsMap = loadResourceDetails();
   const resourceMap = new Map<string, ResourceData>();
   
   const processResource = (
@@ -481,8 +520,11 @@ export function getAllResources(): ResourceData[] {
       existing.recordCount += recordCount;
       existing.recordsByCategory[category] = (existing.recordsByCategory[category] || 0) + recordCount;
     } else {
+      // Get resource details from YAML data
+      const details = resourceDetailsMap.get(cleanedName) || resourceDetailsMap.get(source);
+      
       // Create new resource
-      resourceMap.set(cleanedName, {
+      const newResource: ResourceData = {
         name: cleanedName,
         originalNames: [source],
         categories: [category],
@@ -491,7 +533,44 @@ export function getAllResources(): ResourceData[] {
         recordsByCategory: { [category]: recordCount },
         license: sourceLicenseMap[cleanedName.toLowerCase()] || "unknown",
         maintenance: sourceMaintenanceMap[cleanedName.toLowerCase()] || "unknown"
-      });
+      };
+      
+      // Merge YAML data if available
+      if (details) {
+        if (details.license) {
+          newResource.licenseDetails = {
+            name: details.license.name,
+            fullName: details.license.full_name,
+            attribution: details.license.attribution,
+            url: details.license.url
+          };
+        }
+        
+        if (details.urls) {
+          newResource.urls = {
+            articles: details.urls.articles,
+            webpages: details.urls.webpages
+          };
+        }
+        
+        if (details.pubmeds) {
+          newResource.pubmeds = details.pubmeds;
+        }
+        
+        if (details.emails) {
+          newResource.emails = details.emails;
+        }
+        
+        if (details.recommend) {
+          newResource.recommend = details.recommend;
+        }
+        
+        if (details.descriptions) {
+          newResource.descriptions = details.descriptions;
+        }
+      }
+      
+      resourceMap.set(cleanedName, newResource);
     }
   };
 

@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, ChevronUp, ChevronDown, Download } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, Download, ExternalLink, FileText, Globe, ChevronRight } from "lucide-react";
 import {
   getAllResources,
   getResourceStats,
@@ -37,6 +37,7 @@ export function ResourcesTable() {
   const [maintenanceFilter, setMaintenanceFilter] = useState<string>("all");
   const [sortField, setSortField] = useState<SortField>("recordCount");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const resources = useMemo(() => getAllResources(), []);
   const stats = useMemo(() => getResourceStats(), []);
@@ -48,7 +49,12 @@ export function ResourcesTable() {
         resource.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         resource.originalNames.some(name => name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         resource.categories.some(cat => cat.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        resource.subcategories.some(sub => sub.toLowerCase().includes(searchTerm.toLowerCase()));
+        resource.subcategories.some(sub => sub.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        resource.licenseDetails?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.licenseDetails?.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.recommend?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        resource.descriptions?.some(desc => desc.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        resource.emails?.some(email => email[0].toLowerCase().includes(searchTerm.toLowerCase()) || email[1].toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchesCategory =
         categoryFilter === "all" || resource.categories.includes(categoryFilter);
@@ -94,6 +100,16 @@ export function ResourcesTable() {
     }
   };
 
+  const toggleRowExpansion = (resourceName: string) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(resourceName)) {
+      newExpanded.delete(resourceName);
+    } else {
+      newExpanded.add(resourceName);
+    }
+    setExpandedRows(newExpanded);
+  };
+
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) {
       return <div className="w-4 h-4" />;
@@ -127,8 +143,12 @@ export function ResourcesTable() {
     );
   };
 
-  const getLicenseBadge = (license: ResourceData["license"]) => {
-    if (license === "unknown") {
+  const getLicenseBadge = (resource: ResourceData) => {
+    // Use detailed license info if available, otherwise fall back to category
+    const licenseDetails = resource.licenseDetails;
+    const license = resource.license;
+    
+    if (!licenseDetails && license === "unknown") {
       return <span className="text-muted-foreground">—</span>;
     }
 
@@ -137,16 +157,48 @@ export function ResourcesTable() {
       commercial: "bg-green-100 text-green-800 border-green-200",
     };
 
-    const labels = {
+    const fallbackLabels = {
       academic_nonprofit: "Academic/Non-profit",
       commercial: "Commercial",
     };
 
-    return (
-      <Badge variant="outline" className={colors[license as keyof typeof colors]}>
-        {labels[license as keyof typeof labels]}
-      </Badge>
-    );
+    if (licenseDetails) {
+      // Show detailed license info
+      const badgeContent = (
+        <div className="flex flex-col">
+          <span className="font-medium">{licenseDetails.name}</span>
+          <span className="text-xs opacity-75">{licenseDetails.fullName}</span>
+        </div>
+      );
+
+      if (licenseDetails.url) {
+        return (
+          <a
+            href={licenseDetails.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <Badge variant="outline" className={`${colors[license as keyof typeof colors] || "bg-gray-100 text-gray-800 border-gray-200"} cursor-pointer`}>
+              {badgeContent}
+            </Badge>
+          </a>
+        );
+      } else {
+        return (
+          <Badge variant="outline" className={colors[license as keyof typeof colors] || "bg-gray-100 text-gray-800 border-gray-200"}>
+            {badgeContent}
+          </Badge>
+        );
+      }
+    } else {
+      // Fall back to simple category badge
+      return (
+        <Badge variant="outline" className={colors[license as keyof typeof colors]}>
+          {fallbackLabels[license as keyof typeof fallbackLabels]}
+        </Badge>
+      );
+    }
   };
 
   const getCategoryBadges = (categories: string[]) => {
@@ -165,17 +217,121 @@ export function ResourcesTable() {
     ));
   };
 
+  const getResourceLinks = (resource: ResourceData) => {
+    const links = [];
+    
+    if (resource.urls?.articles && resource.urls.articles.length > 0) {
+      links.push(
+        ...resource.urls.articles.map((url, idx) => (
+          <a
+            key={`article-${idx}`}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 transition-colors"
+            title="Article"
+          >
+            <FileText className="w-4 h-4" />
+          </a>
+        ))
+      );
+    }
+    
+    if (resource.urls?.webpages && resource.urls.webpages.length > 0) {
+      links.push(
+        ...resource.urls.webpages.map((url, idx) => (
+          <a
+            key={`webpage-${idx}`}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-green-600 hover:text-green-800 transition-colors"
+            title="Website"
+          >
+            <Globe className="w-4 h-4" />
+          </a>
+        ))
+      );
+    }
+    
+    if (resource.pubmeds && resource.pubmeds.length > 0) {
+      links.push(
+        ...resource.pubmeds.map((pmid, idx) => (
+          <a
+            key={`pubmed-${idx}`}
+            href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-purple-600 hover:text-purple-800 transition-colors"
+            title={`PubMed: ${pmid}`}
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        ))
+      );
+    }
+    
+    if (links.length === 0) {
+      return <span className="text-muted-foreground">—</span>;
+    }
+    
+    return (
+      <div className="flex gap-2 items-center">
+        {links}
+      </div>
+    );
+  };
+
+  const getResourceName = (resource: ResourceData) => {
+    const primaryUrl = resource.urls?.webpages?.[0] || resource.urls?.articles?.[0];
+    
+    if (primaryUrl) {
+      return (
+        <div className="flex items-center gap-2">
+          <a
+            href={primaryUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+          >
+            {resource.name}
+          </a>
+          <ExternalLink className="w-3 h-3 text-gray-400" />
+        </div>
+      );
+    }
+    
+    return <span className="font-medium">{resource.name}</span>;
+  };
+
   const exportToCSV = () => {
-    const headers = ["Resource Name", "Categories", "License Type", "Maintenance", "Records"];
+    const headers = [
+      "Resource Name", 
+      "Categories", 
+      "License Name", 
+      "License Full Name", 
+      "License URL",
+      "Maintenance", 
+      "Records", 
+      "Articles", 
+      "Webpages", 
+      "PubMeds", 
+      "Contacts"
+    ];
     const rows = filteredAndSortedResources.map(resource => [
       resource.name,
       resource.categories.join("; "),
-      resource.license === "unknown" ? "" : 
-        resource.license === "academic_nonprofit" ? "Academic/Non-profit" : "Commercial",
+      resource.licenseDetails?.name || (resource.license === "academic_nonprofit" ? "Academic/Non-profit" : resource.license === "commercial" ? "Commercial" : "Unknown"),
+      resource.licenseDetails?.fullName || "",
+      resource.licenseDetails?.url || "",
       resource.maintenance === "frequent updates" ? "Frequent Updates" :
         resource.maintenance === "infrequent updates" ? "Infrequent Updates" :
         resource.maintenance === "no updates" ? "No Updates" : "Unknown",
-      resource.recordCount.toString()
+      resource.recordCount.toString(),
+      resource.urls?.articles?.join("; ") || "",
+      resource.urls?.webpages?.join("; ") || "",
+      resource.pubmeds?.join("; ") || "",
+      resource.emails?.map(email => `${email[1]} (${email[0]})`).join("; ") || ""
     ]);
 
     const csvContent = [headers, ...rows]
@@ -294,6 +450,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
+                  <TableHead>Links</TableHead>
                   <TableHead>
                     <Button
                       variant="ghost"
@@ -333,23 +490,87 @@ export function ResourcesTable() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredAndSortedResources.map((resource, index) => (
-                  <TableRow key={`${resource.name}-${index}`}>
-                    <TableCell className="font-medium">
-                      {resource.name}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {getCategoryBadges(resource.categories)}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getLicenseBadge(resource.license)}</TableCell>
-                    <TableCell>{getMaintenanceBadge(resource.maintenance)}</TableCell>
-                    <TableCell className="text-right font-mono">
-                      {resource.recordCount.toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filteredAndSortedResources.map((resource, index) => {
+                  const isExpanded = expandedRows.has(resource.name);
+                  const hasDetails = resource.descriptions || resource.recommend || resource.emails;
+                  
+                  return (
+                    <>
+                      <TableRow key={`${resource.name}-${index}`}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {hasDetails && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0"
+                                onClick={() => toggleRowExpansion(resource.name)}
+                              >
+                                <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                              </Button>
+                            )}
+                            <div className={!hasDetails ? 'ml-8' : ''}>
+                              {getResourceName(resource)}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {getCategoryBadges(resource.categories)}
+                          </div>
+                        </TableCell>
+                        <TableCell>{getResourceLinks(resource)}</TableCell>
+                        <TableCell>{getLicenseBadge(resource)}</TableCell>
+                        <TableCell>{getMaintenanceBadge(resource.maintenance)}</TableCell>
+                        <TableCell className="text-right font-mono">
+                          {resource.recordCount.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                      {isExpanded && hasDetails && (
+                        <TableRow key={`${resource.name}-expanded`}>
+                          <TableCell colSpan={6} className="bg-gray-50 border-t-0">
+                            <div className="space-y-3 py-4">
+                              {resource.recommend && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-gray-700 mb-1">Recommendation</h4>
+                                  <p className="text-sm text-gray-600">{resource.recommend}</p>
+                                </div>
+                              )}
+                              {resource.descriptions && resource.descriptions.length > 0 && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Descriptions</h4>
+                                  <div className="space-y-2">
+                                    {resource.descriptions.map((desc, idx) => (
+                                      <p key={idx} className="text-sm text-gray-600 leading-relaxed">
+                                        {desc}
+                                      </p>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {resource.emails && resource.emails.length > 0 && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Contact</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {resource.emails.map((email, idx) => (
+                                      <a
+                                        key={idx}
+                                        href={`mailto:${email[0]}`}
+                                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                      >
+                                        {email[1]} ({email[0]})
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>

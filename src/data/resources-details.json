@@ -1,0 +1,3443 @@
+{
+  "CFinder": {
+    "name": "CFinder",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Wang": {
+    "name": "Wang",
+    "license": {
+      "name": "CC BY-NC 3.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/3.0/"
+    }
+  },
+  "ProtMapper": {
+    "name": "ProtMapper",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Fantom4": {
+    "name": "Fantom4",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "ENCODE": {
+    "name": "ENCODE",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "HTRIdb": {
+    "name": "HTRIdb",
+    "license": {
+      "name": "LGPLv3",
+      "full_name": "GNU Lesser General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+    }
+  },
+  "CancerGeneCensus": {
+    "name": "CancerGeneCensus",
+    "license": {
+      "name": "COSMIC",
+      "full_name": "COSMIC License",
+      "attribution": "attrib",
+      "url": "https://cancer.sanger.ac.uk/cosmic/license"
+    }
+  },
+  "cellsignal.com": {
+    "name": "cellsignal.com",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    }
+  },
+  "DOMINO": {
+    "name": "DOMINO",
+    "license": {
+      "name": "CC BY 2.5",
+      "full_name": "Creative Commons Attribution 2.5 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/2.5/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/35/suppl_1/D557.long"
+      ],
+      "webpages": [
+        "http://mint.bio.uniroma2.it/domino/search/searchWelcome.do"
+      ]
+    },
+    "pubmeds": [
+      17135199
+    ],
+    "emails": [
+      [
+        "giovanni.cesareni@uniroma2.it",
+        "Gianni Cesareni"
+      ]
+    ],
+    "recommend": "rich details and many specific information; discontinued, Signor from the same lab is larger and newer, and contains most of its data",
+    "descriptions": [
+      "DOMINO aims at annotating all the available information about domain-peptide and domain–domain interactions. The core of DOMINO, of July 24, 2006 consists of more than 3900 interactions extracted from peer-reviewed articles and annotated by expert biologists. A total of 717 manuscripts have been processed, thus covering a large fraction of the published information about domain–peptide interactions. The curation effort has focused on the following domains: SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo and GYF. However, interactions mediated by as many as 150 different domain families are stored in DOMINO.",
+      "DOMINO is an open-access database comprising more than 3900 annotated experiments describing interactions mediated by protein-interaction domains. The curation effort aims at covering the interactions mediated by the following domains (SH3, SH2, 14-3-3, PDZ, PTB, WW, EVH, VHS, FHA, EH, FF, BRCT, Bromo, Chromo, GYF). However, interactions mediated by as many as 150 different domain families are stored in DOMINO.",
+      "The curation process follows the PSI-MI 2.5 standard but with special emphasis on the mapping of the interaction to specific protein domains of both participating proteins. This is achieved by paying special attention to the shortest protein fragment that was experimentally verified as sufficient for the interaction. Whenever the authors report only the name of the domain mediating the interaction (i.e. SH3, SH2 ...), without stating the coordinates of the experimental binding range, the curator may choose to enter the coordinates of the Pfam domain match in the protein sequence. Finally whenever the information is available, any mutation or posttranslational modification affecting the interaction affinity is noted in the database."
+    ]
+  },
+  "LOCATE": {
+    "name": "LOCATE",
+    "license": {
+      "name": "NAR Open Access",
+      "full_name": "Nucleic Acids Research Open Access",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "DoRothEA": {
+    "name": "DoRothEA",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "RegNetwork": {
+    "name": "RegNetwork",
+    "license": {
+      "name": "LGPLv3",
+      "full_name": "GNU Lesser General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+    }
+  },
+  "ORegAnno": {
+    "name": "ORegAnno",
+    "license": {
+      "name": "LGPLv3",
+      "full_name": "GNU Lesser General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+    },
+    "urls": {
+      "articles": [
+        "https://academic.oup.com/nar/article/44/D1/D126/2502683"
+      ],
+      "webpages": [
+        "http://www.oreganno.org/"
+      ]
+    },
+    "pubmeds": [
+      26578589
+    ],
+    "emails": [
+      [
+        "ogriffit@genome.wustl.edu",
+        "Obi L. Griffith"
+      ]
+    ]
+  },
+  "Membranome": {
+    "name": "Membranome",
+    "license": {
+      "name": "Apache 2.0",
+      "full_name": "Apache License, version 2.0",
+      "attribution": "attrib",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "DoRothEA_B": {
+    "name": "DoRothEA_B",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "BEL-Large-Corpus": {
+    "name": "BEL-Large-Corpus",
+    "license": {
+      "name": "NAR Open Access",
+      "full_name": "Nucleic Acids Research Open Access",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "NetworKIN": {
+    "name": "NetworKIN",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Clinvar": {
+    "name": "Clinvar",
+    "license": {
+      "name": "EMBL-EBI",
+      "full_name": "EMBL-EBI terms of use",
+      "attribution": "attrib",
+      "url": "https://www.ebi.ac.uk/about/terms-of-use"
+    }
+  },
+  "REACH": {
+    "name": "REACH",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Ramilowski2015": {
+    "name": "Ramilowski2015",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "PanglaoDB": {
+    "name": "PanglaoDB",
+    "license": {
+      "name": "Informal",
+      "full_name": "Informal license",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/license-list.en.html#informal"
+    }
+  },
+  "OmniPath": {
+    "name": "OmniPath",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "TfactS": {
+    "name": "TfactS",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "TCDB": {
+    "name": "TCDB",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "UniProt": {
+    "name": "UniProt",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CA1": {
+    "name": "CA1",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.sciencemag.org/content/309/5737/1078.full"
+      ],
+      "webpages": []
+    },
+    "pubmeds": [
+      16099987
+    ],
+    "emails": [
+      [
+        "ravi.iyengar@mssm.edu",
+        "Ravi Iyengar"
+      ]
+    ],
+    "recommend": "among the largest resources providing effect signs; more than a decade old dataset, used in many studies",
+    "descriptions": [
+      "We used published research literature to identify the key components of signaling pathways and cellular machines, and their binary interactions. Most components (~80%) have been described in hippocampal neurons or related neuronal cells. Other components are from other cells, but are included because they are key components in processes known to occur in hippocampal neurons, such as translation. We then established that these interactions were both direct and functionally relevant. All of the connections were individually verified by at least one of the authors of this paper by reading the relevant primary paper(s). We developed a system made of 545 components (nodes) and 1259 links (connections). We used arbitrary but consistent rules to sort components into various groups. For instance, transcription factors are considered a as part of the transcriptional machinery, although it may also be equally valid to consider them as the most downstream component of the central signaling network. Similarly the AMPA receptor-channel (AMPAR) is considered part of the ion channels in the electrical response system since its activity is essential to defining the postsynaptic response, although it binds to and is activated by glutamate, and hence can be also considered a ligand gated receptor-channel in the plasma membrane. The links were specified by two criteria: function and biochemical mechanism. Three types of functional links were specified. This follows the rules used for representation of pathways in Science’s STKE (S1). Links may be activating, inhibitory or neutral. Neutral links do not specify directionality between components, and are mostly used to represent scaffolding and anchoring undirected or bidirectional interactions. The biochemical specification includes defining the reactions as non-covalent binding interactions or enzymatic reactions. Within the enzymatic category, reactions were further specified as phosphorylation, dephosphorylation, hydrolysis, etc. These two criteria for specification are independent and were defined for all interactions. For the analyses in this study we only used the functional criteria: activating, inhibitory or neutral specifications. We chose papers that demonstrated direct interactions that were supported by either biochemical or physiological effects of the interactions. From these papers we identified the components and interactions that make up the system we analyzed. During this specification process we did not consider whether these interactions would come together to form higher order organizational units. Each component and interaction was validated by a reference from the primary literature (1202 papers were used). A list of authors who read the papers to validate the components and interactions is provided under authors contributions."
+    ]
+  },
+  "COSMIC": {
+    "name": "COSMIC",
+    "license": {
+      "name": "COSMIC",
+      "full_name": "COSMIC License",
+      "attribution": "attrib",
+      "url": "https://cancer.sanger.ac.uk/cosmic/license"
+    }
+  },
+  "Dinarello2013": {
+    "name": "Dinarello2013",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "TRRD": {
+    "name": "TRRD",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "HuPho": {
+    "name": "HuPho",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    },
+    "urls": {
+      "articles": [
+        "http://onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08712.x/full"
+      ],
+      "webpages": [
+        "http://hupho.uniroma2.it/"
+      ]
+    },
+    "pubmeds": [
+      22804825
+    ],
+    "emails": [
+      [
+        "perfetto@live.it",
+        "Livia Perfetto"
+      ]
+    ],
+    "descriptions": [
+      "In order to offer a proteome-wide perspective of the phosphatase interactome, we have embarked on an extensive text-mining-assisted literature curation effort to extend phosphatase interaction information that was not yet covered by protein–protein interaction (PPI) databases. Interaction evidence captured by expert curators was annotated in the protein interaction database MINT according to the rapid curation standard. This data set was next integrated with protein interaction information from three additional major PPI databases, IntAct, BioGRID and DIP. These databases are part of the PSIMEx consortium and adopt a common data model and common controlled vocabularies, thus facilitating data integration. Duplicated entries were merged and redundant interactions have been removed. As a result, from the HuPho website it is possible to explore experimental evidence from 718 scientific articles reporting 4600 experiments supporting protein interactions where at least one of the partners is a phosphatase. Since some interactions are supported by more than one piece of evidence, the actual number of non-redundant interactions is smaller, 2500 at the time of writing this paper. Moreover, 199 phosphatases have at least one reported ligand, while 53 have none. Interaction evidence is fairly evenly distributed in the four PSIMEx resources suggesting a substantial lack of overlap among the data curated by each database."
+    ]
+  },
+  "Sparser": {
+    "name": "Sparser",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "GPCRdb": {
+    "name": "GPCRdb",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CTD": {
+    "name": "CTD",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "Awan2007": {
+    "name": "Awan2007",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.cancer-systemsbiology.org/Papers/iet-sb2007.pdf"
+      ]
+    },
+    "pubmeds": [
+      17907678
+    ],
+    "emails": [
+      [
+        "Edwin.Wang@cnrc-nrc.gc.ca",
+        "Edwin Wang"
+      ]
+    ],
+    "descriptions": [
+      "To construct the human cellular signalling network, we manually curated signalling pathways from literature. The signalling data source for our pathways is the BioCarta database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is the most comprehensive database for human cellular signalling pathways. Our curated pathway database recorded gene names and functions, cellular locations of each gene and relationships between genes such as activation, inhibition, translocation, enzyme digestion, gene transcription and translation, signal stimulation and so on. To ensure the accuracy and the consistency of the database, each referenced pathway was cross-checked by different researchers and finally all the documented pathways were checked by one researcher. In total, 164 signalling pathways were documented (supplementary Table 2). Furthermore, we merged the curated data with another literature-mined human cellular signalling network. As a result, the merged network contains nearly 1100 proteins (SupplementaryNetworkFile). To construct a signalling network, we considered relationships of proteins as links (activation or inactivation as directed links and physical interactions in protein complexes as neutral links) and proteins as nodes."
+    ]
+  },
+  "ENCODE-distal": {
+    "name": "ENCODE-distal",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "scConnect": {
+    "name": "scConnect",
+    "license": {
+      "name": "MIT",
+      "full_name": "MIT License",
+      "attribution": "attrib",
+      "url": "https://spdx.org/licenses/MIT.html"
+    }
+  },
+  "PhosphoNetworks": {
+    "name": "PhosphoNetworks",
+    "license": {
+      "name": "PhosphoNetworks",
+      "full_name": "PhosphoNetworks License",
+      "attribution": "attrib",
+      "url": "https://phosphonetworks.org/about.html"
+    }
+  },
+  "Cui2007": {
+    "name": "Cui2007",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://msb.embopress.org/content/3/1/152"
+      ],
+      "webpages": []
+    },
+    "pubmeds": [
+      18091723
+    ],
+    "emails": [
+      [
+        "Edwin.Wang@cnrc-nrc.gc.ca",
+        "Edwin Wang"
+      ]
+    ],
+    "descriptions": [
+      "To build up the human signaling network, we manually curated the signaling molecules (most of them are proteins) and the interactions between these molecules from the most comprehensive signaling pathway database, BioCarta (http://www.biocarta.com/). The pathways in the database are illustrated as diagrams. We manually recorded the names, functions, cellular locations, biochemical classifications and the regulatory (including activating and inhibitory) and interaction relations of the signaling molecules for each signaling pathway. To ensure the accuracy of the curation, all the data have been crosschecked four times by different researchers. After combining the curated information with another literature‐mined signaling network that contains ∼500 signaling molecules (Ma'ayan et al, 2005)[this is the CA1], we obtained a signaling network containing ∼1100 proteins (Awan et al, 2007). We further extended this network by extracting and adding the signaling molecules and their relations from the Cancer Cell Map (http://cancer.cellmap.org/cellmap/), a database that contains 10 manually curated signaling pathways for cancer. As a result, the network contains 1634 nodes and 5089 links that include 2403 activation links (positive links), 741 inhibitory links (negative links), 1915 physical links (neutral links) and 30 links whose types are unknown (Supplementary Table 9). To our knowledge, this network is the biggest cellular signaling network at present.",
+      "From Awan 2007: To construct the human cellular signalling network, we manually curated signalling pathways from literature. The signalling data source for our pathways is the BioCarta database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is the most comprehensive database for human cellular signalling pathways. Our curated pathway database recorded gene names and functions, cellular locations of each gene and relationships between genes such as activation, inhibition, translocation, enzyme digestion, gene transcription and translation, signal stimulation and so on. To ensure the accuracy and the consistency of the database, each referenced pathway was cross-checked by different researchers and finally all the documented pathways were checked by one researcher."
+    ]
+  },
+  "DoRothEA_C": {
+    "name": "DoRothEA_C",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "TRIP": {
+    "name": "TRIP",
+    "license": {
+      "name": "CC BY-NC-SA 3.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.plosone.org/article/info:doi/10.1371/journal.pone.0047165",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D356.full",
+        "http://link.springer.com/article/10.1007%2Fs00424-013-1292-2"
+      ],
+      "webpages": [
+        "http://www.trpchannel.org"
+      ]
+    },
+    "pubmeds": [
+      20851834,
+      23071747,
+      23677537
+    ],
+    "emails": [
+      [
+        "jhjeon2@snu.ac.kr",
+        "Ju-Hong Jeon"
+      ]
+    ],
+    "recommend": "high number of specific interactions; focused on TRP channels",
+    "descriptions": [
+      "The literature on TRP channel PPIs found in the PubMed database serve as the primary information source for constructing the TRIP Database. First, a list of synonyms for the term ‘TRP channels’ was constructed from UniprotKB, Entrez Gene, membrane protein databases (Supplementary Table S2) and published review papers for nomenclature. Second, using these synonyms, a list of articles was obtained through a PubMed search. Third, salient articles were collected through a survey of PubMed abstracts and subsequently by search of full-text papers. Finally, we selected articles that contain evidence for physical binding among the proteins denoted. To prevent omission of relevant papers, we manually screened information in other databases, such as DIP, IntAct, MINT, STRING, BioGRID, Entrez Gene, IUPHAR-DB and ISI Web of Knowledge (from Thomson Reuters). All 277 articles used for database construction are listed in our database website."
+    ]
+  },
+  "TFe": {
+    "name": "TFe",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "ReMap": {
+    "name": "ReMap",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "kinase.com": {
+    "name": "kinase.com",
+    "license": {
+      "name": "Kinase.com",
+      "full_name": "Kinase.com License",
+      "attribution": "attrib",
+      "url": "http://kinase.com/about/Disclaimer.html"
+    }
+  },
+  "PDB": {
+    "name": "PDB",
+    "license": {
+      "name": "PDB",
+      "full_name": "PDB License",
+      "attribution": "attrib",
+      "url": "https://www.wwpdb.org/about/privacy"
+    }
+  },
+  "DoRothEA-reviews": {
+    "name": "DoRothEA-reviews",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "KEA": {
+    "name": "KEA",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "CancerSEA": {
+    "name": "CancerSEA",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "TLR": {
+    "name": "TLR",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    },
+    "urls": {
+      "articles": [
+        "https://www.embopress.org/doi/10.1038/msb4100057"
+      ]
+    }
+  },
+  "IntOGen": {
+    "name": "IntOGen",
+    "license": {
+      "name": "CC0 1.0",
+      "full_name": "Creative Commons Zero 1.0 Universal",
+      "attribution": "noattrib",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode"
+    }
+  },
+  "mir2Disease": {
+    "name": "mir2Disease",
+    "license": {
+      "name": "CC BY-NC 2.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 2.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/2.0/"
+    }
+  },
+  "Ramilowski": {
+    "name": "Ramilowski",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CellCall": {
+    "name": "CellCall",
+    "license": {
+      "name": "Artistic-2.0",
+      "full_name": "Artistic License 2.0",
+      "attribution": "attrib",
+      "url": "https://directory.fsf.org/wiki/License:Artistic-2.0"
+    }
+  },
+  "HPRD": {
+    "name": "HPRD",
+    "license": {
+      "name": "HPRD",
+      "full_name": "HPRD License",
+      "attribution": "attrib",
+      "url": "http://hprd.org/FAQ"
+    },
+    "urls": {
+      "articles": [
+        "http://genome.cshlp.org/content/13/10/2363.long",
+        "http://nar.oxfordjournals.org/content/34/suppl_1/D411.long",
+        "http://nar.oxfordjournals.org/content/37/suppl_1/D767.long"
+      ],
+      "webpages": [
+        "http://www.hprd.org/"
+      ]
+    },
+    "pubmeds": [
+      14525934,
+      16381900,
+      18988627
+    ],
+    "emails": [
+      [
+        "pandey@jhmi.edu",
+        "Akhilesh Pandey"
+      ]
+    ],
+    "recommend": "one of the largest kinase-substrate resources; provides large amount of specific information; discontinued",
+    "descriptions": [
+      "The information about protein-protein interactions was cataloged after a critical reading of the published literature. Exhaustive searches were done based on keywords and medical subject headings (MeSH) by using Entrez. The type of experiments that served as the basis for establishing protein-protein interactions was also annotated. Experiments such as coimmunoprecipitation were designated in vivo, GST fusion and similar “pull-down” type of experiments were designated in vitro, and those identified by yeast two-hybrid were annotated as yeast two-hybrid. Posttranslational modifications were annotated based on the type of modification, site of modification, and the modified residue. In addition, the upstream enzymes that are responsible for modifications of these proteins were reported if described in the articles. The most commonly known and the alternative subcellular localization of the protein were based on the literature. The sites of expression of protein and/or mRNA were annotated based on published studies."
+    ]
+  },
+  "Fantom5": {
+    "name": "Fantom5",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "PAZAR": {
+    "name": "PAZAR",
+    "license": {
+      "name": "LGPLv3",
+      "full_name": "GNU Lesser General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+    },
+    "urls": {
+      "articles": [
+        "https://genomebiology.biomedcentral.com/articles/10.1186/gb-2007-8-10-r207",
+        "https://academic.oup.com/nar/article/37/suppl_1/D54/1010368"
+      ],
+      "webpages": [
+        "http://www.pazar.info/"
+      ]
+    },
+    "pubmeds": [
+      18971253,
+      17916232
+    ],
+    "emails": [
+      [
+        "wyeth@cmmt.ubc.ca",
+        "Wyeth Wasserman"
+      ]
+    ]
+  },
+  "LMPID": {
+    "name": "LMPID",
+    "license": {
+      "name": "CC BY-NC 2.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 2.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/2.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://database.oxfordjournals.org/content/2015/bav014.long"
+      ],
+      "webpages": [
+        "http://bicresources.jcbose.ac.in/ssaha4/lmpid/index.php"
+      ]
+    },
+    "pubmeds": [
+      25776024
+    ],
+    "emails": [
+      [
+        "ssaha4@jcbose.ac.in",
+        "Sudipto Saha"
+      ]
+    ],
+    "recommend": "structural details: domain-motif relationships; similar to ELM, but more recent and larger",
+    "descriptions": [
+      "LMPID (Linear Motif mediated Protein Interaction Database) is a manually curated database which provides comprehensive experimentally validated information about the LMs mediating PPIs from all organisms on a single platform. About 2200 entries have been compiled by detailed manual curation of PubMed abstracts, of which about 1000 LM entries were being annotated for the first time, as compared with the Eukaryotic LM resource."
+    ]
+  },
+  "LRdb": {
+    "name": "LRdb",
+    "license": {
+      "name": "GPLv3",
+      "full_name": "GNU General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    },
+    "emails": [
+      [
+        "jacques.colinge@inserm.fr",
+        "Jacques Colinge"
+      ]
+    ]
+  },
+  "MSigDB": {
+    "name": "MSigDB",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "emails": [
+      [
+        "gsea-team@broadinstitute.org",
+        "GSEA Team"
+      ]
+    ]
+  },
+  "ExPASy": {
+    "name": "ExPASy",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "DISEASES": {
+    "name": "DISEASES",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "ChEMBL": {
+    "name": "ChEMBL",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "Vesiclepedia": {
+    "name": "Vesiclepedia",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Humap": {
+    "name": "Humap",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "DoRothEA_D": {
+    "name": "DoRothEA_D",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "PhosphoSite": {
+    "name": "PhosphoSite",
+    "license": {
+      "name": "CC BY-NC-SA 3.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://onlinelibrary.wiley.com/doi/10.1002/pmic.200300772/abstract",
+        "http://nar.oxfordjournals.org/content/40/D1/D261.long",
+        "http://nar.oxfordjournals.org/content/43/D1/D512.long"
+      ],
+      "webpages": [
+        "http://www.phosphosite.org/homeAction.do"
+      ]
+    },
+    "pubmeds": [
+      15174125,
+      22135298,
+      25514926
+    ],
+    "emails": [
+      [
+        "phornbeck@cellsignal.com",
+        "Peter V Hornbeck"
+      ],
+      [
+        "EditorPhosphoSite@cellsignal.com",
+        "PhosphoSite Team"
+      ]
+    ],
+    "recommend": "the largest kinase-substrate database; huge amount of literature referenced",
+    "descriptions": [
+      "PSP integrates both low- and high-throughput (LTP and HTP) data sources into a single reliable and comprehensive resource. Nearly 10,000 journal articles , including both LTP and HTP reports, have been manually curated by expert scientists from over 480 different journals since 2001. Information from nearly 13 000 papers and 600 different journals characterizing modification sites with LTP methods has been curated into PSP. Information is gathered from published literature and other sources. Published literature is searched semi-automatically with multiple intelligent search algorithms to identify reports that potentially identify phosphorylation sites in human, mouse or other species. Each identified report is then scanned by our highly trained curatorial staff (all with PhDs and extensive research experience in cell biology or related disciplines) to select only those papers that either identify new physiological phosphorylation sites or those that illuminate the biological function of the phosphorylation event. Records that are selected for inclusion into PhosphoSite are placed in the curatorial queue for processing. Note: while we gather records that describe both in vitro and in vivo phosphorylation events, we only finally submit records about in vitro sites when we have additional hard evidence that the site is also phosphorylated in vivo."
+    ]
+  },
+  "ENCODE-proximal": {
+    "name": "ENCODE-proximal",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "SignaLink3": {
+    "name": "SignaLink3",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://bioinformatics.oxfordjournals.org/content/26/16/2042.long",
+        "http://www.biomedcentral.com/1752-0509/7/7"
+      ],
+      "webpages": [
+        "http://signalink.org/"
+      ]
+    },
+    "pubmeds": [
+      20542890,
+      23331499
+    ],
+    "emails": [
+      [
+        "korcsmaros@gmail.com",
+        "Tamas Korcsmaros"
+      ],
+      [
+        "tamas.korcsmaros@tgac.ac.uk",
+        "Tamas Korcsmaros"
+      ]
+    ],
+    "recommend": "one of the largest resources with effect sign; due to its specific, biochemically defined pathways suitable for cross-talk analysis",
+    "descriptions": [
+      "In each of the three organisms, we first listed signaling proteins and interactions from reviews (and from WormBook in C.elegans) and then added further signaling interactions of the listed proteins. To identify additional interactions in C.elegans, we examined all interactions (except for transcription regulation) of the signaling proteins listed in WormBase and added only those to SignaLink that we could manually identify in the literature as an experimentally verified signaling interaction. For D.melanogaster, we added to SignaLink those genetic interactions from FlyBase that were also reported in at least one yeast-2-hybrid experiment. For humans, we manually checked the reliability and directions for the PPIs found with the search engines iHop and Chilibot. SignaLink assigns proteins to signaling pathways using the full texts of pathway reviews (written by pathway experts). While most signaling resources consider 5–15 reviews per pathway, SignaLink uses a total of 170 review papers, i.e. more than 20 per pathway on average. Interactions were curated from a total of 941 articles (PubMed IDs are available at the website). We added a small number of proteins based on InParanoid ortholog clusters. For curation, we used a self-developed graphical tool and Perl/Python scripts. The current version of SignaLink was completed in May 2008 based on WormBase (version 191), FlyBase (2008.6), Ensembl, UniProt and the publications listed on the website. The curation protocol of SignaLink (Fig. 1A) contains several steps aimed specifically at reducing data and curation errors. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database."
+    ]
+  },
+  "NTNU.Curated": {
+    "name": "NTNU.Curated",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "PROGENy": {
+    "name": "PROGENy",
+    "license": {
+      "name": "Apache 2.0",
+      "full_name": "Apache License, version 2.0",
+      "attribution": "attrib",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "SwissLipids": {
+    "name": "SwissLipids",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "DrugBank": {
+    "name": "DrugBank",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "NFIRegulomeDB": {
+    "name": "NFIRegulomeDB",
+    "license": {
+      "name": "LGPLv3",
+      "full_name": "GNU Lesser General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+    }
+  },
+  "HOCOMOCO": {
+    "name": "HOCOMOCO",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "DoRothEA-A": {
+    "name": "DoRothEA-A",
+    "license": {
+      "name": "Informal",
+      "full_name": "Informal license",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/license-list.en.html#informal"
+    }
+  },
+  "Exocarta": {
+    "name": "Exocarta",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "gutMGene": {
+    "name": "gutMGene",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    }
+  },
+  "CancerDrugsDB": {
+    "name": "CancerDrugsDB",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "Baccin2019": {
+    "name": "Baccin2019",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    "emails": [
+      [
+        "lars.velten@embl.de",
+        "Lars Velten"
+      ],
+      [
+        "a.trumpp@dkfz-heidelberg.de",
+        "Andreas Trumpp"
+      ],
+      [
+        "s.haas@dkfz-heidelberg.de",
+        "Simon Haas"
+      ]
+    ]
+  },
+  "TransmiR": {
+    "name": "TransmiR",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "Zaman2013": {
+    "name": "Zaman2013",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.sciencedirect.com/science/article/pii/S2211124713004695"
+      ],
+      "webpages": []
+    },
+    "pubmeds": [
+      24075989
+    ],
+    "emails": [
+      [
+        "edwin.wang@cnrc-nrc.gc.ca",
+        "Edwin Wang"
+      ]
+    ],
+    "descriptions": [
+      "The human signaling network (Version 4, containing more than 6,000 genes and more than 50,000 relations) includes our previous data obtained from manually curated signaling networks (Awan et al., 2007; Cui et al., 2007; Li et al., 2012) and by PID (http://pid.nci.nih.gov/) and our recent manual curations using the iHOP database (http://www.ihop-net.org/UniPub/iHOP/)."
+    ]
+  },
+  "ConsensusPathDB": {
+    "name": "ConsensusPathDB",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/37/suppl_1/D623.long",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D712.long",
+        "http://nar.oxfordjournals.org/content/41/D1/D793.long"
+      ],
+      "webpages": [
+        "http://cpdb.molgen.mpg.de/CPDB"
+      ]
+    },
+    "pubmeds": [
+      18940869,
+      23143270,
+      21071422
+    ],
+    "emails": [
+      [
+        "kamburov@molgen.mpg.de",
+        "Atanas Kamburov"
+      ]
+    ],
+    "descriptions": [
+      "Interaction data in ConsensusPathDB currently originates from 12 interaction databases and comprises physical interactions, biochemical reactions and gene regulations. Importantly, the source of physical entities and interactions is always recorded, which allows linking to the original data in the source database. In order to assess the content overlap of the source databases and to reduce redundancy, we have applied a method to merge identical physical entities and identify similar interactions. The method is straightforward and efficient for the integration of networks from any single species. Simple physical entities of the same type (genes, proteins, transcripts, metabolites) are compared on the basis of common database identifiers like UniProt, Ensembl, Entrez, ChEBI, etc. Since different databases tend to annotate physical entities with different identifier types (e.g. some databases annotate proteins with UniProt identifiers, others with Ensembl identifiers), we first translated the annotations to a uniform identifier type, which is a UniProt entry name in case of proteins, Ensembl gene ID in case of genes and transcripts, and KEGG/ChEBI ID in case of metabolites. Protein complexes are compared according to their individual protein composition. Simple physical entities with the same identifier, and complexes with the same composition, are merged in ConsensusPathDB. Information provided by the according source databases for the merged entities is stored in a complementary manner. Functional interactions of physical entities are also compared with each other. Here, we distinguish between primary and secondary interaction participants. Primary participants are substrates and products in case of biochemical reactions, interactors in case of physical interactions and target genes in case of gene regulation. All other participants, e.g. enzymes and interaction modifiers, are secondary participants. If the primary participants of two or more interactions match, these interactions are considered similar. Two similar interactions may have different stoichiometry, modification and/or localization of the participants. To allow for flexibility, similar interactions are marked as such in the database, but the decision whether they should be considered identical despite mismatching details is left to the user and depends on his specific problem. Moreover, ConsensusPathDB does not provide any additional quality control filters. All interactions provided by the different database sources are treated in the same way."
+    ]
+  },
+  "phosphatome": {
+    "name": "phosphatome",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "HPRD-phos": {
+    "name": "HPRD-phos",
+    "license": {
+      "name": "HPRD",
+      "full_name": "HPRD License",
+      "attribution": "attrib",
+      "url": "http://hprd.org/FAQ"
+    }
+  },
+  "Lambert2018": {
+    "name": "Lambert2018",
+    "license": {
+      "name": "EUL",
+      "full_name": "Elsevier User License",
+      "attribution": "attrib",
+      "url": "https://www.elsevier.com/about/policies/open-access-licenses/elsevier-user-license"
+    }
+  },
+  "CSPA": {
+    "name": "CSPA",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Guide2Pharma": {
+    "name": "Guide2Pharma",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/42/D1/D1098.long",
+        "http://onlinelibrary.wiley.com/doi/10.1111/j.1476-5381.2011.01649_1.x/full"
+      ],
+      "webpages": [
+        "http://www.guidetopharmacology.org/"
+      ]
+    },
+    "pubmeds": [
+      24234439
+    ],
+    "emails": [
+      [
+        "enquiries@guidetopharmacology.org",
+        "Guide to Pharmacology Team"
+      ],
+      [
+        "cdsouthan@hotmail.com",
+        "Cristopher Southan"
+      ]
+    ],
+    "recommend": "one of the strongest in ligand-receptor interactions; still does not contain everything, therefore worth to combine with larger activity flow resources like Signor",
+    "descriptions": [
+      "Presently, the resource describes the interactions between target proteins and 6064 distinct ligand entities (Table 1). Ligands are listed against targets by their action (e.g. activator, inhibitor), and also classified according to substance types and their status as approved drugs. Classes include metabolites (a general category for all biogenic, non-peptide, organic molecules including lipids, hormones and neurotransmitters), synthetic organic chemicals (e.g. small molecule drugs), natural products, mammalian endogenous peptides, synthetic and other peptides including toxins from non-mammalian organisms, antibodies, inorganic substances and other, not readily classifiable compounds. The new database was constructed by integrating data from IUPHAR-DB and the published GRAC compendium. An overview of the curation process is depicted as an organizational flow chart in Figure 2. New information was added to the existing relational database behind IUPHAR-DB and new webpages were created to display the integrated information. For each new target, information on human, mouse and rat genes and proteins, including gene symbol, full name, location, gene ID, UniProt and Ensembl IDs was manually curated from HGNC, the Mouse Genome Database (MGD) at Mouse Genome Informatics (MGI), the Rat Genome Database (RGD), UniProt and Ensembl, respectively. In addition, ‘Other names’, target-specific fields such as ‘Principal transduction’, text from the ‘Overview’ and ‘Comments’ sections and reference citations (downloaded from PubMed; http://www.ncbi.nlm.nih.gov/pubmed) were captured from GRAC and uploaded into the database against a unique Object ID."
+    ]
+  },
+  "CellCellInteractions": {
+    "name": "CellCellInteractions",
+    "license": {
+      "name": "CellCellInteractions",
+      "full_name": "CellCellInteractions License",
+      "attribution": "attrib",
+      "url": "https://baderlab.org/CellCellInteractions"
+    }
+  },
+  "Cellinker": {
+    "name": "Cellinker",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "NCI-PID": {
+    "name": "NCI-PID",
+    "license": {
+      "name": "BSD",
+      "full_name": "3-clause BSD License",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/license-list.html#ModifiedBSD"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/37/suppl_1/D674.long"
+      ],
+      "webpages": [
+        "http://pid.nci.nih.gov/index.shtml",
+        "http://www.ndexbio.org/",
+        "http://web.archive.org/web/20150908030438/http://pid.nci.nih.gov/index.shtml"
+      ]
+    },
+    "pubmeds": [
+      18832364
+    ],
+    "emails": [
+      [
+        "yanch@mail.nih.gov",
+        "Chunhua Yan"
+      ]
+    ],
+    "recommend": "one of the largest process description resources; represents remarkable curation effort; discontinued",
+    "descriptions": [
+      "In curating, editors synthesize meaningful networks of events into defined pathways and adhere to the PID data model for consistency in data representation: molecules and biological processes are annotated with standardized names and unambiguous identifiers; and signaling and regulatory events are annotated with evidence codes and references. To ensure accurate data representation, editors assemble pathways from data that is principally derived from primary research publications. The majority of data in PID is human; however, if a finding discovered in another mammal is also deemed to occur in humans, editors may decide to include this finding, but will also record that the evidence was inferred from another species. Prior to publication, all pathways are reviewed by one or more experts in a field for accuracy and completeness."
+    ]
+  },
+  "MIMP": {
+    "name": "MIMP",
+    "license": {
+      "name": "LGPLv3",
+      "full_name": "GNU Lesser General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+    }
+  },
+  "Negatome": {
+    "name": "Negatome",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/38/suppl_1/D540.long",
+        "http://nar.oxfordjournals.org/content/42/D1/D396.long"
+      ],
+      "webpages": [
+        "http://mips.helmholtz-muenchen.de/proj/ppi/negatome/"
+      ]
+    },
+    "pubmeds": [
+      24214996,
+      19920129
+    ],
+    "emails": [
+      [
+        "d.frishman@helmholtz-muenchen.de",
+        "Dmitrij Frishman"
+      ]
+    ],
+    "descriptions": [
+      "Annotation of the manual dataset was performed analogous to the annotation of protein–protein interactions and protein complexes in previous projects published by our group. Information about NIPs was extracted from scientific literature using only data from individual experiments but not from high-throughput experiments. Only mammalian proteins were considered. Data from high-throughput experiments were omitted in order to maintain the highest possible standard of reliability."
+    ]
+  },
+  "Zhong2015": {
+    "name": "Zhong2015",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "I2D": {
+    "name": "I2D",
+    "license": {
+      "name": "I2D",
+      "full_name": "I2D License",
+      "attribution": "attrib",
+      "url": "http://ophid.utoronto.ca/ophidv2.204/downloads.jsp"
+    }
+  },
+  "GeneOntology": {
+    "name": "GeneOntology",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "GEREDB": {
+    "name": "GEREDB",
+    "license": {
+      "name": "AFL 3.0",
+      "full_name": "Academic Free License v3.0",
+      "attribution": "attrib",
+      "url": "https://directory.fsf.org/wiki/License:AFL-3.0"
+    }
+  },
+  "Phobius": {
+    "name": "Phobius",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "WikiPathways": {
+    "name": "WikiPathways",
+    "license": {
+      "name": "CC BY 3.0",
+      "full_name": "Creative Commons Attribution 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/40/D1/D1301"
+      ],
+      "webpages": [
+        "http://www.wikipathways.org/index.php/WikiPathways"
+      ]
+    },
+    "emails": [
+      [
+        "thomaskelder@gmail.com",
+        "Thomas Kelder"
+      ],
+      [
+        "apico@gladstone.ucsf.edu",
+        "Alex Pico"
+      ]
+    ],
+    "recommend": "process description resource developed in a community effort; high proportion of specific proteins",
+    "descriptions": [
+      "The goal of WikiPathways is to capture knowledge about biological pathways (the elements, their interactions and layout) in a form that is both human readable and amenable to computational analysis."
+    ]
+  },
+  "GO-lig-rec": {
+    "name": "GO-lig-rec",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Lit-BM-17": {
+    "name": "Lit-BM-17",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CORUM": {
+    "name": "CORUM",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/36/suppl_1/D646.long",
+        "http://nar.oxfordjournals.org/content/38/suppl_1/D497.long"
+      ],
+      "webpages": [
+        "http://mips.helmholtz-muenchen.de/genre/proj/corum"
+      ]
+    },
+    "pubmeds": [
+      19884131,
+      17965090
+    ],
+    "emails": [
+      [
+        "andreas.ruepp@helmholtz-muenchen.de",
+        "Andreas Ruepp"
+      ]
+    ],
+    "descriptions": [
+      "The CORUM database is a collection of experimentally verified mammalian protein complexes. Information is manually derived by critical reading of the scientific literature from expert annotators. Information about protein complexes includes protein complex names, subunits, literature references as well as the function of the complexes. In order to provide a high-quality dataset of mammalian protein complexes, all entries are manually created. Only protein complexes which have been isolated and characterized by reliable experimental evidence are included in CORUM. To be considered for CORUM, a protein complex has to be isolated as one molecule and must not be a construct derived from several experiments. Also, artificial constructs of subcomplexes are not taken into account. Since information from high-throughput experi ments contains a significant fraction of false-positive results, this type of data is excluded. References for relevant articles were mainly found in general review articles, cross-references to related protein complexes within analysed literature and comments on referenced articles in UniProt."
+    ]
+  },
+  "Surfaceome": {
+    "name": "Surfaceome",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "InnateDB": {
+    "name": "InnateDB",
+    "license": {
+      "name": "DSL",
+      "full_name": "Design Science License",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/license-list.html#dsl"
+    },
+    "urls": {
+      "articles": [
+        "http://msb.embopress.org/content/4/1/218.long",
+        "http://www.biomedcentral.com/1752-0509/4/117",
+        "http://nar.oxfordjournals.org/content/41/D1/D1228.long"
+      ],
+      "webpages": [
+        "http://www.innatedb.com/"
+      ]
+    },
+    "pubmeds": [
+      20727158,
+      23180781,
+      18766178
+    ],
+    "emails": [
+      [
+        "innatedb-mail@sfu.ca",
+        "InnateDB Team"
+      ],
+      [
+        "david.lynn@sahmri.com",
+        "David Lynn"
+      ]
+    ],
+    "recommend": "middle size interaction resource; special focus on immune pathways",
+    "descriptions": [
+      "InnateDB (www.innatedb.com) is a database and integrated analysis platform specifically designed to facilitate systems-level analyses of the mammalian innate immune response (Lynn et al. 2008; 2010, 2013). To enrich our knowledge of innate immunity networks and pathways, the InnateDB curation team has contextually annotated >25,000 human and mouse innate immunity-relevant molecular interactions through the review of >5,000 biomedical articles. Curation adheres to the MIMIx guidelines and new interactions are added weekly. Importantly, interactions are curated between molecules with a documented role in an innate immunity relevant biological process or pathway and all other interactors regardless of whether the interacting molecule has any known role in innate immunity. This approach captures interactions between the innate immune system and other systems. InnateDB is not limited to data on the innate immune system. It is a comprehensive database of human, mouse and bovine molecular interactions and pathways, consisting of more than 300,000 molecular interactions and 3,000+ pathways, integrated from major public molecular interaction and pathway databases. InnateDB is also an analysis platform offering user-friendly bioinformatics tools, including pathway and ontology analysis, network visualization and analysis and the ability to upload and analyze user-supplied gene expression or other quantitative data in a network and/or pathway context. The platform has a global profile and is utilised by >10,000 users per annum and is widely cited. A mirror of the site hosted in Australia is also available at innatedb.sahmri.com. Note that new interactions and gene annotations are added to InnateDB on an almost weekly database so the data is being continuously updated."
+    ]
+  },
+  "FANTOM": {
+    "name": "FANTOM",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "RaMP": {
+    "name": "RaMP",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "lncRNADisease": {
+    "name": "lncRNADisease",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "iTALK": {
+    "name": "iTALK",
+    "license": {
+      "name": "CC BY-NC-SA 3.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/3.0/"
+    }
+  },
+  "Adhesome": {
+    "name": "Adhesome",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "BioGRID": {
+    "name": "BioGRID",
+    "license": {
+      "name": "MIT",
+      "full_name": "MIT License",
+      "attribution": "attrib",
+      "url": "https://spdx.org/licenses/MIT.html"
+    },
+    "urls": {
+      "articles": [
+        "http://genomebiology.biomedcentral.com/articles/10.1186/gb-2003-4-3-r23",
+        "http://nar.oxfordjournals.org/content/34/suppl_1/D535.long",
+        "http://nar.oxfordjournals.org/content/36/suppl_1/D637.long",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D698.long",
+        "http://nar.oxfordjournals.org/content/41/D1/D816.long",
+        "http://nar.oxfordjournals.org/content/43/D1/D470.long"
+      ],
+      "webpages": [
+        "http://thebiogrid.org/"
+      ]
+    },
+    "pubmeds": [
+      25428363,
+      23203989,
+      21071413,
+      18000002,
+      16381927,
+      12620108
+    ],
+    "emails": [
+      [
+        "biogridadmin@gmail.com",
+        "BioGRID Team"
+      ],
+      [
+        "md.tyers@umontreal.ca",
+        "Michael Tyers"
+      ]
+    ],
+    "recommend": "one of the largest interaction resources; contains both HTP and literature curated interactions"
+  },
+  "SignaLink2": {
+    "name": "SignaLink2",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "ARN": {
+    "name": "ARN",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.tandfonline.com/doi/full/10.4161/15548627.2014.994346"
+      ],
+      "webpages": [
+        "http://autophagyregulation.org/"
+      ]
+    },
+    "pubmeds": [
+      25635527
+    ],
+    "emails": [
+      [
+        "korcsmaros@gmail.com",
+        "Tamas Korcsmaros"
+      ],
+      [
+        "tamas.korcsmaros@tgac.ac.uk",
+        "Tamas Korcsmaros"
+      ]
+    ],
+    "recommend": "well curated essential interactions in autophagy regulation; connections to transcription factors",
+    "descriptions": [
+      "From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database."
+    ]
+  },
+  "DeathDomain": {
+    "name": "DeathDomain",
+    "license": {
+      "name": "NAR Open Access",
+      "full_name": "Nucleic Acids Research Open Access",
+      "attribution": "attrib",
+      "url": null
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/40/D1/D331"
+      ],
+      "webpages": [
+        "http://deathdomain.org/"
+      ]
+    },
+    "pubmeds": [
+      22135292
+    ],
+    "emails": [
+      [
+        "hyunho@ynu.ac.kr",
+        "Hyun Ho Park"
+      ]
+    ],
+    "recommend": "focused deep curation effort on death domain superfamily proteins; many specific relationships",
+    "descriptions": [
+      "The PubMed database was used as the primary source for collecting information and constructing the DD database. After finding synonyms for each of the 99 DD superfamily proteins using UniProtKB and Entrez Gene, we obtained a list of articles using each name of the proteins and its synonyms on a PubMed search, and we selected the articles that contained evidence for physical binding among the proteins denoted. We also manually screened information that was in other databases, such as DIP, IntAct, MINT, STRING and Entrez Gene. All of the 295 articles used for database construction are listed on our database website."
+    ]
+  },
+  "DrugCentral": {
+    "name": "DrugCentral",
+    "license": {
+      "name": "CC BY-SA 4.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "Kinexus": {
+    "name": "Kinexus",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CollecTRI": {
+    "name": "CollecTRI",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "HTRI": {
+    "name": "HTRI",
+    "license": {
+      "name": "LGPLv3",
+      "full_name": "GNU Lesser General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/lgpl-3.0.en.html"
+    }
+  },
+  "ABS": {
+    "name": "ABS",
+    "license": {
+      "name": "GPLv2",
+      "full_name": "GNU General Public License version 2",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-2.0.html"
+    }
+  },
+  "HPA": {
+    "name": "HPA",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "Humsavar": {
+    "name": "Humsavar",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "MCAM": {
+    "name": "MCAM",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "DoRothEA_E": {
+    "name": "DoRothEA_E",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "Pavlidis2021": {
+    "name": "Pavlidis2021",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "OpenTargets": {
+    "name": "OpenTargets",
+    "license": {
+      "name": "OpenTargets",
+      "full_name": "Open Targets mixed license",
+      "attribution": "attrib",
+      "url": "https://platform-docs.opentargets.org/licence"
+    }
+  },
+  "iPTMnet": {
+    "name": "iPTMnet",
+    "license": {
+      "name": "CC BY-NC-SA 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+    }
+  },
+  "HGNC": {
+    "name": "HGNC",
+    "license": {
+      "name": "HGNC",
+      "full_name": "HGNC License",
+      "attribution": "attrib",
+      "url": "https://www.genenames.org/about/"
+    }
+  },
+  "Pharos": {
+    "name": "Pharos",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "HU-union": {
+    "name": "HU-union",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Pavlidis": {
+    "name": "Pavlidis",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "HumanCellMap": {
+    "name": "HumanCellMap",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CellTypist": {
+    "name": "CellTypist",
+    "license": {
+      "name": "CC BY 3.0",
+      "full_name": "Creative Commons Attribution 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/3.0/"
+    }
+  },
+  "ELM": {
+    "name": "ELM",
+    "license": {
+      "name": "ELM",
+      "full_name": "ELM Software License Agreement",
+      "attribution": "attrib",
+      "url": "http://elm.eu.org/media/Elm_academic_license.pdf"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/40/D1/D242.long",
+        "http://nar.oxfordjournals.org/content/42/D1/D259.long",
+        "http://nar.oxfordjournals.org/content/44/D1/D294.long"
+      ],
+      "webpages": [
+        "http://elm.eu.org/"
+      ]
+    },
+    "pubmeds": [
+      22110040,
+      24214962,
+      26615199
+    ],
+    "emails": [
+      [
+        "feedback@elm.eu.org",
+        "ELM Team"
+      ],
+      [
+        "gibson@embl.de",
+        "Toby Gibson"
+      ]
+    ],
+    "recommend": "structural details: domain-motif relationships; very high confidence",
+    "descriptions": [
+      "Ideally, each motif class has multiple example instances of this motif annotated, whereby an instance is described as a match to the regular expression pattern of the ELM motif class in a protein sequence. For each instance entry, ideally, multiple sources of experimental evidence are recorded (identifying participant, detecting motif presence and detecting interaction), and, following annotation best practices, a reliability score is given by the annotator."
+    ]
+  },
+  "DLRP": {
+    "name": "DLRP",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "InterPro": {
+    "name": "InterPro",
+    "license": {
+      "name": "CC0 1.0",
+      "full_name": "Creative Commons Zero 1.0 Universal",
+      "attribution": "noattrib",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode"
+    }
+  },
+  "MINT": {
+    "name": "MINT",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC1751541/"
+      ],
+      "webpages": [
+        "http://mint.bio.uniroma2.it/mint/Welcome.do"
+      ]
+    },
+    "emails": [
+      [
+        "livia.perfetto@live.it",
+        "Livia Perfetto"
+      ]
+    ]
+  },
+  "Macrophage": {
+    "name": "Macrophage",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.biomedcentral.com/1752-0509/4/63"
+      ],
+      "webpages": [
+        "http://www.macrophages.com/macrophage-pathways"
+      ]
+    },
+    "pubmeds": [
+      20470404
+    ],
+    "emails": [
+      [
+        "tom.freeman@roslin.ed.ac.uk",
+        "Tom Freeman"
+      ]
+    ],
+    "recommend": "medium size resource with effect signs; high ratio of specific interactions; interactions confirmed in macrophages",
+    "descriptions": [
+      "Ongoing analysis of macrophage-related datasets and an interest in consolidating our knowledge of a number of signalling pathways directed our choice of pathways to be mapped (see Figure 1). Public and propriety databases were initially used as resources for data mining, but ultimately all molecular interaction data was sourced from published literature. Manual curation of the literature was performed to firstly evaluate the quality of the evidence supporting an interaction and secondly, to extract the necessary and additional pieces of information required to 'understand' the pathway and construct an interaction diagram. We have drawn pathways based on our desire to model pathways active in a human macrophage and therefore all components have been depicted using standard human gene nomenclature (HGNC). However, our understanding of the pathway components and the interactions between them, have been drawn largely from a consensus view of literature knowledge. As such the pathways presented here are based on data derived from a range of different cellular systems and mammalian species (human and mouse)."
+    ]
+  },
+  "InnateDB-All": {
+    "name": "InnateDB-All",
+    "license": {
+      "name": "DSL",
+      "full_name": "Design Science License",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/license-list.html#dsl"
+    }
+  },
+  "CPAD": {
+    "name": "CPAD",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    }
+  },
+  "KEGG-MEDICUS": {
+    "name": "KEGG-MEDICUS",
+    "license": {
+      "name": "CC BY-SA 4.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "SPIKE": {
+    "name": "SPIKE",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.biomedcentral.com/1471-2105/9/110",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D793.full.html"
+      ],
+      "webpages": [
+        "http://www.cs.tau.ac.il/~spike/"
+      ]
+    },
+    "pubmeds": [
+      18289391,
+      21097778
+    ],
+    "emails": [
+      [
+        "rshamir@tau.ac.il",
+        "Ron Shamir"
+      ]
+    ],
+    "recommend": "one of the 3 large resources providing effect signs; combined with Signor and SignaLink gives the major part of the literature curated activity flow network",
+    "descriptions": [
+      "SPIKE’s data on relationships between entities come from three sources: (i) Highly curated data submitted directly to SPIKE database by SPIKE curators and experts in various biomedical domains. (ii) Data imported from external signaling pathway databaes. At present, SPIKE database imports such data from Reactome, KEGG, NetPath and The Transcription Factor Encyclopedia (http://www.cisreg.ca/cgi-bin/tfe/home.pl). (iii) Data on protein–protein interactions (PPIs) imported either directly from wide-scale studies that recorded such interactions [to date,PPI data were imported from Stelzl et al., Rual et al. and Lim et al.] or from external PPI databases [IntAct and MINT]. Relationship data coming from these different sources vary greatly in their quality and this is reflected by a quality level attribute, which is attached to each relationship in SPIKE database (Supplementary Data). Each relationship in SPIKE is linked to at least one PubMed reference that supports it. As of August 2010, the SPIKE database contains 20 412 genes/proteins, 542 complexes (327 of high quality), 320 protein families (167 of high quality) and 39 small molecules. These entities are linked by 34 338 interactions (of which 2400 are of high quality) and 6074 regulations (4420 of high quality). These are associated with 5873 journal references in total. Each of the maps is constructed by a domain expert; typically the same expert will also be responsible later for keeping it up-to-date. The expert reads the relevant literature and identifies those interactions and regulations that are pertinent to the pathway. The regulations and interactions in the database are assigned quality values ranging from 1 to 4. In general, relationships (regulations and interactions) derived from highly focused biochemical studies are assigned high quality (2 or 1) while those derived from high-throughput experiments are assigned lower quality (4 or 3). The curator uses best judgment to assign a quality level. For example, relationships mentioned in two independent research reports, or cited repeatedly in reviews written by leading authorities will get quality 1. Relationships with cited concrete references and those imported en masse from external curated signaling DBs are initially assigned quality 2 but later can be changed to the highest quality after the curator has read and was convinced by the cited papers. Data imported from protein-protein interaction DBs and datasets are assigned quality 3 or 4, depending on the experimental technique."
+    ]
+  },
+  "miRDeatdhDB": {
+    "name": "miRDeatdhDB",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "phospho.ELM": {
+    "name": "phospho.ELM",
+    "license": {
+      "name": "ELM",
+      "full_name": "ELM Software License Agreement",
+      "attribution": "attrib",
+      "url": "http://elm.eu.org/media/Elm_academic_license.pdf"
+    }
+  },
+  "DDInter": {
+    "name": "DDInter",
+    "license": {
+      "name": "CC BY-NC-SA 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+    }
+  },
+  "TFcensus": {
+    "name": "TFcensus",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "DEPOD": {
+    "name": "DEPOD",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://stke.sciencemag.org/content/6/275/rs10.long",
+        "http://nar.oxfordjournals.org/content/43/D1/D531.long"
+      ],
+      "webpages": [
+        "http://www.koehn.embl.de/depod/index.php"
+      ]
+    },
+    "pubmeds": [
+      23674824,
+      25332398
+    ],
+    "emails": [
+      [
+        "koehn@embl.de",
+        "Maja Kohn"
+      ]
+    ],
+    "recommend": "the only resource focusing on dephosphorylation interactions; most of these can not be found anywhere else",
+    "descriptions": [
+      "DEPOD the human DEPhOsphorylation Database (version 1.0) is a manually curated database collecting human active phosphatases, their experimentally verified protein and non-protein substrates and dephosphorylation site information, and pathways in which they are involved. It also provides links to popular kinase databases and protein-protein interaction databases for these phosphatases and substrates. DEPOD aims to be a valuable resource for studying human phosphatases and their substrate specificities and molecular mechanisms; phosphatase-targeted drug discovery and development; connecting phosphatases with kinases through their common substrates; completing the human phosphorylation/dephosphorylation network."
+    ]
+  },
+  "NetworkBlast": {
+    "name": "NetworkBlast",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CytoSig": {
+    "name": "CytoSig",
+    "license": {
+      "name": "CytoSig",
+      "full_name": "CytoSig License",
+      "attribution": "attrib",
+      "url": "https://github.com/data2intelligence/CytoSig/blob/master/LICENSE"
+    }
+  },
+  "OMA": {
+    "name": "OMA",
+    "license": {
+      "name": "CC BY-SA 2.5",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "ICELLNET": {
+    "name": "ICELLNET",
+    "license": {
+      "name": "GPLv3",
+      "full_name": "GNU General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  },
+  "Tfact": {
+    "name": "Tfact",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Li2012": {
+    "name": "Li2012",
+    "license": {
+      "name": "CC BY-NC 3.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/3.0/"
+    }
+  },
+  "Kirouac2010": {
+    "name": "Kirouac2010",
+    "license": {
+      "name": "CC BY-NC-ND 3.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-NoDerivs 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-nd/3.0/"
+    }
+  },
+  "MatrixDB": {
+    "name": "MatrixDB",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://bioinformatics.oxfordjournals.org/content/25/5/690.long",
+        "http://nar.oxfordjournals.org/content/43/D1/D321.long",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D235.long"
+      ],
+      "webpages": [
+        "http://matrixdb.univ-lyon1.fr/"
+      ]
+    },
+    "pubmeds": [
+      19147664,
+      20852260,
+      25378329
+    ],
+    "emails": [
+      [
+        "matrixdb@ibcp.fr",
+        "MatrixDB Team"
+      ],
+      [
+        "sylvie.ricard-blum@ibcp.fr",
+        "Sylvie Ricard-Blum"
+      ]
+    ],
+    "recommend": "small, literature curated interaction resource; many interactions for receptors and extracellular proteins",
+    "descriptions": [
+      "Protein data were imported from the UniProtKB/Swiss-Prot database (Bairoch et al., 2005) and identified by UniProtKB/SwissProt accession numbers. In order to list all the partners of a protein, interactions are associated by default to the accession number of the human protein. The actual source species used in experiments is indicated in the page reporting interaction data. Intracellular and membrane proteins were included to obtain a comprehensive network of the partners of extracellular molecules. Indeed, ECM proteins and GAGs bind to a number of membrane proteins or cell-associated proteoglycans and some of them interact with intracellular partners upon internalization (Dixelius et al., 2000). ECM proteins were identified by the UniProtKB/Swiss-Prot keyword ‘extracellular matrix’ and by the GO terms ‘extracellular matrix’, ‘proteinaceous extracellular matrix’ and their child terms. The proteins annotated with the GO terms ‘extracellular region’ and ‘extracellular space’, which are used for proteins found in biological fluids, were not included because circulating molecules do not directly contribute to the extracellular scaffold. Additionally, 96 proteins were manually (re-)annotated through literature curation. MatrixDB integrates 1378 interactions from the Human Protein Reference Database (HPRD, Prasad et al., 2009), 211 interactions from the Molecular INTeraction database (MINT, Chatr-Aryamontri et al., 2007), 46 interactions from the Database of Interacting Proteins (DIP, Salwinski et al., 2004), 232 interactions from IntAct (Kerrien et al., 2007a) and 839 from BioGRID (Breitkreutz et al., 2008) involving at least one extracellular biomolecule of mammalian origin. We added 283 interactions from manual literature curation and 65 interactions from protein and GAG array experiments.",
+      "Interaction data stored in MatrixDB are (i) experimentally determined in the laboratory using surface plasmon resonance (SPR) binding assays, including protein and glycosaminoglycan arrays probed by SPR imaging, (ii) extracted from the literature by manual curation and (iii) imported from other interaction databases belonging to the IMEx consortium [IntAct, DIP, MINT, BioGRID], as well as from the Human Protein Reference Database. Imported data are restricted to interactions involving at least one extracellular protein.",
+      "The content of MatrixDB has been updated with new interaction data manually curated by the MatrixDB team, and by importing interaction data from four interaction databases of the IMEx consortium via The Proteomics Standard Initiative Common QUery InterfaCe (PSICQUIC), a community standard for computational access to molecular-interaction data resources. In the current release MatrixDB contains 904 interactions supported by 1244 experiments, which have been manually curated from 237 publications, compared to 490 interactions supported by 847 experiments in the previous version of the database. This is the MatrixDB ‘core’ data set."
+    ]
+  },
+  "Almen2009": {
+    "name": "Almen2009",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "HPO": {
+    "name": "HPO",
+    "license": {
+      "name": "HPO",
+      "full_name": "HPO License",
+      "attribution": "attrib",
+      "url": "https://hpo.jax.org/app/license"
+    }
+  },
+  "Yang2016": {
+    "name": "Yang2016",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CARFMAP": {
+    "name": "CARFMAP",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0143274"
+      ],
+      "webpages": [
+        "http://visionet.erc.monash.edu.au/CARFMAP/"
+      ]
+    },
+    "pubmeds": [
+      26673252
+    ],
+    "emails": [
+      [
+        "hieu.nim@monash.edu",
+        "Hieu T Nim"
+      ],
+      [
+        "sarah.boyd@monash.edu",
+        "Sarah E Boyd"
+      ]
+    ]
+  },
+  "miRecords": {
+    "name": "miRecords",
+    "license": {
+      "name": "miRecords",
+      "full_name": "miRecords License",
+      "attribution": "attrib",
+      "url": "http://c1.accurascience.com/miRecords/copyright.php"
+    }
+  },
+  "hu.MAP2": {
+    "name": "hu.MAP2",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "OPM": {
+    "name": "OPM",
+    "license": {
+      "name": "Apache 2.0",
+      "full_name": "Apache License, version 2.0",
+      "attribution": "attrib",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "STRING": {
+    "name": "STRING",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/43/D1/D447.long",
+        "http://nar.oxfordjournals.org/content/41/D1/D808.long",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D561.long",
+        "http://nar.oxfordjournals.org/content/37/suppl_1/D412.long",
+        "http://nar.oxfordjournals.org/content/35/suppl_1/D358.long",
+        "http://nar.oxfordjournals.org/content/33/suppl_1/D433.long",
+        "http://nar.oxfordjournals.org/content/31/1/258.long",
+        "http://nar.oxfordjournals.org/content/28/18/3442.long"
+      ],
+      "webpages": [
+        "http://string-db.org/"
+      ]
+    },
+    "pubmeds": [
+      25352553,
+      23203871,
+      21045058,
+      18940858,
+      17098935,
+      15608232,
+      12519996,
+      10982861
+    ],
+    "emails": [
+      [
+        "bork@embl.de",
+        "Peer Bork"
+      ],
+      [
+        "lars.juhl.jensen@cpr.ku.dk",
+        "Lars Juhl Jensen"
+      ],
+      [
+        "mering@imls.uzh.ch",
+        "Christian von Mering"
+      ]
+    ]
+  },
+  "TCRcuration": {
+    "name": "TCRcuration",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "Adrecs": {
+    "name": "Adrecs",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "DisGeNet": {
+    "name": "DisGeNet",
+    "license": {
+      "name": "CC BY-NC-SA 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+    }
+  },
+  "PANTHER": {
+    "name": "PANTHER",
+    "license": {
+      "name": "GPLv2",
+      "full_name": "GNU General Public License version 2",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-2.0.html"
+    },
+    "urls": {
+      "articles": [
+        "http://link.springer.com/protocol/10.1007%2F978-1-60761-175-2_7#section=82252&page=1",
+        "http://nar.oxfordjournals.org/content/35/suppl_1/D247.long"
+      ],
+      "webpages": [
+        "http://www.pantherdb.org/"
+      ]
+    },
+    "pubmeds": [
+      17130144,
+      19597783
+    ],
+    "emails": [
+      [
+        "feedback@pantherdb.org",
+        "Panther Team"
+      ],
+      [
+        "paul.thomas@sri.com",
+        "Paul Thomas"
+      ]
+    ],
+    "recommend": "",
+    "descriptions": [
+      "References are captured at three levels. First, each pathway as a whole requires a reference. For signaling pathways, at least three references, usually review papers, are required in order to provide a more objective view of the scope of the pathway. For metabolic pathways, a textbook reference is usually sufficient. Second, references are often associated to each molecule class in the pathway. Most of these references are OMIM records or review papers. Third, references are provided to support association of specific protein sequences with a particular molecule class, e.g., the SWISS-PROT sequence P53_HUMAN annotated as an instance of the molecule class ‘‘P53’’ appearing in the pathway class ‘‘P53 pathway’’. These are usually research papers that report the experimental evidence that a particular protein or gene participates in the reactions represented in the pathway diagram. There are three major properties that make this infrastructure differ from other pathway curation systems, such as from Reactome and EcoCyc. First, the pathway diagrams are drawn with CellDesigner software. There are two advantages to using CellDesigner. First, controlled graphical notations are used to draw the pathway diagram, and the software automatically creates a computational representation that is compatible with the SBML standard. Second, a pathway diagram can be viewed with an exact, one-to-one correspondence with the ontological representation of the pathways stored in the back-end. The second property is that the scope of the pathway is defined first based on literature, and pathway components (proteins, genes, RNAs) are treated as ontology terms, or molecule classes, rather than specific instances. This means that multiple proteins from the same organism or different organisms can potentially play the same given role in a pathway. The advantage is that the work flow is more similar to the thinking process of the biologists who are the users of our curation software module. The third major property is that the curation software is designed to be simple enough to be used directly by bench biologists after a brief training course. All other pathway databases we are aware of employ highly trained curators, who of course cannot be experts in all areas of biology. The current set of PANTHER pathways has been curated by more than 40 different external experts from the scientific community; they must only have demonstrated their expertise with publications in the relevant field."
+    ]
+  },
+  "ARACNe-GTEx": {
+    "name": "ARACNe-GTEx",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "PDZBase": {
+    "name": "PDZBase",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    },
+    "urls": {
+      "articles": [
+        "http://bioinformatics.oxfordjournals.org/content/21/6/827.long"
+      ],
+      "webpages": [
+        "http://abc.med.cornell.edu/pdzbase"
+      ]
+    },
+    "pubmeds": [
+      15513994
+    ],
+    "emails": [
+      [
+        "haw2002@med.cornell.edu",
+        "Harel Weinstein"
+      ],
+      [
+        "pdzbase@med.cornell.edu",
+        "PDZBase Team"
+      ]
+    ],
+    "recommend": "a handful specific interactions for proteins with PDZ domain",
+    "descriptions": [
+      "PDZBase is a database that aims to contain all known PDZ-domain-mediated protein-protein interactions. Currently, PDZBase contains approximately 300 such interactions, which have been manually extracted from &gt;200 articles. PDZBase currently contains ∼300 interactions, all of which have been manually extracted from the literature, and have been independently verified by two curators. The extracted information comes from in vivo (co-immunoprecipitation) or in vitro experiments (GST-fusion or related pull-down experiments). Interactions identified solely from high throughput methods (e.g. yeast two-hybrid or mass spectrometry) were not included in PDZBase. Other prerequisites for inclusion in the database are: that knowledge of the binding sites on both interacting proteins must be available (for instance through a truncation or mutagenesis experiment); that interactions must be mediated directly by the PDZ-domain, and not by any other possible domain within the protein."
+    ]
+  },
+  "Reactome": {
+    "name": "Reactome",
+    "license": {
+      "name": "CC0 1.0",
+      "full_name": "Creative Commons Zero 1.0 Universal",
+      "attribution": "noattrib",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/33/suppl_1/D428.long",
+        "http://nar.oxfordjournals.org/content/37/suppl_1/D619.long",
+        "http://onlinelibrary.wiley.com/doi/10.1002/pmic.201100066/abstract",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D691.long",
+        "http://genomebiology.com/content/8/3/R39",
+        "http://nar.oxfordjournals.org/content/42/D1/D472.long",
+        "http://www.mdpi.com/2072-6694/4/4/1180/htm"
+      ],
+      "webpages": [
+        "http://reactome.org/"
+      ]
+    },
+    "pubmeds": [
+      15608231,
+      18981052,
+      21751369,
+      21067998,
+      24213504,
+      24243840
+    ],
+    "emails": [
+      [
+        "help@reactome.org",
+        "Reactome Team"
+      ],
+      [
+        "hhe@ebi.ac.uk",
+        "Henning Hermjakob"
+      ]
+    ],
+    "recommend": "the largest process description resource; peerless coverage; both signaling and metabolism",
+    "descriptions": [
+      "Once the content of the module is approved by the author and curation staff, it is peer-reviewed on the development web-site, by one or more bench biologists selected by the curator in consultation with the author. The peer review is open and the reviewers are acknowledged in the database by name. Any issues raised in the review are resolved, and the new module is scheduled for release."
+    ]
+  },
+  "CytReg": {
+    "name": "CytReg",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "PhosphoPoint": {
+    "name": "PhosphoPoint",
+    "license": {
+      "name": "CC BY-SA 4.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://bioinformatics.oxfordjournals.org/content/24/16/i14.long"
+      ],
+      "webpages": [
+        "http://kinase.bioinformatics.tw/",
+        "http://web.archive.org/web/20140530070613/http://kinase.bioinformatics.tw/"
+      ]
+    },
+    "pubmeds": [
+      18689816
+    ],
+    "emails": [
+      [
+        "cyhuang5@ym.edu.tw",
+        "Chi-Ying F. Huang"
+      ],
+      [
+        "kmchao@csie.ntu.edu.tw",
+        "Kun-Mao Chao"
+      ]
+    ],
+    "descriptions": [
+      "We have integrated three existing databases, including Phospho.ELM (release 6.0, total 9236 phosphorylation sites), HPRD (release 6, total 8992 phosphorylation sites), SwissProt (release 51.5, total 6529 phosphorylation sites), and our manually curated 400 kinase–substrate pairs, which are primarily from review articles. Among these phosphorylation sites, 7843 (6152+995+696) are from high-throughput (HTP) screening, 6329 (3828+1152+1349) are from low-throughput (LTP) analysis, and only 679 (420+97+162) are both from HTP and LTP screening. One special note is that there are 887 phosphorylation sites, which do not have annotation from literature in the SwissProt database and it is not possible distinguish whether these are from HTP or LTP."
+    ]
+  },
+  "IMEx": {
+    "name": "IMEx",
+    "license": {
+      "name": "CC BY 2.5",
+      "full_name": "Creative Commons Attribution 2.5 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/2.5/"
+    }
+  },
+  "Wojtowicz2020": {
+    "name": "Wojtowicz2020",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "dbPTM": {
+    "name": "dbPTM",
+    "license": {
+      "name": "NAR Open Access",
+      "full_name": "Nucleic Acids Research Open Access",
+      "attribution": "attrib",
+      "url": null
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/41/D1/D295.long",
+        "http://www.biomedcentral.com/1756-0500/2/111",
+        "http://nar.oxfordjournals.org/content/34/suppl_1/D622.long",
+        "http://nar.oxfordjournals.org/content/44/D1/D435.long"
+      ],
+      "webpages": [
+        "http://dbptm.mbc.nctu.edu.tw/"
+      ]
+    },
+    "pubmeds": [
+      16381945,
+      19549291,
+      23193290,
+      26578568
+    ],
+    "emails": [
+      [
+        "francis@saturn.yzu.edu.tw",
+        "Hsien-Da Huang"
+      ],
+      [
+        "bryan@mail.nctu.edu.tw",
+        "Hsien-Da Huang"
+      ]
+    ],
+    "recommend": "integrates many small efforts; beside phosphorylations provides all types of PTMs and enzyme-substrate relationships",
+    "descriptions": [
+      "Due to the inaccessibility of database contents in several online PTM resources, a total 11 biological databases related to PTMs are integrated in dbPTM, including UniProtKB/SwissProt, version 9.0 of Phospho.ELM, PhosphoSitePlus, PHOSIDA, version 6.0 of O-GLYCBASE, dbOGAP, dbSNO, version 1.0 of UbiProt, PupDB, version 1.1 of SysPTM and release 9.0 of HPRD. With the high throughput of MS-based methods in post-translational proteomics, this update also includes manually curated MS/MS-identified peptides associated with PTMs from research articles through a literature survey. First, a table list of PTM-related keywords is constructed by referring to the UniProtKB/SwissProt PTM list (http://www.uniprot.org/docs/ptmlist.txt) and the annotations of RESID (28). Then, all fields in the PubMed database are searched based on the keywords of the constructed table list. This is then followed by downloading the full text of the research articles. For the various experiments of proteomic identification, a text-mining system is developed to survey full-text literature that potentially describes the site-specific identification of modified sites. Approximately 800 original and review articles associated with MS/MS proteomics and protein modifications are retrieved from PubMed (July 2012). Next, the full-length articles are manually reviewed for precisely extracting the MS/MS peptides along with the modified sites. Furthermore, in order to determine the locations of PTMs on a full-length protein sequence, the experimentally verified MS/MS peptides are then mapped to UniProtKB protein entries based on its database identifier (ID) and sequence identity. In the process of data mapping, MS/MS peptides that cannot align exactly to a protein sequence are discarded. Finally, each mapped PTM site is attributed with a corresponding literature (PubMed ID).",
+      "dbPTM was developed as a comprehensive database of experimentally verified PTMs from several databases with annotations of potential PTMs for all UniProtKB protein entries. For this tenth anniversary of dbPTM, the updated resource includes not only a comprehensive dataset of experimentally verified PTMs, supported by the literature, but also an integrative interface for accessing all available databases and tools that are associated with PTM analysis. As well as collecting experimental PTM data from 14 public databases, this update manually curates over 12,000 modified peptides, including the emerging S-nitrosylation, S-glutathionylation and succinylation, from approximately 500 research articles, which were retrieved by text mining."
+    ]
+  },
+  "DGIdb": {
+    "name": "DGIdb",
+    "license": {
+      "name": "MIT",
+      "full_name": "MIT License",
+      "attribution": "attrib",
+      "url": "https://spdx.org/licenses/MIT.html"
+    }
+  },
+  "talklr": {
+    "name": "talklr",
+    "license": {
+      "name": "GPLv3",
+      "full_name": "GNU General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  },
+  "HI-II": {
+    "name": "HI-II",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Ataxia": {
+    "name": "Ataxia",
+    "license": {
+      "name": "CC BY 2.5",
+      "full_name": "Creative Commons Attribution 2.5 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/2.5/"
+    },
+    "urls": {
+      "articles": [
+        "http://hmg.oxfordjournals.org/content/20/3/510.long"
+      ],
+      "webpages": [
+        "http://franklin.imgen.bcm.tmc.edu/ppi/tables.html"
+      ]
+    },
+    "emails": [
+      [
+        "Tong_Hao@dfci.harvard.edu",
+        "Tong Hao"
+      ],
+      [
+        "barabasi@gmail.com",
+        "Albert-Laszlo Barabasi"
+      ]
+    ],
+    "descriptions": [
+      "In order to expand the interaction dataset, we added relevant direct protein–protein interactions from currently available human protein–protein interaction networks (Rual et al., 2005; Stelzl et al., 2005). We also searched public databases, including BIND (Bader et al., 2003), DIP (Xenarios et al., 2002), HPRD (Peri et al., 2003), MINT (Zanzoni et al., 2002), and MIPS (Pagel et al., 2005), to identify literature-based binary interactions involving the 54 ataxia-associated baits and the 561 interacting prey proteins. We identified 4796 binary protein–protein interactions for our Y2H baits and prey proteins (Table S4) and incorporated them in the Y2H protein–protein interaction map (Figures 4A–4C)."
+    ]
+  },
+  "HIPPIE": {
+    "name": "HIPPIE",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Havugimana": {
+    "name": "Havugimana",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "miRTarBase": {
+    "name": "miRTarBase",
+    "license": {
+      "name": "miRTarBase",
+      "full_name": "miRTarBase License",
+      "attribution": "attrib",
+      "url": "http://mirtarbase.cuhk.edu.cn/cache/download/LICENSE"
+    }
+  },
+  "connectomeDB2020": {
+    "name": "connectomeDB2020",
+    "license": {
+      "name": "MIT",
+      "full_name": "MIT License",
+      "attribution": "attrib",
+      "url": "https://spdx.org/licenses/MIT.html"
+    }
+  },
+  "Twosides": {
+    "name": "Twosides",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    }
+  },
+  "SIGNOR": {
+    "name": "SIGNOR",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/44/D1/D548",
+        "http://f1000research.com/posters/1098359"
+      ],
+      "webpages": [
+        "http://signor.uniroma2.it/"
+      ]
+    },
+    "pubmeds": [
+      26467481
+    ],
+    "emails": [
+      [
+        "perfetto@live.it",
+        "Livia Perfetto"
+      ]
+    ],
+    "recommend": "provides effect sign for an unprecedented number of interactions; large and recent curation effort; many specific entities; PTMs with enzymes",
+    "descriptions": [
+      "SIGNOR, the SIGnaling Network Open Resource, organizes and stores in a structured format signaling information published in the scientific literature. The captured information is stored as binary causative relationships between biological entities and can be represented graphically as activity flow. The entire network can be freely downloaded and used to support logic modeling or to interpret high content datasets. The core of this project is a collection of more than 11000 manually-annotated causal relationships between proteins that participate in signal transduction. Each relationship is linked to the literature reporting the experimental evidence. In addition each node is annotated with the chemical inhibitors that modulate its activity. The signaling information is mapped to the human proteome even if the experimental evidence is based on experiments on mammalian model organisms."
+    ]
+  },
+  "NRF2ome": {
+    "name": "NRF2ome",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.hindawi.com/journals/omcl/2013/737591/",
+        "http://www.sciencedirect.com/science/article/pii/S0014579312003912"
+      ],
+      "webpages": [
+        "http://nrf2.elte.hu/"
+      ]
+    },
+    "pubmeds": [
+      22641035,
+      23710289
+    ],
+    "emails": [
+      [
+        "korcsmaros@gmail.com",
+        "Tamas Korcsmaros"
+      ],
+      [
+        "tamas.korcsmaros@tgac.ac.uk",
+        "Tamas Korcsmaros"
+      ]
+    ],
+    "recommend": "specific details about NRF2 related oxidative stress signaling; connections to transcription factors",
+    "descriptions": [
+      "From Korcsmaros 2010: ... we first listed signaling proteins and interactions from reviews and then added further signaling interactions of the listed proteins. We used reviews as a starting point, manually looked up interactions three times, and manually searched for interactions of known signaling proteins with no signaling interactions so far in the database."
+    ]
+  },
+  "TRRUST": {
+    "name": "TRRUST",
+    "license": {
+      "name": "CC BY-SA 4.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "Compleat": {
+    "name": "Compleat",
+    "license": {
+      "name": "CC BY-SA 4.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "Integrins": {
+    "name": "Integrins",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "JASPAR": {
+    "name": "JASPAR",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "SIDER": {
+    "name": "SIDER",
+    "license": {
+      "name": "CC BY-NC-SA 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+    }
+  },
+  "lncrnadb": {
+    "name": "lncrnadb",
+    "license": {
+      "name": "NAR Open Access",
+      "full_name": "Nucleic Acids Research Open Access",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "HuRI Lit-BM": {
+    "name": "HuRI Lit-BM",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.cell.com/cell/abstract/S0092-8674(14)01422-6"
+      ],
+      "webpages": [
+        "http://interactome.dfci.harvard.edu/H_sapiens/",
+        "http://www.interactome-atlas.org/"
+      ]
+    },
+    "pubmeds": [
+      25416956
+    ],
+    "emails": [
+      [
+        "Michael_Calderwood@dfci.harvard.edu",
+        "Michael Calderwood"
+      ]
+    ],
+    "descriptions": [
+      "High-quality non-systematic Literature dataset. In 2013, we extracted interaction data from BIND, BioGRID, DIP, HPRD, MINT, IntAct, and PDB to generate a high-quality binary literature dataset comprising ~11,000 protein-protein interactions that are binary and supported by at least two traceable pieces of evidence (publications and/or methods) (Rolland et al Cell 2014). Although this dataset does not result from a systematic investigation of the interactome search space and should thus be used with caution for any network topology analyses, it represents valuable interactions for targeted studies and is freely available to the research community through the search engine or via download."
+    ]
+  },
+  "Matrisome": {
+    "name": "Matrisome",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "CellChatDB-cofactors": {
+    "name": "CellChatDB-cofactors",
+    "license": {
+      "name": "GPLv3",
+      "full_name": "GNU General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  },
+  "CellChatDB": {
+    "name": "CellChatDB",
+    "license": {
+      "name": "GPLv3",
+      "full_name": "GNU General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  },
+  "ComPPI": {
+    "name": "ComPPI",
+    "license": {
+      "name": "CC BY-SA 4.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "HSN": {
+    "name": "HSN",
+    "urls": {
+      "articles": [],
+      "webpages": [
+        "http://www.cancer-systemsbiology.org/dataandsoftware.htm",
+        "http://www.bri.nrc.ca/wang/"
+      ]
+    },
+    "emails": [
+      [
+        "Edwin.Wang@cnrc-nrc.gc.ca",
+        "Edwin Wang"
+      ]
+    ],
+    "descriptions": [
+      "Composed from multiple manually curated datasets, and contains own manual cuartion effort. Methods are unclear, and the dataset has not been published in reviewed paper. Based on the Cui et al 2007. Wang Lab has manually curated human signaling data from literature since 2005. The data sources include BioCarta, CST Signaling pathways, NCI Pathway Interaction Database, iHOP, and many review papers. The contents are updated every year. iHOP is not literature curated, but is a literature mining platform."
+    ]
+  },
+  "Yu2011": {
+    "name": "Yu2011",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "SignaLink": {
+    "name": "SignaLink",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "PathwayCommons": {
+    "name": "PathwayCommons",
+    "license": {
+      "name": "PathwayCommons",
+      "full_name": "PathwayCommons License",
+      "attribution": "attrib",
+      "url": "http://www.pathwaycommons.org/#faq-2"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D685.long"
+      ],
+      "webpages": [
+        "http://www.pathwaycommons.org/pc2/",
+        "http://www.pathwaycommons.org/about/"
+      ]
+    },
+    "pubmeds": [
+      21071392
+    ],
+    "emails": [
+      [
+        "gary.bader@utoronto.ca",
+        "Gary Bader"
+      ]
+    ]
+  },
+  "Compath": {
+    "name": "Compath",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "ncRDeathDB": {
+    "name": "ncRDeathDB",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "phosphoELM": {
+    "name": "phosphoELM",
+    "license": {
+      "name": "ELM",
+      "full_name": "ELM Software License Agreement",
+      "attribution": "attrib",
+      "url": "http://elm.eu.org/media/Elm_academic_license.pdf"
+    },
+    "urls": {
+      "articles": [
+        "http://www.biomedcentral.com/1471-2105/5/79",
+        "http://nar.oxfordjournals.org/content/36/suppl_1/D240.full",
+        "http://nar.oxfordjournals.org/content/39/suppl_1/D261"
+      ],
+      "webpages": [
+        "http://phospho.elm.eu.org/"
+      ]
+    },
+    "pubmeds": [
+      15212693,
+      17962309,
+      21062810
+    ],
+    "emails": [
+      [
+        "toby.gibson@embl.de",
+        "Toby Gibson"
+      ]
+    ],
+    "recommend": "one of the largest kinase-substrate databases; substantial number of specific proteins and interactions, with more receptors than PhosphoSite",
+    "descriptions": [
+      "Phospho.ELM http://phospho.elm.eu.org is a new resource containing experimentally verified phosphorylation sites manually curated from the literature and is developed as part of the ELM (Eukaryotic Linear Motif) resource. Phospho.ELM constitutes the largest searchable collection of phosphorylation sites available to the research community. The Phospho.ELM entries store information about substrate proteins with the exact positions of residues known to be phosphorylated by cellular kinases. Additional annotation includes literature references, subcellular compartment, tissue distribution, and information about the signaling pathways involved as well as links to the molecular interaction database MINT. Phospho.ELM version 2.0 contains 1,703 phosphorylation site instances for 556 phosphorylated proteins. (Diella 2004)",
+      "Phospho.ELM is a manually curated database of eukaryotic phosphorylation sites. The resource includes data collected from published literature as well as high-throughput data sets. The current release of the Phospho.ELM data set (version 7.0, July 2007) contains 4078 phospho-protein sequences covering 12,025 phospho-serine, 2,362 phospho-threonine and 2,083 phospho-tyrosine sites with a total of 16,470 sites. For each phospho-site we report if the phosphorylation evidence has been identified by small-scale analysis (low throughput; LTP) that typically focus on one or a few proteins at a time or by large-scale experiments (high throughput; HTP), which mainly apply MS techniques. It is noteworthy that in our data set there is a small overlap between instances identified by LTP and HTP experiments. (Diella 2007)",
+      "The current release of the Phospho.ELM data set (version 9.0) contains more than 42,500 non-redundant instances of phosphorylated residues in more than 11,000 different protein sequences (3370 tyrosine, 31 754 serine and 7449 threonine residues). For each phosphosite we report whether the phosphorylation evidence has been identified by small-scale analyses (low-throughput, LTP) and/or by large-scale experiments (high-throughput, HTP), which mainly apply MS techniques. The majority of the protein instances from Phospho. ELM are vertebrate (mostly Homo sapiens (62%) and Mus musculus (16%)) though 22% are from other species, mainly Drosophila melanogaster (13%) and Caenorhabditis elegans (7%). In total, more than 300 different kinases have been annotated and a document providing additional information about all kinases annotated in Phospho.ELM can be found at http://phospho.elm.eu.org/kinases.html. (Dinkel 2010)"
+    ]
+  },
+  "ExTRI": {
+    "name": "ExTRI",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "CancerCellMap": {
+    "name": "CancerCellMap",
+    "license": {
+      "name": "CC BY 2.5",
+      "full_name": "Creative Commons Attribution 2.5 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/2.5/"
+    },
+    "urls": {
+      "articles": [],
+      "webpages": [
+        "http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/",
+        "http://web.archive.org/web/20130729025707/http://cancer.cellmap.org/cellmap/home.do"
+      ]
+    },
+    "emails": [
+      [
+        "gary.bader@utoronto.ca",
+        "Gary Bader"
+      ]
+    ],
+    "recommend": "old literature curated resource; effect signs for some interactions",
+    "descriptions": [
+      "Manually curated data, unpublished. A team of M.Sc. and Ph.D. biologists at the Institute of Bioinformatics in Bangalore, India read original research papers and hand-entered the pathway data into our database. The quality of the Cancer Cell Map pathways is very high. Half of the pathways were reviewed by experts at Memorial Sloan-Kettering Cancer Center and were found to contain only a few errors, which were subsequently fixed. A pathway is a collection of all genes/proteins that have been described as pathway members in any publication and all the interactions between them that can be found described in the literature."
+    ]
+  },
+  "Offsides": {
+    "name": "Offsides",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    }
+  },
+  "IntAct": {
+    "name": "IntAct",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/42/D1/D358.long",
+        "http://nar.oxfordjournals.org/content/40/D1/D841.long",
+        "http://nar.oxfordjournals.org/content/38/suppl_1/D525.long",
+        "http://nar.oxfordjournals.org/content/35/suppl_1/D561.long",
+        "http://nar.oxfordjournals.org/content/32/suppl_1/D452.long"
+      ],
+      "webpages": [
+        "http://www.ebi.ac.uk/intact/"
+      ]
+    },
+    "pubmeds": [
+      14681455,
+      17145710,
+      19850723,
+      22121220,
+      24234451
+    ],
+    "emails": [
+      [
+        "orchard@ebi.ac.uk",
+        "Sandra Orchard"
+      ],
+      [
+        "hhe@ebi.ac.uk",
+        "Henning Hermjakob"
+      ]
+    ],
+    "recommend": "the largest interaction resource; highest coverage on the human proteome; miscore confidence score",
+    "descriptions": [
+      "The information within the IntAct database primarily consists of protein–protein interaction (PPI) data. The majority of the PPI data within the database is annotated to IMEx standards, as agreed by the IMEx consortium. All such records contain a full description of the experimental conditions in which the interaction was observed. This includes full details of the constructs used in each experiment, such as the presence and position of tags, the minimal binding region defined by deletion mutants and the effect of any point mutations, referenced to UniProtKB, the underlying protein sequence database. Protein interactions can be described down to the isoform level, or indeed to the post-translationally cleaved mature peptide level if such information is available in the publication, using the appropriate UniProtKB identifiers. Each entry in IntAct is peer reviewed by a senior curator, and not released until accepted by that curator. Additional rule-based checks are run at the database level, and manually fixed when necessary. Finally, on release of the data, the original author of each publication is contacted and asked to comment on the representation of their data; again manual updates are made to the entry should the author highlight any errors. All binary interactions evidences in the IntAct database, including those generated by Spoke expansion of co-complex data, are clustered to produce a non-redundant set of protein pairs (R. C. Jimenez et al., manuscript in preparation). Each binary pair is then scored, using a simple addition of the cumulated value of a weighted score for the interaction detection method and the interaction type for each interaction evidence associated with that binary pair, as described using the PSI-MI CV terms. The scores are given in Table 1, all children of each given parent receives that score. Only experimental data is scored, inferred interactions, for example, would be excluded. Any low confidence data or data manually tagged by a curator for exclusion from the process, would not be scored. Isoforms and post-processed protein chains are regarded as distinct proteins for scoring purposes."
+    ]
+  },
+  "DoRothEA_A": {
+    "name": "DoRothEA_A",
+    "license": {
+      "name": "Composite",
+      "full_name": "Constituting databases carry their own licenses",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "HuRI": {
+    "name": "HuRI",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.cell.com/cell/abstract/S0092-8674(14)01422-6"
+      ],
+      "webpages": [
+        "http://interactome.dfci.harvard.edu/H_sapiens/",
+        "http://www.interactome-atlas.org/"
+      ]
+    },
+    "pubmeds": [
+      25416956
+    ],
+    "emails": [
+      [
+        "Michael_Calderwood@dfci.harvard.edu",
+        "Michael Calderwood"
+      ]
+    ],
+    "recommend": "very large, quality controlled, unbiased yeast-2-hybrid screening"
+  },
+  "TRED": {
+    "name": "TRED",
+    "license": {
+      "name": "NAR Open Access",
+      "full_name": "Nucleic Acids Research Open Access",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
+  "CellPhoneDB": {
+    "name": "CellPhoneDB",
+    "license": {
+      "name": "MIT",
+      "full_name": "MIT License",
+      "attribution": "attrib",
+      "url": "https://spdx.org/licenses/MIT.html"
+    }
+  },
+  "NetPath": {
+    "name": "NetPath",
+    "license": {
+      "name": "CC BY 2.5",
+      "full_name": "Creative Commons Attribution 2.5 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/2.5/"
+    },
+    "urls": {
+      "articles": [
+        "http://genomebiology.com/content/11/1/R3",
+        "http://database.oxfordjournals.org/content/2011/bar032.long",
+        "http://database.oxfordjournals.org/content/2011/bar021.long",
+        "http://www.omicsonline.com/0974-276X/JPB-04-184.php",
+        "http://www.biomedcentral.com/1756-0500/4/408",
+        "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3830942/",
+        "http://link.springer.com/article/10.1007/s12079-012-0168-0",
+        "http://www.hindawi.com/journals/jst/2012/376470/",
+        "http://link.springer.com/article/10.1007/s12079-012-0186-y",
+        "http://link.springer.com/article/10.1007/s12079-012-0181-3",
+        "http://link.springer.com/article/10.1007/s12079-013-0197-3",
+        "http://www.tandfonline.com/doi/full/10.3109/15419061.2013.791683",
+        "http://link.springer.com/article/10.1007/s12079-013-0200-z",
+        "http://database.oxfordjournals.org/content/2014/bau007.long",
+        "http://link.springer.com/article/10.1007/s12079-014-0224-z",
+        "http://www.hindawi.com/journals/jst/2014/962962/"
+      ],
+      "webpages": [
+        "http://netpath.org/"
+      ]
+    },
+    "pubmeds": [
+      20067622,
+      21959865,
+      21742767,
+      21996254,
+      24255551,
+      22684822,
+      22649723,
+      23255051,
+      23161412,
+      23504413,
+      23631681,
+      23606317,
+      24573880,
+      24584707,
+      24829797
+    ],
+    "emails": [
+      [
+        "pandey@jhmi.edu",
+        "Akhilesh Pandey"
+      ]
+    ],
+    "recommend": "the smallest process description resource, but represents a high quality literature curation effort; provides pathway annotations",
+    "descriptions": [
+      "The initial annotation process of any signaling pathway involves gathering and reading of review articles to achieve a brief overview of the pathway. This process is followed by listing all the molecules that arereported to be involved in the pathway under annotation. Information regarding potential pathway authorities are also gathered at this initial stage. Pathway experts are involved in initial screening of the molecules listed to check for any obvious omissions. In the second phase, annotators manually perform extensive literature searches using search keys, which include all the alter native names of the molecules involved, the name of the pathway, the names of reactions, and so on. In addition, the iHOP resource is also used to perform advanced PubMed-based literature searches to collect the reactions that were reported to be implicated in a given pathway. The collected reactions are manually entered using the PathBuilder annotation interface, which is subjected to an internal review process involving PhD level scientists with expertise in the areas of molecular biology, immunology and biochemistry. However, there are instances where a molecule has been implicated in a pathway in a published report but the associated experimental evidence is either weak or differs from experiments carried out by other groups. For this purpose, we recruit several investigators as pathway authorities based on their expertise in individual signaling pathways. The review by pathway authorities occasionally leads to correction of errors or, more commonly, to inclusion of additional information. Finally, the pathway authorities help in assessing whether the work of all major laboratories has been incorporated for the given signaling pathway."
+    ]
+  },
+  "LipidMAPS": {
+    "name": "LipidMAPS",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "PathoPhenoDB": {
+    "name": "PathoPhenoDB",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    }
+  },
+  "GOA": {
+    "name": "GOA",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "ComplexPortal": {
+    "name": "ComplexPortal",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "RLIMS-P": {
+    "name": "RLIMS-P",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "HI-III": {
+    "name": "HI-III",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "KEGG": {
+    "name": "KEGG",
+    "license": {
+      "name": "KEGG",
+      "full_name": "KEGG License",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/28/1/27.long"
+      ],
+      "webpages": [
+        "http://www.genome.jp/kegg/"
+      ]
+    },
+    "emails": [
+      [
+        "kanehisa@kuicr.kyoto-u.ac.jp",
+        "Minoru Kaneshia"
+      ]
+    ]
+  },
+  "JASPAR-v2018": {
+    "name": "JASPAR-v2018",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "MPPI": {
+    "name": "MPPI",
+    "license": {
+      "name": "MPPI",
+      "full_name": "MPPI License",
+      "attribution": "attrib",
+      "url": "http://mips.helmholtz-muenchen.de/proj/ppi/"
+    },
+    "urls": {
+      "articles": [
+        "http://bioinformatics.oxfordjournals.org/content/21/6/832"
+      ],
+      "webpages": [
+        "http://mips.helmholtz-muenchen.de/proj/ppi/"
+      ]
+    },
+    "pubmeds": [
+      15531608
+    ],
+    "emails": [
+      [
+        "p.pagel@wzw.tum.de",
+        "Philipp Pagel"
+      ],
+      [
+        "d.frishman@helmholtz-muenchen.de",
+        "Dmitrij Frishman"
+      ]
+    ],
+    "recommend": "small, literature curated interaction dataset; complements well activity flow resources",
+    "descriptions": [
+      "The first and foremost principle of our MPPI database is to favor quality over completeness. Therefore, we decided to include only published experimental evidence derived from individual experiments as opposed to large-scale surveys. High-throughput data may be integrated later, but will be marked to distinguish it from evidence derived from individual experiments."
+    ]
+  },
+  "DIP": {
+    "name": "DIP",
+    "license": {
+      "name": "CC BY-ND 3.0",
+      "full_name": "Creative Commons Attribution-NoDerivatives 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nd/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://nar.oxfordjournals.org/content/28/1/289.long",
+        "http://nar.oxfordjournals.org/content/29/1/239.long",
+        "http://nar.oxfordjournals.org/content/30/1/303.long",
+        "http://nar.oxfordjournals.org/content/32/suppl_1/D449.full"
+      ],
+      "webpages": [
+        "http://dip.doe-mbi.ucla.edu/dip/Main.cgi"
+      ]
+    },
+    "pubmeds": [
+      10592249,
+      11125102,
+      11752321,
+      14681454
+    ],
+    "emails": [
+      [
+        "david@mbi.ucla.edu",
+        "David Eisenberg"
+      ]
+    ],
+    "recommend": "one of the earliest interaction databases; remarkable literature curation effort",
+    "descriptions": [
+      "In the beginning (near 2000), it was a entirely manually curated database: Currently protein–protein interactions are entered into the DIP only following publication in peer-reviewed journals. Entry is done manually by the curator, followed by automated tests that show the proteins and citations exist. Interactions are double-checked by a second curator and flagged accordingly in the database. From 2001, it contains high-throughput interactions: Because the reliability of experimental evidence varies widely, methods of quality assessment have been developed and utilized to identify the most reliable subset of the interactions. This CORE set can be used as a reference when evaluating the reliability of high-throughput protein-protein interaction data sets, for development of prediction methods, as well as in the studies of the properties of protein interaction networks."
+    ]
+  },
+  "BioCarta": {
+    "name": "BioCarta",
+    "license": {
+      "name": "BioCarta",
+      "full_name": "BioCarta License",
+      "attribution": "attrib",
+      "url": "web.archive.org/web/20150207091158/http://biocarta.com/legal/terms.asp"
+    },
+    "urls": {
+      "articles": [],
+      "webpages": [
+        "http://www.biocarta.com/",
+        "http://cgap.nci.nih.gov/Pathways/BioCarta_Pathways"
+      ]
+    },
+    "emails": [
+      [
+        "info@biocarta.com",
+        "BioCarta Scientific Advisory Board"
+      ]
+    ],
+    "descriptions": [
+      "Community built pathway database based on expert curation."
+    ]
+  },
+  "GuideToPharmacology": {
+    "name": "GuideToPharmacology",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "ACSN": {
+    "name": "ACSN",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.nature.com/oncsis/journal/v4/n7/full/oncsis201519a.html",
+        "http://msb.embopress.org/content/4/1/0174.long"
+      ],
+      "webpages": [
+        "https://acsn.curie.fr"
+      ]
+    },
+    "pubmeds": [
+      26192618,
+      18319725
+    ],
+    "emails": [
+      [
+        "andrei.zinovyev@curie.fr",
+        "Andrei Zinovyev"
+      ]
+    ],
+    "recommend": "the third largest process description resource; focused on signaling pathways; relationships mapped into a topological space",
+    "descriptions": [
+      "The map curator studies the body of literature dedicated to the biological process or molecular mechanism of interest. The initial sources of information are the major review articles from high-impact journals that represent the consensus view on the studied topic and also provide a list of original references. The map curator extracts information from review papers and represents it in the form of biochemical reactions in CellDesigner. This level of details reflects the ‘canonical’ mechanisms. Afterwards, the curator extends the search and analyses original papers from the list provided in the review articles and beyond. This information is used to enrich the map with details from the recent discoveries in the field. The rule for confident acceptance and inclusion of a biochemical reaction or a process is the presence of sufficient evidences from more than two studies, preferably from different scientific groups. The content of ACSN is also verified and compared with publicly available databases such as REACTOME, KEGG, WikiPathways, BioCarta, Cell Signalling and others to ensure comprehensive representation of consensus pathways and links on PMIDs of original articles confirmed annotated molecular interactions.",
+      "CellDesigner 3.5 version was used to enter biological facts from a carefully studied selection of papers (see the whole bibliography on the web site with Supplementary information). Whenever the details of a biological fact could not be naturally expressed with CellDesigner standard notations, it was fixed and some solution was proposed. For example, we added a notation (co‐factor) to describe all the components intervening in the transcription of genes mediated by the E2F family proteins."
+    ]
+  },
+  "NTNUcuration": {
+    "name": "NTNUcuration",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "KEGG-PC": {
+    "name": "KEGG-PC",
+    "license": {
+      "name": "PathwayCommons",
+      "full_name": "PathwayCommons License",
+      "attribution": "attrib",
+      "url": "http://www.pathwaycommons.org/#faq-2"
+    }
+  },
+  "Laudanna": {
+    "name": "Laudanna",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "urls": {
+      "webpages": [
+        "http://dp.univr.it/~laudanna/LCTST/downloads/"
+      ]
+    },
+    "emails": [
+      [
+        "giovanni.scardoni@gmail.com",
+        "Giovanni Scardoni"
+      ]
+    ]
+  },
+  "Guide to Pharmacology": {
+    "name": "Guide to Pharmacology",
+    "license": {
+      "name": "CC BY-SA 3.0",
+      "full_name": "Creative Commons Attribution-ShareAlike 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    }
+  },
+  "EMBRACE": {
+    "name": "EMBRACE",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Lit-BM-13": {
+    "name": "Lit-BM-13",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "HOCOMOCO-v11": {
+    "name": "HOCOMOCO-v11",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "AlzPathway": {
+    "name": "AlzPathway",
+    "license": {
+      "name": "CC BY 3.0",
+      "full_name": "Creative Commons Attribution 3.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "urls": {
+      "articles": [
+        "http://www.biomedcentral.com/1752-0509/6/52",
+        "http://onlinelibrary.wiley.com/doi/10.1038/clpt.2013.37/epdf",
+        "http://link.springer.com/protocol/10.1007%2F978-1-4939-2627-5_25"
+      ],
+      "webpages": [
+        "http://alzpathway.org/AlzPathway.html"
+      ]
+    },
+    "pubmeds": [
+      23511713,
+      22647208
+    ],
+    "emails": [
+      [
+        "ogishima@sysmedbio.org",
+        "Soichi Ogishima"
+      ],
+      [
+        "info@alzpathway.org",
+        "Soichi Ogishima"
+      ]
+    ],
+    "descriptions": [
+      "We collected 123 review articles related to AD accessible from PubMed. We then manually curated these review articles, and have built an AD pathway map by using CellDesigner. Molecules are distinguished by the following types: proteins, complexes, simple molecules, genes, RNAs, ions, degraded products, and phenotypes. Gene symbols are pursuant to the HGNC symbols. Reactions are also distinguished by the following categories: state transition, transcription, translation, heterodimer association, dissociation, transport, unknown transition, and omitted transition. All the reactions have evidences to the references in PubMed ID using the MIRIAM scheme. All the references used for constructing the AlzPathway are listed in the ‘References for AlzPathway’. Cellular types are distinguished by the followings: neuron, astrocyte, and microglial cells. Cellular compartments are also distinguished by the followings: brain blood barrier, presynaptic, postsynaptic, and their inner cellular localizations."
+    ]
+  },
+  "miRBase": {
+    "name": "miRBase",
+    "license": {
+      "name": "CC0 1.0",
+      "full_name": "Creative Commons Zero 1.0 Universal",
+      "attribution": "noattrib",
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/legalcode"
+    }
+  },
+  "TopDB": {
+    "name": "TopDB",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  },
+  "CST": {
+    "name": "CST",
+    "license": {
+      "name": "No license",
+      "full_name": "No license",
+      "attribution": "attrib",
+      "url": "http://www.gnu.org/licenses/license-list.html#NoLicense"
+    },
+    "urls": {
+      "articles": [],
+      "webpages": [
+        "http://www.cellsignal.com/common/content/content.jsp?id=science-pathways"
+      ]
+    },
+    "emails": [
+      [
+        "info@cellsignal.com",
+        "Cell Signaling Technology"
+      ]
+    ],
+    "descriptions": [
+      "On these resource pages you can find signaling pathway diagrams, research overviews, relevant antibody products, publications, and other research resources organized by topic. The pathway diagrams associated with these topics have been assembled by CST scientists and outside experts to provide succinct and current overviews of selected signaling pathways."
+    ]
+  },
+  "CellTalkDB": {
+    "name": "CellTalkDB",
+    "license": {
+      "name": "GPLv3",
+      "full_name": "GNU General Public License version 3",
+      "attribution": "attrib",
+      "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  },
+  "HPMR": {
+    "name": "HPMR",
+    "license": {
+      "name": "CC BY-NC 4.0",
+      "full_name": "Creative Commons Attribution-NonCommercial 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+  }
+}
