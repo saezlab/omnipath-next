@@ -94,8 +94,8 @@ const CHART_COLORS = {
 
 
 export default function CombinedDatabaseVisualization({
-  width = 1250,
-  height = 1400,
+  width = 1200,
+  height = 1270,
 }: CombinedVisualizationProps) {
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -173,7 +173,7 @@ export default function CombinedDatabaseVisualization({
         yPosition: 60  // Y position for grid
       },
       charts: {
-        height: 400,  // Height for charts section
+        height: 350,  // Height for charts section
         yPosition: 950,  // Y position for charts with some spacing from grid
         chartWidth: 200,  // Adjusted for better fit
         chartHeight: 280,
