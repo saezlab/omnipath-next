@@ -11,7 +11,7 @@ import {
   interactionTypeColors,
   annotationCategoryColors,
   VoronoiNode
-} from "@/utils/database-treemap-data";
+} from "@/utils/database-data";
 
 interface GridVisualizationProps {
   width?: number;

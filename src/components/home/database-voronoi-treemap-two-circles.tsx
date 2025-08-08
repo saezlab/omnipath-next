@@ -8,7 +8,7 @@ import { voronoiTreemap } from "d3-voronoi-treemap";
 import {
   VoronoiNode,
   getAllDatabaseData
-} from "@/utils/database-treemap-data";
+} from "@/utils/database-data";
 
 // RWTH Color Palette
 const rwthColors = {

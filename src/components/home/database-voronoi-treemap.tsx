@@ -10,7 +10,7 @@ import {
   getAllDatabaseData,
   databaseColors,
   interactionTypeColors
-} from "@/utils/database-treemap-data";
+} from "@/utils/database-data";
 
 export function DatabaseVoronoiTreemap() {
   const svgRef = useRef<SVGSVGElement>(null);

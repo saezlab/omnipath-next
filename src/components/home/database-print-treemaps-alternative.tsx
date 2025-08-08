@@ -10,7 +10,7 @@ import {
   getAllDatabaseDataAlt,
   interactionTypeColorsAlt,
   annotationCategoryColorsAlt
-} from "@/utils/database-treemap-data";
+} from "@/utils/database-data";
 
 function createTreemap(
   svgElement: SVGSVGElement,
