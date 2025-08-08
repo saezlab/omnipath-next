@@ -499,7 +499,10 @@ export default function CombinedDatabaseVisualization({
             // Ensure minimum readable size is 5pt, hide if smaller
             return fontSize < 5 ? "0px" : `${Math.max(5, fontSize)}px`;
           })
-          .style("fill", "white")
+          .style("fill", () => {
+            // Always use white text for maximum contrast on colored backgrounds
+            return "white";
+          })
           .style("font-weight", "600")
           .style("pointer-events", "none")
           .style("text-shadow", "0 0 2px rgba(0,0,0,0.8)")
@@ -603,7 +606,10 @@ export default function CombinedDatabaseVisualization({
               .attr("transform", `rotate(-90, ${-this.config.dimensions.leftLabelWidth + 25}, ${centerY})`)
               .style("font-size", "15px")
               .style("font-weight", "700")
-              .style("fill", "#374151")
+              .style("fill", () => {
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                return isDarkMode ? "white" : "black";
+              })
               .style("letter-spacing", "1px")
               .text(category.toUpperCase());
               
@@ -639,24 +645,26 @@ export default function CombinedDatabaseVisualization({
             // Position text based on whether it's in a multi-row category
             let indent, fontSize, fontWeight, textColor;
             
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            
             if (isMainCategory) {
               // Single-row main categories (Intercellular, Complexes, Enzyme-Substrate)
               indent = 15;
               fontSize = "14px"; // Slightly larger for main categories
               fontWeight = "700";
-              textColor = "#1f2937";
+              textColor = isDarkMode ? "white" : "black";
             } else if (cells.length > 1) {
               // Subcategories under multi-row categories (with rotated headers)
               indent = 55; // More space for rotated header + separator
               fontSize = "11px"; // Reduced for subcategories to fit better
               fontWeight = "600";
-              textColor = "#4b5563";
+              textColor = isDarkMode ? "#e5e7eb" : "#111827";
             } else {
               // Fallback
               indent = 15;
               fontSize = "11px";
               fontWeight = "600";
-              textColor = "#4b5563";
+              textColor = isDarkMode ? "#e5e7eb" : "#111827";
             }
             
             // For subcategories in multi-row sections, just use row center
@@ -758,7 +766,10 @@ export default function CombinedDatabaseVisualization({
       .attr("y", 15)
       .style("font-size", "16px")
       .style("font-weight", "bold")
-      .style("fill", "#374151")
+      .style("fill", () => {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        return isDarkMode ? "white" : "black";
+      })
       .text("A)");
 
     // Initialize grid visualization
@@ -1172,7 +1183,10 @@ export default function CombinedDatabaseVisualization({
           .attr("y", 15)
           .style("font-size", "16px")
           .style("font-weight", "bold")
-          .style("fill", "#374151")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "white" : "black";
+          })
           .text(label);
       }
 
@@ -1305,7 +1319,10 @@ export default function CombinedDatabaseVisualization({
           .attr("y", 15)
           .style("font-size", "16px")
           .style("font-weight", "bold")
-          .style("fill", "#374151")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "white" : "black";
+          })
           .text(label);
       }
     };
@@ -1410,7 +1427,10 @@ export default function CombinedDatabaseVisualization({
           .attr("y", 15)
           .style("font-size", "16px")
           .style("font-weight", "bold")
-          .style("fill", "#374151")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "white" : "black";
+          })
           .text(label);
       }
     };
@@ -1431,7 +1451,10 @@ export default function CombinedDatabaseVisualization({
         .attr("class", "legend-title")
         .style("font-size", "14px")
         .style("font-weight", "600")
-        .style("fill", "#374151")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        })
         .text("Maintenance");
 
       const maintenanceItems = [
@@ -1454,7 +1477,10 @@ export default function CombinedDatabaseVisualization({
           .attr("y", 10)
           .attr("class", "legend-text")
           .style("font-size", "12px")
-          .style("fill", "#374151")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "#e5e7eb" : "#111827";
+          })
           .text(item.name);
       });
 
@@ -1467,7 +1493,10 @@ export default function CombinedDatabaseVisualization({
         .attr("class", "legend-title")
         .style("font-size", "14px")
         .style("font-weight", "600")
-        .style("fill", "#374151")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        })
         .text("License");
 
       const licenseItems = [
@@ -1489,7 +1518,10 @@ export default function CombinedDatabaseVisualization({
           .attr("y", 10)
           .attr("class", "legend-text")
           .style("font-size", "12px")
-          .style("fill", "#374151")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "#e5e7eb" : "#111827";
+          })
           .text(item.name);
       });
     };
@@ -1509,7 +1541,10 @@ export default function CombinedDatabaseVisualization({
         .attr("class", "legend-title")
         .style("font-size", "14px")
         .style("font-weight", "600")
-        .style("fill", "#374151")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        })
         .text("Resource Overlap");
 
       const overlapItems = [
@@ -1534,7 +1569,10 @@ export default function CombinedDatabaseVisualization({
           .attr("y", 10)
           .attr("class", "legend-text")
           .style("font-size", "12px")
-          .style("fill", "#374151")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "#e5e7eb" : "#111827";
+          })
           .text(item.name);
       });
     };
