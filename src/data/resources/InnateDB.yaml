@@ -4,3 +4,43 @@ license:
   full_name: Design Science License
   attribution: attrib
   url: https://www.gnu.org/licenses/license-list.html#dsl
+urls:
+  articles:
+  - http://msb.embopress.org/content/4/1/218.long
+  - http://www.biomedcentral.com/1752-0509/4/117
+  - http://nar.oxfordjournals.org/content/41/D1/D1228.long
+  webpages:
+  - http://www.innatedb.com/
+pubmeds:
+- 20727158
+- 23180781
+- 18766178
+emails:
+- - innatedb-mail@sfu.ca
+  - InnateDB Team
+- - david.lynn@sahmri.com
+  - David Lynn
+recommend: middle size interaction resource; special focus on immune pathways
+descriptions:
+- InnateDB (www.innatedb.com) is a database and integrated analysis platform specifically
+  designed to facilitate systems-level analyses of the mammalian innate immune response
+  (Lynn et al. 2008; 2010, 2013). To enrich our knowledge of innate immunity networks
+  and pathways, the InnateDB curation team has contextually annotated >25,000 human
+  and mouse innate immunity-relevant molecular interactions through the review of
+  >5,000 biomedical articles. Curation adheres to the MIMIx guidelines and new interactions
+  are added weekly. Importantly, interactions are curated between molecules with a
+  documented role in an innate immunity relevant biological process or pathway and
+  all other interactors regardless of whether the interacting molecule has any known
+  role in innate immunity. This approach captures interactions between the innate
+  immune system and other systems. InnateDB is not limited to data on the innate immune
+  system. It is a comprehensive database of human, mouse and bovine molecular interactions
+  and pathways, consisting of more than 300,000 molecular interactions and 3,000+
+  pathways, integrated from major public molecular interaction and pathway databases.
+  InnateDB is also an analysis platform offering user-friendly bioinformatics tools,
+  including pathway and ontology analysis, network visualization and analysis and
+  the ability to upload and analyze user-supplied gene expression or other quantitative
+  data in a network and/or pathway context. The platform has a global profile and
+  is utilised by >10,000 users per annum and is widely cited. A mirror of the site
+  hosted in Australia is also available at innatedb.sahmri.com. Note that new interactions
+  and gene annotations are added to InnateDB on an almost weekly database so the data
+  is being continuously updated.

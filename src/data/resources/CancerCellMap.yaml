@@ -4,3 +4,21 @@ license:
   full_name: Creative Commons Attribution 2.5 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by/2.5/
+urls:
+  articles: []
+  webpages:
+  - http://www.pathwaycommons.org/archives/PC1/last_release-2011/tab_delim_network/by_source/
+  - http://web.archive.org/web/20130729025707/http://cancer.cellmap.org/cellmap/home.do
+emails:
+- - gary.bader@utoronto.ca
+  - Gary Bader
+recommend: old literature curated resource; effect signs for some interactions
+descriptions:
+- Manually curated data, unpublished. A team of M.Sc. and Ph.D. biologists at the
+  Institute of Bioinformatics in Bangalore, India read original research papers and
+  hand-entered the pathway data into our database. The quality of the Cancer Cell
+  Map pathways is very high. Half of the pathways were reviewed by experts at Memorial
+  Sloan-Kettering Cancer Center and were found to contain only a few errors, which
+  were subsequently fixed. A pathway is a collection of all genes/proteins that have
+  been described as pathway members in any publication and all the interactions between
+  them that can be found described in the literature.

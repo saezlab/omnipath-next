@@ -4,3 +4,49 @@ license:
   full_name: GNU General Public License version 2
   attribution: attrib
   url: https://www.gnu.org/licenses/gpl-2.0.html
+urls:
+  articles:
+  - http://link.springer.com/protocol/10.1007%2F978-1-60761-175-2_7#section=82252&page=1
+  - http://nar.oxfordjournals.org/content/35/suppl_1/D247.long
+  webpages:
+  - http://www.pantherdb.org/
+pubmeds:
+- 17130144
+- 19597783
+emails:
+- - feedback@pantherdb.org
+  - Panther Team
+- - paul.thomas@sri.com
+  - Paul Thomas
+recommend: ''
+descriptions:
+- References are captured at three levels. First, each pathway as a whole requires
+  a reference. For signaling pathways, at least three references, usually review papers,
+  are required in order to provide a more objective view of the scope of the pathway.
+  For metabolic pathways, a textbook reference is usually sufficient. Second, references
+  are often associated to each molecule class in the pathway. Most of these references
+  are OMIM records or review papers. Third, references are provided to support association
+  of specific protein sequences with a particular molecule class, e.g., the SWISS-PROT
+  sequence P53_HUMAN annotated as an instance of the molecule class ‘‘P53’’ appearing
+  in the pathway class ‘‘P53 pathway’’. These are usually research papers that report
+  the experimental evidence that a particular protein or gene participates in the
+  reactions represented in the pathway diagram. There are three major properties that
+  make this infrastructure differ from other pathway curation systems, such as from
+  Reactome and EcoCyc. First, the pathway diagrams are drawn with CellDesigner software.
+  There are two advantages to using CellDesigner. First, controlled graphical notations
+  are used to draw the pathway diagram, and the software automatically creates a computational
+  representation that is compatible with the SBML standard. Second, a pathway diagram
+  can be viewed with an exact, one-to-one correspondence with the ontological representation
+  of the pathways stored in the back-end. The second property is that the scope of
+  the pathway is defined first based on literature, and pathway components (proteins,
+  genes, RNAs) are treated as ontology terms, or molecule classes, rather than specific
+  instances. This means that multiple proteins from the same organism or different
+  organisms can potentially play the same given role in a pathway. The advantage is
+  that the work flow is more similar to the thinking process of the biologists who
+  are the users of our curation software module. The third major property is that
+  the curation software is designed to be simple enough to be used directly by bench
+  biologists after a brief training course. All other pathway databases we are aware
+  of employ highly trained curators, who of course cannot be experts in all areas
+  of biology. The current set of PANTHER pathways has been curated by more than 40
+  different external experts from the scientific community; they must only have demonstrated
+  their expertise with publications in the relevant field.

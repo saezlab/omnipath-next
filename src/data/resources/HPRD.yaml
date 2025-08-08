@@ -4,3 +4,33 @@ license:
   full_name: HPRD License
   attribution: attrib
   url: http://hprd.org/FAQ
+urls:
+  articles:
+  - http://genome.cshlp.org/content/13/10/2363.long
+  - http://nar.oxfordjournals.org/content/34/suppl_1/D411.long
+  - http://nar.oxfordjournals.org/content/37/suppl_1/D767.long
+  webpages:
+  - http://www.hprd.org/
+pubmeds:
+- 14525934
+- 16381900
+- 18988627
+emails:
+- - pandey@jhmi.edu
+  - Akhilesh Pandey
+recommend: one of the largest kinase-substrate resources; provides large amount of
+  specific information; discontinued
+descriptions:
+- The information about protein-protein interactions was cataloged after a critical
+  reading of the published literature. Exhaustive searches were done based on keywords
+  and medical subject headings (MeSH) by using Entrez. The type of experiments that
+  served as the basis for establishing protein-protein interactions was also annotated.
+  Experiments such as coimmunoprecipitation were designated in vivo, GST fusion and
+  similar “pull-down” type of experiments were designated in vitro, and those identified
+  by yeast two-hybrid were annotated as yeast two-hybrid. Posttranslational modifications
+  were annotated based on the type of modification, site of modification, and the
+  modified residue. In addition, the upstream enzymes that are responsible for modifications
+  of these proteins were reported if described in the articles. The most commonly
+  known and the alternative subcellular localization of the protein were based on
+  the literature. The sites of expression of protein and/or mRNA were annotated based
+  on published studies.

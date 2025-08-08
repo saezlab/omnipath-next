@@ -4,3 +4,49 @@ license:
   full_name: Creative Commons Attribution 4.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by/4.0/
+urls:
+  articles:
+  - http://www.sciencemag.org/content/309/5737/1078.full
+  webpages: []
+pubmeds:
+- 16099987
+emails:
+- - ravi.iyengar@mssm.edu
+  - Ravi Iyengar
+recommend: among the largest resources providing effect signs; more than a decade
+  old dataset, used in many studies
+descriptions:
+- 'We used published research literature to identify the key components of signaling
+  pathways and cellular machines, and their binary interactions. Most components (~80%)
+  have been described in hippocampal neurons or related neuronal cells. Other components
+  are from other cells, but are included because they are key components in processes
+  known to occur in hippocampal neurons, such as translation. We then established
+  that these interactions were both direct and functionally relevant. All of the connections
+  were individually verified by at least one of the authors of this paper by reading
+  the relevant primary paper(s). We developed a system made of 545 components (nodes)
+  and 1259 links (connections). We used arbitrary but consistent rules to sort components
+  into various groups. For instance, transcription factors are considered a as part
+  of the transcriptional machinery, although it may also be equally valid to consider
+  them as the most downstream component of the central signaling network. Similarly
+  the AMPA receptor-channel (AMPAR) is considered part of the ion channels in the
+  electrical response system since its activity is essential to defining the postsynaptic
+  response, although it binds to and is activated by glutamate, and hence can be also
+  considered a ligand gated receptor-channel in the plasma membrane. The links were
+  specified by two criteria: function and biochemical mechanism. Three types of functional
+  links were specified. This follows the rules used for representation of pathways
+  in Science’s STKE (S1). Links may be activating, inhibitory or neutral. Neutral
+  links do not specify directionality between components, and are mostly used to represent
+  scaffolding and anchoring undirected or bidirectional interactions. The biochemical
+  specification includes defining the reactions as non-covalent binding interactions
+  or enzymatic reactions. Within the enzymatic category, reactions were further specified
+  as phosphorylation, dephosphorylation, hydrolysis, etc. These two criteria for specification
+  are independent and were defined for all interactions. For the analyses in this
+  study we only used the functional criteria: activating, inhibitory or neutral specifications.
+  We chose papers that demonstrated direct interactions that were supported by either
+  biochemical or physiological effects of the interactions. From these papers we identified
+  the components and interactions that make up the system we analyzed. During this
+  specification process we did not consider whether these interactions would come
+  together to form higher order organizational units. Each component and interaction
+  was validated by a reference from the primary literature (1202 papers were used).
+  A list of authors who read the papers to validate the components and interactions
+  is provided under authors contributions.'

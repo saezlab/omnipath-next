@@ -4,3 +4,25 @@ license:
   full_name: Creative Commons Attribution-ShareAlike 3.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by-sa/3.0/
+urls:
+  articles:
+  - http://www.hindawi.com/journals/omcl/2013/737591/
+  - http://www.sciencedirect.com/science/article/pii/S0014579312003912
+  webpages:
+  - http://nrf2.elte.hu/
+pubmeds:
+- 22641035
+- 23710289
+emails:
+- - korcsmaros@gmail.com
+  - Tamas Korcsmaros
+- - tamas.korcsmaros@tgac.ac.uk
+  - Tamas Korcsmaros
+recommend: specific details about NRF2 related oxidative stress signaling; connections
+  to transcription factors
+descriptions:
+- 'From Korcsmaros 2010: ... we first listed signaling proteins and interactions from
+  reviews and then added further signaling interactions of the listed proteins. We
+  used reviews as a starting point, manually looked up interactions three times, and
+  manually searched for interactions of known signaling proteins with no signaling
+  interactions so far in the database.'

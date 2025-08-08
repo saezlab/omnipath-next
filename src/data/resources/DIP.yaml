@@ -4,3 +4,33 @@ license:
   full_name: Creative Commons Attribution-NoDerivatives 3.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by-nd/3.0/
+urls:
+  articles:
+  - http://nar.oxfordjournals.org/content/28/1/289.long
+  - http://nar.oxfordjournals.org/content/29/1/239.long
+  - http://nar.oxfordjournals.org/content/30/1/303.long
+  - http://nar.oxfordjournals.org/content/32/suppl_1/D449.full
+  webpages:
+  - http://dip.doe-mbi.ucla.edu/dip/Main.cgi
+pubmeds:
+- 10592249
+- 11125102
+- 11752321
+- 14681454
+emails:
+- - david@mbi.ucla.edu
+  - David Eisenberg
+recommend: one of the earliest interaction databases; remarkable literature curation
+  effort
+descriptions:
+- 'In the beginning (near 2000), it was a entirely manually curated database: Currently
+  protein–protein interactions are entered into the DIP only following publication
+  in peer-reviewed journals. Entry is done manually by the curator, followed by automated
+  tests that show the proteins and citations exist. Interactions are double-checked
+  by a second curator and flagged accordingly in the database. From 2001, it contains
+  high-throughput interactions: Because the reliability of experimental evidence varies
+  widely, methods of quality assessment have been developed and utilized to identify
+  the most reliable subset of the interactions. This CORE set can be used as a reference
+  when evaluating the reliability of high-throughput protein-protein interaction data
+  sets, for development of prediction methods, as well as in the studies of the properties
+  of protein interaction networks.'

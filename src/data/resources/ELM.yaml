@@ -4,3 +4,27 @@ license:
   full_name: ELM Software License Agreement
   attribution: attrib
   url: http://elm.eu.org/media/Elm_academic_license.pdf
+urls:
+  articles:
+  - http://nar.oxfordjournals.org/content/40/D1/D242.long
+  - http://nar.oxfordjournals.org/content/42/D1/D259.long
+  - http://nar.oxfordjournals.org/content/44/D1/D294.long
+  webpages:
+  - http://elm.eu.org/
+pubmeds:
+- 22110040
+- 24214962
+- 26615199
+emails:
+- - feedback@elm.eu.org
+  - ELM Team
+- - gibson@embl.de
+  - Toby Gibson
+recommend: 'structural details: domain-motif relationships; very high confidence'
+descriptions:
+- Ideally, each motif class has multiple example instances of this motif annotated,
+  whereby an instance is described as a match to the regular expression pattern of
+  the ELM motif class in a protein sequence. For each instance entry, ideally, multiple
+  sources of experimental evidence are recorded (identifying participant, detecting
+  motif presence and detecting interaction), and, following annotation best practices,
+  a reliability score is given by the annotator.

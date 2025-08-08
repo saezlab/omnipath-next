@@ -4,3 +4,10 @@ license:
   full_name: Creative Commons Attribution-NonCommercial 4.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by-nc/4.0/
+emails:
+- - lars.velten@embl.de
+  - Lars Velten
+- - a.trumpp@dkfz-heidelberg.de
+  - Andreas Trumpp
+- - s.haas@dkfz-heidelberg.de
+  - Simon Haas

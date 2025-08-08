@@ -4,3 +4,27 @@ license:
   full_name: MIT License
   attribution: attrib
   url: https://spdx.org/licenses/MIT.html
+urls:
+  articles:
+  - http://genomebiology.biomedcentral.com/articles/10.1186/gb-2003-4-3-r23
+  - http://nar.oxfordjournals.org/content/34/suppl_1/D535.long
+  - http://nar.oxfordjournals.org/content/36/suppl_1/D637.long
+  - http://nar.oxfordjournals.org/content/39/suppl_1/D698.long
+  - http://nar.oxfordjournals.org/content/41/D1/D816.long
+  - http://nar.oxfordjournals.org/content/43/D1/D470.long
+  webpages:
+  - http://thebiogrid.org/
+pubmeds:
+- 25428363
+- 23203989
+- 21071413
+- 18000002
+- 16381927
+- 12620108
+emails:
+- - biogridadmin@gmail.com
+  - BioGRID Team
+- - md.tyers@umontreal.ca
+  - Michael Tyers
+recommend: one of the largest interaction resources; contains both HTP and literature
+  curated interactions

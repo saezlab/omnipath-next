@@ -4,3 +4,15 @@ license:
   full_name: Creative Commons Attribution 4.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by/4.0/
+urls:
+  articles:
+  - http://www.cell.com/cell/abstract/S0092-8674(14)01422-6
+  webpages:
+  - http://interactome.dfci.harvard.edu/H_sapiens/
+  - http://www.interactome-atlas.org/
+pubmeds:
+- 25416956
+emails:
+- - Michael_Calderwood@dfci.harvard.edu
+  - Michael Calderwood
+recommend: very large, quality controlled, unbiased yeast-2-hybrid screening

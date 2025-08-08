@@ -4,3 +4,11 @@ license:
   full_name: KEGG License
   attribution: attrib
   url: http://www.gnu.org/licenses/license-list.html#NoLicense
+urls:
+  articles:
+  - http://nar.oxfordjournals.org/content/28/1/27.long
+  webpages:
+  - http://www.genome.jp/kegg/
+emails:
+- - kanehisa@kuicr.kyoto-u.ac.jp
+  - Minoru Kaneshia

@@ -4,3 +4,30 @@ license:
   full_name: Creative Commons Attribution 4.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by/4.0/
+urls:
+  articles:
+  - http://www.biomedcentral.com/1752-0509/4/63
+  webpages:
+  - http://www.macrophages.com/macrophage-pathways
+pubmeds:
+- 20470404
+emails:
+- - tom.freeman@roslin.ed.ac.uk
+  - Tom Freeman
+recommend: medium size resource with effect signs; high ratio of specific interactions;
+  interactions confirmed in macrophages
+descriptions:
+- Ongoing analysis of macrophage-related datasets and an interest in consolidating
+  our knowledge of a number of signalling pathways directed our choice of pathways
+  to be mapped (see Figure 1). Public and propriety databases were initially used
+  as resources for data mining, but ultimately all molecular interaction data was
+  sourced from published literature. Manual curation of the literature was performed
+  to firstly evaluate the quality of the evidence supporting an interaction and secondly,
+  to extract the necessary and additional pieces of information required to 'understand'
+  the pathway and construct an interaction diagram. We have drawn pathways based on
+  our desire to model pathways active in a human macrophage and therefore all components
+  have been depicted using standard human gene nomenclature (HGNC). However, our understanding
+  of the pathway components and the interactions between them, have been drawn largely
+  from a consensus view of literature knowledge. As such the pathways presented here
+  are based on data derived from a range of different cellular systems and mammalian
+  species (human and mouse).

@@ -4,3 +4,28 @@ license:
   full_name: Creative Commons Attribution 4.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by/4.0/
+urls:
+  articles:
+  - http://www.cancer-systemsbiology.org/Papers/iet-sb2007.pdf
+pubmeds:
+- 17907678
+emails:
+- - Edwin.Wang@cnrc-nrc.gc.ca
+  - Edwin Wang
+descriptions:
+- To construct the human cellular signalling network, we manually curated signalling
+  pathways from literature. The signalling data source for our pathways is the BioCarta
+  database (http://www.biocarta.com/genes/allpathways.asp), which, so far, is the
+  most comprehensive database for human cellular signalling pathways. Our curated
+  pathway database recorded gene names and functions, cellular locations of each gene
+  and relationships between genes such as activation, inhibition, translocation, enzyme
+  digestion, gene transcription and translation, signal stimulation and so on. To
+  ensure the accuracy and the consistency of the database, each referenced pathway
+  was cross-checked by different researchers and finally all the documented pathways
+  were checked by one researcher. In total, 164 signalling pathways were documented
+  (supplementary Table 2). Furthermore, we merged the curated data with another literature-mined
+  human cellular signalling network. As a result, the merged network contains nearly
+  1100 proteins (SupplementaryNetworkFile). To construct a signalling network, we
+  considered relationships of proteins as links (activation or inactivation as directed
+  links and physical interactions in protein complexes as neutral links) and proteins
+  as nodes.

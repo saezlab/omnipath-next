@@ -4,3 +4,27 @@ license:
   full_name: Creative Commons Attribution-NonCommercial 4.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by-nc/4.0/
+urls:
+  articles:
+  - http://stke.sciencemag.org/content/6/275/rs10.long
+  - http://nar.oxfordjournals.org/content/43/D1/D531.long
+  webpages:
+  - http://www.koehn.embl.de/depod/index.php
+pubmeds:
+- 23674824
+- 25332398
+emails:
+- - koehn@embl.de
+  - Maja Kohn
+recommend: the only resource focusing on dephosphorylation interactions; most of these
+  can not be found anywhere else
+descriptions:
+- DEPOD the human DEPhOsphorylation Database (version 1.0) is a manually curated database
+  collecting human active phosphatases, their experimentally verified protein and
+  non-protein substrates and dephosphorylation site information, and pathways in which
+  they are involved. It also provides links to popular kinase databases and protein-protein
+  interaction databases for these phosphatases and substrates. DEPOD aims to be a
+  valuable resource for studying human phosphatases and their substrate specificities
+  and molecular mechanisms; phosphatase-targeted drug discovery and development; connecting
+  phosphatases with kinases through their common substrates; completing the human
+  phosphorylation/dephosphorylation network.

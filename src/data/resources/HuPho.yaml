@@ -4,3 +4,32 @@ license:
   full_name: No license
   attribution: attrib
   url: http://www.gnu.org/licenses/license-list.html#NoLicense
+urls:
+  articles:
+  - http://onlinelibrary.wiley.com/doi/10.1111/j.1742-4658.2012.08712.x/full
+  webpages:
+  - http://hupho.uniroma2.it/
+pubmeds:
+- 22804825
+emails:
+- - perfetto@live.it
+  - Livia Perfetto
+descriptions:
+- In order to offer a proteome-wide perspective of the phosphatase interactome, we
+  have embarked on an extensive text-mining-assisted literature curation effort to
+  extend phosphatase interaction information that was not yet covered by protein–protein
+  interaction (PPI) databases. Interaction evidence captured by expert curators was
+  annotated in the protein interaction database MINT according to the rapid curation
+  standard. This data set was next integrated with protein interaction information
+  from three additional major PPI databases, IntAct, BioGRID and DIP. These databases
+  are part of the PSIMEx consortium and adopt a common data model and common controlled
+  vocabularies, thus facilitating data integration. Duplicated entries were merged
+  and redundant interactions have been removed. As a result, from the HuPho website
+  it is possible to explore experimental evidence from 718 scientific articles reporting
+  4600 experiments supporting protein interactions where at least one of the partners
+  is a phosphatase. Since some interactions are supported by more than one piece of
+  evidence, the actual number of non-redundant interactions is smaller, 2500 at the
+  time of writing this paper. Moreover, 199 phosphatases have at least one reported
+  ligand, while 53 have none. Interaction evidence is fairly evenly distributed in
+  the four PSIMEx resources suggesting a substantial lack of overlap among the data
+  curated by each database.

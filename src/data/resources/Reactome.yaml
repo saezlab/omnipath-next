@@ -4,3 +4,34 @@ license:
   full_name: Creative Commons Zero 1.0 Universal
   attribution: noattrib
   url: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+urls:
+  articles:
+  - http://nar.oxfordjournals.org/content/33/suppl_1/D428.long
+  - http://nar.oxfordjournals.org/content/37/suppl_1/D619.long
+  - http://onlinelibrary.wiley.com/doi/10.1002/pmic.201100066/abstract
+  - http://nar.oxfordjournals.org/content/39/suppl_1/D691.long
+  - http://genomebiology.com/content/8/3/R39
+  - http://nar.oxfordjournals.org/content/42/D1/D472.long
+  - http://www.mdpi.com/2072-6694/4/4/1180/htm
+  webpages:
+  - http://reactome.org/
+pubmeds:
+- 15608231
+- 18981052
+- 21751369
+- 21067998
+- 24213504
+- 24243840
+emails:
+- - help@reactome.org
+  - Reactome Team
+- - hhe@ebi.ac.uk
+  - Henning Hermjakob
+recommend: the largest process description resource; peerless coverage; both signaling
+  and metabolism
+descriptions:
+- Once the content of the module is approved by the author and curation staff, it
+  is peer-reviewed on the development web-site, by one or more bench biologists selected
+  by the curator in consultation with the author. The peer review is open and the
+  reviewers are acknowledged in the database by name. Any issues raised in the review
+  are resolved, and the new module is scheduled for release.

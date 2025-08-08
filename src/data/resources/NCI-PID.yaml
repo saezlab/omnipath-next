@@ -4,3 +4,28 @@ license:
   full_name: 3-clause BSD License
   attribution: attrib
   url: https://www.gnu.org/licenses/license-list.html#ModifiedBSD
+urls:
+  articles:
+  - http://nar.oxfordjournals.org/content/37/suppl_1/D674.long
+  webpages:
+  - http://pid.nci.nih.gov/index.shtml
+  - http://www.ndexbio.org/
+  - http://web.archive.org/web/20150908030438/http://pid.nci.nih.gov/index.shtml
+pubmeds:
+- 18832364
+emails:
+- - yanch@mail.nih.gov
+  - Chunhua Yan
+recommend: one of the largest process description resources; represents remarkable
+  curation effort; discontinued
+descriptions:
+- 'In curating, editors synthesize meaningful networks of events into defined pathways
+  and adhere to the PID data model for consistency in data representation: molecules
+  and biological processes are annotated with standardized names and unambiguous identifiers;
+  and signaling and regulatory events are annotated with evidence codes and references.
+  To ensure accurate data representation, editors assemble pathways from data that
+  is principally derived from primary research publications. The majority of data
+  in PID is human; however, if a finding discovered in another mammal is also deemed
+  to occur in humans, editors may decide to include this finding, but will also record
+  that the evidence was inferred from another species. Prior to publication, all pathways
+  are reviewed by one or more experts in a field for accuracy and completeness.'

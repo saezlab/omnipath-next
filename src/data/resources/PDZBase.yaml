@@ -4,3 +4,29 @@ license:
   full_name: Unspecified Non-commercial Redistributable
   attribution: attrib
   url: null
+urls:
+  articles:
+  - http://bioinformatics.oxfordjournals.org/content/21/6/827.long
+  webpages:
+  - http://abc.med.cornell.edu/pdzbase
+pubmeds:
+- 15513994
+emails:
+- - haw2002@med.cornell.edu
+  - Harel Weinstein
+- - pdzbase@med.cornell.edu
+  - PDZBase Team
+recommend: a handful specific interactions for proteins with PDZ domain
+descriptions:
+- 'PDZBase is a database that aims to contain all known PDZ-domain-mediated protein-protein
+  interactions. Currently, PDZBase contains approximately 300 such interactions, which
+  have been manually extracted from &gt;200 articles. PDZBase currently contains ∼300
+  interactions, all of which have been manually extracted from the literature, and
+  have been independently verified by two curators. The extracted information comes
+  from in vivo (co-immunoprecipitation) or in vitro experiments (GST-fusion or related
+  pull-down experiments). Interactions identified solely from high throughput methods
+  (e.g. yeast two-hybrid or mass spectrometry) were not included in PDZBase. Other
+  prerequisites for inclusion in the database are: that knowledge of the binding sites
+  on both interacting proteins must be available (for instance through a truncation
+  or mutagenesis experiment); that interactions must be mediated directly by the PDZ-domain,
+  and not by any other possible domain within the protein.'

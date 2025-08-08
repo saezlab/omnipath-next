@@ -1,0 +1,17 @@
+name: HSN
+urls:
+  articles: []
+  webpages:
+  - http://www.cancer-systemsbiology.org/dataandsoftware.htm
+  - http://www.bri.nrc.ca/wang/
+emails:
+- - Edwin.Wang@cnrc-nrc.gc.ca
+  - Edwin Wang
+descriptions:
+- Composed from multiple manually curated datasets, and contains own manual cuartion
+  effort. Methods are unclear, and the dataset has not been published in reviewed
+  paper. Based on the Cui et al 2007. Wang Lab has manually curated human signaling
+  data from literature since 2005. The data sources include BioCarta, CST Signaling
+  pathways, NCI Pathway Interaction Database, iHOP, and many review papers. The contents
+  are updated every year. iHOP is not literature curated, but is a literature mining
+  platform.

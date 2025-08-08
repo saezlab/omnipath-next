@@ -4,3 +4,31 @@ license:
   full_name: Creative Commons Attribution 4.0 International
   attribution: attrib
   url: https://creativecommons.org/licenses/by/4.0/
+urls:
+  articles:
+  - http://nar.oxfordjournals.org/content/43/D1/D447.long
+  - http://nar.oxfordjournals.org/content/41/D1/D808.long
+  - http://nar.oxfordjournals.org/content/39/suppl_1/D561.long
+  - http://nar.oxfordjournals.org/content/37/suppl_1/D412.long
+  - http://nar.oxfordjournals.org/content/35/suppl_1/D358.long
+  - http://nar.oxfordjournals.org/content/33/suppl_1/D433.long
+  - http://nar.oxfordjournals.org/content/31/1/258.long
+  - http://nar.oxfordjournals.org/content/28/18/3442.long
+  webpages:
+  - http://string-db.org/
+pubmeds:
+- 25352553
+- 23203871
+- 21045058
+- 18940858
+- 17098935
+- 15608232
+- 12519996
+- 10982861
+emails:
+- - bork@embl.de
+  - Peer Bork
+- - lars.juhl.jensen@cpr.ku.dk
+  - Lars Juhl Jensen
+- - mering@imls.uzh.ch
+  - Christian von Mering
