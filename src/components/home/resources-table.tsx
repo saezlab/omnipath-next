@@ -217,90 +217,8 @@ export function ResourcesTable() {
     ));
   };
 
-  const getResourceLinks = (resource: ResourceData) => {
-    const links = [];
-    
-    if (resource.urls?.articles && resource.urls.articles.length > 0) {
-      links.push(
-        ...resource.urls.articles.map((url, idx) => (
-          <a
-            key={`article-${idx}`}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 transition-colors"
-            title="Article"
-          >
-            <FileText className="w-4 h-4" />
-          </a>
-        ))
-      );
-    }
-    
-    if (resource.urls?.webpages && resource.urls.webpages.length > 0) {
-      links.push(
-        ...resource.urls.webpages.map((url, idx) => (
-          <a
-            key={`webpage-${idx}`}
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-green-600 hover:text-green-800 transition-colors"
-            title="Website"
-          >
-            <Globe className="w-4 h-4" />
-          </a>
-        ))
-      );
-    }
-    
-    if (resource.pubmeds && resource.pubmeds.length > 0) {
-      links.push(
-        ...resource.pubmeds.map((pmid, idx) => (
-          <a
-            key={`pubmed-${idx}`}
-            href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-purple-600 hover:text-purple-800 transition-colors"
-            title={`PubMed: ${pmid}`}
-          >
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        ))
-      );
-    }
-    
-    if (links.length === 0) {
-      return <span className="text-muted-foreground">—</span>;
-    }
-    
-    return (
-      <div className="flex gap-2 items-center">
-        {links}
-      </div>
-    );
-  };
 
   const getResourceName = (resource: ResourceData) => {
-    const primaryUrl = resource.urls?.webpages?.[0] || resource.urls?.articles?.[0];
-    
-    if (primaryUrl) {
-      return (
-        <div className="flex items-center gap-2">
-          <a
-            href={primaryUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-          >
-            {resource.name}
-          </a>
-          <ExternalLink className="w-3 h-3 text-gray-400" />
-        </div>
-      );
-    }
-    
     return <span className="font-medium">{resource.name}</span>;
   };
 
@@ -450,7 +368,6 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>Links</TableHead>
                   <TableHead>
                     <Button
                       variant="ghost"
@@ -492,7 +409,10 @@ export function ResourcesTable() {
               <TableBody>
                 {filteredAndSortedResources.map((resource, index) => {
                   const isExpanded = expandedRows.has(resource.name);
-                  const hasDetails = resource.descriptions || resource.recommend || resource.emails;
+                  const hasDetails = resource.descriptions || resource.recommend || resource.emails || 
+                    (resource.urls?.articles && resource.urls.articles.length > 0) ||
+                    (resource.urls?.webpages && resource.urls.webpages.length > 0) ||
+                    (resource.pubmeds && resource.pubmeds.length > 0);
                   
                   return (
                     <>
@@ -519,7 +439,6 @@ export function ResourcesTable() {
                             {getCategoryBadges(resource.categories)}
                           </div>
                         </TableCell>
-                        <TableCell>{getResourceLinks(resource)}</TableCell>
                         <TableCell>{getLicenseBadge(resource)}</TableCell>
                         <TableCell>{getMaintenanceBadge(resource.maintenance)}</TableCell>
                         <TableCell className="text-right font-mono">
@@ -528,7 +447,7 @@ export function ResourcesTable() {
                       </TableRow>
                       {isExpanded && hasDetails && (
                         <TableRow key={`${resource.name}-expanded`}>
-                          <TableCell colSpan={6} className="bg-gray-50 border-t-0">
+                          <TableCell colSpan={5} className="bg-gray-50 border-t-0">
                             <div className="space-y-3 py-4">
                               {resource.recommend && (
                                 <div>
@@ -536,6 +455,7 @@ export function ResourcesTable() {
                                   <p className="text-sm text-gray-600">{resource.recommend}</p>
                                 </div>
                               )}
+                              
                               {resource.descriptions && resource.descriptions.length > 0 && (
                                 <div>
                                   <h4 className="font-medium text-sm text-gray-700 mb-2">Descriptions</h4>
@@ -548,6 +468,69 @@ export function ResourcesTable() {
                                   </div>
                                 </div>
                               )}
+                              
+                              {resource.urls?.articles && resource.urls.articles.length > 0 && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Articles</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {resource.urls.articles.map((url, idx) => (
+                                      <a
+                                        key={idx}
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                                      >
+                                        <FileText className="w-4 h-4" />
+                                        Article {idx + 1}
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {resource.urls?.webpages && resource.urls.webpages.length > 0 && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Webpages</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {resource.urls.webpages.map((url, idx) => (
+                                      <a
+                                        key={idx}
+                                        href={url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:underline transition-colors"
+                                      >
+                                        <Globe className="w-4 h-4" />
+                                        Website {idx + 1}
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {resource.pubmeds && resource.pubmeds.length > 0 && (
+                                <div>
+                                  <h4 className="font-medium text-sm text-gray-700 mb-2">PubMed References</h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {resource.pubmeds.map((pmid, idx) => (
+                                      <a
+                                        key={idx}
+                                        href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
+                                      >
+                                        <ExternalLink className="w-4 h-4" />
+                                        PMID: {pmid}
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
                               {resource.emails && resource.emails.length > 0 && (
                                 <div>
                                   <h4 className="font-medium text-sm text-gray-700 mb-2">Contact</h4>
