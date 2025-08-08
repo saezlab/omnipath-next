@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, ChevronUp, ChevronDown, Download, ExternalLink, FileText, Globe, ChevronRight } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, Download, FileText, Globe, ChevronRight } from "lucide-react";
 import {
   getAllResources,
   getResourceStats,
@@ -594,9 +594,19 @@ export function ResourcesTable() {
                     <span className="font-medium">{stats.byLicense.commercial || 0}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Unknown:</span>
-                    <span className="font-medium">{stats.byLicense.unknown || 0}</span>
+                    <span className="text-muted-foreground">No License:</span>
+                    <span className="font-medium">{stats.byLicense.no_license || 0}</span>
                   </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Composite:</span>
+                    <span className="font-medium">{stats.byLicense.composite || 0}</span>
+                  </div>
+                  {stats.byLicense.unknown > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Unknown:</span>
+                      <span className="font-medium">{stats.byLicense.unknown}</span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

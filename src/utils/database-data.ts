@@ -613,6 +613,26 @@ export function getAllResources(): ResourceData[] {
 export function getResourceStats() {
   const resources = getAllResources();
   
+  // Count licenses based on licenseDetails.name if available, otherwise use license category
+  const licenseCount: Record<string, number> = {};
+  resources.forEach(r => {
+    let licenseKey: string;
+    if (r.licenseDetails?.name) {
+      // Use the actual license name from details
+      if (r.licenseDetails.name === "No license") {
+        licenseKey = "no_license";
+      } else if (r.licenseDetails.name === "Composite") {
+        licenseKey = "composite";
+      } else {
+        // For other licenses, use the category
+        licenseKey = r.license;
+      }
+    } else {
+      licenseKey = r.license;
+    }
+    licenseCount[licenseKey] = (licenseCount[licenseKey] || 0) + 1;
+  });
+  
   return {
     total: resources.length,
     totalRecords: resources.reduce((sum, r) => sum + r.recordCount, 0),
@@ -624,9 +644,11 @@ export function getResourceStats() {
       Intercellular: resources.filter(r => r.categories.includes("Intercellular")).length,
     },
     byLicense: {
-      academic_nonprofit: resources.filter(r => r.license === "academic_nonprofit").length,
-      commercial: resources.filter(r => r.license === "commercial").length,
-      unknown: resources.filter(r => r.license === "unknown").length,
+      academic_nonprofit: licenseCount.academic_nonprofit || 0,
+      commercial: licenseCount.commercial || 0,
+      no_license: licenseCount.no_license || 0,
+      composite: licenseCount.composite || 0,
+      unknown: licenseCount.unknown || 0,
     },
     byMaintenance: {
       "frequent updates": resources.filter(r => r.maintenance === "frequent updates").length,
