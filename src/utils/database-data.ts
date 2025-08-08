@@ -2,6 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import dbStats from "@/data/db-stats.json";
+import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
+import resourcesByLicense from "@/data/resources_by_license.json";
+
+// ============================================================================
+// SHARED TYPES AND INTERFACES
+// ============================================================================
 
 export interface VoronoiNode {
   name: string;
@@ -14,7 +20,21 @@ export interface VoronoiNode {
   interactionType?: string;
 }
 
-// Color schemes
+export interface ResourceData {
+  name: string;
+  originalNames: string[];
+  categories: string[];
+  subcategories: string[];
+  recordCount: number;
+  recordsByCategory: Record<string, number>;
+  license: "academic_nonprofit" | "commercial" | "unknown";
+  maintenance: "frequent updates" | "infrequent updates" | "no updates" | "unknown";
+}
+
+// ============================================================================
+// COLOR SCHEMES
+// ============================================================================
+
 export const databaseColors = {
   Interactions: "#176fc1",      // Havelock blue
   "Enzyme-Substrate": "#d22027", // Tomato
@@ -76,7 +96,10 @@ export const annotationCategoryColorsAlt = {
   "Transcription factors": "#ec4899"
 };
 
-// Source groups from filter sidebar
+// ============================================================================
+// ANNOTATION SOURCE GROUPS
+// ============================================================================
+
 const ANNOTATION_SOURCE_GROUPS = {
   "Cell-cell communication": ["Baccin2019", "CellCall", "CellCellInteractions", "CellChatDB", "CellChatDB_complex", "Cellinker", "Cellinker_complex", "CellPhoneDB", "CellPhoneDB_complex", "CellTalkDB", "connectomeDB2020", "EMBRACE", "Guide2Pharma", "iTALK", "HPMR", "ICELLNET", "ICELLNET_complex", "Kirouac2010", "LRdb", "Ramilowski2015", "scConnect", "scConnect_complex", "SignaLink_function", "Surfaceome", "talklr"],
   "Localization (subcellular)": ["ComPPI", "Exocarta", "HPA_subcellular", "HPA_secretome", "HumanCellMap", "LOCATE", "Ramilowski_location", "UniProt_location", "Vesiclepedia", "Wang"],
@@ -99,7 +122,10 @@ Object.entries(ANNOTATION_SOURCE_GROUPS).forEach(([category, sources]) => {
   });
 });
 
-// Data cleaning function
+// ============================================================================
+// SHARED UTILITY FUNCTIONS
+// ============================================================================
+
 export function cleanSourceName(sourceName: string): string {
   const underscoreIndex = sourceName.indexOf('_');
   if (underscoreIndex > 0) {
@@ -110,6 +136,33 @@ export function cleanSourceName(sourceName: string): string {
     }
   }
   return sourceName;
+}
+
+// Shared license/maintenance mapping functions
+function createLicenseMaintenanceMaps() {
+  const sourceMaintenanceMap: Record<string, ResourceData["maintenance"]> = {};
+  const sourceLicenseMap: Record<string, ResourceData["license"]> = {};
+  
+  // Map maintenance categories
+  Object.entries(maintenanceCategories).forEach(([category, resources]) => {
+    (resources as string[]).forEach(resource => {
+      const cleanedResource = cleanSourceName(resource);
+      sourceMaintenanceMap[cleanedResource] = category as ResourceData["maintenance"];
+    });
+  });
+
+  // Map license categories
+  resourcesByLicense.academic_nonprofit.forEach(resource => {
+    const cleanedResource = cleanSourceName(resource);
+    sourceLicenseMap[cleanedResource] = 'academic_nonprofit';
+  });
+
+  resourcesByLicense.commercial.forEach(resource => {
+    const cleanedResource = cleanSourceName(resource);
+    sourceLicenseMap[cleanedResource] = 'commercial';
+  });
+
+  return { sourceMaintenanceMap, sourceLicenseMap };
 }
 
 // Deduplicate sources by cleaned name (treemap specific logic)
@@ -141,6 +194,50 @@ function deduplicateSources(sources: any[]): any[] {
   });
   return Array.from(deduplicatedMap.values());
 }
+
+// Deduplicate sources for table (aggregates record counts)
+function deduplicateSourcesForTable(sources: Array<{ source: string; record_count: number }>): Array<{ source: string; record_count: number }> {
+  // Resources to exclude from plots (composite databases or no licenses)
+  const excludedResources = new Set(['CPAD', 'CollecTRI', 'DoRothEA', 'cellsignal.com']);
+  
+  const deduplicatedMap = new Map<string, { source: string; record_count: number }>();
+  sources.forEach(item => {
+    const cleanedName = cleanSourceName(item.source);
+    
+    // Skip excluded resources
+    if (excludedResources.has(cleanedName)) {
+      return;
+    }
+    
+    const existing = deduplicatedMap.get(cleanedName);
+    
+    if (!existing) {
+      // First occurrence of this cleaned name
+      deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
+    } else {
+      // Check if current item is the original (matches cleaned name exactly)
+      const isCurrentOriginal = item.source === cleanedName;
+      const isExistingOriginal = existing.source === cleanedName;
+      
+      if (isCurrentOriginal && !isExistingOriginal) {
+        // Current is original, existing is secondary - replace
+        deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
+      } else if (!isCurrentOriginal && !isExistingOriginal) {
+        // Both are secondary sources - keep the one with higher record count, but aggregate
+        existing.record_count += item.record_count;
+      } else if (!isCurrentOriginal && isExistingOriginal) {
+        // Existing is original, add current record count to it
+        existing.record_count += item.record_count;
+      }
+      // If existing is original, keep it and add record count
+    }
+  });
+  return Array.from(deduplicatedMap.values());
+}
+
+// ============================================================================
+// VISUALIZATION DATA PROCESSING (for combined-database-visualization.tsx)
+// ============================================================================
 
 // Process interaction types with deduplication
 export function processInteractionTypes(): VoronoiNode[] {
@@ -360,4 +457,121 @@ export function getAllDatabaseDataAlt() {
   });
   
   return data;
+}
+
+// ============================================================================
+// TABLE DATA PROCESSING (for resources-table.tsx)
+// ============================================================================
+
+export function getAllResources(): ResourceData[] {
+  const { sourceMaintenanceMap, sourceLicenseMap } = createLicenseMaintenanceMaps();
+  const resourceMap = new Map<string, ResourceData>();
+  
+  const processResource = (
+    source: string,
+    recordCount: number,
+    category: string,
+    subcategory?: string
+  ) => {
+    const cleanedName = cleanSourceName(source);
+    const existing = resourceMap.get(cleanedName);
+    
+    if (existing) {
+      // Add to existing resource
+      if (!existing.categories.includes(category)) {
+        existing.categories.push(category);
+      }
+      if (subcategory && !existing.subcategories.includes(subcategory)) {
+        existing.subcategories.push(subcategory);
+      }
+      if (!existing.originalNames.includes(source)) {
+        existing.originalNames.push(source);
+      }
+      existing.recordCount += recordCount;
+      existing.recordsByCategory[category] = (existing.recordsByCategory[category] || 0) + recordCount;
+    } else {
+      // Create new resource
+      resourceMap.set(cleanedName, {
+        name: cleanedName,
+        originalNames: [source],
+        categories: [category],
+        subcategories: subcategory ? [subcategory] : [],
+        recordCount,
+        recordsByCategory: { [category]: recordCount },
+        license: sourceLicenseMap[cleanedName] || "unknown",
+        maintenance: sourceMaintenanceMap[cleanedName] || "unknown"
+      });
+    }
+  };
+
+  // Process interactions with subcategories
+  dbStats.interactionsSourceType.forEach(item => {
+    let type = item.type;
+    if (type === 'lncrna_post_transcriptional') {
+      type = 'post_transcriptional';
+    }
+    const subcategory = type === 'mirna_transcriptional' ? 'miRNA Transcriptional' 
+      : type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    
+    processResource(item.source, item.record_count, "Interactions", subcategory);
+  });
+
+  // Process annotations with subcategories
+  dbStats.annotations.forEach(item => {
+    const subcategory = sourceToCategory.get(item.source.toLowerCase()) || "Other";
+    if (subcategory !== "Other") {
+      processResource(item.source, item.record_count, "Annotations", subcategory);
+    }
+  });
+
+  // Process other databases without subcategories
+  dbStats.enz_sub.forEach(item => {
+    processResource(item.source, item.record_count, "Enzyme-Substrate");
+  });
+
+  dbStats.complexes.forEach(item => {
+    processResource(item.source, item.record_count, "Complexes");
+  });
+
+  dbStats.intercell.forEach(item => {
+    processResource(item.source, item.record_count, "Intercellular");
+  });
+
+  return Array.from(resourceMap.values()).sort((a, b) => b.recordCount - a.recordCount);
+}
+
+export function getResourceStats() {
+  const resources = getAllResources();
+  
+  return {
+    total: resources.length,
+    totalRecords: resources.reduce((sum, r) => sum + r.recordCount, 0),
+    byCategory: {
+      Interactions: resources.filter(r => r.categories.includes("Interactions")).length,
+      Annotations: resources.filter(r => r.categories.includes("Annotations")).length,
+      "Enzyme-Substrate": resources.filter(r => r.categories.includes("Enzyme-Substrate")).length,
+      Complexes: resources.filter(r => r.categories.includes("Complexes")).length,
+      Intercellular: resources.filter(r => r.categories.includes("Intercellular")).length,
+    },
+    byLicense: {
+      academic_nonprofit: resources.filter(r => r.license === "academic_nonprofit").length,
+      commercial: resources.filter(r => r.license === "commercial").length,
+      unknown: resources.filter(r => r.license === "unknown").length,
+    },
+    byMaintenance: {
+      "frequent updates": resources.filter(r => r.maintenance === "frequent updates").length,
+      "infrequent updates": resources.filter(r => r.maintenance === "infrequent updates").length,
+      "no updates": resources.filter(r => r.maintenance === "no updates").length,
+      unknown: resources.filter(r => r.maintenance === "unknown").length,
+    }
+  };
+}
+
+// ============================================================================
+// CHART DATA PROCESSING (for combined-database-visualization.tsx charts)
+// ============================================================================
+
+// Deduplicate sources for chart usage (same as visualization component)
+export function deduplicateSourcesForCharts(sources: Array<{ source: string; record_count: number }>): Array<{ source: string; record_count: number }> {
+  return deduplicateSourcesForTable(sources);
 }

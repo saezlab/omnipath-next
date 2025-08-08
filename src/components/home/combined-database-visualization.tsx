@@ -12,8 +12,9 @@ import {
   interactionTypeColors,
   annotationCategoryColors,
   VoronoiNode,
-  cleanSourceName
-} from "@/utils/database-treemap-data";
+  cleanSourceName,
+  deduplicateSourcesForCharts
+} from "@/utils/database-data";
 import dbStats from "@/data/db-stats.json";
 import maintenanceCategories from "@/data/resources_by_maintenance_category.json";
 import resourcesByLicense from "@/data/resources_by_license.json";
@@ -91,45 +92,6 @@ const CHART_COLORS = {
   overlap: ['#176fc1', '#00acc1', '#5e35b1', '#f89d0e', '#d22027']
 };
 
-// Deduplicate sources by cleaned name (same logic as treemap)
-function deduplicateSources(sources: Array<{ source: string; record_count: number }>): Array<{ source: string; record_count: number }> {
-  // Resources to exclude from plots (composite databases or no licenses)
-  const excludedResources = new Set(['CPAD', 'CollecTRI', 'DoRothEA', 'cellsignal.com']);
-  
-  const deduplicatedMap = new Map<string, { source: string; record_count: number }>();
-  sources.forEach(item => {
-    const cleanedName = cleanSourceName(item.source);
-    
-    // Skip excluded resources
-    if (excludedResources.has(cleanedName)) {
-      return;
-    }
-    
-    const existing = deduplicatedMap.get(cleanedName);
-    
-    if (!existing) {
-      // First occurrence of this cleaned name
-      deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
-    } else {
-      // Check if current item is the original (matches cleaned name exactly)
-      const isCurrentOriginal = item.source === cleanedName;
-      const isExistingOriginal = existing.source === cleanedName;
-      
-      if (isCurrentOriginal && !isExistingOriginal) {
-        // Current is original, existing is secondary - replace
-        deduplicatedMap.set(cleanedName, { source: cleanedName, record_count: item.record_count });
-      } else if (!isCurrentOriginal && !isExistingOriginal) {
-        // Both are secondary sources - keep the one with higher record count, but aggregate
-        existing.record_count += item.record_count;
-      } else if (!isCurrentOriginal && isExistingOriginal) {
-        // Existing is original, add current record count to it
-        existing.record_count += item.record_count;
-      }
-      // If existing is original, keep it and add record count
-    }
-  });
-  return Array.from(deduplicatedMap.values());
-}
 
 export default function CombinedDatabaseVisualization({
   width = 1250,
@@ -810,27 +772,27 @@ export default function CombinedDatabaseVisualization({
     const databases: DatabaseSection[] = [
       {
         title: "Interactions",
-        data: deduplicateSources(dbStats.interactions),
+        data: deduplicateSourcesForCharts(dbStats.interactions),
         description: "Molecular interactions between proteins"
       },
       {
         title: "Enzyme-Substrate",
-        data: deduplicateSources(dbStats.enz_sub),
+        data: deduplicateSourcesForCharts(dbStats.enz_sub),
         description: "Enzyme-substrate relationships"
       },
       {
         title: "Complexes",
-        data: deduplicateSources(dbStats.complexes),
+        data: deduplicateSourcesForCharts(dbStats.complexes),
         description: "Protein complex compositions"
       },
       {
         title: "Annotations",
-        data: deduplicateSources(dbStats.annotations),
+        data: deduplicateSourcesForCharts(dbStats.annotations),
         description: "Functional annotations and properties"
       },
       {
         title: "Intercellular",
-        data: deduplicateSources(dbStats.intercell),
+        data: deduplicateSourcesForCharts(dbStats.intercell),
         description: "Intercellular communication molecules"
       }
     ];

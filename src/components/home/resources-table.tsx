@@ -25,7 +25,7 @@ import {
   getAllResources,
   getResourceStats,
   type ResourceData,
-} from "@/utils/resources-table-data";
+} from "@/utils/database-data";
 
 type SortField = "name" | "categories" | "recordCount" | "license" | "maintenance";
 type SortDirection = "asc" | "desc";
