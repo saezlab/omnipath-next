@@ -340,11 +340,11 @@ export function ResourcesTable() {
           </div>
 
           {/* Table */}
-          <div className="rounded-md border">
-            <Table>
+          <div className="rounded-md border overflow-hidden">
+            <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead>
+                  <TableHead className="w-[280px]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -356,7 +356,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[200px]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -368,7 +368,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[240px]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -380,7 +380,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="w-[140px]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -392,7 +392,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead className="text-right">
+                  <TableHead className="text-right w-[120px]">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent ml-auto"
@@ -417,51 +417,61 @@ export function ResourcesTable() {
                   return (
                     <>
                       <TableRow key={`${resource.name}-${index}`}>
-                        <TableCell>
+                        <TableCell className="w-[280px]">
                           <div className="flex items-center gap-2">
                             {hasDetails && (
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-6 w-6 p-0"
+                                className="h-6 w-6 p-0 flex-shrink-0"
                                 onClick={() => toggleRowExpansion(resource.name)}
                               >
                                 <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                               </Button>
                             )}
-                            <div className={!hasDetails ? 'ml-8' : ''}>
-                              {getResourceName(resource)}
+                            <div className={`${!hasDetails ? 'ml-8' : ''} min-w-0`}>
+                              <div className="truncate pr-2" title={resource.name}>
+                                {getResourceName(resource)}
+                              </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[200px]">
                           <div className="flex flex-wrap gap-1">
                             {getCategoryBadges(resource.categories)}
                           </div>
                         </TableCell>
-                        <TableCell>{getLicenseBadge(resource)}</TableCell>
-                        <TableCell>{getMaintenanceBadge(resource.maintenance)}</TableCell>
-                        <TableCell className="text-right font-mono">
+                        <TableCell className="w-[240px] max-w-0">
+                          <div className="min-w-0">
+                            {getLicenseBadge(resource)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="w-[140px]">
+                          {getMaintenanceBadge(resource.maintenance)}
+                        </TableCell>
+                        <TableCell className="text-right font-mono w-[120px]">
                           {resource.recordCount.toLocaleString()}
                         </TableCell>
                       </TableRow>
                       {isExpanded && hasDetails && (
                         <TableRow key={`${resource.name}-expanded`}>
-                          <TableCell colSpan={5} className="bg-gray-50 border-t-0">
-                            <div className="space-y-3 py-4">
+                          <TableCell colSpan={5} className="bg-gray-50 border-t-0 p-0">
+                            <div className="px-6 py-4 space-y-4 max-w-none">
                               {resource.recommend && (
-                                <div>
-                                  <h4 className="font-medium text-sm text-gray-700 mb-1">Recommendation</h4>
-                                  <p className="text-sm text-gray-600">{resource.recommend}</p>
+                                <div className="max-w-full">
+                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Recommendation</h4>
+                                  <p className="text-sm text-gray-600 leading-relaxed break-words">
+                                    {resource.recommend}
+                                  </p>
                                 </div>
                               )}
                               
                               {resource.descriptions && resource.descriptions.length > 0 && (
-                                <div>
+                                <div className="max-w-full">
                                   <h4 className="font-medium text-sm text-gray-700 mb-2">Descriptions</h4>
-                                  <div className="space-y-2">
+                                  <div className="space-y-3">
                                     {resource.descriptions.map((desc, idx) => (
-                                      <p key={idx} className="text-sm text-gray-600 leading-relaxed">
+                                      <p key={idx} className="text-sm text-gray-600 leading-relaxed break-words whitespace-pre-wrap">
                                         {desc}
                                       </p>
                                     ))}
@@ -469,84 +479,88 @@ export function ResourcesTable() {
                                 </div>
                               )}
                               
-                              {resource.urls?.articles && resource.urls.articles.length > 0 && (
-                                <div>
-                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Articles</h4>
-                                  <div className="flex flex-wrap gap-2">
-                                    {resource.urls.articles.map((url, idx) => (
-                                      <a
-                                        key={idx}
-                                        href={url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                                      >
-                                        <FileText className="w-4 h-4" />
-                                        Article {idx + 1}
-                                        <ExternalLink className="w-3 h-3" />
-                                      </a>
-                                    ))}
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {resource.urls?.articles && resource.urls.articles.length > 0 && (
+                                  <div>
+                                    <h4 className="font-medium text-sm text-gray-700 mb-2">Articles</h4>
+                                    <div className="space-y-1">
+                                      {resource.urls.articles.map((url, idx) => (
+                                        <a
+                                          key={idx}
+                                          href={url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors break-all"
+                                        >
+                                          <FileText className="w-4 h-4 flex-shrink-0" />
+                                          <span className="flex-1">Article {idx + 1}</span>
+                                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                        </a>
+                                      ))}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
+                                
+                                {resource.urls?.webpages && resource.urls.webpages.length > 0 && (
+                                  <div>
+                                    <h4 className="font-medium text-sm text-gray-700 mb-2">Webpages</h4>
+                                    <div className="space-y-1">
+                                      {resource.urls.webpages.map((url, idx) => (
+                                        <a
+                                          key={idx}
+                                          href={url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center gap-2 text-sm text-green-600 hover:text-green-800 hover:underline transition-colors break-all"
+                                        >
+                                          <Globe className="w-4 h-4 flex-shrink-0" />
+                                          <span className="flex-1">Website {idx + 1}</span>
+                                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                                        </a>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                               
-                              {resource.urls?.webpages && resource.urls.webpages.length > 0 && (
-                                <div>
-                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Webpages</h4>
-                                  <div className="flex flex-wrap gap-2">
-                                    {resource.urls.webpages.map((url, idx) => (
-                                      <a
-                                        key={idx}
-                                        href={url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:underline transition-colors"
-                                      >
-                                        <Globe className="w-4 h-4" />
-                                        Website {idx + 1}
-                                        <ExternalLink className="w-3 h-3" />
-                                      </a>
-                                    ))}
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {resource.pubmeds && resource.pubmeds.length > 0 && (
+                                  <div>
+                                    <h4 className="font-medium text-sm text-gray-700 mb-2">PubMed References</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                      {resource.pubmeds.map((pmid, idx) => (
+                                        <a
+                                          key={idx}
+                                          href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
+                                        >
+                                          <ExternalLink className="w-3 h-3" />
+                                          PMID: {pmid}
+                                        </a>
+                                      ))}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                              
-                              {resource.pubmeds && resource.pubmeds.length > 0 && (
-                                <div>
-                                  <h4 className="font-medium text-sm text-gray-700 mb-2">PubMed References</h4>
-                                  <div className="flex flex-wrap gap-2">
-                                    {resource.pubmeds.map((pmid, idx) => (
-                                      <a
-                                        key={idx}
-                                        href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
-                                      >
-                                        <ExternalLink className="w-4 h-4" />
-                                        PMID: {pmid}
-                                      </a>
-                                    ))}
+                                )}
+                                
+                                {resource.emails && resource.emails.length > 0 && (
+                                  <div>
+                                    <h4 className="font-medium text-sm text-gray-700 mb-2">Contact</h4>
+                                    <div className="space-y-1">
+                                      {resource.emails.map((email, idx) => (
+                                        <a
+                                          key={idx}
+                                          href={`mailto:${email[0]}`}
+                                          className="block text-sm text-blue-600 hover:text-blue-800 hover:underline break-all"
+                                        >
+                                          {email[1]} ({email[0]})
+                                        </a>
+                                      ))}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                              
-                              {resource.emails && resource.emails.length > 0 && (
-                                <div>
-                                  <h4 className="font-medium text-sm text-gray-700 mb-2">Contact</h4>
-                                  <div className="flex flex-wrap gap-2">
-                                    {resource.emails.map((email, idx) => (
-                                      <a
-                                        key={idx}
-                                        href={`mailto:${email[0]}`}
-                                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                                      >
-                                        {email[1]} ({email[0]})
-                                      </a>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
+                                )}
+                              </div>
                             </div>
                           </TableCell>
                         </TableRow>
