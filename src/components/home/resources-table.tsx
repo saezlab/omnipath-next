@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, Download } from "lucide-react";
 import {
   getAllResources,
   getResourceStats,
@@ -165,13 +165,49 @@ export function ResourcesTable() {
     ));
   };
 
+  const exportToCSV = () => {
+    const headers = ["Resource Name", "Categories", "License Type", "Maintenance", "Records"];
+    const rows = filteredAndSortedResources.map(resource => [
+      resource.name,
+      resource.categories.join("; "),
+      resource.license === "unknown" ? "" : 
+        resource.license === "academic_nonprofit" ? "Academic/Non-profit" : "Commercial",
+      resource.maintenance === "frequent updates" ? "Frequent Updates" :
+        resource.maintenance === "infrequent updates" ? "Infrequent Updates" :
+        resource.maintenance === "no updates" ? "No Updates" : "Unknown",
+      resource.recordCount.toString()
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(field => `"${field.replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "omnipath-resources.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Database Resources Overview</CardTitle>
-        <CardDescription>
-          Comprehensive listing of all {stats.total} resources with {stats.totalRecords.toLocaleString()} total records
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Database Resources Overview</CardTitle>
+            <CardDescription>
+              Comprehensive listing of all {stats.total} resources with {stats.totalRecords.toLocaleString()} total records
+            </CardDescription>
+          </div>
+          <Button onClick={exportToCSV} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
