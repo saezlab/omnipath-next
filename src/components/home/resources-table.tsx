@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -165,9 +165,9 @@ export function ResourcesTable() {
     if (licenseDetails) {
       // Show detailed license info
       const badgeContent = (
-        <div className="flex flex-col">
-          <span className="font-medium">{licenseDetails.name}</span>
-          <span className="text-xs opacity-75">{licenseDetails.fullName}</span>
+        <div className="flex flex-col max-w-[200px]" title={licenseDetails.fullName}>
+          <span className="font-medium truncate">{licenseDetails.name}</span>
+          <span className="text-xs opacity-75 truncate">{licenseDetails.fullName}</span>
         </div>
       );
 
@@ -415,8 +415,8 @@ export function ResourcesTable() {
                     (resource.pubmeds && resource.pubmeds.length > 0);
                   
                   return (
-                    <>
-                      <TableRow key={`${resource.name}-${index}`}>
+                    <React.Fragment key={`${resource.name}-${index}`}>
+                      <TableRow>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
                             {hasDetails && (
@@ -434,8 +434,8 @@ export function ResourcesTable() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
+                        <TableCell className="max-w-[250px]">
+                          <div className="flex flex-wrap gap-1" title={resource.categories.join(", ")}>
                             {getCategoryBadges(resource.categories)}
                           </div>
                         </TableCell>
@@ -446,7 +446,7 @@ export function ResourcesTable() {
                         </TableCell>
                       </TableRow>
                       {isExpanded && hasDetails && (
-                        <TableRow key={`${resource.name}-expanded`}>
+                        <TableRow>
                           <TableCell colSpan={5} className="bg-gray-50 border-t-0 p-0">
                             <div className="px-6 py-4 space-y-4 max-w-none">
                               {resource.recommend && (
@@ -554,7 +554,7 @@ export function ResourcesTable() {
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })}
               </TableBody>
