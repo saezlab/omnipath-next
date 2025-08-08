@@ -340,11 +340,11 @@ export function ResourcesTable() {
           </div>
 
           {/* Table */}
-          <div className="rounded-md border overflow-hidden">
-            <Table className="table-fixed w-full">
+          <div className="rounded-md border">
+            <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[280px]">
+                  <TableHead>
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -356,7 +356,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead className="w-[200px]">
+                  <TableHead>
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -368,7 +368,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead className="w-[240px]">
+                  <TableHead>
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -380,7 +380,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead className="w-[140px]">
+                  <TableHead>
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent"
@@ -392,7 +392,7 @@ export function ResourcesTable() {
                       </div>
                     </Button>
                   </TableHead>
-                  <TableHead className="text-right w-[120px]">
+                  <TableHead className="text-right">
                     <Button
                       variant="ghost"
                       className="h-auto p-0 font-medium hover:bg-transparent ml-auto"
@@ -417,39 +417,31 @@ export function ResourcesTable() {
                   return (
                     <>
                       <TableRow key={`${resource.name}-${index}`}>
-                        <TableCell className="w-[280px]">
+                        <TableCell className="font-medium">
                           <div className="flex items-center gap-2">
                             {hasDetails && (
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-6 w-6 p-0 flex-shrink-0"
+                                className="h-6 w-6 p-0"
                                 onClick={() => toggleRowExpansion(resource.name)}
                               >
                                 <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                               </Button>
                             )}
-                            <div className={`${!hasDetails ? 'ml-8' : ''} min-w-0`}>
-                              <div className="truncate pr-2" title={resource.name}>
-                                {getResourceName(resource)}
-                              </div>
+                            <div className={!hasDetails ? 'ml-8' : ''}>
+                              {getResourceName(resource)}
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="w-[200px]">
+                        <TableCell>
                           <div className="flex flex-wrap gap-1">
                             {getCategoryBadges(resource.categories)}
                           </div>
                         </TableCell>
-                        <TableCell className="w-[240px] max-w-0">
-                          <div className="min-w-0">
-                            {getLicenseBadge(resource)}
-                          </div>
-                        </TableCell>
-                        <TableCell className="w-[140px]">
-                          {getMaintenanceBadge(resource.maintenance)}
-                        </TableCell>
-                        <TableCell className="text-right font-mono w-[120px]">
+                        <TableCell>{getLicenseBadge(resource)}</TableCell>
+                        <TableCell>{getMaintenanceBadge(resource.maintenance)}</TableCell>
+                        <TableCell className="text-right font-mono">
                           {resource.recordCount.toLocaleString()}
                         </TableCell>
                       </TableRow>
@@ -494,7 +486,6 @@ export function ResourcesTable() {
                                         >
                                           <FileText className="w-4 h-4 flex-shrink-0" />
                                           <span className="flex-1">Article {idx + 1}</span>
-                                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
                                         </a>
                                       ))}
                                     </div>
@@ -515,7 +506,6 @@ export function ResourcesTable() {
                                         >
                                           <Globe className="w-4 h-4 flex-shrink-0" />
                                           <span className="flex-1">Website {idx + 1}</span>
-                                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
                                         </a>
                                       ))}
                                     </div>
@@ -534,9 +524,8 @@ export function ResourcesTable() {
                                           href={`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
+                                          className="text-sm text-purple-600 hover:text-purple-800 hover:underline transition-colors"
                                         >
-                                          <ExternalLink className="w-3 h-3" />
                                           PMID: {pmid}
                                         </a>
                                       ))}
