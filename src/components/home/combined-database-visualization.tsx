@@ -1153,7 +1153,11 @@ export default function CombinedDatabaseVisualization({
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end")
-        .style("font-size", "12px");
+        .style("font-size", "12px")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        });
 
       // Y axis with formatting
       const yAxis = d3.axisLeft(yScale)
@@ -1166,7 +1170,11 @@ export default function CombinedDatabaseVisualization({
         .call(yAxis)
         .selectAll("text")
         .style("font-size", "14px")
-        .style("font-weight", "500");
+        .style("font-weight", "500")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        });
 
       // Y axis label
       if (yAxisLabel) {
@@ -1177,6 +1185,10 @@ export default function CombinedDatabaseVisualization({
           .attr("dy", "1em")
           .style("text-anchor", "middle")
           .style("font-size", "13px")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "white" : "black";
+          })
           .text(yAxisLabel);
       }
 
@@ -1287,7 +1299,11 @@ export default function CombinedDatabaseVisualization({
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end")
-        .style("font-size", "12px");
+        .style("font-size", "12px")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        });
 
       // Y axis with formatting
       const yAxis = d3.axisLeft(yScale)
@@ -1302,7 +1318,11 @@ export default function CombinedDatabaseVisualization({
         .call(yAxis)
         .selectAll("text")
         .style("font-size", "14px")
-        .style("font-weight", "500");
+        .style("font-weight", "500")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        });
 
       // Y axis label
       if (yAxisLabel) {
@@ -1313,6 +1333,10 @@ export default function CombinedDatabaseVisualization({
           .attr("dy", "1em")
           .style("text-anchor", "middle")
           .style("font-size", "13px")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "white" : "black";
+          })
           .text(yAxisLabel);
       }
 
@@ -1403,14 +1427,22 @@ export default function CombinedDatabaseVisualization({
         .selectAll("text")
         .attr("transform", "rotate(-45)")
         .style("text-anchor", "end")
-        .style("font-size", "12px");
+        .style("font-size", "12px")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        });
 
       // Y axis
       innerG.append("g")
         .call(d3.axisLeft(yScale).ticks(5))
         .selectAll("text")
         .style("font-size", "14px")
-        .style("font-weight", "500");
+        .style("font-weight", "500")
+        .style("fill", () => {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          return isDarkMode ? "white" : "black";
+        });
 
       // Y axis label
       if (yAxisLabel) {
@@ -1421,6 +1453,10 @@ export default function CombinedDatabaseVisualization({
           .attr("dy", "1em")
           .style("text-anchor", "middle")
           .style("font-size", "13px")
+          .style("fill", () => {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            return isDarkMode ? "white" : "black";
+          })
           .text(yAxisLabel);
       }
 
