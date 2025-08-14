@@ -13,9 +13,6 @@ Example queries:
 • Canonical pathways for a protein:
   SELECT * FROM annotations WHERE source IN ('SignaLink_pathway', 'SIGNOR', 'NetPath', 'KEGG-PC') AND (uniprot = '<uniprot_accession>' OR genesymbol = '<genesymbol>')
 
-• Check if protein is transmembrane:
-  SELECT * FROM annotations WHERE source = 'OPM' AND (uniprot = '<uniprot_accession>' OR genesymbol = '<genesymbol>')
-
 • Find transcription factor regulators:
   SELECT * FROM interactions WHERE collectri AND (target = '<uniprot_accession>' OR target_genesymbol = '<genesymbol>')
 

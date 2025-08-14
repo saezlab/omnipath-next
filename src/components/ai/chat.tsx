@@ -19,11 +19,6 @@ const suggestedActions = [
     action: "Which canonical pathways does EGFR belong to?",
   },
   {
-    title: "Is EGFR a transmembrane protein?",
-    label: "Check membrane localization",
-    action: "Is EGFR a transmembrane protein?",
-  },
-  {
     title: "Which TFs regulate MYC?",
     label: "Find transcriptional regulators",
     action: "Which transcription factors regulate the expression of MYC?",
