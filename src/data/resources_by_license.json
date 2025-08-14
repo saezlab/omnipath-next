@@ -57,7 +57,8 @@
     "miRTarBase",
     "ncRDeathDB",
     "phospho.ELM",
-    "phosphoELM"
+    "phosphoELM",
+    "HINT"
   ],
   "commercial": [
     "ABS",
@@ -222,6 +223,7 @@
     "guidetopharmacology",
     "hu.MAP",
     "hu.MAP2",
+    "hu.MAP3",
     "iMEX",
     "lncrnadb",
     "miRBase",

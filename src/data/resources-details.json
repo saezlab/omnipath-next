@@ -810,6 +810,15 @@
       "url": "https://creativecommons.org/licenses/by/4.0/"
     }
   },
+  "HINT": {
+    "name": "HINT",
+    "license": {
+      "name": "Unspecified NC-SA",
+      "full_name": "Unspecified Non-commercial Redistributable",
+      "attribution": "attrib",
+      "url": null
+    }
+  },
   "DoRothEA_D": {
     "name": "DoRothEA_D",
     "license": {
@@ -2159,6 +2168,15 @@
   },
   "hu.MAP2": {
     "name": "hu.MAP2",
+    "license": {
+      "name": "CC BY 4.0",
+      "full_name": "Creative Commons Attribution 4.0 International",
+      "attribution": "attrib",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+    "hu.MAP3": {
+    "name": "hu.MAP3",
     "license": {
       "name": "CC BY 4.0",
       "full_name": "Creative Commons Attribution 4.0 International",

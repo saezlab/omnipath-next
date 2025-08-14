@@ -2,579 +2,595 @@
   "interactions": [
     {
       "source": "DoRothEA",
-      "record_count": 666310
+      "record_count": 750939
     },
     {
       "source": "PAZAR_DoRothEA",
-      "record_count": 378281
+      "record_count": 414032
     },
     {
       "source": "ReMap_DoRothEA",
-      "record_count": 275556
+      "record_count": 321452
     },
     {
       "source": "CollecTRI",
-      "record_count": 129234
+      "record_count": 144380
     },
     {
       "source": "Wang",
-      "record_count": 120407
+      "record_count": 142247
     },
     {
       "source": "ExTRI_CollecTRI",
-      "record_count": 94887
+      "record_count": 105276
     },
     {
       "source": "SIGNOR",
-      "record_count": 84387
+      "record_count": 97696
     },
     {
       "source": "HPRD",
-      "record_count": 78295
+      "record_count": 95601
     },
     {
       "source": "SPIKE_LC",
-      "record_count": 70178
+      "record_count": 84959
+    },
+    {
+      "source": "HINT",
+      "record_count": 70205
     },
     {
       "source": "ENCODE-proximal",
-      "record_count": 56144
+      "record_count": 63316
     },
     {
       "source": "ENCODE-distal",
-      "record_count": 41548
+      "record_count": 49646
     },
     {
       "source": "HTRIdb",
-      "record_count": 39679
+      "record_count": 47740
     },
     {
       "source": "ProtMapper",
-      "record_count": 31266
-    },
-    {
-      "source": "NTNU.Curated_CollecTRI",
-      "record_count": 30194
-    },
-    {
-      "source": "ARACNe-GTEx_DoRothEA",
-      "record_count": 26592
+      "record_count": 45432
     },
     {
       "source": "IntAct",
-      "record_count": 26379
+      "record_count": 43642
     },
     {
-      "source": "TRRUST_CollecTRI",
-      "record_count": 25495
+      "source": "NTNU.Curated_CollecTRI",
+      "record_count": 32219
     },
     {
       "source": "Lit-BM-17",
-      "record_count": 24590
+      "record_count": 30491
     },
     {
-      "source": "HOCOMOCO_DoRothEA",
-      "record_count": 23103
+      "source": "ARACNe-GTEx_DoRothEA",
+      "record_count": 30065
+    },
+    {
+      "source": "TRRUST_CollecTRI",
+      "record_count": 28825
     },
     {
       "source": "PhosphoPoint",
-      "record_count": 23067
+      "record_count": 25682
+    },
+    {
+      "source": "HOCOMOCO_DoRothEA",
+      "record_count": 25676
     },
     {
       "source": "GEREDB_CollecTRI",
-      "record_count": 22873
+      "record_count": 24811
+    },
+    {
+      "source": "TRRUST",
+      "record_count": 24613
     },
     {
       "source": "JASPAR_DoRothEA",
-      "record_count": 20320
+      "record_count": 22679
     },
     {
       "source": "SPIKE",
-      "record_count": 19148
-    },
-    {
-      "source": "KEA",
-      "record_count": 18163
-    },
-    {
-      "source": "KEGG",
-      "record_count": 18031
-    },
-    {
-      "source": "TRRUST_DoRothEA",
-      "record_count": 17561
-    },
-    {
-      "source": "MIMP",
-      "record_count": 16899
-    },
-    {
-      "source": "TRED_DoRothEA",
-      "record_count": 16732
-    },
-    {
-      "source": "RegNetwork_DoRothEA",
-      "record_count": 16732
-    },
-    {
-      "source": "PhosphoSite_MIMP",
-      "record_count": 16046
-    },
-    {
-      "source": "iPTMnet",
-      "record_count": 14179
+      "record_count": 22006
     },
     {
       "source": "HuRI",
-      "record_count": 13596
+      "record_count": 21832
+    },
+    {
+      "source": "iPTMnet",
+      "record_count": 21800
+    },
+    {
+      "source": "KEGG",
+      "record_count": 21143
+    },
+    {
+      "source": "TRRUST_DoRothEA",
+      "record_count": 20461
+    },
+    {
+      "source": "KEA",
+      "record_count": 20152
     },
     {
       "source": "PhosphoSite_ProtMapper",
-      "record_count": 13350
+      "record_count": 19342
     },
     {
-      "source": "InnateDB",
-      "record_count": 13015
-    },
-    {
-      "source": "phosphoELM_MIMP",
-      "record_count": 12738
-    },
-    {
-      "source": "HPRD_MIMP",
-      "record_count": 12732
-    },
-    {
-      "source": "Cui2007",
-      "record_count": 11977
-    },
-    {
-      "source": "BioGRID",
-      "record_count": 11265
-    },
-    {
-      "source": "Sparser_ProtMapper",
-      "record_count": 10600
-    },
-    {
-      "source": "TFactS_CollecTRI",
-      "record_count": 10426
-    },
-    {
-      "source": "SIGNOR_ProtMapper",
-      "record_count": 10094
+      "source": "MIMP",
+      "record_count": 19290
     },
     {
       "source": "REACH_ProtMapper",
-      "record_count": 9898
+      "record_count": 18714
+    },
+    {
+      "source": "RegNetwork_DoRothEA",
+      "record_count": 18473
+    },
+    {
+      "source": "TRED_DoRothEA",
+      "record_count": 18473
+    },
+    {
+      "source": "PhosphoSite_MIMP",
+      "record_count": 18370
+    },
+    {
+      "source": "InnateDB",
+      "record_count": 16748
+    },
+    {
+      "source": "BioGRID",
+      "record_count": 14755
+    },
+    {
+      "source": "phosphoELM_MIMP",
+      "record_count": 14495
+    },
+    {
+      "source": "HPRD_MIMP",
+      "record_count": 14450
+    },
+    {
+      "source": "Sparser_ProtMapper",
+      "record_count": 13783
+    },
+    {
+      "source": "Cui2007",
+      "record_count": 13229
+    },
+    {
+      "source": "SIGNOR_ProtMapper",
+      "record_count": 13017
+    },
+    {
+      "source": "TFactS_CollecTRI",
+      "record_count": 11375
     },
     {
       "source": "PhosphoSite",
-      "record_count": 9733
+      "record_count": 11331
+    },
+    {
+      "source": "PAZAR",
+      "record_count": 10759
     },
     {
       "source": "NetworKIN_KEA",
-      "record_count": 9496
+      "record_count": 10720
     },
     {
       "source": "NetPath",
-      "record_count": 9002
-    },
-    {
-      "source": "CellTalkDB",
-      "record_count": 8688
+      "record_count": 10432
     },
     {
       "source": "Cellinker",
-      "record_count": 8599
+      "record_count": 10235
+    },
+    {
+      "source": "CellTalkDB",
+      "record_count": 10039
     },
     {
       "source": "LRdb",
-      "record_count": 8225
-    },
-    {
-      "source": "miRTarBase",
-      "record_count": 8124
+      "record_count": 9542
     },
     {
       "source": "ACSN",
-      "record_count": 7475
+      "record_count": 8970
     },
     {
-      "source": "PhosphoSite_KEA",
-      "record_count": 7091
+      "source": "miRTarBase",
+      "record_count": 8425
     },
     {
       "source": "HTRI_CollecTRI",
-      "record_count": 7087
+      "record_count": 8008
     },
     {
-      "source": "DoRothEA-A_CollecTRI",
-      "record_count": 6799
-    },
-    {
-      "source": "SIGNOR_CollecTRI",
-      "record_count": 6629
-    },
-    {
-      "source": "PhosphoSite_noref",
-      "record_count": 6496
+      "source": "PhosphoSite_KEA",
+      "record_count": 7798
     },
     {
       "source": "iTALK",
-      "record_count": 6487
+      "record_count": 7768
+    },
+    {
+      "source": "DoRothEA-A_CollecTRI",
+      "record_count": 7640
+    },
+    {
+      "source": "PhosphoSite_noref",
+      "record_count": 7519
+    },
+    {
+      "source": "SIGNOR_CollecTRI",
+      "record_count": 7488
     },
     {
       "source": "Fantom5_LRdb",
-      "record_count": 6199
+      "record_count": 7429
     },
     {
       "source": "talklr",
-      "record_count": 6074
-    },
-    {
-      "source": "HTRIdb_DoRothEA",
-      "record_count": 5816
-    },
-    {
-      "source": "DOMINO",
-      "record_count": 5657
-    },
-    {
-      "source": "connectomeDB2020",
-      "record_count": 5656
+      "record_count": 7281
     },
     {
       "source": "DIP",
-      "record_count": 5624
+      "record_count": 7031
+    },
+    {
+      "source": "connectomeDB2020",
+      "record_count": 6779
+    },
+    {
+      "source": "HTRIdb_DoRothEA",
+      "record_count": 6730
+    },
+    {
+      "source": "DOMINO",
+      "record_count": 6119
     },
     {
       "source": "KEGG-MEDICUS",
-      "record_count": 5386
-    },
-    {
-      "source": "HPRD_KEA",
-      "record_count": 5071
-    },
-    {
-      "source": "Ramilowski2015",
-      "record_count": 4789
-    },
-    {
-      "source": "HPRD-phos",
-      "record_count": 4724
-    },
-    {
-      "source": "PhosphoNetworks",
-      "record_count": 4658
-    },
-    {
-      "source": "SignaLink3",
-      "record_count": 4641
-    },
-    {
-      "source": "Adhesome",
-      "record_count": 4530
-    },
-    {
-      "source": "RLIMS-P_ProtMapper",
-      "record_count": 4492
-    },
-    {
-      "source": "EMBRACE",
-      "record_count": 4439
-    },
-    {
-      "source": "CellPhoneDB",
-      "record_count": 4406
-    },
-    {
-      "source": "Baccin2019",
-      "record_count": 4385
-    },
-    {
-      "source": "CytReg_CollecTRI",
-      "record_count": 4255
-    },
-    {
-      "source": "TFactS_DoRothEA",
-      "record_count": 4104
-    },
-    {
-      "source": "phosphoELM_KEA",
-      "record_count": 3933
-    },
-    {
-      "source": "TransmiR",
-      "record_count": 3868
-    },
-    {
-      "source": "Ramilowski2015_Baccin2019",
-      "record_count": 3862
-    },
-    {
-      "source": "Pavlidis2021_CollecTRI",
-      "record_count": 3778
-    },
-    {
-      "source": "STRING_talklr",
-      "record_count": 3420
-    },
-    {
-      "source": "HPRD_LRdb",
-      "record_count": 3401
+      "record_count": 6003
     },
     {
       "source": "CellChatDB",
-      "record_count": 3369
+      "record_count": 5670
     },
     {
-      "source": "phosphoELM",
-      "record_count": 3235
+      "source": "Ramilowski2015",
+      "record_count": 5649
     },
     {
-      "source": "HPRD_talklr",
-      "record_count": 3228
+      "source": "HPRD_KEA",
+      "record_count": 5639
     },
     {
-      "source": "ncRDeathDB",
-      "record_count": 2902
+      "source": "HPRD-phos",
+      "record_count": 5505
     },
     {
-      "source": "CA1",
-      "record_count": 2887
+      "source": "hprd_ProtMapper",
+      "record_count": 5188
     },
     {
-      "source": "KEGG_DoRothEA",
-      "record_count": 2851
+      "source": "RLIMS-P_ProtMapper",
+      "record_count": 5179
     },
     {
-      "source": "CancerCellMap",
-      "record_count": 2849
+      "source": "SignaLink3",
+      "record_count": 5150
     },
     {
-      "source": "Macrophage",
-      "record_count": 2823
+      "source": "PhosphoNetworks",
+      "record_count": 5140
     },
     {
-      "source": "dbPTM",
-      "record_count": 2590
+      "source": "CellPhoneDB",
+      "record_count": 5091
     },
     {
-      "source": "Kinexus_KEA",
-      "record_count": 2490
+      "source": "CytReg_CollecTRI",
+      "record_count": 4899
     },
     {
-      "source": "CellCall",
-      "record_count": 2476
-    },
-    {
-      "source": "DEPOD",
-      "record_count": 2184
-    },
-    {
-      "source": "HPMR_LRdb",
-      "record_count": 2176
-    },
-    {
-      "source": "NCI-PID_ProtMapper",
-      "record_count": 2106
+      "source": "Adhesome",
+      "record_count": 4860
     },
     {
       "source": "CancerDrugsDB",
-      "record_count": 2101
+      "record_count": 4825
     },
     {
-      "source": "HPMR_talklr",
-      "record_count": 2096
+      "source": "TFactS_DoRothEA",
+      "record_count": 4580
     },
     {
-      "source": "GOA_CollecTRI",
-      "record_count": 2070
+      "source": "phosphoELM_KEA",
+      "record_count": 4362
     },
     {
-      "source": "Reactome_LRdb",
-      "record_count": 1858
+      "source": "STRING_talklr",
+      "record_count": 4172
+    },
+    {
+      "source": "Pavlidis2021_CollecTRI",
+      "record_count": 4134
+    },
+    {
+      "source": "HPRD_LRdb",
+      "record_count": 4047
+    },
+    {
+      "source": "Baccin2019",
+      "record_count": 3984
+    },
+    {
+      "source": "HPRD_talklr",
+      "record_count": 3827
+    },
+    {
+      "source": "TransmiR",
+      "record_count": 3788
+    },
+    {
+      "source": "EMBRACE",
+      "record_count": 3664
+    },
+    {
+      "source": "phosphoELM",
+      "record_count": 3607
+    },
+    {
+      "source": "Ramilowski2015_Baccin2019",
+      "record_count": 3571
     },
     {
       "source": "ICELLNET",
-      "record_count": 1777
+      "record_count": 3481
+    },
+    {
+      "source": "Macrophage",
+      "record_count": 3476
+    },
+    {
+      "source": "KEGG_DoRothEA",
+      "record_count": 3383
+    },
+    {
+      "source": "CancerCellMap",
+      "record_count": 3268
+    },
+    {
+      "source": "CA1",
+      "record_count": 3130
+    },
+    {
+      "source": "ncRDeathDB",
+      "record_count": 2905
+    },
+    {
+      "source": "dbPTM",
+      "record_count": 2828
+    },
+    {
+      "source": "CellCall",
+      "record_count": 2827
+    },
+    {
+      "source": "DEPOD",
+      "record_count": 2732
+    },
+    {
+      "source": "Kinexus_KEA",
+      "record_count": 2719
     },
     {
       "source": "ELM",
-      "record_count": 1755
+      "record_count": 2609
     },
     {
-      "source": "BEL-Large-Corpus_ProtMapper",
-      "record_count": 1645
+      "source": "HPMR_LRdb",
+      "record_count": 2579
+    },
+    {
+      "source": "NCI-PID_ProtMapper",
+      "record_count": 2525
+    },
+    {
+      "source": "HPMR_talklr",
+      "record_count": 2493
+    },
+    {
+      "source": "GOA_CollecTRI",
+      "record_count": 2417
+    },
+    {
+      "source": "LMPID",
+      "record_count": 2223
     },
     {
       "source": "IntAct_DoRothEA",
-      "record_count": 1642
-    },
-    {
-      "source": "HPMR_Cellinker",
-      "record_count": 1634
+      "record_count": 1962
     },
     {
       "source": "Guide2Pharma",
-      "record_count": 1632
+      "record_count": 1909
     },
     {
-      "source": "CellChatDB-cofactors",
-      "record_count": 1528
-    },
-    {
-      "source": "miRecords",
-      "record_count": 1525
+      "source": "HPMR_Cellinker",
+      "record_count": 1876
     },
     {
       "source": "Reactome_ProtMapper",
-      "record_count": 1375
+      "record_count": 1859
+    },
+    {
+      "source": "BEL-Large-Corpus_ProtMapper",
+      "record_count": 1859
+    },
+    {
+      "source": "Reactome_LRdb",
+      "record_count": 1844
     },
     {
       "source": "HPMR",
-      "record_count": 1313
+      "record_count": 1817
+    },
+    {
+      "source": "CellChatDB-cofactors",
+      "record_count": 1787
     },
     {
       "source": "TFe_DoRothEA",
-      "record_count": 1276
-    },
-    {
-      "source": "ENCODE_tf-mirna",
-      "record_count": 1237
+      "record_count": 1577
     },
     {
       "source": "scConnect",
-      "record_count": 1164
+      "record_count": 1344
     },
     {
       "source": "DLRP_talklr",
-      "record_count": 1120
+      "record_count": 1313
     },
     {
       "source": "ORegAnno_DoRothEA",
-      "record_count": 1093
-    },
-    {
-      "source": "Guide2Pharma_Cellinker",
-      "record_count": 1080
-    },
-    {
-      "source": "Li2012",
-      "record_count": 1023
-    },
-    {
-      "source": "FANTOM4_DoRothEA",
-      "record_count": 1009
-    },
-    {
-      "source": "Guide2Pharma_LRdb",
-      "record_count": 925
-    },
-    {
-      "source": "Guide2Pharma_talklr",
-      "record_count": 882
-    },
-    {
-      "source": "IntAct_CollecTRI",
-      "record_count": 860
-    },
-    {
-      "source": "MPPI",
-      "record_count": 855
+      "record_count": 1248
     },
     {
       "source": "Wojtowicz2020",
-      "record_count": 821
+      "record_count": 1182
+    },
+    {
+      "source": "Li2012",
+      "record_count": 1157
+    },
+    {
+      "source": "Guide2Pharma_Cellinker",
+      "record_count": 1141
+    },
+    {
+      "source": "miRecords",
+      "record_count": 1120
+    },
+    {
+      "source": "FANTOM4_DoRothEA",
+      "record_count": 1083
+    },
+    {
+      "source": "ENCODE_tf-mirna",
+      "record_count": 1031
+    },
+    {
+      "source": "MPPI",
+      "record_count": 1020
+    },
+    {
+      "source": "IntAct_CollecTRI",
+      "record_count": 1010
+    },
+    {
+      "source": "Guide2Pharma_LRdb",
+      "record_count": 998
+    },
+    {
+      "source": "Guide2Pharma_talklr",
+      "record_count": 958
     },
     {
       "source": "ORegAnno",
-      "record_count": 780
-    },
-    {
-      "source": "DLRP_Cellinker",
-      "record_count": 772
+      "record_count": 862
     },
     {
       "source": "CellPhoneDB_Cellinker",
-      "record_count": 678
+      "record_count": 857
     },
     {
-      "source": "TCRcuration_SignaLink3",
-      "record_count": 653
-    },
-    {
-      "source": "DoRothEA-reviews_DoRothEA",
-      "record_count": 640
+      "source": "DLRP_Cellinker",
+      "record_count": 838
     },
     {
       "source": "UniProt_LRdb",
-      "record_count": 612
+      "record_count": 758
+    },
+    {
+      "source": "DoRothEA-reviews_DoRothEA",
+      "record_count": 738
+    },
+    {
+      "source": "TCRcuration_SignaLink3",
+      "record_count": 661
     },
     {
       "source": "TRRD_DoRothEA",
-      "record_count": 552
+      "record_count": 637
     },
     {
       "source": "TRIP",
-      "record_count": 459
-    },
-    {
-      "source": "miR2Disease",
-      "record_count": 435
+      "record_count": 454
     },
     {
       "source": "Kirouac2010",
-      "record_count": 371
+      "record_count": 432
+    },
+    {
+      "source": "miR2Disease",
+      "record_count": 360
     },
     {
       "source": "miRDeathDB",
       "record_count": 331
     },
     {
-      "source": "PDZBase",
-      "record_count": 282
-    },
-    {
-      "source": "MatrixDB",
-      "record_count": 273
-    },
-    {
       "source": "NRF2ome",
-      "record_count": 267
+      "record_count": 318
     },
     {
       "source": "ARN",
-      "record_count": 248
+      "record_count": 295
     },
     {
-      "source": "ABS",
-      "record_count": 211
+      "source": "PDZBase",
+      "record_count": 254
     },
     {
       "source": "AlzPathway",
-      "record_count": 172
+      "record_count": 193
     },
     {
       "source": "DeathDomain",
-      "record_count": 87
+      "record_count": 118
     },
     {
       "source": "InnateDB_SignaLink3",
-      "record_count": 87
-    },
-    {
-      "source": "ACSN_SignaLink3",
-      "record_count": 79
+      "record_count": 108
     },
     {
       "source": "NFIRegulomeDB_DoRothEA",
-      "record_count": 73
+      "record_count": 107
+    },
+    {
+      "source": "ACSN_SignaLink3",
+      "record_count": 95
     },
     {
       "source": "Reactome_SignaLink3",
-      "record_count": 69
+      "record_count": 77
+    },
+    {
+      "source": "lncrnadb",
+      "record_count": 58
     },
     {
       "source": "LncRNADisease",
@@ -582,109 +598,104 @@
     },
     {
       "source": "cellsignal.com_LRdb",
-      "record_count": 37
+      "record_count": 51
     }
   ],
   "interactionsSourceType": [
     {
-      "source": "ABS",
-      "type": "transcriptional",
-      "record_count": 211
-    },
-    {
       "source": "ACSN",
       "type": "post_translational",
-      "record_count": 7475
+      "record_count": 8970
     },
     {
       "source": "ACSN_SignaLink3",
       "type": "post_translational",
-      "record_count": 79
+      "record_count": 95
     },
     {
       "source": "ARACNe-GTEx_DoRothEA",
       "type": "transcriptional",
-      "record_count": 26592
+      "record_count": 30065
     },
     {
       "source": "ARN",
       "type": "post_translational",
-      "record_count": 248
+      "record_count": 295
     },
     {
       "source": "Adhesome",
       "type": "post_translational",
-      "record_count": 4530
+      "record_count": 4860
     },
     {
       "source": "AlzPathway",
       "type": "post_translational",
-      "record_count": 172
+      "record_count": 193
     },
     {
       "source": "BEL-Large-Corpus_ProtMapper",
       "type": "post_translational",
-      "record_count": 1645
+      "record_count": 1859
     },
     {
       "source": "Baccin2019",
       "type": "post_translational",
-      "record_count": 4385
+      "record_count": 3984
     },
     {
       "source": "BioGRID",
       "type": "post_translational",
-      "record_count": 11265
+      "record_count": 14755
     },
     {
       "source": "CA1",
       "type": "post_translational",
-      "record_count": 2887
+      "record_count": 3130
     },
     {
       "source": "CancerCellMap",
       "type": "post_translational",
-      "record_count": 2849
+      "record_count": 3268
     },
     {
       "source": "CancerDrugsDB",
       "type": "small_molecule_protein",
-      "record_count": 2101
+      "record_count": 4825
     },
     {
       "source": "CellCall",
       "type": "post_translational",
-      "record_count": 2476
+      "record_count": 2827
     },
     {
       "source": "CellChatDB",
       "type": "post_translational",
-      "record_count": 3369
+      "record_count": 5670
     },
     {
       "source": "CellChatDB-cofactors",
       "type": "post_translational",
-      "record_count": 1528
+      "record_count": 1787
     },
     {
       "source": "CellPhoneDB",
       "type": "post_translational",
-      "record_count": 4406
+      "record_count": 5091
     },
     {
       "source": "CellPhoneDB_Cellinker",
       "type": "post_translational",
-      "record_count": 678
+      "record_count": 857
     },
     {
       "source": "CellTalkDB",
       "type": "post_translational",
-      "record_count": 8688
+      "record_count": 10039
     },
     {
       "source": "Cellinker",
       "type": "post_translational",
-      "record_count": 8285
+      "record_count": 9921
     },
     {
       "source": "Cellinker",
@@ -694,127 +705,137 @@
     {
       "source": "CollecTRI",
       "type": "transcriptional",
-      "record_count": 129234
+      "record_count": 144333
+    },
+    {
+      "source": "CollecTRI",
+      "type": "mirna_transcriptional",
+      "record_count": 47
     },
     {
       "source": "Cui2007",
       "type": "post_translational",
-      "record_count": 11977
+      "record_count": 13229
     },
     {
       "source": "CytReg_CollecTRI",
       "type": "transcriptional",
-      "record_count": 4255
+      "record_count": 4899
     },
     {
       "source": "DEPOD",
       "type": "post_translational",
-      "record_count": 2184
+      "record_count": 2732
     },
     {
       "source": "DIP",
       "type": "post_translational",
-      "record_count": 5624
+      "record_count": 7031
     },
     {
       "source": "DLRP_Cellinker",
       "type": "post_translational",
-      "record_count": 772
+      "record_count": 838
     },
     {
       "source": "DLRP_talklr",
       "type": "post_translational",
-      "record_count": 1120
+      "record_count": 1313
     },
     {
       "source": "DOMINO",
       "type": "post_translational",
-      "record_count": 5657
+      "record_count": 6119
     },
     {
       "source": "DeathDomain",
       "type": "post_translational",
-      "record_count": 87
+      "record_count": 118
     },
     {
       "source": "DoRothEA",
       "type": "transcriptional",
-      "record_count": 666310
+      "record_count": 750939
     },
     {
       "source": "DoRothEA-A_CollecTRI",
       "type": "transcriptional",
-      "record_count": 6799
+      "record_count": 7640
     },
     {
       "source": "DoRothEA-reviews_DoRothEA",
       "type": "transcriptional",
-      "record_count": 640
+      "record_count": 738
     },
     {
       "source": "ELM",
       "type": "post_translational",
-      "record_count": 1755
+      "record_count": 2609
     },
     {
       "source": "EMBRACE",
       "type": "post_translational",
-      "record_count": 4439
+      "record_count": 3664
     },
     {
       "source": "ENCODE-distal",
       "type": "transcriptional",
-      "record_count": 41548
+      "record_count": 49646
     },
     {
       "source": "ENCODE-proximal",
       "type": "transcriptional",
-      "record_count": 56144
+      "record_count": 63316
     },
     {
       "source": "ENCODE_tf-mirna",
       "type": "mirna_transcriptional",
-      "record_count": 1234
-    },
-    {
-      "source": "ENCODE_tf-mirna",
-      "type": "transcriptional",
-      "record_count": 3
+      "record_count": 1031
     },
     {
       "source": "ExTRI_CollecTRI",
       "type": "transcriptional",
-      "record_count": 94887
+      "record_count": 105234
+    },
+    {
+      "source": "ExTRI_CollecTRI",
+      "type": "mirna_transcriptional",
+      "record_count": 42
     },
     {
       "source": "FANTOM4_DoRothEA",
       "type": "transcriptional",
-      "record_count": 1009
+      "record_count": 1083
     },
     {
       "source": "Fantom5_LRdb",
       "type": "post_translational",
-      "record_count": 6199
+      "record_count": 7429
     },
     {
       "source": "GEREDB_CollecTRI",
       "type": "transcriptional",
-      "record_count": 22873
+      "record_count": 24804
+    },
+    {
+      "source": "GEREDB_CollecTRI",
+      "type": "mirna_transcriptional",
+      "record_count": 7
     },
     {
       "source": "GOA_CollecTRI",
       "type": "transcriptional",
-      "record_count": 2070
+      "record_count": 2417
     },
     {
       "source": "Guide2Pharma",
       "type": "post_translational",
-      "record_count": 1632
+      "record_count": 1909
     },
     {
       "source": "Guide2Pharma_Cellinker",
       "type": "post_translational",
-      "record_count": 766
+      "record_count": 827
     },
     {
       "source": "Guide2Pharma_Cellinker",
@@ -824,177 +845,187 @@
     {
       "source": "Guide2Pharma_LRdb",
       "type": "post_translational",
-      "record_count": 925
+      "record_count": 998
     },
     {
       "source": "Guide2Pharma_talklr",
       "type": "post_translational",
-      "record_count": 882
+      "record_count": 958
+    },
+    {
+      "source": "HINT",
+      "type": "post_translational",
+      "record_count": 70205
     },
     {
       "source": "HOCOMOCO_DoRothEA",
       "type": "transcriptional",
-      "record_count": 23103
+      "record_count": 25676
     },
     {
       "source": "HPMR",
       "type": "post_translational",
-      "record_count": 1313
+      "record_count": 1817
     },
     {
       "source": "HPMR_Cellinker",
       "type": "post_translational",
-      "record_count": 1634
+      "record_count": 1876
     },
     {
       "source": "HPMR_LRdb",
       "type": "post_translational",
-      "record_count": 2176
+      "record_count": 2579
     },
     {
       "source": "HPMR_talklr",
       "type": "post_translational",
-      "record_count": 2096
+      "record_count": 2493
     },
     {
       "source": "HPRD",
       "type": "post_translational",
-      "record_count": 78295
+      "record_count": 95601
     },
     {
       "source": "HPRD-phos",
       "type": "post_translational",
-      "record_count": 4724
+      "record_count": 5505
     },
     {
       "source": "HPRD_KEA",
       "type": "post_translational",
-      "record_count": 5071
+      "record_count": 5639
     },
     {
       "source": "HPRD_LRdb",
       "type": "post_translational",
-      "record_count": 3401
+      "record_count": 4047
     },
     {
       "source": "HPRD_MIMP",
       "type": "post_translational",
-      "record_count": 12732
+      "record_count": 14450
     },
     {
       "source": "HPRD_talklr",
       "type": "post_translational",
-      "record_count": 3228
+      "record_count": 3827
     },
     {
       "source": "HTRI_CollecTRI",
       "type": "transcriptional",
-      "record_count": 7087
+      "record_count": 8008
     },
     {
       "source": "HTRIdb",
       "type": "transcriptional",
-      "record_count": 39679
+      "record_count": 47740
     },
     {
       "source": "HTRIdb_DoRothEA",
       "type": "transcriptional",
-      "record_count": 5816
+      "record_count": 6730
     },
     {
       "source": "HuRI",
       "type": "post_translational",
-      "record_count": 13596
+      "record_count": 21832
     },
     {
       "source": "ICELLNET",
       "type": "post_translational",
-      "record_count": 1777
+      "record_count": 3481
     },
     {
       "source": "InnateDB",
       "type": "post_translational",
-      "record_count": 13015
+      "record_count": 16748
     },
     {
       "source": "InnateDB_SignaLink3",
       "type": "post_translational",
-      "record_count": 87
+      "record_count": 108
     },
     {
       "source": "IntAct",
       "type": "post_translational",
-      "record_count": 26379
+      "record_count": 43642
     },
     {
       "source": "IntAct_CollecTRI",
       "type": "transcriptional",
-      "record_count": 860
+      "record_count": 1010
     },
     {
       "source": "IntAct_DoRothEA",
       "type": "transcriptional",
-      "record_count": 1642
+      "record_count": 1962
     },
     {
       "source": "JASPAR_DoRothEA",
       "type": "transcriptional",
-      "record_count": 20320
+      "record_count": 22679
     },
     {
       "source": "KEA",
       "type": "post_translational",
-      "record_count": 18163
+      "record_count": 20152
     },
     {
       "source": "KEGG",
       "type": "post_translational",
-      "record_count": 14472
+      "record_count": 16985
     },
     {
       "source": "KEGG",
       "type": "transcriptional",
-      "record_count": 3559
+      "record_count": 4158
     },
     {
       "source": "KEGG-MEDICUS",
       "type": "post_translational",
-      "record_count": 4716
+      "record_count": 5262
     },
     {
       "source": "KEGG-MEDICUS",
       "type": "transcriptional",
-      "record_count": 670
+      "record_count": 741
     },
     {
       "source": "KEGG_DoRothEA",
       "type": "transcriptional",
-      "record_count": 2851
+      "record_count": 3383
     },
     {
       "source": "Kinexus_KEA",
       "type": "post_translational",
-      "record_count": 2490
+      "record_count": 2719
     },
     {
       "source": "Kirouac2010",
       "type": "post_translational",
-      "record_count": 371
+      "record_count": 432
+    },
+    {
+      "source": "LMPID",
+      "type": "post_translational",
+      "record_count": 2223
     },
     {
       "source": "LRdb",
       "type": "post_translational",
-      "record_count": 8225
+      "record_count": 9542
     },
     {
       "source": "Li2012",
       "type": "post_translational",
-      "record_count": 1023
+      "record_count": 1157
     },
     {
       "source": "Lit-BM-17",
       "type": "post_translational",
-      "record_count": 24590
+      "record_count": 30491
     },
     {
       "source": "LncRNADisease",
@@ -1004,177 +1035,182 @@
     {
       "source": "MIMP",
       "type": "post_translational",
-      "record_count": 16899
+      "record_count": 19290
     },
     {
       "source": "MPPI",
       "type": "post_translational",
-      "record_count": 855
+      "record_count": 1020
     },
     {
       "source": "Macrophage",
       "type": "post_translational",
-      "record_count": 2823
-    },
-    {
-      "source": "MatrixDB",
-      "type": "post_translational",
-      "record_count": 273
+      "record_count": 3476
     },
     {
       "source": "NCI-PID_ProtMapper",
       "type": "post_translational",
-      "record_count": 2106
+      "record_count": 2525
     },
     {
       "source": "NFIRegulomeDB_DoRothEA",
       "type": "transcriptional",
-      "record_count": 73
+      "record_count": 107
     },
     {
       "source": "NRF2ome",
       "type": "post_translational",
-      "record_count": 267
+      "record_count": 318
     },
     {
       "source": "NTNU.Curated_CollecTRI",
       "type": "transcriptional",
-      "record_count": 30194
+      "record_count": 32207
+    },
+    {
+      "source": "NTNU.Curated_CollecTRI",
+      "type": "mirna_transcriptional",
+      "record_count": 12
     },
     {
       "source": "NetPath",
       "type": "post_translational",
-      "record_count": 9002
+      "record_count": 10432
     },
     {
       "source": "NetworKIN_KEA",
       "type": "post_translational",
-      "record_count": 9496
+      "record_count": 10720
     },
     {
       "source": "ORegAnno",
       "type": "transcriptional",
-      "record_count": 780
+      "record_count": 862
     },
     {
       "source": "ORegAnno_DoRothEA",
       "type": "transcriptional",
-      "record_count": 1093
+      "record_count": 1248
+    },
+    {
+      "source": "PAZAR",
+      "type": "transcriptional",
+      "record_count": 10759
     },
     {
       "source": "PAZAR_DoRothEA",
       "type": "transcriptional",
-      "record_count": 378281
+      "record_count": 414032
     },
     {
       "source": "PDZBase",
       "type": "post_translational",
-      "record_count": 282
+      "record_count": 254
     },
     {
       "source": "Pavlidis2021_CollecTRI",
       "type": "transcriptional",
-      "record_count": 3778
+      "record_count": 4134
     },
     {
       "source": "PhosphoNetworks",
       "type": "post_translational",
-      "record_count": 4658
+      "record_count": 5140
     },
     {
       "source": "PhosphoPoint",
       "type": "post_translational",
-      "record_count": 23067
+      "record_count": 25682
     },
     {
       "source": "PhosphoSite",
       "type": "post_translational",
-      "record_count": 9733
+      "record_count": 11331
     },
     {
       "source": "PhosphoSite_KEA",
       "type": "post_translational",
-      "record_count": 7091
+      "record_count": 7798
     },
     {
       "source": "PhosphoSite_MIMP",
       "type": "post_translational",
-      "record_count": 16046
+      "record_count": 18370
     },
     {
       "source": "PhosphoSite_ProtMapper",
       "type": "post_translational",
-      "record_count": 13350
+      "record_count": 19342
     },
     {
       "source": "PhosphoSite_noref",
       "type": "post_translational",
-      "record_count": 6496
+      "record_count": 7519
     },
     {
       "source": "ProtMapper",
       "type": "post_translational",
-      "record_count": 31266
+      "record_count": 45432
     },
     {
       "source": "REACH_ProtMapper",
       "type": "post_translational",
-      "record_count": 9898
+      "record_count": 18714
     },
     {
       "source": "RLIMS-P_ProtMapper",
       "type": "post_translational",
-      "record_count": 4492
+      "record_count": 5179
     },
     {
       "source": "Ramilowski2015",
       "type": "post_translational",
-      "record_count": 4789
+      "record_count": 5649
     },
     {
       "source": "Ramilowski2015_Baccin2019",
       "type": "post_translational",
-      "record_count": 3862
+      "record_count": 3571
     },
     {
       "source": "ReMap_DoRothEA",
       "type": "transcriptional",
-      "record_count": 275556
+      "record_count": 321452
     },
     {
       "source": "Reactome_LRdb",
       "type": "post_translational",
-      "record_count": 1858
+      "record_count": 1844
     },
     {
       "source": "Reactome_ProtMapper",
       "type": "post_translational",
-      "record_count": 1375
+      "record_count": 1859
     },
     {
       "source": "Reactome_SignaLink3",
       "type": "post_translational",
-      "record_count": 69
+      "record_count": 77
     },
     {
       "source": "RegNetwork_DoRothEA",
       "type": "transcriptional",
-      "record_count": 16732
+      "record_count": 18473
     },
     {
       "source": "SIGNOR",
       "type": "post_translational",
-      "record_count": 80263
+      "record_count": 94508
     },
     {
       "source": "SIGNOR",
       "type": "transcriptional",
-      "record_count": 2512
+      "record_count": 3004
     },
     {
       "source": "SIGNOR",
       "type": "small_molecule_protein",
-      "record_count": 1604
+      "record_count": 176
     },
     {
       "source": "SIGNOR",
@@ -1184,137 +1220,147 @@
     {
       "source": "SIGNOR_CollecTRI",
       "type": "transcriptional",
-      "record_count": 6629
+      "record_count": 7488
     },
     {
       "source": "SIGNOR_ProtMapper",
       "type": "post_translational",
-      "record_count": 10094
+      "record_count": 13017
     },
     {
       "source": "SPIKE",
       "type": "post_translational",
-      "record_count": 19148
+      "record_count": 22006
     },
     {
       "source": "SPIKE_LC",
       "type": "post_translational",
-      "record_count": 70178
+      "record_count": 84959
     },
     {
       "source": "STRING_talklr",
       "type": "post_translational",
-      "record_count": 3420
+      "record_count": 4172
     },
     {
       "source": "SignaLink3",
       "type": "post_translational",
-      "record_count": 4641
+      "record_count": 5150
     },
     {
       "source": "Sparser_ProtMapper",
       "type": "post_translational",
-      "record_count": 10600
+      "record_count": 13783
     },
     {
       "source": "TCRcuration_SignaLink3",
       "type": "post_translational",
-      "record_count": 653
+      "record_count": 661
     },
     {
       "source": "TFactS_CollecTRI",
       "type": "transcriptional",
-      "record_count": 10426
+      "record_count": 11375
     },
     {
       "source": "TFactS_DoRothEA",
       "type": "transcriptional",
-      "record_count": 4104
+      "record_count": 4580
     },
     {
       "source": "TFe_DoRothEA",
       "type": "transcriptional",
-      "record_count": 1276
+      "record_count": 1577
     },
     {
       "source": "TRED_DoRothEA",
       "type": "transcriptional",
-      "record_count": 16732
+      "record_count": 18473
     },
     {
       "source": "TRIP",
       "type": "post_translational",
-      "record_count": 459
+      "record_count": 454
     },
     {
       "source": "TRRD_DoRothEA",
       "type": "transcriptional",
-      "record_count": 552
+      "record_count": 637
+    },
+    {
+      "source": "TRRUST",
+      "type": "transcriptional",
+      "record_count": 24613
     },
     {
       "source": "TRRUST_CollecTRI",
       "type": "transcriptional",
-      "record_count": 25495
+      "record_count": 28825
     },
     {
       "source": "TRRUST_DoRothEA",
       "type": "transcriptional",
-      "record_count": 17561
+      "record_count": 20461
     },
     {
       "source": "TransmiR",
       "type": "mirna_transcriptional",
-      "record_count": 3813
-    },
-    {
-      "source": "TransmiR",
-      "type": "transcriptional",
-      "record_count": 55
+      "record_count": 3788
     },
     {
       "source": "UniProt_LRdb",
       "type": "post_translational",
-      "record_count": 612
+      "record_count": 758
     },
     {
       "source": "Wang",
       "type": "post_translational",
-      "record_count": 120407
+      "record_count": 142247
     },
     {
       "source": "Wojtowicz2020",
       "type": "post_translational",
-      "record_count": 821
+      "record_count": 1182
     },
     {
       "source": "cellsignal.com_LRdb",
       "type": "post_translational",
-      "record_count": 37
+      "record_count": 51
     },
     {
       "source": "connectomeDB2020",
       "type": "post_translational",
-      "record_count": 5656
+      "record_count": 6779
     },
     {
       "source": "dbPTM",
       "type": "post_translational",
-      "record_count": 2590
+      "record_count": 2828
+    },
+    {
+      "source": "hprd_ProtMapper",
+      "type": "post_translational",
+      "record_count": 5188
     },
     {
       "source": "iPTMnet",
       "type": "post_translational",
-      "record_count": 14179
+      "record_count": 21800
     },
     {
       "source": "iTALK",
       "type": "post_translational",
-      "record_count": 6487
+      "record_count": 7768
+    },
+    {
+      "source": "lncrnadb",
+      "type": "lncrna_post_transcriptional",
+      "record_count": 58
     },
     {
       "source": "miR2Disease",
       "type": "post_transcriptional",
-      "record_count": 435
+      "record_count": 360
     },
     {
       "source": "miRDeathDB",
@@ -1324,151 +1370,159 @@
     {
       "source": "miRTarBase",
       "type": "post_transcriptional",
-      "record_count": 8124
+      "record_count": 8425
     },
     {
       "source": "miRecords",
       "type": "post_transcriptional",
-      "record_count": 1525
+      "record_count": 1120
     },
     {
       "source": "ncRDeathDB",
       "type": "post_transcriptional",
-      "record_count": 2773
+      "record_count": 2775
     },
     {
       "source": "ncRDeathDB",
       "type": "lncrna_post_transcriptional",
-      "record_count": 129
+      "record_count": 130
     },
     {
       "source": "phosphoELM",
       "type": "post_translational",
-      "record_count": 3235
+      "record_count": 3607
     },
     {
       "source": "phosphoELM_KEA",
       "type": "post_translational",
-      "record_count": 3933
+      "record_count": 4362
     },
     {
       "source": "phosphoELM_MIMP",
       "type": "post_translational",
-      "record_count": 12738
+      "record_count": 14495
     },
     {
       "source": "scConnect",
       "type": "post_translational",
-      "record_count": 1164
+      "record_count": 1344
     },
     {
       "source": "talklr",
       "type": "post_translational",
-      "record_count": 6074
+      "record_count": 7281
     }
   ],
   "enz_sub": [
     {
       "source": "ProtMapper",
-      "record_count": 43715
+      "record_count": 69108
     },
     {
       "source": "PhosphoSite",
-      "record_count": 32840
-    },
-    {
-      "source": "MIMP",
-      "record_count": 25347
+      "record_count": 35707
     },
     {
       "source": "SIGNOR",
-      "record_count": 24042
+      "record_count": 33006
     },
     {
-      "source": "PhosphoSite_MIMP",
-      "record_count": 23715
-    },
-    {
-      "source": "KEA",
-      "record_count": 23531
-    },
-    {
-      "source": "HPRD_MIMP",
-      "record_count": 18308
-    },
-    {
-      "source": "phosphoELM_MIMP",
-      "record_count": 18006
+      "source": "MIMP",
+      "record_count": 28705
     },
     {
       "source": "PhosphoSite_ProtMapper",
-      "record_count": 17870
+      "record_count": 27999
     },
     {
-      "source": "SIGNOR_ProtMapper",
-      "record_count": 15597
+      "source": "PhosphoSite_MIMP",
+      "record_count": 27312
     },
     {
-      "source": "Sparser_ProtMapper",
-      "record_count": 11313
+      "source": "KEA",
+      "record_count": 26807
     },
     {
       "source": "REACH_ProtMapper",
-      "record_count": 10883
+      "record_count": 24236
+    },
+    {
+      "source": "HPRD_MIMP",
+      "record_count": 21501
+    },
+    {
+      "source": "phosphoELM_MIMP",
+      "record_count": 21175
+    },
+    {
+      "source": "SIGNOR_ProtMapper",
+      "record_count": 20623
+    },
+    {
+      "source": "Sparser_ProtMapper",
+      "record_count": 16588
     },
     {
       "source": "PhosphoNetworks",
-      "record_count": 8238
+      "record_count": 9132
+    },
+    {
+      "source": "hprd_ProtMapper",
+      "record_count": 8890
     },
     {
       "source": "HPRD",
-      "record_count": 7252
+      "record_count": 8135
     },
     {
       "source": "RLIMS-P_ProtMapper",
-      "record_count": 5084
-    },
-    {
-      "source": "phosphoELM",
-      "record_count": 4184
+      "record_count": 6052
     },
     {
       "source": "NCI-PID_ProtMapper",
-      "record_count": 3476
+      "record_count": 4880
     },
     {
-      "source": "dbPTM",
-      "record_count": 2713
+      "source": "phosphoELM",
+      "record_count": 4827
     },
     {
       "source": "Reactome_ProtMapper",
-      "record_count": 1989
+      "record_count": 3147
+    },
+    {
+      "source": "dbPTM",
+      "record_count": 3114
     },
     {
       "source": "BEL-Large-Corpus_ProtMapper",
-      "record_count": 1956
+      "record_count": 2428
     },
     {
       "source": "DEPOD",
-      "record_count": 1085
+      "record_count": 910
     },
     {
       "source": "Li2012",
-      "record_count": 652
+      "record_count": 892
     }
   ],
   "complexes": [
     {
+      "source": "hu.MAP3",
+      "record_count": 15433
+    },
+    {
       "source": "Compleat",
-      "record_count": 9693
+      "record_count": 9695
     },
     {
       "source": "PDB",
-      "record_count": 7710
+      "record_count": 9235
     },
     {
       "source": "hu.MAP2",
-      "record_count": 6944
+      "record_count": 7044
     },
     {
       "source": "NetworkBlast",
@@ -1476,11 +1530,11 @@
     },
     {
       "source": "SIGNOR",
-      "record_count": 4875
+      "record_count": 4890
     },
     {
       "source": "hu.MAP",
-      "record_count": 4506
+      "record_count": 4545
     },
     {
       "source": "CORUM",
@@ -1488,7 +1542,7 @@
     },
     {
       "source": "ComplexPortal",
-      "record_count": 1364
+      "record_count": 2210
     },
     {
       "source": "CFinder",
@@ -1500,333 +1554,329 @@
     },
     {
       "source": "KEGG-MEDICUS",
-      "record_count": 473
+      "record_count": 528
     },
     {
       "source": "CellPhoneDB",
-      "record_count": 359
+      "record_count": 358
+    },
+    {
+      "source": "CellChatDB",
+      "record_count": 330
+    },
+    {
+      "source": "ICELLNET",
+      "record_count": 156
     },
     {
       "source": "SPIKE",
       "record_count": 154
     },
     {
-      "source": "CellChatDB",
-      "record_count": 153
-    },
-    {
       "source": "Cellinker",
       "record_count": 143
     },
     {
-      "source": "ICELLNET",
-      "record_count": 131
-    },
-    {
       "source": "Guide2Pharma",
-      "record_count": 91
+      "record_count": 93
     }
   ],
   "annotations": [
     {
       "source": "MSigDB",
-      "record_count": 5522266
+      "record_count": 5895462
     },
     {
       "source": "HPA_tissue",
-      "record_count": 2095327
+      "record_count": 1981903
     },
     {
       "source": "UniProt_keyword",
-      "record_count": 391929
+      "record_count": 515217
     },
     {
       "source": "Vesiclepedia",
-      "record_count": 276287
+      "record_count": 295464
     },
     {
       "source": "PROGENy",
-      "record_count": 233413
+      "record_count": 233277
     },
     {
       "source": "CytoSig",
-      "record_count": 200490
+      "record_count": 200408
     },
     {
       "source": "Ramilowski_location",
-      "record_count": 136938
-    },
-    {
-      "source": "DisGeNet",
-      "record_count": 128267
+      "record_count": 147050
     },
     {
       "source": "ComPPI",
-      "record_count": 108792
+      "record_count": 130282
+    },
+    {
+      "source": "DisGeNet",
+      "record_count": 129190
     },
     {
       "source": "InterPro",
-      "record_count": 96507
-    },
-    {
-      "source": "UniProt_tissue",
-      "record_count": 71162
+      "record_count": 98741
     },
     {
       "source": "UniProt_location",
-      "record_count": 67934
+      "record_count": 76883
     },
     {
-      "source": "GO_Intercell",
-      "record_count": 46955
-    },
-    {
-      "source": "UniProt_topology",
-      "record_count": 44998
-    },
-    {
-      "source": "Phobius",
-      "record_count": 38117
-    },
-    {
-      "source": "DGIdb",
-      "record_count": 34805
-    },
-    {
-      "source": "LOCATE",
-      "record_count": 32894
-    },
-    {
-      "source": "Exocarta",
-      "record_count": 31562
-    },
-    {
-      "source": "HGNC",
-      "record_count": 28373
-    },
-    {
-      "source": "CSPA_celltype",
-      "record_count": 20896
-    },
-    {
-      "source": "MatrixDB",
-      "record_count": 19393
-    },
-    {
-      "source": "UniProt_family",
-      "record_count": 18603
+      "source": "UniProt_tissue",
+      "record_count": 73747
     },
     {
       "source": "HPA_subcellular",
-      "record_count": 16820
+      "record_count": 71451
     },
     {
-      "source": "KEGG",
-      "record_count": 16523
+      "source": "UniProt_topology",
+      "record_count": 47548
     },
     {
-      "source": "HumanCellMap",
-      "record_count": 16366
+      "source": "GO_Intercell",
+      "record_count": 46761
+    },
+    {
+      "source": "Phobius",
+      "record_count": 44615
+    },
+    {
+      "source": "DGIdb",
+      "record_count": 37027
+    },
+    {
+      "source": "Exocarta",
+      "record_count": 36098
+    },
+    {
+      "source": "LOCATE",
+      "record_count": 34781
+    },
+    {
+      "source": "HGNC",
+      "record_count": 31822
+    },
+    {
+      "source": "CSPA_celltype",
+      "record_count": 22044
     },
     {
       "source": "TopDB",
-      "record_count": 15685
+      "record_count": 21058
+    },
+    {
+      "source": "UniProt_family",
+      "record_count": 19623
+    },
+    {
+      "source": "HumanCellMap",
+      "record_count": 17481
+    },
+    {
+      "source": "KEGG",
+      "record_count": 17401
     },
     {
       "source": "NetPath",
-      "record_count": 8870
+      "record_count": 9055
     },
     {
       "source": "PanglaoDB",
-      "record_count": 8461
+      "record_count": 8211
     },
     {
       "source": "CORUM_GO",
       "record_count": 7126
     },
     {
-      "source": "Almen2009",
-      "record_count": 6014
-    },
-    {
       "source": "CellCellInteractions",
-      "record_count": 5783
-    },
-    {
-      "source": "CellTalkDB",
-      "record_count": 5693
+      "record_count": 6160
     },
     {
       "source": "scConnect",
-      "record_count": 5580
+      "record_count": 6072
+    },
+    {
+      "source": "CellTalkDB",
+      "record_count": 5822
+    },
+    {
+      "source": "Almen2009",
+      "record_count": 5716
     },
     {
       "source": "LRdb",
-      "record_count": 5515
+      "record_count": 5638
     },
     {
       "source": "CORUM_Funcat",
       "record_count": 5366
     },
     {
+      "source": "MatrixDB",
+      "record_count": 4841
+    },
+    {
       "source": "Cellinker",
-      "record_count": 4530
+      "record_count": 4720
     },
     {
       "source": "Surfaceome",
-      "record_count": 3730
+      "record_count": 4013
     },
     {
       "source": "HPA_secretome",
-      "record_count": 3707
-    },
-    {
-      "source": "Wang",
-      "record_count": 3443
-    },
-    {
-      "source": "Lambert2018",
-      "record_count": 3379
+      "record_count": 3856
     },
     {
       "source": "Membranome",
-      "record_count": 3342
-    },
-    {
-      "source": "talklr",
-      "record_count": 2949
+      "record_count": 3647
     },
     {
       "source": "SIGNOR",
-      "record_count": 2948
+      "record_count": 3644
+    },
+    {
+      "source": "Wang",
+      "record_count": 3526
+    },
+    {
+      "source": "Lambert2018",
+      "record_count": 3424
     },
     {
       "source": "TCDB",
-      "record_count": 2923
+      "record_count": 3296
     },
     {
-      "source": "KEGG-PC",
-      "record_count": 2904
-    },
-    {
-      "source": "CancerSEA",
-      "record_count": 2685
-    },
-    {
-      "source": "iTALK",
-      "record_count": 2623
-    },
-    {
-      "source": "connectomeDB2020",
-      "record_count": 2602
-    },
-    {
-      "source": "SignaLink_pathway",
-      "record_count": 2487
-    },
-    {
-      "source": "CPAD",
-      "record_count": 2382
-    },
-    {
-      "source": "Baccin2019",
-      "record_count": 2368
-    },
-    {
-      "source": "CellPhoneDB",
-      "record_count": 2305
-    },
-    {
-      "source": "CSPA",
-      "record_count": 2188
-    },
-    {
-      "source": "Ramilowski2015",
-      "record_count": 2079
-    },
-    {
-      "source": "TFcensus",
-      "record_count": 2042
-    },
-    {
-      "source": "SignaLink_function",
-      "record_count": 2001
-    },
-    {
-      "source": "CellChatDB",
-      "record_count": 1869
-    },
-    {
-      "source": "HPMR",
-      "record_count": 1753
-    },
-    {
-      "source": "EMBRACE",
-      "record_count": 1620
+      "source": "talklr",
+      "record_count": 3054
     },
     {
       "source": "Matrisome",
-      "record_count": 1552
+      "record_count": 3045
+    },
+    {
+      "source": "KEGG-PC",
+      "record_count": 2927
+    },
+    {
+      "source": "CellChatDB",
+      "record_count": 2834
+    },
+    {
+      "source": "CancerSEA",
+      "record_count": 2760
+    },
+    {
+      "source": "iTALK",
+      "record_count": 2725
+    },
+    {
+      "source": "connectomeDB2020",
+      "record_count": 2716
+    },
+    {
+      "source": "SignaLink_pathway",
+      "record_count": 2578
+    },
+    {
+      "source": "TFcensus",
+      "record_count": 2430
+    },
+    {
+      "source": "CellPhoneDB",
+      "record_count": 2410
+    },
+    {
+      "source": "CPAD",
+      "record_count": 2350
+    },
+    {
+      "source": "CSPA",
+      "record_count": 2309
     },
     {
       "source": "ICELLNET",
-      "record_count": 1436
+      "record_count": 2259
+    },
+    {
+      "source": "Ramilowski2015",
+      "record_count": 2176
+    },
+    {
+      "source": "SignaLink_function",
+      "record_count": 2076
+    },
+    {
+      "source": "Baccin2019",
+      "record_count": 2023
     },
     {
       "source": "CellChatDB_complex",
-      "record_count": 1313
+      "record_count": 1968
+    },
+    {
+      "source": "HPMR",
+      "record_count": 1881
     },
     {
       "source": "ICELLNET_complex",
-      "record_count": 975
+      "record_count": 1498
+    },
+    {
+      "source": "EMBRACE",
+      "record_count": 1435
     },
     {
       "source": "Guide2Pharma",
-      "record_count": 885
+      "record_count": 945
     },
     {
       "source": "kinase.com",
-      "record_count": 883
-    },
-    {
-      "source": "CellTypist",
-      "record_count": 877
-    },
-    {
-      "source": "IntOGen",
-      "record_count": 814
-    },
-    {
-      "source": "CellCall",
-      "record_count": 810
-    },
-    {
-      "source": "OPM",
-      "record_count": 760
-    },
-    {
-      "source": "Zhong2015",
-      "record_count": 730
-    },
-    {
-      "source": "CancerGeneCensus",
-      "record_count": 727
+      "record_count": 920
     },
     {
       "source": "GPCRdb",
-      "record_count": 502
+      "record_count": 897
+    },
+    {
+      "source": "CellTypist",
+      "record_count": 880
+    },
+    {
+      "source": "CellCall",
+      "record_count": 841
+    },
+    {
+      "source": "IntOGen",
+      "record_count": 835
+    },
+    {
+      "source": "Zhong2015",
+      "record_count": 803
+    },
+    {
+      "source": "CancerGeneCensus",
+      "record_count": 763
     },
     {
       "source": "Kirouac2010",
-      "record_count": 419
+      "record_count": 432
     },
     {
       "source": "Adhesome",
-      "record_count": 409
+      "record_count": 425
     },
     {
       "source": "CellPhoneDB_complex",
-      "record_count": 359
+      "record_count": 358
     },
     {
       "source": "Phosphatome",
@@ -1834,7 +1884,7 @@
     },
     {
       "source": "CancerDrugsDB",
-      "record_count": 193
+      "record_count": 220
     },
     {
       "source": "Cellinker_complex",
@@ -1842,11 +1892,15 @@
     },
     {
       "source": "MCAM",
-      "record_count": 139
+      "record_count": 150
+    },
+    {
+      "source": "OPM",
+      "record_count": 135
     },
     {
       "source": "Integrins",
-      "record_count": 61
+      "record_count": 67
     },
     {
       "source": "scConnect_complex",
@@ -1856,135 +1910,139 @@
   "intercell": [
     {
       "source": "OmniPath",
-      "record_count": 97187
-    },
-    {
-      "source": "UniProt_location",
-      "record_count": 41388
+      "record_count": 120129
     },
     {
       "source": "ComPPI",
-      "record_count": 40982
+      "record_count": 53099
+    },
+    {
+      "source": "UniProt_location",
+      "record_count": 46978
     },
     {
       "source": "GO_Intercell",
-      "record_count": 18169
+      "record_count": 18506
     },
     {
       "source": "UniProt_keyword",
-      "record_count": 12066
-    },
-    {
-      "source": "Almen2009",
-      "record_count": 10492
+      "record_count": 14191
     },
     {
       "source": "LOCATE",
-      "record_count": 9571
+      "record_count": 10270
     },
     {
       "source": "Surfaceome",
-      "record_count": 9396
+      "record_count": 9875
+    },
+    {
+      "source": "Almen2009",
+      "record_count": 9383
     },
     {
       "source": "HGNC",
-      "record_count": 7367
-    },
-    {
-      "source": "HPMR",
-      "record_count": 6968
+      "record_count": 7630
     },
     {
       "source": "Phobius",
-      "record_count": 6706
+      "record_count": 7126
+    },
+    {
+      "source": "HPMR",
+      "record_count": 6782
     },
     {
       "source": "Cellinker",
-      "record_count": 6370
-    },
-    {
-      "source": "Ramilowski_location",
-      "record_count": 6275
+      "record_count": 6654
     },
     {
       "source": "UniProt_topology",
-      "record_count": 6261
+      "record_count": 6533
+    },
+    {
+      "source": "Ramilowski_location",
+      "record_count": 6312
     },
     {
       "source": "scConnect",
-      "record_count": 5364
+      "record_count": 5856
     },
     {
       "source": "connectomeDB2020",
-      "record_count": 4850
+      "record_count": 5072
     },
     {
       "source": "CellPhoneDB",
-      "record_count": 4428
+      "record_count": 4604
     },
     {
-      "source": "Baccin2019",
-      "record_count": 3709
-    },
-    {
-      "source": "DGIdb",
-      "record_count": 3269
-    },
-    {
-      "source": "CellCellInteractions",
-      "record_count": 3002
-    },
-    {
-      "source": "iTALK",
-      "record_count": 2558
-    },
-    {
-      "source": "CellTalkDB",
-      "record_count": 2376
-    },
-    {
-      "source": "GPCRdb",
-      "record_count": 2008
+      "source": "MatrixDB",
+      "record_count": 3907
     },
     {
       "source": "Matrisome",
-      "record_count": 1934
+      "record_count": 3726
     },
     {
       "source": "ICELLNET",
-      "record_count": 1906
+      "record_count": 3620
     },
     {
-      "source": "Ramilowski2015",
-      "record_count": 1829
+      "source": "GPCRdb",
+      "record_count": 3588
     },
     {
-      "source": "Membranome",
-      "record_count": 1814
+      "source": "DGIdb",
+      "record_count": 3529
     },
     {
-      "source": "HPA_secretome",
-      "record_count": 1670
+      "source": "Baccin2019",
+      "record_count": 3291
+    },
+    {
+      "source": "CellCellInteractions",
+      "record_count": 3206
+    },
+    {
+      "source": "iTALK",
+      "record_count": 2674
+    },
+    {
+      "source": "CellTalkDB",
+      "record_count": 2505
     },
     {
       "source": "CellChatDB",
-      "record_count": 1638
+      "record_count": 2352
     },
     {
-      "source": "EMBRACE",
-      "record_count": 1413
-    },
-    {
-      "source": "CSPA",
-      "record_count": 1289
+      "source": "Membranome",
+      "record_count": 2066
     },
     {
       "source": "TopDB",
-      "record_count": 1248
+      "record_count": 2027
+    },
+    {
+      "source": "Ramilowski2015",
+      "record_count": 1926
+    },
+    {
+      "source": "HPA_secretome",
+      "record_count": 1669
+    },
+    {
+      "source": "CSPA",
+      "record_count": 1364
     },
     {
       "source": "Zhong2015",
-      "record_count": 1122
+      "record_count": 1257
+    },
+    {
+      "source": "EMBRACE",
+      "record_count": 1249
     },
     {
       "source": "LRdb",
@@ -1996,39 +2054,35 @@
     },
     {
       "source": "Guide2Pharma",
-      "record_count": 862
+      "record_count": 922
     },
     {
       "source": "CellCall",
-      "record_count": 793
-    },
-    {
-      "source": "MatrixDB",
-      "record_count": 510
+      "record_count": 824
     },
     {
       "source": "SignaLink_function",
-      "record_count": 447
+      "record_count": 471
     },
     {
       "source": "Kirouac2010",
-      "record_count": 412
+      "record_count": 425
     },
     {
       "source": "Adhesome",
-      "record_count": 249
-    },
-    {
-      "source": "OPM",
-      "record_count": 239
+      "record_count": 262
     },
     {
       "source": "MCAM",
-      "record_count": 138
+      "record_count": 149
     },
     {
       "source": "Integrins",
-      "record_count": 124
+      "record_count": 136
+    },
+    {
+      "source": "OPM",
+      "record_count": 46
     }
   ],
   "plotData": {
@@ -2036,7 +2090,7 @@
       {
         "database": "ACSN",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1653
+        "unique_reference_count": 1665
       },
       {
         "database": "ARN",
@@ -2046,7 +2100,7 @@
       {
         "database": "Adhesome",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1823
+        "unique_reference_count": 1827
       },
       {
         "database": "AlzPathway",
@@ -2056,12 +2110,12 @@
       {
         "database": "Baccin2019",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1516
+        "unique_reference_count": 1205
       },
       {
         "database": "BioGRID",
         "interaction_type": "post_translational",
-        "unique_reference_count": 5775
+        "unique_reference_count": 6491
       },
       {
         "database": "CA1",
@@ -2071,12 +2125,12 @@
       {
         "database": "CFinder",
         "interaction_type": "complex",
-        "unique_reference_count": 3
+        "unique_reference_count": 11
       },
       {
         "database": "CORUM",
         "interaction_type": "complex",
-        "unique_reference_count": 927
+        "unique_reference_count": 853
       },
       {
         "database": "CancerCellMap",
@@ -2086,27 +2140,27 @@
       {
         "database": "CellChatDB",
         "interaction_type": "complex",
-        "unique_reference_count": 42
+        "unique_reference_count": 54
       },
       {
         "database": "CellChatDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 163
+        "unique_reference_count": 275
       },
       {
         "database": "CellPhoneDB",
         "interaction_type": "complex",
-        "unique_reference_count": 35
+        "unique_reference_count": 55
       },
       {
         "database": "CellTalkDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1447
+        "unique_reference_count": 1448
       },
       {
         "database": "Cellinker",
         "interaction_type": "complex",
-        "unique_reference_count": 27
+        "unique_reference_count": 56
       },
       {
         "database": "Cellinker",
@@ -2120,18 +2174,23 @@
       },
       {
         "database": "CollecTRI",
+        "interaction_type": "mirna_transcriptional",
+        "unique_reference_count": 52
+      },
+      {
+        "database": "CollecTRI",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 38028
+        "unique_reference_count": 37982
       },
       {
         "database": "Compleat",
         "interaction_type": "complex",
-        "unique_reference_count": 1840
+        "unique_reference_count": 1832
       },
       {
         "database": "ComplexPortal",
         "interaction_type": "complex",
-        "unique_reference_count": 365
+        "unique_reference_count": 797
       },
       {
         "database": "DEPOD",
@@ -2146,12 +2205,12 @@
       {
         "database": "DIP",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1674
+        "unique_reference_count": 1738
       },
       {
         "database": "DOMINO",
         "interaction_type": "post_translational",
-        "unique_reference_count": 395
+        "unique_reference_count": 394
       },
       {
         "database": "DeathDomain",
@@ -2166,37 +2225,42 @@
       {
         "database": "ELM",
         "interaction_type": "post_translational",
-        "unique_reference_count": 579
+        "unique_reference_count": 740
       },
       {
         "database": "Guide2Pharma",
         "interaction_type": "complex",
-        "unique_reference_count": 56
+        "unique_reference_count": 38
       },
       {
         "database": "Guide2Pharma",
         "interaction_type": "post_translational",
-        "unique_reference_count": 343
+        "unique_reference_count": 345
+      },
+      {
+        "database": "HINT",
+        "interaction_type": "post_translational",
+        "unique_reference_count": 30804
       },
       {
         "database": "HPMR",
         "interaction_type": "post_translational",
-        "unique_reference_count": 352
+        "unique_reference_count": 350
       },
       {
         "database": "HPRD",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 1786
+        "unique_reference_count": 1789
       },
       {
         "database": "HPRD",
         "interaction_type": "post_translational",
-        "unique_reference_count": 16328
+        "unique_reference_count": 17205
       },
       {
         "database": "HPRD-phos",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1797
+        "unique_reference_count": 1800
       },
       {
         "database": "HTRIdb",
@@ -2206,42 +2270,47 @@
       {
         "database": "Havugimana2012",
         "interaction_type": "complex",
-        "unique_reference_count": 10
+        "unique_reference_count": 5
       },
       {
         "database": "ICELLNET",
         "interaction_type": "complex",
-        "unique_reference_count": 58
+        "unique_reference_count": 85
       },
       {
         "database": "ICELLNET",
         "interaction_type": "post_translational",
-        "unique_reference_count": 360
+        "unique_reference_count": 654
       },
       {
         "database": "InnateDB",
         "interaction_type": "post_translational",
-        "unique_reference_count": 2547
+        "unique_reference_count": 2624
       },
       {
         "database": "IntAct",
         "interaction_type": "post_translational",
-        "unique_reference_count": 5226
+        "unique_reference_count": 5855
       },
       {
         "database": "KEA",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 3296
+        "unique_reference_count": 3295
       },
       {
         "database": "KEA",
         "interaction_type": "post_translational",
-        "unique_reference_count": 3438
+        "unique_reference_count": 3437
       },
       {
         "database": "KEGG-MEDICUS",
         "interaction_type": "complex",
-        "unique_reference_count": 64
+        "unique_reference_count": 72
+      },
+      {
+        "database": "LMPID",
+        "interaction_type": "post_translational",
+        "unique_reference_count": 642
       },
       {
         "database": "LRdb",
@@ -2251,7 +2320,7 @@
       {
         "database": "Lit-BM-17",
         "interaction_type": "post_translational",
-        "unique_reference_count": 14002
+        "unique_reference_count": 14280
       },
       {
         "database": "LncRNADisease",
@@ -2261,17 +2330,12 @@
       {
         "database": "MPPI",
         "interaction_type": "post_translational",
-        "unique_reference_count": 175
+        "unique_reference_count": 176
       },
       {
         "database": "Macrophage",
         "interaction_type": "post_translational",
         "unique_reference_count": 437
-      },
-      {
-        "database": "MatrixDB",
-        "interaction_type": "post_translational",
-        "unique_reference_count": 54
       },
       {
         "database": "NRF2ome",
@@ -2281,7 +2345,7 @@
       {
         "database": "NetPath",
         "interaction_type": "post_translational",
-        "unique_reference_count": 1333
+        "unique_reference_count": 1339
       },
       {
         "database": "ORegAnno",
@@ -2289,9 +2353,14 @@
         "unique_reference_count": 68
       },
       {
+        "database": "PAZAR",
+        "interaction_type": "transcriptional",
+        "unique_reference_count": 460
+      },
+      {
         "database": "PDB",
         "interaction_type": "complex",
-        "unique_reference_count": 202
+        "unique_reference_count": 532
       },
       {
         "database": "PDZBase",
@@ -2301,17 +2370,17 @@
       {
         "database": "PhosphoSite",
         "interaction_type": "post_translational",
-        "unique_reference_count": 12347
+        "unique_reference_count": 12621
       },
       {
         "database": "ProtMapper",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 14511
+        "unique_reference_count": 20449
       },
       {
         "database": "ProtMapper",
         "interaction_type": "post_translational",
-        "unique_reference_count": 13205
+        "unique_reference_count": 18973
       },
       {
         "database": "Ramilowski2015",
@@ -2321,12 +2390,12 @@
       {
         "database": "SIGNOR",
         "interaction_type": "complex",
-        "unique_reference_count": 114
+        "unique_reference_count": 189
       },
       {
         "database": "SIGNOR",
         "interaction_type": "enzyme-substrate",
-        "unique_reference_count": 3909
+        "unique_reference_count": 5327
       },
       {
         "database": "SIGNOR",
@@ -2336,32 +2405,32 @@
       {
         "database": "SIGNOR",
         "interaction_type": "post_translational",
-        "unique_reference_count": 7443
+        "unique_reference_count": 10136
       },
       {
         "database": "SIGNOR",
         "interaction_type": "small_molecule_protein",
-        "unique_reference_count": 469
+        "unique_reference_count": 77
       },
       {
         "database": "SIGNOR",
         "interaction_type": "transcriptional",
-        "unique_reference_count": 577
+        "unique_reference_count": 604
       },
       {
         "database": "SPIKE",
         "interaction_type": "complex",
-        "unique_reference_count": 67
+        "unique_reference_count": 31
       },
       {
         "database": "SPIKE",
         "interaction_type": "post_translational",
-        "unique_reference_count": 4528
+        "unique_reference_count": 4532
       },
       {
         "database": "SPIKE_LC",
         "interaction_type": "post_translational",
-        "unique_reference_count": 6301
+        "unique_reference_count": 6326
       },
       {
         "database": "SignaLink3",
@@ -2371,17 +2440,17 @@
       {
         "database": "TRIP",
         "interaction_type": "post_translational",
-        "unique_reference_count": 224
+        "unique_reference_count": 226
+      },
+      {
+        "database": "TRRUST",
+        "interaction_type": "transcriptional",
+        "unique_reference_count": 6547
       },
       {
         "database": "TransmiR",
         "interaction_type": "mirna_transcriptional",
-        "unique_reference_count": 1004
-      },
-      {
-        "database": "TransmiR",
-        "interaction_type": "transcriptional",
-        "unique_reference_count": 101
+        "unique_reference_count": 997
       },
       {
         "database": "connectomeDB2020",
@@ -2401,17 +2470,27 @@
       {
         "database": "hu.MAP",
         "interaction_type": "complex",
-        "unique_reference_count": 56
+        "unique_reference_count": 38
       },
       {
         "database": "hu.MAP2",
         "interaction_type": "complex",
-        "unique_reference_count": 75
+        "unique_reference_count": 114
+      },
+      {
+        "database": "hu.MAP3",
+        "interaction_type": "complex",
+        "unique_reference_count": 73
       },
       {
         "database": "iPTMnet",
         "interaction_type": "post_translational",
-        "unique_reference_count": 5755
+        "unique_reference_count": 136
+      },
+      {
+        "database": "lncrnadb",
+        "interaction_type": "lncrna_post_transcriptional",
+        "unique_reference_count": 32
       },
       {
         "database": "miRDeathDB",
@@ -2421,12 +2500,12 @@
       {
         "database": "miRTarBase",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 6780
+        "unique_reference_count": 7651
       },
       {
         "database": "miRecords",
         "interaction_type": "post_transcriptional",
-        "unique_reference_count": 472
+        "unique_reference_count": 408
       },
       {
         "database": "ncRDeathDB",
@@ -2463,372 +2542,382 @@
       {
         "number_of_resources": 1,
         "entry_type": "complex",
-        "number_of_entries": 3586
+        "number_of_entries": 3914
       },
       {
         "number_of_resources": 2,
         "entry_type": "complex",
-        "number_of_entries": 1828
+        "number_of_entries": 2068
       },
       {
         "number_of_resources": 3,
         "entry_type": "complex",
-        "number_of_entries": 310
+        "number_of_entries": 392
       },
       {
         "number_of_resources": 4,
         "entry_type": "complex",
-        "number_of_entries": 153
+        "number_of_entries": 174
       },
       {
         "number_of_resources": 5,
         "entry_type": "complex",
-        "number_of_entries": 89
+        "number_of_entries": 108
       },
       {
         "number_of_resources": 6,
         "entry_type": "complex",
-        "number_of_entries": 44
+        "number_of_entries": 60
       },
       {
         "number_of_resources": 7,
         "entry_type": "complex",
-        "number_of_entries": 28
+        "number_of_entries": 35
       },
       {
         "number_of_resources": 8,
         "entry_type": "complex",
-        "number_of_entries": 17
+        "number_of_entries": 19
       },
       {
         "number_of_resources": 9,
         "entry_type": "complex",
-        "number_of_entries": 4
+        "number_of_entries": 5
       },
       {
         "number_of_resources": 10,
+        "entry_type": "complex",
+        "number_of_entries": 1
+      },
+      {
+        "number_of_resources": 11,
         "entry_type": "complex",
         "number_of_entries": 2
       },
       {
         "number_of_resources": 1,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 16897
+        "number_of_entries": 17436
       },
       {
         "number_of_resources": 2,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 10721
+        "number_of_entries": 15858
       },
       {
         "number_of_resources": 3,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 4881
+        "number_of_entries": 7969
       },
       {
         "number_of_resources": 4,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 4169
+        "number_of_entries": 5915
       },
       {
         "number_of_resources": 5,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 2142
+        "number_of_entries": 2837
       },
       {
         "number_of_resources": 6,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 1467
+        "number_of_entries": 1902
       },
       {
         "number_of_resources": 7,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 1784
+        "number_of_entries": 2170
       },
       {
         "number_of_resources": 8,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 1335
+        "number_of_entries": 1528
       },
       {
         "number_of_resources": 9,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 1503
+        "number_of_entries": 1613
       },
       {
         "number_of_resources": 10,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 1138
+        "number_of_entries": 1457
       },
       {
         "number_of_resources": 11,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 1004
+        "number_of_entries": 1129
       },
       {
         "number_of_resources": 12,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 813
+        "number_of_entries": 1040
       },
       {
         "number_of_resources": 13,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 531
+        "number_of_entries": 742
       },
       {
         "number_of_resources": 14,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 395
+        "number_of_entries": 523
       },
       {
         "number_of_resources": 15,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 292
+        "number_of_entries": 434
       },
       {
         "number_of_resources": 16,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 146
+        "number_of_entries": 349
       },
       {
         "number_of_resources": 17,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 75
+        "number_of_entries": 205
       },
       {
         "number_of_resources": 18,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 34
+        "number_of_entries": 101
       },
       {
         "number_of_resources": 19,
         "entry_type": "enzyme-substrate",
-        "number_of_entries": 13
+        "number_of_entries": 50
       },
       {
         "number_of_resources": 20,
+        "entry_type": "enzyme-substrate",
+        "number_of_entries": 12
+      },
+      {
+        "number_of_resources": 21,
         "entry_type": "enzyme-substrate",
         "number_of_entries": 3
       },
       {
         "number_of_resources": 1,
         "entry_type": "interaction",
-        "number_of_entries": 266372
+        "number_of_entries": 306183
       },
       {
         "number_of_resources": 2,
         "entry_type": "interaction",
-        "number_of_entries": 683957
+        "number_of_entries": 782750
       },
       {
         "number_of_resources": 3,
         "entry_type": "interaction",
-        "number_of_entries": 134454
+        "number_of_entries": 162805
       },
       {
         "number_of_resources": 4,
         "entry_type": "interaction",
-        "number_of_entries": 44098
+        "number_of_entries": 51640
       },
       {
         "number_of_resources": 5,
         "entry_type": "interaction",
-        "number_of_entries": 20902
+        "number_of_entries": 26886
       },
       {
         "number_of_resources": 6,
         "entry_type": "interaction",
-        "number_of_entries": 13076
+        "number_of_entries": 16823
       },
       {
         "number_of_resources": 7,
         "entry_type": "interaction",
-        "number_of_entries": 9323
+        "number_of_entries": 12770
       },
       {
         "number_of_resources": 8,
         "entry_type": "interaction",
-        "number_of_entries": 6593
+        "number_of_entries": 9313
       },
       {
         "number_of_resources": 9,
         "entry_type": "interaction",
-        "number_of_entries": 4495
+        "number_of_entries": 6140
       },
       {
         "number_of_resources": 10,
         "entry_type": "interaction",
-        "number_of_entries": 3610
+        "number_of_entries": 4807
       },
       {
         "number_of_resources": 11,
         "entry_type": "interaction",
-        "number_of_entries": 2789
+        "number_of_entries": 4040
       },
       {
         "number_of_resources": 12,
         "entry_type": "interaction",
-        "number_of_entries": 2374
+        "number_of_entries": 2994
       },
       {
         "number_of_resources": 13,
         "entry_type": "interaction",
-        "number_of_entries": 2016
+        "number_of_entries": 2659
       },
       {
         "number_of_resources": 14,
         "entry_type": "interaction",
-        "number_of_entries": 1807
+        "number_of_entries": 2119
       },
       {
         "number_of_resources": 15,
         "entry_type": "interaction",
-        "number_of_entries": 1369
+        "number_of_entries": 1821
       },
       {
         "number_of_resources": 16,
         "entry_type": "interaction",
-        "number_of_entries": 1132
+        "number_of_entries": 1396
       },
       {
         "number_of_resources": 17,
         "entry_type": "interaction",
-        "number_of_entries": 900
+        "number_of_entries": 1218
       },
       {
         "number_of_resources": 18,
         "entry_type": "interaction",
-        "number_of_entries": 845
+        "number_of_entries": 997
       },
       {
         "number_of_resources": 19,
         "entry_type": "interaction",
-        "number_of_entries": 679
+        "number_of_entries": 910
       },
       {
         "number_of_resources": 20,
         "entry_type": "interaction",
-        "number_of_entries": 620
+        "number_of_entries": 787
       },
       {
         "number_of_resources": 21,
         "entry_type": "interaction",
-        "number_of_entries": 525
+        "number_of_entries": 613
       },
       {
         "number_of_resources": 22,
         "entry_type": "interaction",
-        "number_of_entries": 400
+        "number_of_entries": 550
       },
       {
         "number_of_resources": 23,
         "entry_type": "interaction",
-        "number_of_entries": 355
+        "number_of_entries": 434
       },
       {
         "number_of_resources": 24,
         "entry_type": "interaction",
-        "number_of_entries": 276
+        "number_of_entries": 440
       },
       {
         "number_of_resources": 25,
         "entry_type": "interaction",
-        "number_of_entries": 268
+        "number_of_entries": 277
       },
       {
         "number_of_resources": 26,
         "entry_type": "interaction",
-        "number_of_entries": 210
+        "number_of_entries": 284
       },
       {
         "number_of_resources": 27,
         "entry_type": "interaction",
-        "number_of_entries": 223
+        "number_of_entries": 266
       },
       {
         "number_of_resources": 28,
         "entry_type": "interaction",
-        "number_of_entries": 176
+        "number_of_entries": 250
       },
       {
         "number_of_resources": 29,
         "entry_type": "interaction",
-        "number_of_entries": 178
+        "number_of_entries": 226
       },
       {
         "number_of_resources": 30,
         "entry_type": "interaction",
-        "number_of_entries": 155
+        "number_of_entries": 160
       },
       {
         "number_of_resources": 31,
         "entry_type": "interaction",
-        "number_of_entries": 92
+        "number_of_entries": 170
       },
       {
         "number_of_resources": 32,
         "entry_type": "interaction",
-        "number_of_entries": 74
+        "number_of_entries": 125
       },
       {
         "number_of_resources": 33,
         "entry_type": "interaction",
-        "number_of_entries": 62
+        "number_of_entries": 93
       },
       {
         "number_of_resources": 34,
         "entry_type": "interaction",
-        "number_of_entries": 65
+        "number_of_entries": 90
       },
       {
         "number_of_resources": 35,
         "entry_type": "interaction",
-        "number_of_entries": 53
+        "number_of_entries": 77
       },
       {
         "number_of_resources": 36,
         "entry_type": "interaction",
-        "number_of_entries": 37
+        "number_of_entries": 72
       },
       {
         "number_of_resources": 37,
         "entry_type": "interaction",
-        "number_of_entries": 39
+        "number_of_entries": 43
       },
       {
         "number_of_resources": 38,
         "entry_type": "interaction",
-        "number_of_entries": 26
+        "number_of_entries": 42
       },
       {
         "number_of_resources": 39,
         "entry_type": "interaction",
-        "number_of_entries": 18
+        "number_of_entries": 41
       },
       {
         "number_of_resources": 40,
         "entry_type": "interaction",
-        "number_of_entries": 14
+        "number_of_entries": 21
       },
       {
         "number_of_resources": 41,
         "entry_type": "interaction",
-        "number_of_entries": 7
+        "number_of_entries": 11
       },
       {
         "number_of_resources": 42,
         "entry_type": "interaction",
-        "number_of_entries": 9
+        "number_of_entries": 8
       },
       {
         "number_of_resources": 43,
         "entry_type": "interaction",
-        "number_of_entries": 6
+        "number_of_entries": 8
       },
       {
         "number_of_resources": 44,
         "entry_type": "interaction",
-        "number_of_entries": 6
+        "number_of_entries": 11
       },
       {
         "number_of_resources": 45,
@@ -2838,19 +2927,19 @@
       {
         "number_of_resources": 46,
         "entry_type": "interaction",
+        "number_of_entries": 3
+      },
+      {
+        "number_of_resources": 48,
+        "entry_type": "interaction",
         "number_of_entries": 6
       },
       {
-        "number_of_resources": 47,
-        "entry_type": "interaction",
-        "number_of_entries": 5
-      },
-      {
-        "number_of_resources": 51,
+        "number_of_resources": 52,
         "entry_type": "interaction",
         "number_of_entries": 3
       }
     ]
   },
-  "generatedAt": "2025-08-08T07:32:51.036Z"
+  "generatedAt": "2025-08-14T06:59:48.991Z"
 }

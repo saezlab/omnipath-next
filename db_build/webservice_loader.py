@@ -27,7 +27,7 @@ if DATABASE_URL:
 else:
     DB_HOST = DB_PORT = DB_USER = DB_PASSWORD = DB_NAME = None
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "omnipath_latest_build")
 
 # Table configurations - file to table mapping
 TABLE_CONFIG = {
