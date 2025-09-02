@@ -274,8 +274,8 @@ export function Chat({
       )}
 
       {messages.length > 1 && (
-        <div ref={inputAreaRef} className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t">
-          <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 py-4 md:px-0">
+        <div ref={inputAreaRef} className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm">
+          <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 pb-4 md:px-0">
             <ChatInput
               input={input}
               setInput={setInput}

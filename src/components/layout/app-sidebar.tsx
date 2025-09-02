@@ -30,7 +30,8 @@ import {
   MessageSquare, 
   Network, 
   Tag,
-  ChevronsUpDown
+  ChevronsUpDown,
+  Trash2
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -64,7 +65,7 @@ const navigationItems = [
 export function AppSidebar() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
-  const { searchHistory, clearSearchHistory, currentSearchTerm } = useSearchStore()
+  const { searchHistory, clearSearchHistory, currentSearchTerm, chats, currentChatId, switchChat, deleteChat } = useSearchStore()
   const { isMobile } = useSidebar()
   const { filterData } = useFilters()
 
@@ -112,6 +113,33 @@ export function AppSidebar() {
       return `${baseUrl}?q=${encodeURIComponent(currentSearchTerm)}`
     }
     return baseUrl
+  }
+
+  // Get chat preview text from messages
+  const getChatPreview = (chat: typeof chats[0]) => {
+    if (chat.messages.length === 0) {
+      return "New chat"
+    }
+    
+    // Find first user message
+    const firstUserMessage = chat.messages.find(msg => msg.role === 'user')
+    if (firstUserMessage && firstUserMessage.parts && firstUserMessage.parts.length > 0) {
+      const textPart = firstUserMessage.parts.find(part => part.type === 'text')
+      if (textPart?.text) {
+        return textPart.text.length > 15 
+          ? textPart.text.slice(0, 15) + '...'
+          : textPart.text
+      }
+    }
+    
+    return "New chat"
+  }
+
+  // Handle chat deletion
+  const handleDeleteChat = (chatId: string, event: React.MouseEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    deleteChat(chatId)
   }
 
   return (
@@ -239,6 +267,58 @@ export function AppSidebar() {
                 className="w-full"
               />
             </div>
+            
+            {/* Chat History Section */}
+            {chats.filter(chat => 
+              chat.messages.length > 0 && 
+              chat.messages.some(msg => msg.role === 'user')
+            ).length > 0 && (
+              <>
+                <div className="px-3">
+                  <SidebarSeparator />
+                </div>
+                <SidebarGroup>
+                  <div className="px-3 py-1">
+                    <h3 className="text-xs font-medium text-muted-foreground">Chat History</h3>
+                  </div>
+                  <ScrollArea className="h-[300px]">
+                    <SidebarMenu>
+                      {chats
+                        .filter(chat => 
+                          chat.messages.length > 0 && 
+                          chat.messages.some(msg => msg.role === 'user')
+                        )
+                        .map((chat) => (
+                          <SidebarMenuItem key={chat.id}>
+                            <div className="group relative">
+                              <SidebarMenuButton
+                                asChild
+                                isActive={currentChatId === chat.id}
+                                className="pr-8"
+                              >
+                                <Link href={`/chat?id=${chat.id}`} onClick={() => switchChat(chat.id)}>
+                                  <MessageSquare className="h-4 w-4" />
+                                  <span className="truncate">{getChatPreview(chat)}</span>
+                                </Link>
+                              </SidebarMenuButton>
+                              {chats.length > 1 && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute right-1 top-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={(e) => handleDeleteChat(chat.id, e)}
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                  </ScrollArea>
+                </SidebarGroup>
+              </>
+            )}
           </>
         )}
 
