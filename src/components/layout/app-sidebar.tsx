@@ -3,18 +3,25 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { 
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator
+  SidebarSeparator,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { 
   Search, 
@@ -22,7 +29,8 @@ import {
   Sun, 
   MessageSquare, 
   Network, 
-  Tag
+  Tag,
+  ChevronsUpDown
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -53,6 +61,7 @@ export function AppSidebar() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const { searchHistory, clearSearchHistory } = useSearchStore()
+  const { isMobile } = useSidebar()
 
   // Get entity type color
   const getEntityTypeColor = (type: string) => {
@@ -95,17 +104,86 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
-        <Link href="/" className="flex items-center gap-3 px-4 py-4">
-          <Image 
-            src="/omnipath-logo-gradient.svg" 
-            alt="OmniPath Logo" 
-            width={32} 
-            height={32} 
-          />
-          <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
-            OmniPath
-          </span>
-        </Link>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                    <Image 
+                      src="/omnipath-logo-gradient.svg" 
+                      alt="OmniPath Logo" 
+                      width={40} 
+                      height={40}
+                    />
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-bold text-lg bg-gradient-to-r from-[#007B7F] via-[#6EA945] to-[#FCCC06] bg-clip-text text-transparent">
+                      OmniPath
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {searchHistory.length} recent items
+                    </span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                align="start"
+                side={isMobile ? "bottom" : "right"}
+                sideOffset={4}
+              >
+                <DropdownMenuLabel className="text-muted-foreground text-xs">
+                  Recent Activity
+                </DropdownMenuLabel>
+                {searchHistory.length > 0 ? (
+                  <>
+                    <ScrollArea className="h-[300px]">
+                      {searchHistory.map((item) => (
+                        <DropdownMenuItem key={item.id} asChild>
+                          <Link 
+                            href={getHistoryItemUrl(item)}
+                            className="flex items-center gap-3 py-2 px-2"
+                          >
+                            {getHistoryIcon(item.type)}
+                            <div className="flex-1 min-w-0">
+                              <p className="truncate text-sm">{item.query}</p>
+                            </div>
+                            <Badge className={`${getEntityTypeColor(item.type)} text-xs`}>
+                              {item.type}
+                            </Badge>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </ScrollArea>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={clearSearchHistory}
+                      className="gap-2 p-2 text-muted-foreground"
+                    >
+                      Clear History
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <div className="px-3 py-6 text-center text-muted-foreground">
+                    <p className="text-sm">No recent activity</p>
+                  </div>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link 
+                    href="/"
+                    className="gap-2 p-2 text-muted-foreground"
+                  >
+                    Go to Home
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent>
@@ -137,48 +215,6 @@ export function AppSidebar() {
           </>
         )}
 
-        {searchHistory.length > 0 && (
-          <>
-            <SidebarSeparator />
-            <SidebarGroup>
-              <div className="flex items-center justify-between px-4 py-2">
-                <SidebarGroupLabel className="text-sm font-medium">Recent</SidebarGroupLabel>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={clearSearchHistory}
-                  className="h-6 text-xs px-2"
-                >
-                  Clear
-                </Button>
-              </div>
-              <SidebarGroupContent>
-                <ScrollArea className="h-[300px]">
-                  <SidebarMenu>
-                    {searchHistory.map((item) => (
-                      <SidebarMenuItem key={item.id}>
-                        <SidebarMenuButton asChild>
-                          <Link 
-                            href={getHistoryItemUrl(item)}
-                            className="flex items-center gap-3 py-2 px-4"
-                          >
-                            {getHistoryIcon(item.type)}
-                            <div className="flex-1 min-w-0">
-                              <p className="truncate text-sm">{item.query}</p>
-                            </div>
-                            <Badge className={`${getEntityTypeColor(item.type)} text-xs`}>
-                              {item.type}
-                            </Badge>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </ScrollArea>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </>
-        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t">
