@@ -1,6 +1,5 @@
 "use client"
 
-import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { getProteinAnnotations, getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
@@ -13,7 +12,7 @@ import {
   MapPin,
   Tag
 } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
@@ -27,13 +26,14 @@ interface FilterCounts {
 export function AnnotationsBrowser() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { addToSearchHistory } = useSearchStore()
+  const { addToSearchHistory, currentSearchTerm, setCurrentSearchTerm } = useSearchStore()
   const { setFilterData } = useFilters()
   
   const [isLoading, setIsLoading] = useState(false)
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
+  const lastSearchedQuery = useRef('')
   
   // Get query from URL
   const annotationsQuery = searchParams.get('q') || ''
@@ -65,10 +65,10 @@ export function AnnotationsBrowser() {
   const handleSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) return
 
-    setIsLoading(true)
-    setIsLoadingProtein(true)
+    // Update shared search term
+    setCurrentSearchTerm(searchQuery.trim())
     
-    // Update URL with new query
+    // Update URL with new query - this will trigger the effect to do the actual search
     const params = new URLSearchParams(searchParams.toString())
     params.set('q', searchQuery)
     params.set('page', '1')
@@ -77,29 +77,56 @@ export function AnnotationsBrowser() {
     
     // Add to search history with full URL
     addToSearchHistory(searchQuery, 'annotation', newUrl)
+  }, [searchParams, router, addToSearchHistory, setCurrentSearchTerm])
 
-    try {
-      const [annotationsResponse, proteinResponse] = await Promise.all([
-        getProteinAnnotations(searchQuery),
-        getProteinInformation(searchQuery)
-      ])
-      
-      setAnnotationsResults(annotationsResponse.annotations)
-      setProteinData(proteinResponse)
-    } catch (error) {
-      console.error("Error fetching data:", error)
-    } finally {
-      setIsLoading(false)
-      setIsLoadingProtein(false)
-    }
-  }, [searchParams, router, addToSearchHistory])
-
-  // Fetch annotations when query changes
+  // Single effect to handle both sync and fetch
   useEffect(() => {
-    if (annotationsQuery) {
-      handleSearch(annotationsQuery)
+    const queryToUse = annotationsQuery || currentSearchTerm
+    
+    // Sync shared search term when query changes from URL
+    if (annotationsQuery && annotationsQuery !== currentSearchTerm) {
+      setCurrentSearchTerm(annotationsQuery)
     }
-  }, [annotationsQuery]) // eslint-disable-line react-hooks/exhaustive-deps
+    
+    // Prevent duplicate searches
+    if (queryToUse && queryToUse !== lastSearchedQuery.current) {
+      lastSearchedQuery.current = queryToUse
+      
+      const fetchData = async () => {
+        setIsLoading(true)
+        setIsLoadingProtein(true)
+        
+        // If no URL query but we have a shared search term, update URL
+        if (!annotationsQuery && currentSearchTerm) {
+          const params = new URLSearchParams(searchParams.toString())
+          params.set('q', currentSearchTerm)
+          params.set('page', '1')
+          const newUrl = `/annotations?${params.toString()}`
+          router.push(newUrl, { scroll: false })
+          
+          // Add to search history
+          addToSearchHistory(currentSearchTerm, 'annotation', newUrl)
+        }
+        
+        try {
+          const [annotationsResponse, proteinResponse] = await Promise.all([
+            getProteinAnnotations(queryToUse),
+            getProteinInformation(queryToUse)
+          ])
+          
+          setAnnotationsResults(annotationsResponse.annotations)
+          setProteinData(proteinResponse)
+        } catch (error) {
+          console.error("Error fetching data:", error)
+        } finally {
+          setIsLoading(false)
+          setIsLoadingProtein(false)
+        }
+      }
+      
+      fetchData()
+    }
+  }, [annotationsQuery, currentSearchTerm, searchParams, router, addToSearchHistory, setCurrentSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {
@@ -284,13 +311,6 @@ export function AnnotationsBrowser() {
 
   return (
       <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6">
-        <SearchBar
-          placeholder="Search for a protein..."
-          onSearch={handleSearch}
-          initialQuery={annotationsQuery}
-          isLoading={isLoading}
-        />
-        
         {annotationsQuery ? (
           <>
             <ProteinSummaryCard 

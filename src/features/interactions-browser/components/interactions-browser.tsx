@@ -1,6 +1,5 @@
 "use client"
 
-import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
@@ -11,7 +10,7 @@ import { InteractionResultsTable } from "@/features/interactions-browser/compone
 import { useSearchStore } from "@/store/search-store"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { Search } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card } from "@/components/ui/card"
 import { useFilters } from "@/contexts/filter-context"
@@ -41,7 +40,7 @@ export function InteractionsBrowser({
 }: InteractionsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { addToSearchHistory } = useSearchStore()
+  const { addToSearchHistory, currentSearchTerm, setCurrentSearchTerm } = useSearchStore()
   const { setFilterData } = useFilters()
   
   // Get query from URL
@@ -88,14 +87,15 @@ export function InteractionsBrowser({
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
+  const lastSearchedQuery = useRef('')
 
   const handleSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) return
 
-    setIsLoading(true)
-    setIsLoadingProtein(true)
+    // Update shared search term
+    setCurrentSearchTerm(searchQuery.trim())
     
-    // Update URL with new query
+    // Update URL with new query - this will trigger the effect to do the actual search
     const params = new URLSearchParams(searchParams.toString())
     params.set('q', searchQuery)
     const newUrl = `/interactions?${params.toString()}`
@@ -103,43 +103,46 @@ export function InteractionsBrowser({
     
     // Add to search history with full URL
     addToSearchHistory(searchQuery, 'interaction', newUrl)
+  }, [searchParams, router, addToSearchHistory, setCurrentSearchTerm])
 
-    try {
-      const [interactionsResponse, proteinResponse] = await Promise.all([
-        searchProteinNeighbors(searchQuery),
-        getProteinInformation(searchQuery)
-      ])
-      
-      setInteractions(interactionsResponse.interactions)
-      setProteinData(proteinResponse)
-      if (onEntitySelect) {
-        onEntitySelect(searchQuery)
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error)
-    } finally {
-      setIsLoading(false)
-      setIsLoadingProtein(false)
-    }
-  }, [searchParams, router, addToSearchHistory, onEntitySelect])
-
-  // Fetch interactions when query changes
+  // Single effect to handle both sync and fetch
   useEffect(() => {
-    if (interactionsQuery) {
+    const queryToUse = interactionsQuery || currentSearchTerm
+    
+    // Sync shared search term when query changes from URL
+    if (interactionsQuery && interactionsQuery !== currentSearchTerm) {
+      setCurrentSearchTerm(interactionsQuery)
+    }
+    
+    // Prevent duplicate searches
+    if (queryToUse && queryToUse !== lastSearchedQuery.current) {
+      lastSearchedQuery.current = queryToUse
+      
       const fetchData = async () => {
         setIsLoading(true)
         setIsLoadingProtein(true)
         
+        // If no URL query but we have a shared search term, update URL
+        if (!interactionsQuery && currentSearchTerm) {
+          const params = new URLSearchParams(searchParams.toString())
+          params.set('q', currentSearchTerm)
+          const newUrl = `/interactions?${params.toString()}`
+          router.push(newUrl, { scroll: false })
+          
+          // Add to search history
+          addToSearchHistory(currentSearchTerm, 'interaction', newUrl)
+        }
+        
         try {
           const [interactionsResponse, proteinResponse] = await Promise.all([
-            searchProteinNeighbors(interactionsQuery),
-            getProteinInformation(interactionsQuery)
+            searchProteinNeighbors(queryToUse),
+            getProteinInformation(queryToUse)
           ])
           
           setInteractions(interactionsResponse.interactions)
           setProteinData(proteinResponse)
           if (onEntitySelect) {
-            onEntitySelect(interactionsQuery)
+            onEntitySelect(queryToUse)
           }
         } catch (error) {
           console.error("Error fetching data:", error)
@@ -151,7 +154,7 @@ export function InteractionsBrowser({
       
       fetchData()
     }
-  }, [interactionsQuery, onEntitySelect])
+  }, [interactionsQuery, currentSearchTerm, onEntitySelect, searchParams, router, addToSearchHistory, setCurrentSearchTerm])
 
   // Calculate filter counts from interactions
   const filterCounts = useMemo(() => {
@@ -415,13 +418,6 @@ export function InteractionsBrowser({
 
   return (
       <div className="w-full">
-        <SearchBar
-          placeholder="Search for proteins, genes, or other biological entities..."
-          onSearch={(query) => handleSearch(query)}
-          isLoading={isLoading}
-          initialQuery={interactionsQuery}
-        />
-
         {interactionsQuery && (
           <div className="max-w-7xl mx-auto px-4 pb-4">
             <ProteinSummaryCard 

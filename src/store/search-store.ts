@@ -14,6 +14,9 @@ interface SearchState {
   searchHistory: SearchHistoryItem[]
   maxHistoryItems: number
 
+  // Shared search state
+  currentSearchTerm: string
+
   // Chat Actions
   addMessage: (message: ChatMessage) => void
   setMessages: (messages: ChatMessage[]) => void
@@ -27,6 +30,9 @@ interface SearchState {
   addToSearchHistory: (query: string, type: SearchHistoryItem['type'], url: string) => void
   addChatToHistory: (chatId: string, firstUserMessage: string) => void
   clearSearchHistory: () => void
+
+  // Shared Search Actions
+  setCurrentSearchTerm: (term: string) => void
 }
 
 type SearchStateCreator = StateCreator<SearchState, [], []>
@@ -44,6 +50,9 @@ export const useSearchStore = create<SearchState>()(
       // Search history initial state
       searchHistory: [],
       maxHistoryItems: 20,
+
+      // Shared search initial state
+      currentSearchTerm: '',
 
       // Chat Actions
       addMessage: (message: ChatMessage) => {
@@ -165,6 +174,9 @@ export const useSearchStore = create<SearchState>()(
       },
       
       clearSearchHistory: () => set({ searchHistory: [] }),
+
+      // Shared Search Actions
+      setCurrentSearchTerm: (term: string) => set({ currentSearchTerm: term }),
     })) as SearchStateCreator,
     {
       name: 'search-store',
@@ -172,6 +184,7 @@ export const useSearchStore = create<SearchState>()(
         chats: state.chats,
         currentChatId: state.currentChatId,
         searchHistory: state.searchHistory,
+        currentSearchTerm: state.currentSearchTerm,
       }),
     }
   )
