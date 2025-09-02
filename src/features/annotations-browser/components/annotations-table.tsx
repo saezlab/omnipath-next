@@ -152,7 +152,7 @@ export function AnnotationsTable({
                   {rows.map((row) => (
                     <TableRow
                       key={row.recordId}
-                      className="cursor-pointer hover:bg-muted/50"
+                      className="hover:bg-muted/50"
                     >
                       {headers.map(header => (
                         <TableCell key={`${row.recordId}-${header}`}>
