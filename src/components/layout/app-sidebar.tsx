@@ -38,6 +38,9 @@ import { useTheme } from "next-themes"
 import { useSearchStore } from "@/store/search-store"
 import { NewChatButton } from "@/components/ai/new-chat-button"
 import Image from "next/image"
+import { useFilters } from "@/contexts/filter-context"
+import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
+import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
 
 const navigationItems = [
   {
@@ -62,6 +65,7 @@ export function AppSidebar() {
   const { theme, setTheme } = useTheme()
   const { searchHistory, clearSearchHistory } = useSearchStore()
   const { isMobile } = useSidebar()
+  const { filterData } = useFilters()
 
   // Get entity type color
   const getEntityTypeColor = (type: string) => {
@@ -215,10 +219,33 @@ export function AppSidebar() {
           </>
         )}
 
+        {/* Render filters based on current page */}
+        {filterData && (
+          <>
+            {filterData.type === "interactions" && (
+              <FilterSidebar
+                filters={filterData.filters}
+                filterCounts={filterData.filterCounts}
+                onFilterChange={filterData.onFilterChange}
+                onClearFilters={filterData.onClearFilters}
+              />
+            )}
+            {filterData.type === "annotations" && (
+              <AnnotationsFilterSidebar
+                filters={filterData.filters}
+                filterCounts={filterData.filterCounts}
+                onFilterChange={filterData.onFilterChange}
+                onClearFilters={filterData.onClearFilters}
+              />
+            )}
+          </>
+        )}
+
+
       </SidebarContent>
 
       <SidebarFooter className="border-t">
-        <div className="flex items-center justify-center p-2">
+        <div className="flex items-center justify-center">
           <Button
             variant="ghost"
             size="icon"

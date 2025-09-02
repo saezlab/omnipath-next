@@ -1,5 +1,9 @@
 "use client"
 
+// NOTE: This component is no longer used by the main filter components (FilterSidebar, AnnotationsFilterSidebar)
+// as they have been refactored to use native sidebar components for better visual integration.
+// This component is kept for potential future use or other filter implementations.
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Filter, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -25,10 +29,10 @@ export function FilterCard({
   return (
     <Card 
       className={cn(
-        "w-full md:w-64 lg:w-72 shrink-0 transition-all duration-200",
+        "w-full shrink-0 transition-all duration-200",
         "border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md pt-4",
         "bg-background",
-        showMobileFilters ? "block" : "hidden md:block",
+        showMobileFilters ? "block" : "block", // Always show when in sidebar
         className
       )}
     >

@@ -2,10 +2,8 @@
 
 import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
-import { Button } from "@/components/ui/button"
 import { getProteinAnnotations, getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
-import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { useSearchStore } from "@/store/search-store"
 import { Annotation, SearchFilters } from "@/features/annotations-browser/types"
@@ -13,11 +11,11 @@ import {
   Activity,
   Info,
   MapPin,
-  SlidersHorizontal,
   Tag
 } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
+import { useFilters } from "@/contexts/filter-context"
 
 const RESULTS_PER_PAGE = 20
 
@@ -30,9 +28,9 @@ export function AnnotationsBrowser() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { addToSearchHistory } = useSearchStore()
+  const { setFilterData } = useFilters()
   
   const [isLoading, setIsLoading] = useState(false)
-  const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
@@ -203,7 +201,7 @@ export function AnnotationsBrowser() {
   )
 
   // Handle filter changes
-  const handleFilterChange = (type: keyof SearchFilters, value: string) => {
+  const handleFilterChange = useCallback((type: keyof SearchFilters, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     
     const newFilters = { ...annotationsFilters }
@@ -226,14 +224,14 @@ export function AnnotationsBrowser() {
     params.set('page', '1')
     
     router.push(`?${params.toString()}`, { scroll: false })
-  }
+  }, [searchParams, annotationsFilters, router])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('filters')
     params.set('page', '1')
     router.push(`?${params.toString()}`, { scroll: false })
-  }
+  }, [searchParams, router])
   
   const setAnnotationsCurrentPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -271,6 +269,19 @@ export function AnnotationsBrowser() {
     return "bg-gray-100 text-gray-800 hover:bg-gray-200"
   }
 
+  // Update filter data in context when query or data changes
+  useEffect(() => {
+    const filterContextValue = annotationsQuery ? {
+      type: "annotations" as const,
+      filters: annotationsFilters,
+      filterCounts,
+      onFilterChange: handleFilterChange,
+      onClearFilters: clearFilters,
+    } : null
+    
+    setFilterData(filterContextValue)
+  }, [annotationsQuery, annotationsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
+
   return (
       <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6">
         <SearchBar
@@ -289,52 +300,34 @@ export function AnnotationsBrowser() {
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowMobileFilters(!showMobileFilters)}
-                    className="lg:hidden"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                    Filters
-                  </Button>
                   <span className="text-sm text-muted-foreground">
                     {uniqueRecordCount} results
                   </span>
                 </div>
               </div>
 
-              <div className="flex gap-6">
-                <AnnotationsFilterSidebar
-                  filterCounts={filterCounts}
-                  filters={annotationsFilters}
-                  onFilterChange={handleFilterChange}
-                  onClearFilters={clearFilters}
-                  showMobileFilters={showMobileFilters}
-                />
-
-                <div className="flex-1 min-w-0 overflow-hidden">
-                  {isLoading ? (
-                    <TableSkeleton />
-                  ) : uniqueRecordCount > 0 ? (
-                    <AnnotationsTable
-                      currentResults={currentResults}
-                      getCategoryIcon={getCategoryIcon}
-                      getCategoryColor={getCategoryColor}
-                      currentPage={annotationsCurrentPage}
-                      totalPages={totalPages}
-                      onPageChange={setAnnotationsCurrentPage}
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                      <Info className="h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium mb-2">No annotations found</h3>
-                      <p className="text-muted-foreground max-w-md">
-                        No annotations found for &ldquo;{annotationsQuery}&rdquo;. Try searching for a different protein.
-                      </p>
-                    </div>
-                  )}
-                </div>
+              {/* Main Content - Now uses full width */}
+              <div className="w-full">
+                {isLoading ? (
+                  <TableSkeleton />
+                ) : uniqueRecordCount > 0 ? (
+                  <AnnotationsTable
+                    currentResults={currentResults}
+                    getCategoryIcon={getCategoryIcon}
+                    getCategoryColor={getCategoryColor}
+                    currentPage={annotationsCurrentPage}
+                    totalPages={totalPages}
+                    onPageChange={setAnnotationsCurrentPage}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <Info className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No annotations found</h3>
+                    <p className="text-muted-foreground max-w-md">
+                      No annotations found for &ldquo;{annotationsQuery}&rdquo;. Try searching for a different protein.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </>

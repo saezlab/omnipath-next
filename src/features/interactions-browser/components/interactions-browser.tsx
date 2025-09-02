@@ -1,13 +1,11 @@
 "use client"
 
-import { FilterSkeleton } from "@/components/filter-skeleton"
 import { SearchBar } from "@/components/search-bar"
 import { TableSkeleton } from "@/components/table-skeleton"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
-import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
 import { useSearchStore } from "@/store/search-store"
@@ -16,6 +14,7 @@ import { Search } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Card } from "@/components/ui/card"
+import { useFilters } from "@/contexts/filter-context"
 
 const RESULTS_PER_PAGE = 15
 
@@ -43,6 +42,7 @@ export function InteractionsBrowser({
   const searchParams = useSearchParams()
   const router = useRouter()
   const { addToSearchHistory } = useSearchStore()
+  const { setFilterData } = useFilters()
   
   // Get query from URL
   const interactionsQuery = searchParams.get('q') || ''
@@ -356,7 +356,7 @@ export function InteractionsBrowser({
     })
   }, [interactions, interactionsFilters, interactionsQuery])
 
-  const handleFilterChange = (type: keyof InteractionsFilters, value: string | boolean | null | number) => {
+  const handleFilterChange = useCallback((type: keyof InteractionsFilters, value: string | boolean | null | number) => {
     const params = new URLSearchParams(searchParams.toString())
     
     const newFilters = { ...interactionsFilters }
@@ -386,13 +386,13 @@ export function InteractionsBrowser({
     }
     
     router.push(`?${params.toString()}`, { scroll: false })
-  }
+  }, [searchParams, interactionsFilters, router])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('filters')
     router.push(`?${params.toString()}`, { scroll: false })
-  }
+  }, [searchParams, router])
 
 
   const handleSelectInteraction = (interaction: SearchProteinNeighborsResponse['interactions'][number]) => {
@@ -400,42 +400,42 @@ export function InteractionsBrowser({
     setIsDetailsOpen(true)
   }
 
+  // Update filter data in context when query or data changes
+  useEffect(() => {
+    const filterContextValue = interactionsQuery ? {
+      type: "interactions" as const,
+      filters: interactionsFilters,
+      filterCounts,
+      onFilterChange: handleFilterChange,
+      onClearFilters: clearFilters,
+    } : null
+    
+    setFilterData(filterContextValue)
+  }, [interactionsQuery, interactionsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
+
   return (
-    <div className="w-full">
-      <SearchBar
-        placeholder="Search for proteins, genes, or other biological entities..."
-        onSearch={(query) => handleSearch(query)}
-        isLoading={isLoading}
-        initialQuery={interactionsQuery}
-      />
+      <div className="w-full">
+        <SearchBar
+          placeholder="Search for proteins, genes, or other biological entities..."
+          onSearch={(query) => handleSearch(query)}
+          isLoading={isLoading}
+          initialQuery={interactionsQuery}
+        />
 
-      {interactionsQuery && (
-        <div className="max-w-7xl mx-auto px-4 pb-4">
-          <ProteinSummaryCard 
-            proteinData={proteinData ?? undefined}
-            isLoading={isLoadingProtein}
-            defaultExpanded={false}
-          />
-        </div>
-      )}
+        {interactionsQuery && (
+          <div className="max-w-7xl mx-auto px-4 pb-4">
+            <ProteinSummaryCard 
+              proteinData={proteinData ?? undefined}
+              isLoading={isLoadingProtein}
+              defaultExpanded={false}
+            />
+          </div>
+        )}
 
-      <div className="max-w-7xl mx-auto p-4">
-        {interactionsQuery ? (
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Filters Sidebar */}
-            {isLoading ? (
-              <FilterSkeleton />
-            ) : (
-              <FilterSidebar
-                filters={interactionsFilters}
-                filterCounts={filterCounts}
-                onFilterChange={handleFilterChange}
-                onClearFilters={clearFilters}
-              />
-            )}
-
-            {/* Main Content */}
-            <div className="flex-1 min-w-0">
+        <div className="max-w-7xl mx-auto p-4">
+          {interactionsQuery ? (
+            <div className="w-full">
+              {/* Main Content - Now uses full width */}
               {isLoading ? (
                 <TableSkeleton rows={5} />
               ) : interactions.length > 0 ? (
@@ -473,30 +473,29 @@ export function InteractionsBrowser({
                 </div>
               )}
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Search className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Welcome to Interactions Browser</h3>
-            <p className="text-muted-foreground max-w-md">
-              Search for proteins or genes to explore their interactions.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Interaction Details Dialog */}
-      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogTitle>
-            Interaction Details
-          </DialogTitle>
-          {selectedInteraction && (
-            <InteractionDetails selectedInteraction={selectedInteraction} />
+          ) : (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Search className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Welcome to Interactions Browser</h3>
+              <p className="text-muted-foreground max-w-md">
+                Search for proteins or genes to explore their interactions.
+              </p>
+            </div>
           )}
-        </DialogContent>
-      </Dialog>
-    </div>
+        </div>
+
+        {/* Interaction Details Dialog */}
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogTitle>
+              Interaction Details
+            </DialogTitle>
+            {selectedInteraction && (
+              <InteractionDetails selectedInteraction={selectedInteraction} />
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
   )
 }
 
