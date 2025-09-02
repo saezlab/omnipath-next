@@ -4,7 +4,7 @@ import { smoothStream, streamText, stepCountIs } from "ai";
 import { z } from 'zod/v3';
 import { DATABASE_SCHEMA_DESCRIPTION, SYSTEM_PROMPT, handleSqlError, validateSqlQuery, SQL_VALIDATION_ERROR } from '@/lib/api-constants';
 
-// Define the message schema for the new UIMessage format
+// Define the message schema for UIMessage format with parts only
 const messagePartSchema = z.object({
   type: z.string(),
   text: z.string().optional(),
@@ -13,8 +13,7 @@ const messagePartSchema = z.object({
 const messageSchema = z.object({
   id: z.string().optional(),
   role: z.enum(["user", "assistant", "system"]),
-  parts: z.array(messagePartSchema).optional(),
-  content: z.string().optional(), // Keep for backward compatibility
+  parts: z.array(messagePartSchema),
 });
 
 // Define the request schema
@@ -53,36 +52,15 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { messages } = requestSchema.parse(body);
     
-    // Convert messages to UIMessage format for the new AI SDK
-    const uiMessages = messages.map((msg, index) => {
-      // Handle new format with parts
-      if (msg.parts && msg.parts.length > 0) {
-        return {
-          id: msg.id || `msg-${index}`,
-          role: msg.role,
-          parts: msg.parts.map(part => ({
-            ...part,
-            type: part.type as 'text' | 'image' | 'reasoning'
-          }))
-        };
-      }
-      // Handle old format with content (backward compatibility)
-      else if (msg.content) {
-        return {
-          id: msg.id || `msg-${index}`,
-          role: msg.role,
-          parts: [{ type: 'text' as const, text: msg.content }]
-        };
-      }
-      // Fallback for empty messages
-      else {
-        return {
-          id: msg.id || `msg-${index}`,
-          role: msg.role,
-          parts: [{ type: 'text' as const, text: '' }]
-        };
-      }
-    });
+    // Convert messages to UIMessage format
+    const uiMessages = messages.map((msg, index) => ({
+      id: msg.id || `msg-${index}`,
+      role: msg.role,
+      parts: msg.parts.map(part => ({
+        ...part,
+        type: part.type as 'text' | 'image' | 'reasoning'
+      }))
+    }));
     
     // Convert UIMessages to CoreMessages format
     const coreMessages = uiMessages.map(msg => {

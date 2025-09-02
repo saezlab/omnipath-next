@@ -1,33 +1,9 @@
-// --- Import the new shared table and its types --- 
 import { ResultsTable, ColumnDef } from "@/components/shared/results-table";
-import { useState } from 'react'; // Import useState
-import { Textarea } from '@/components/ui/textarea'; // Assuming Textarea component exists
-import { Button } from '@/components/ui/button'; // Assuming Button component exists
-import { AlertCircle, Pencil } from 'lucide-react'; // Icon for errors and Pencil icon
-
-// Type for a single row in the SQL results
-type SqlResultRow = Record<string, unknown>;
-
-// Type for the result object returned by the executeSql tool
-interface SqlToolResult {
-  results: SqlResultRow[];
-  totalCount: number;
-  limited: boolean;
-}
-
-// Update ToolResult to include SqlToolResult and explicit error type
-interface SqlToolError {
-    error: string;
-}
-type ToolResult = SqlToolResult | SqlToolError; 
-
-// Update CustomToolInvocation args
-interface CustomToolInvocation {
-  toolName: string;
-  args: { sqlQuery: string }; // Changed from query to sqlQuery
-  state: string; // e.g., "pending", "success", "error"
-  result?: ToolResult;
-}
+import { useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Pencil } from 'lucide-react';
+import { SqlResultRow, SqlToolResult, SqlToolError, ToolResult, CustomToolInvocation } from '@/types/chat';
 
 // Add onRerunQuery prop
 export const ToolResponse = ({ 
@@ -43,8 +19,6 @@ export const ToolResponse = ({
 
   // Early exit for pending or unknown states without results yet
   if (state === 'pending' || !result) {
-     // Optionally render a loading indicator or nothing
-     // console.log("Tool state is pending or no result yet:", state);
      return null; 
   }
 
@@ -54,7 +28,7 @@ export const ToolResponse = ({
       const sqlResult = result as SqlToolResult; // Cast for success case
       const sqlError = result as SqlToolError; // Cast for error case
 
-      // --- Define columns for the ResultsTable (only if not error and data is valid) ---
+      // Define columns for the ResultsTable (only if not error and data is valid)
       const columns: ColumnDef<SqlResultRow>[] = !isError && sqlResult?.results?.length > 0
         ? Object.keys(sqlResult.results[0]).map(key => ({
             accessorKey: key,
@@ -68,9 +42,8 @@ export const ToolResponse = ({
             enableSorting: true,
         }))
         : [];
-      // --- End of column definition --- 
+ 
 
-      // --- Handle Rerun ---
       const handleRerun = () => {
         if (onRerunQuery) {
             onRerunQuery(editedQuery);
@@ -165,9 +138,7 @@ export const ToolResponse = ({
             )}
         </div>
       );
-    // --- Removed cases for searchInteractions and getAnnotations ---
     default:
-       console.warn(`Received response for unknown tool: ${toolName}`);
       return <p className="text-sm text-muted-foreground">Unknown tool response format.</p>;
   }
 }; 

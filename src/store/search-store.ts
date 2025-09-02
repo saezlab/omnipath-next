@@ -2,27 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { StateCreator } from 'zustand'
 import { nanoid } from 'nanoid'
-import { ToolInvocation } from 'ai'
-
-export interface ChatMessage {
-  id: string
-  role: 'user' | 'assistant' | 'system' | 'function' | 'tool'
-  content: string
-  toolInvocations?: ToolInvocation[]
-}
-
-export interface ChatSession {
-  id: string
-  messages: ChatMessage[]
-}
-
-export interface SearchHistoryItem {
-  id: string
-  query: string
-  type: 'annotation' | 'interaction' | 'chat'
-  timestamp: number
-  url: string
-}
+import { ChatMessage, ChatSession, SearchHistoryItem } from '@/types/chat'
 
 interface SearchState {
   // Chat state
@@ -94,8 +74,6 @@ export const useSearchStore = create<SearchState>()(
             currentChatId: chatId,
             messages: targetChat.messages,
           })
-        } else {
-          console.warn(`Chat with id ${chatId} not found.`)
         }
       },
       saveCurrentChat: () => {
