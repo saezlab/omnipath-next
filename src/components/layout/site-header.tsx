@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { History, Search, Moon, Sun } from "lucide-react"
+import { History, Search, Moon, Sun, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { useSearchStore } from "@/store/search-store"
@@ -22,8 +22,20 @@ export function SiteHeader() {
         return "bg-primary/10 text-primary"
       case "interaction":
         return "bg-secondary/10 text-secondary"
+      case "chat":
+        return "bg-blue-500/10 text-blue-500"
       default:
         return "bg-muted text-muted-foreground"
+    }
+  }
+
+  // Get icon for history item type
+  const getHistoryIcon = (type: string) => {
+    switch (type) {
+      case "chat":
+        return <MessageSquare className="h-4 w-4 text-muted-foreground" />
+      default:
+        return <Search className="h-4 w-4 text-muted-foreground" />
     }
   }
 
@@ -88,7 +100,7 @@ export function SiteHeader() {
                           href={getHistoryItemUrl(item)}
                           className="flex items-center gap-2 py-2 cursor-pointer"
                         >
-                          <Search className="h-4 w-4 text-muted-foreground" />
+                          {getHistoryIcon(item.type)}
                           <div className="flex-1">
                             <p>{item.query}</p>
                           </div>
@@ -154,7 +166,7 @@ export function SiteHeader() {
                           href={getHistoryItemUrl(item)}
                           className="flex items-center gap-2 py-2 cursor-pointer"
                         >
-                          <Search className="h-4 w-4 text-muted-foreground" />
+                          {getHistoryIcon(item.type)}
                           <div className="flex-1">
                             <p>{item.query}</p>
                           </div>

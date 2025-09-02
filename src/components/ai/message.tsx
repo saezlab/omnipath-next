@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 import { Markdown } from "@/components/ai/markdown";
 import { ToolResponse } from "@/components/ai/tool-response";
 import { Button } from "@/components/ui/button";
-import { AlertTriangleIcon, TerminalIcon, Pencil } from "lucide-react";
+import { AlertTriangleIcon, TerminalIcon, Pencil, Trash2 } from "lucide-react";
 
 // Extend the ToolInvocation type locally if needed, or handle potential errors defensively.
 // This assumes result might contain an error property.
@@ -59,7 +59,8 @@ export const Message = ({
   isInitialMessage,
   onRerunQuery,
   id,
-  startEdit
+  startEdit,
+  deleteMessage
 }: {
   role: string;
   content: string | ReactNode;
@@ -68,8 +69,10 @@ export const Message = ({
   onRerunQuery?: (newQuery: string) => void;
   id: string;
   startEdit?: (messageId: string, currentContent: string) => void;
+  deleteMessage?: (messageId: string) => void;
 }) => {
   const canEdit = role === 'user' && typeof content === 'string' && !!startEdit;
+  const canDelete = typeof content === 'string' && !!deleteMessage && !isInitialMessage;
 
   return (
     <motion.div
@@ -101,18 +104,31 @@ export const Message = ({
                 : ""
           }`}>
             <Markdown>{content as string}</Markdown>
-            {canEdit && (
-               <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => startEdit(id, content as string)}
-                  className="absolute top-1 right-1 h-6 w-6 text-zinc-400 dark:text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                  aria-label="Edit message"
-                  data-edit-button="true"
-                >
-                  <Pencil className="h-3 w-3" />
-                </Button>
-            )}
+            <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+              {canEdit && (
+                 <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => startEdit(id, content as string)}
+                    className="h-6 w-6 text-zinc-400 dark:text-zinc-500 hover:text-blue-500"
+                    aria-label="Edit message"
+                    data-edit-button="true"
+                  >
+                    <Pencil className="h-3 w-3" />
+                  </Button>
+              )}
+              {canDelete && (
+                <Button 
+                   variant="ghost" 
+                   size="icon" 
+                   onClick={() => deleteMessage(id)}
+                   className="h-6 w-6 text-zinc-400 dark:text-zinc-500 hover:text-red-500"
+                   aria-label="Delete message"
+                 >
+                   <Trash2 className="h-3 w-3" />
+                 </Button>
+              )}
+            </div>
           </div>
         )}
       </div>
