@@ -1,13 +1,14 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar"
 import { Slider } from "@/components/ui/slider"
-import { SidebarGroup, SidebarGroupAction, SidebarMenuBadge, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar"
+import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { ArrowRight, HeartHandshake, X } from "lucide-react"
-import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons"
+import { useCallback, useState } from "react"
 
 interface FilterSidebarProps {
   filters: InteractionsFilters
@@ -73,18 +74,24 @@ export function FilterSidebar({
   return (
     <>
       {/* Main Filters Group with Clear Action */}
-      <SidebarGroup>
         {activeFilterCount > 0 && (
-          <SidebarGroupAction onClick={onClearFilters} title="Clear all filters">
-            <X className="h-4 w-4" />
-            <span className="sr-only">Clear all ({activeFilterCount})</span>
-          </SidebarGroupAction>
+          <div className="px-3 pb-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onClearFilters}
+              className="w-full justify-start gap-2"
+            >
+              <X className="h-4 w-4" />
+              Clear all ({activeFilterCount})
+            </Button>
+          </div>
         )}
 
       {/* All Filters */}
       <SidebarMenu className="space-y-2">
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Quick Filters">
+            <SidebarMenuButton className="pointer-events-none" tooltip="Quick Filters">
               <span>Quick Filters</span>
             </SidebarMenuButton>
             <SidebarMenuSub className="space-y-1">
@@ -201,7 +208,7 @@ export function FilterSidebar({
             </SidebarMenuSub>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Interaction Type">
+            <SidebarMenuButton className="pointer-events-none" tooltip="Interaction Type">
               <span>Interaction Type</span>
             </SidebarMenuButton>
             <SidebarMenuSub className="space-y-1">
@@ -241,7 +248,7 @@ export function FilterSidebar({
             </SidebarMenuSub>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Minimum References">
+            <SidebarMenuButton className="pointer-events-none" tooltip="Minimum References">
               <span>Minimum References</span>
             </SidebarMenuButton>
             <SidebarMenuSub className="space-y-1">
@@ -261,7 +268,7 @@ export function FilterSidebar({
             </SidebarMenuSub>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Source Entity Type">
+            <SidebarMenuButton className="pointer-events-none" tooltip="Source Entity Type">
               <span>Source Entity Type</span>
             </SidebarMenuButton>
             <SidebarMenuSub className="space-y-1">
@@ -295,7 +302,7 @@ export function FilterSidebar({
             </SidebarMenuSub>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Target Entity Type">
+            <SidebarMenuButton className="pointer-events-none" tooltip="Target Entity Type">
               <span>Target Entity Type</span>
             </SidebarMenuButton>
             <SidebarMenuSub className="space-y-1">
@@ -329,7 +336,6 @@ export function FilterSidebar({
             </SidebarMenuSub>
           </SidebarMenuItem>
         </SidebarMenu>
-            </SidebarGroup>
 
     </>
   )

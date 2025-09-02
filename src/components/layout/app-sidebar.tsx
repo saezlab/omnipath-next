@@ -208,7 +208,9 @@ export function AppSidebar() {
 
         {pathname === '/chat' && (
           <>
-            <SidebarSeparator />
+            <div className="px-3">
+              <SidebarSeparator />
+            </div>
             <div className="px-3 py-2">
               <NewChatButton 
                 initialMessages={[]}
@@ -220,24 +222,33 @@ export function AppSidebar() {
         )}
 
         {/* Render filters based on current page */}
-        {filterData && (
+        {filterData && pathname !== '/chat' && (
           <>
-            {filterData.type === "interactions" && (
-              <FilterSidebar
-                filters={filterData.filters}
-                filterCounts={filterData.filterCounts}
-                onFilterChange={filterData.onFilterChange}
-                onClearFilters={filterData.onClearFilters}
-              />
-            )}
-            {filterData.type === "annotations" && (
-              <AnnotationsFilterSidebar
-                filters={filterData.filters}
-                filterCounts={filterData.filterCounts}
-                onFilterChange={filterData.onFilterChange}
-                onClearFilters={filterData.onClearFilters}
-              />
-            )}
+            <div className="px-3">
+              <SidebarSeparator />
+            </div>
+            <div className="flex-1 overflow-hidden pb-4">
+              <ScrollArea className="h-full">
+                <div className="px-1">
+                  {filterData.type === "interactions" && (
+                    <FilterSidebar
+                      filters={filterData.filters}
+                      filterCounts={filterData.filterCounts}
+                      onFilterChange={filterData.onFilterChange}
+                      onClearFilters={filterData.onClearFilters}
+                    />
+                  )}
+                  {filterData.type === "annotations" && (
+                    <AnnotationsFilterSidebar
+                      filters={filterData.filters}
+                      filterCounts={filterData.filterCounts}
+                      onFilterChange={filterData.onFilterChange}
+                      onClearFilters={filterData.onClearFilters}
+                    />
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
           </>
         )}
 

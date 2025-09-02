@@ -1,4 +1,5 @@
 "use client"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -156,15 +157,18 @@ export function AnnotationsFilterSidebar({
   return (
     <>
       {/* Main Filters Group with Clear Action */}
-      <SidebarGroup>
-        <SidebarGroupLabel>
-          Annotations Filters
-        </SidebarGroupLabel>
           {activeFilterCount > 0 && (
-            <SidebarGroupAction onClick={onClearFilters} title="Clear all filters">
-              <X className="h-4 w-4" />
-              <span className="sr-only">Clear all ({activeFilterCount})</span>
-            </SidebarGroupAction>
+            <div className="px-3 pb-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onClearFilters}
+                className="w-full justify-start gap-2"
+              >
+                <X className="h-4 w-4" />
+                Clear all ({activeFilterCount})
+              </Button>
+            </div>
           )}
 
       {/* Source Groups */}
@@ -215,7 +219,7 @@ export function AnnotationsFilterSidebar({
 
           return (
             <SidebarMenuItem key={groupName}>
-              <SidebarMenuButton tooltip={groupName}>
+              <SidebarMenuButton className="pointer-events-none" tooltip={groupName}>
                 <span>{groupName}</span>
               </SidebarMenuButton>
               <SidebarMenuSub className="space-y-1">
@@ -249,7 +253,7 @@ export function AnnotationsFilterSidebar({
       {/* Value Search */}
       <SidebarMenu className="mt-4">
         <SidebarMenuItem>
-          <SidebarMenuButton tooltip="Value Search">
+          <SidebarMenuButton className="pointer-events-none" tooltip="Value Search">
             <span>Value Search</span>
           </SidebarMenuButton>
           <SidebarMenuSub>
@@ -265,7 +269,6 @@ export function AnnotationsFilterSidebar({
           </SidebarMenuSub>
         </SidebarMenuItem>
       </SidebarMenu>
-            </SidebarGroup>
 
     </>
   )
