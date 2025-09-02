@@ -31,9 +31,13 @@ export function Chat({
 }) {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
-  const { currentChatId, removeMessage, setMessages: setStoreMessages, messages: storeMessages, addChatToHistory } = useSearchStore();
+  const { currentChatId, removeMessage, setMessages: setStoreMessages, messages: storeMessages, addChatToHistory, switchChat } = useSearchStore();
 
   const [input, setInput] = useState("");
+  
+  // Ensure we use the consistent chat ID
+  const chatIdToUse = currentChatId || id;
+  
   const {
     messages,
     sendMessage,
@@ -43,7 +47,7 @@ export function Chat({
     regenerate,
     error,
   } = useChat({
-    id: currentChatId || id,
+    id: chatIdToUse,
     onError: (error) => {
       console.error("Chat error:", error);
       toast.error("Failed to send message. Please try again.");
@@ -52,8 +56,13 @@ export function Chat({
 
   // Initialize messages when component mounts or initialMessages change
   useEffect(() => {
+    // Ensure we're switched to the correct chat in the store
+    if (chatIdToUse && currentChatId !== chatIdToUse) {
+      switchChat(chatIdToUse);
+    }
+    
     let messagesToInit;
-    if (storeMessages.length > 0) {
+    if (storeMessages.length > 0 && currentChatId === chatIdToUse) {
       // Convert ChatMessage to UIMessage format
       messagesToInit = storeMessages.map(msg => ({
         id: msg.id,
@@ -67,7 +76,7 @@ export function Chat({
     if (messagesToInit.length > 0 && messages.length === 0) {
       setMessages(messagesToInit);
     }
-  }, [initialMessages, storeMessages, messages.length, setMessages]);
+  }, [initialMessages, storeMessages, messages.length, setMessages, chatIdToUse, currentChatId, switchChat]);
 
   const isLoading = status === 'streaming' || status === 'submitted';
 
@@ -90,7 +99,7 @@ export function Chat({
 
   // Sync messages to store when they change
   const syncToStore = useCallback(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && chatIdToUse) {
       const chatMessages: ChatMessage[] = messages.map(msg => ({
         id: msg.id,
         role: msg.role as 'user' | 'assistant' | 'system',
@@ -100,19 +109,18 @@ export function Chat({
       
       // Add to history if it has user messages
       const firstUserMessage = messages.find(msg => msg.role === 'user');
-      const actualChatId = currentChatId || id;
-      if (firstUserMessage && actualChatId) {
+      if (firstUserMessage) {
         const textContent = extractTextContent(firstUserMessage.parts);
         if (textContent) {
-          addChatToHistory(actualChatId, textContent);
+          addChatToHistory(chatIdToUse, textContent);
         }
       }
     }
-  }, [messages, setStoreMessages, currentChatId, id, addChatToHistory]);
+  }, [messages, setStoreMessages, chatIdToUse, addChatToHistory]);
 
+  // Sync immediately when messages change (no delay)
   useEffect(() => {
-    const timeoutId = setTimeout(syncToStore, 100);
-    return () => clearTimeout(timeoutId);
+    syncToStore();
   }, [syncToStore]);
 
   // Custom remove message function that syncs both states

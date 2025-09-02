@@ -37,14 +37,12 @@ interface SearchState {
 
 type SearchStateCreator = StateCreator<SearchState, [], []>
 
-const initialChatId = nanoid()
-
 export const useSearchStore = create<SearchState>()(
   persist(
     ((set, get) => ({
       // Chat initial state
-      chats: [{ id: initialChatId, messages: [] }],
-      currentChatId: initialChatId,
+      chats: [],
+      currentChatId: null,
       messages: [],
 
       // Search history initial state

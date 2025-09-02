@@ -24,12 +24,14 @@ export function NewChatButton({
   const { startNewChat } = useSearchStore();
 
   const handleNewChat = () => {
-    // Convert UIMessage to ChatMessage format
+    // Convert UIMessage to ChatMessage format (if any initial messages provided)
     const chatMessages: ChatMessage[] = initialMessages.map(msg => ({
       id: msg.id,
       role: msg.role as 'user' | 'assistant' | 'system',
       parts: msg.parts
     }));
+    
+    // Create new chat with proper ID generation
     const newChatId = startNewChat(chatMessages);
     
     // Navigate to the new chat URL
