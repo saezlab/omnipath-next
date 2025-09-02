@@ -4,12 +4,11 @@ import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { ResourcesTable } from "@/components/home/resources-table"
-import { SiteLayout } from "@/components/layout/main-layout"
 import { Download, FileText, Filter, MapPin, Network, Tag, Users } from "lucide-react"
 import CombinedDatabaseVisualization from '@/components/home/combined-database-visualization';
 export function HomePage() {
   return (
-    <SiteLayout>
+    <>
       <HeroSection />
 
       <div className="container py-8 mx-auto px-4 sm:px-6">
@@ -86,7 +85,7 @@ export function HomePage() {
 
         <AboutSection />
       </div>
-    </SiteLayout>
+    </>
   )
 }
 

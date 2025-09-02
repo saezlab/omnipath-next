@@ -10,7 +10,6 @@ import { useScrollToBottom } from "@/components/ai/use-scroll-to-bottom";
 import { Loader2, AlertTriangleIcon } from "lucide-react";
 import { ChatInput } from "./chat-input";
 import { SuggestedActions } from "./suggested-actions";
-import { NewChatButton } from "./new-chat-button";
 import { useSearchStore } from "@/store/search-store";
 import { ChatMessage } from "@/types/chat";
 
@@ -215,11 +214,6 @@ export function Chat({
             ))}
             
             <div className="space-y-4">
-              {/* Chat Controls */}
-              <div className="flex items-center justify-end gap-2 mb-4">
-                <NewChatButton initialMessages={initialMessages} />
-              </div>
-              
               <ChatInput
                 input={input}
                 setInput={setInput}
@@ -282,10 +276,6 @@ export function Chat({
       {messages.length > 1 && (
         <div ref={inputAreaRef} className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t">
           <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 py-4 md:px-0">
-            {/* Chat Controls */}
-            <div className="flex items-center justify-end gap-2">
-              <NewChatButton initialMessages={initialMessages} />
-            </div>
             <ChatInput
               input={input}
               setInput={setInput}

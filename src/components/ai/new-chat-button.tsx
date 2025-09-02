@@ -11,12 +11,14 @@ interface NewChatButtonProps {
   initialMessages: UIMessage[];
   size?: "sm" | "default" | "lg" | "icon";
   variant?: "default" | "outline" | "ghost" | "secondary" | "destructive";
+  className?: string;
 }
 
 export function NewChatButton({ 
   initialMessages, 
   size = "sm",
-  variant = "default" 
+  variant = "default",
+  className
 }: NewChatButtonProps) {
   const router = useRouter();
   const { startNewChat } = useSearchStore();
@@ -39,7 +41,7 @@ export function NewChatButton({
       variant={variant}
       size={size}
       onClick={handleNewChat}
-      className="h-8 px-3"
+      className={className || "h-8 px-3"}
     >
       <Plus className="h-4 w-4 mr-1" />
       New Chat

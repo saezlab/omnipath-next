@@ -1,17 +1,15 @@
 "use client";
 
 import { Chat } from "@/components/ai/chat";
-import { SiteLayout } from "@/components/layout/chat-layout";
 import { UIMessage } from "ai";
 import { useSearchParams } from "next/navigation";
 import { useSearchStore } from "@/store/search-store";
 import { useEffect, useState } from "react";
-import { nanoid } from "nanoid";
 
 export default function ChatPage() {
   const searchParams = useSearchParams();
   const chatId = searchParams.get('id');
-  const { chats, currentChatId, switchChat, startNewChat } = useSearchStore();
+  const { chats, currentChatId, switchChat } = useSearchStore();
   const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
   const [chatIdToUse, setChatIdToUse] = useState<string>("main-chat");
 
@@ -24,9 +22,9 @@ export default function ChatPage() {
         const messages = existingChat.messages.map(msg => ({
           id: msg.id,
           role: msg.role === 'function' || msg.role === 'tool' ? 'assistant' : msg.role as 'user' | 'assistant' | 'system',
-          parts: [{ type: 'text' as const, text: msg.content }],
+          parts: msg.parts,
         }));
-        setInitialMessages(messages);
+        setInitialMessages(messages as UIMessage[]);
         setChatIdToUse(chatId);
         switchChat(chatId);
       } else {
@@ -51,9 +49,9 @@ export default function ChatPage() {
           const messages = existingChat.messages.map(msg => ({
             id: msg.id,
             role: msg.role === 'function' || msg.role === 'tool' ? 'assistant' : msg.role as 'user' | 'assistant' | 'system',
-            parts: [{ type: 'text' as const, text: msg.content }],
+            parts: msg.parts,
           }));
-          setInitialMessages(messages);
+          setInitialMessages(messages as UIMessage[]);
           setChatIdToUse(currentChatId);
         }
       } else if (chats.length > 0) {
@@ -62,9 +60,9 @@ export default function ChatPage() {
         const messages = mostRecentChat.messages.map(msg => ({
           id: msg.id,
           role: msg.role === 'function' || msg.role === 'tool' ? 'assistant' : msg.role as 'user' | 'assistant' | 'system',
-          parts: [{ type: 'text' as const, text: msg.content }],
+          parts: msg.parts,
         }));
-        setInitialMessages(messages);
+        setInitialMessages(messages as UIMessage[]);
         setChatIdToUse(mostRecentChat.id);
         switchChat(mostRecentChat.id);
       } else {
@@ -82,9 +80,5 @@ export default function ChatPage() {
     }
   }, [chatId, chats, currentChatId, switchChat]);
 
-  return (
-    <SiteLayout>
-      <Chat id={chatIdToUse} initialMessages={initialMessages} />
-    </SiteLayout>
-  );
+  return <Chat id={chatIdToUse} initialMessages={initialMessages} />;
 } 
