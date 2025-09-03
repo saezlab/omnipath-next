@@ -418,25 +418,27 @@ export function InteractionsBrowser({
 
   return (
       <div className="w-full">
-        {interactionsQuery && (
-          <div className="max-w-7xl mx-auto px-4 pb-4">
-            <ProteinSummaryCard 
-              proteinData={proteinData ?? undefined}
-              isLoading={isLoadingProtein}
-              defaultExpanded={false}
-            />
-          </div>
-        )}
-
         <div className="max-w-7xl mx-auto p-4">
           {interactionsQuery ? (
-            <div className="w-full">
-              {/* Main Content - Now uses full width */}
+            <div className="w-full space-y-4">
+              {/* Header with protein info and results count */}
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <ProteinSummaryCard 
+                  proteinData={proteinData ?? undefined}
+                  isLoading={isLoadingProtein}
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {filteredInteractions.length} interactions
+                  </span>
+                </div>
+              </div>
+
+              {/* Main Content */}
               {isLoading ? (
                 <TableSkeleton rows={5} />
               ) : interactions.length > 0 ? (
                 <div className="space-y-6"> 
-
                   {/* Interactions Section */}
                   <div className="space-y-4">
                     {/* Results display based on view mode */}

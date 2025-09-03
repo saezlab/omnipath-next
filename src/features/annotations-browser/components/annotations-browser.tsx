@@ -310,15 +310,15 @@ export function AnnotationsBrowser() {
   }, [annotationsQuery, annotationsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
   return (
-      <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6">
+      <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
         {annotationsQuery ? (
           <>
-            <ProteinSummaryCard 
-              proteinData={proteinData ?? undefined}
-              isLoading={isLoadingProtein}
-            />
             <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <ProteinSummaryCard 
+                  proteinData={proteinData ?? undefined}
+                  isLoading={isLoadingProtein}
+                />
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
                     {uniqueRecordCount} results
