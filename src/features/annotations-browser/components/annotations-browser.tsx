@@ -2,6 +2,7 @@
 
 import { TableSkeleton } from "@/components/table-skeleton"
 import { getProteinAnnotations, getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
+import { searchIdentifiers } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { useSearchStore } from "@/store/search-store"
@@ -26,7 +27,16 @@ interface FilterCounts {
 export function AnnotationsBrowser() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { addToSearchHistory, currentSearchTerm, setCurrentSearchTerm } = useSearchStore()
+  const { 
+    addToSearchHistory, 
+    currentSearchTerm, 
+    setCurrentSearchTerm,
+    currentIdentifierResults,
+    currentIdentifierQuery,
+    currentSpeciesFilter,
+    setIdentifierResults,
+    clearIdentifierResults
+  } = useSearchStore()
   const { setFilterData } = useFilters()
   
   const [isLoading, setIsLoading] = useState(false)
@@ -117,9 +127,22 @@ export function AnnotationsBrowser() {
         }
         
         try {
+          // Check if we have cached identifier results for this query
+          let identifierResults = currentIdentifierResults;
+          
+          if (!identifierResults || currentIdentifierQuery !== queryToUse) {
+            // Need to fetch identifier results
+            console.log(`Fetching identifier results for: "${queryToUse}" with species: ${currentSpeciesFilter}`);
+            identifierResults = await searchIdentifiers(queryToUse, 50, currentSpeciesFilter);
+            setIdentifierResults(queryToUse, identifierResults);
+          } else {
+            console.log(`Using cached identifier results for: "${queryToUse}"`);
+          }
+          
+          // Now use the identifier results to get annotations and protein info
           const [annotationsResponse, proteinResponse] = await Promise.all([
-            getProteinAnnotations(queryToUse),
-            getProteinInformation(queryToUse)
+            getProteinAnnotations(identifierResults),
+            getProteinInformation(identifierResults)
           ])
           
           setAnnotationsResults(annotationsResponse.annotations)
@@ -134,7 +157,7 @@ export function AnnotationsBrowser() {
       
       fetchData()
     }
-  }, [annotationsQuery, currentSearchTerm, searchParams, router, addToSearchHistory, setCurrentSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [annotationsQuery, currentSearchTerm, currentIdentifierResults, currentIdentifierQuery, currentSpeciesFilter, searchParams, router, addToSearchHistory, setCurrentSearchTerm, setIdentifierResults])
 
   // Get all unique sources from all annotations (for infinite scroll management)
   // Keep natural database order - don't sort to prevent layout shifts

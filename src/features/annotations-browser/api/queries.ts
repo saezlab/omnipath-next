@@ -2,39 +2,71 @@
 
 import { db } from "@/db";
 import { annotations, uniprotProteins } from "@/db/drizzle/schema";
-import { eq, or } from "drizzle-orm";
+import { eq, or, inArray } from "drizzle-orm";
+import { SearchIdentifiersResponse } from "@/db/queries";
 
 
-export async function getProteinAnnotations(query: string) {
-  query = query.trim().toUpperCase();
-    const results = await db
-      .select({
-        uniprot: annotations.uniprot,
-        genesymbol: annotations.genesymbol,
-        entityType: annotations.entityType,
-        source: annotations.source,
-        label: annotations.label,
-        value: annotations.value,
-        recordId: annotations.recordId
-      })
-      .from(annotations)
-      .where(
-        or(
-          eq(annotations.genesymbol, query),
-          eq(annotations.uniprot, query)
-        )
-      )  
+export async function getProteinAnnotations(identifierResults: SearchIdentifiersResponse) {
+  if (identifierResults.length === 0) {
+    // No identifiers found, return empty results
     return {
-      annotations: results,
+      annotations: [],
     };
   }
+  
+  // Extract unique uniprot accessions and gene symbols
+  const uniprotAccessions = [...new Set(identifierResults.map(r => r.uniprotAccession))];
+  const geneSymbols = [...new Set(identifierResults
+    .filter(r => r.identifierType.includes('gene'))
+    .map(r => r.identifierValue.toUpperCase())
+  )];
+  
+  // Build the where conditions
+  const whereConditions = [];
+  
+  if (uniprotAccessions.length > 0) {
+    whereConditions.push(inArray(annotations.uniprot, uniprotAccessions));
+  }
+  
+  if (geneSymbols.length > 0) {
+    whereConditions.push(inArray(annotations.genesymbol, geneSymbols));
+  }
+  
+  if (whereConditions.length === 0) {
+    return {
+      annotations: [],
+    };
+  }
+  
+  const results = await db
+    .select({
+      uniprot: annotations.uniprot,
+      genesymbol: annotations.genesymbol,
+      entityType: annotations.entityType,
+      source: annotations.source,
+      label: annotations.label,
+      value: annotations.value,
+      recordId: annotations.recordId
+    })
+    .from(annotations)
+    .where(or(...whereConditions));
+    
+  return {
+    annotations: results,
+  };
+}
   
 export type GetProteinAnnotationsResponse = Awaited<
   ReturnType<typeof getProteinAnnotations>
 >;
 
-export async function getProteinInformation(query: string) {
-  query = query.trim().toUpperCase();
+export async function getProteinInformation(identifierResults: SearchIdentifiersResponse) {
+  if (identifierResults.length === 0) {
+    return null;
+  }
+  
+  // Get the first (best match) UniProt accession
+  const primaryAccession = identifierResults[0].uniprotAccession;
   
   const result = await db
     .select({
@@ -65,12 +97,7 @@ export async function getProteinInformation(query: string) {
       alphafolddb: uniprotProteins.alphafolddb,
     })
     .from(uniprotProteins)
-    .where(
-      or(
-        eq(uniprotProteins.entry, query),
-        eq(uniprotProteins.geneNamesPrimary, query)
-      )
-    )
+    .where(eq(uniprotProteins.entry, primaryAccession))
     .limit(1);
     
   return result[0] || null;

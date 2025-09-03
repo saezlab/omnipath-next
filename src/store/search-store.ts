@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import { StateCreator } from 'zustand'
 import { nanoid } from 'nanoid'
 import { ChatMessage, ChatSession, SearchHistoryItem } from '@/types/chat'
+import { SearchIdentifiersResponse } from '@/db/queries'
 
 interface SearchState {
   // Chat state
@@ -16,6 +17,11 @@ interface SearchState {
 
   // Shared search state
   currentSearchTerm: string
+
+  // Identifier search results
+  currentIdentifierResults: SearchIdentifiersResponse | null
+  currentIdentifierQuery: string
+  currentSpeciesFilter: string
 
   // Chat Actions
   addMessage: (message: ChatMessage) => void
@@ -32,6 +38,11 @@ interface SearchState {
 
   // Shared Search Actions
   setCurrentSearchTerm: (term: string) => void
+
+  // Identifier Search Actions
+  setIdentifierResults: (query: string, results: SearchIdentifiersResponse) => void
+  clearIdentifierResults: () => void
+  setSpeciesFilter: (species: string) => void
 }
 
 type SearchStateCreator = StateCreator<SearchState, [], []>
@@ -50,6 +61,11 @@ export const useSearchStore = create<SearchState>()(
 
       // Shared search initial state
       currentSearchTerm: '',
+
+      // Identifier search initial state
+      currentIdentifierResults: null,
+      currentIdentifierQuery: '',
+      currentSpeciesFilter: '9606', // Default to human
 
       // Chat Actions
       addMessage: (message: ChatMessage) => {
@@ -172,6 +188,23 @@ export const useSearchStore = create<SearchState>()(
 
       // Shared Search Actions
       setCurrentSearchTerm: (term: string) => set({ currentSearchTerm: term }),
+
+      // Identifier Search Actions
+      setIdentifierResults: (query: string, results: SearchIdentifiersResponse) => {
+        set({ 
+          currentIdentifierResults: results,
+          currentIdentifierQuery: query.trim()
+        });
+      },
+      clearIdentifierResults: () => {
+        set({ 
+          currentIdentifierResults: null,
+          currentIdentifierQuery: ''
+        });
+      },
+      setSpeciesFilter: (species: string) => {
+        set({ currentSpeciesFilter: species });
+      },
     })) as SearchStateCreator,
     {
       name: 'search-store',
@@ -180,6 +213,9 @@ export const useSearchStore = create<SearchState>()(
         currentChatId: state.currentChatId,
         searchHistory: state.searchHistory,
         currentSearchTerm: state.currentSearchTerm,
+        currentIdentifierResults: state.currentIdentifierResults,
+        currentIdentifierQuery: state.currentIdentifierQuery,
+        currentSpeciesFilter: state.currentSpeciesFilter,
       }),
     }
   )

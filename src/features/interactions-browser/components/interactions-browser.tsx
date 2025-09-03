@@ -4,6 +4,7 @@ import { TableSkeleton } from "@/components/table-skeleton"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
+import { searchIdentifiers } from "@/db/queries"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
@@ -39,7 +40,16 @@ export function InteractionsBrowser({
 }: InteractionsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { addToSearchHistory, currentSearchTerm, setCurrentSearchTerm } = useSearchStore()
+  const { 
+    addToSearchHistory, 
+    currentSearchTerm, 
+    setCurrentSearchTerm,
+    currentIdentifierResults,
+    currentIdentifierQuery,
+    currentSpeciesFilter,
+    setIdentifierResults,
+    clearIdentifierResults
+  } = useSearchStore()
   const { setFilterData } = useFilters()
   
   // Get query from URL
@@ -122,9 +132,22 @@ export function InteractionsBrowser({
         }
         
         try {
+          // Check if we have cached identifier results for this query
+          let identifierResults = currentIdentifierResults;
+          
+          if (!identifierResults || currentIdentifierQuery !== queryToUse) {
+            // Need to fetch identifier results
+            console.log(`Fetching identifier results for: "${queryToUse}" with species: ${currentSpeciesFilter}`);
+            identifierResults = await searchIdentifiers(queryToUse, 50, currentSpeciesFilter);
+            setIdentifierResults(queryToUse, identifierResults);
+          } else {
+            console.log(`Using cached identifier results for: "${queryToUse}"`);
+          }
+          
+          // Now use the identifier results to get interactions and protein info
           const [interactionsResponse, proteinResponse] = await Promise.all([
-            searchProteinNeighbors(queryToUse),
-            getProteinInformation(queryToUse)
+            searchProteinNeighbors(identifierResults),
+            getProteinInformation(identifierResults)
           ])
           
           setInteractions(interactionsResponse.interactions)
@@ -148,7 +171,7 @@ export function InteractionsBrowser({
       
       fetchData()
     }
-  }, [interactionsQuery, currentSearchTerm, onEntitySelect, searchParams, router, addToSearchHistory, setCurrentSearchTerm])
+  }, [interactionsQuery, currentSearchTerm, currentIdentifierResults, currentIdentifierQuery, currentSpeciesFilter, onEntitySelect, searchParams, router, addToSearchHistory, setCurrentSearchTerm, setIdentifierResults])
 
   // Calculate filter counts from interactions
   const filterCounts = useMemo(() => {
