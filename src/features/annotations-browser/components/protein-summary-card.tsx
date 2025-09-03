@@ -249,30 +249,21 @@ export function ProteinSummaryCard({ proteinData, isLoading }: ProteinSummaryCar
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       {/* Compact Trigger */}
       <DialogTrigger asChild>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className="w-fit h-auto p-2 justify-start border border-border transition-all hover:scale-[1.02]"
-              >
-                  {proteinData.geneNamesPrimary && (
-                    <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 h-auto font-semibold flex-shrink-0">
-                      <Dna className="h-3 w-3 mr-1" />
-                      {proteinData.geneNamesPrimary}
-                    </Badge>
-                  )}
-                  <span className="font-medium text-sm truncate max-w-48">
-                    {proteinNames.main}
-                  </span>
-                  <ChevronRight className="h-3 w-3 text-muted-foreground flex-shrink-0 ml-1" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Click to view detailed protein information</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Button 
+          variant="ghost" 
+          className="w-fit h-auto p-2 justify-start border border-border transition-all hover:scale-[1.02]"
+        >
+            {proteinData.geneNamesPrimary && (
+              <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 h-auto font-semibold flex-shrink-0">
+                <Dna className="h-3 w-3 mr-1" />
+                {proteinData.geneNamesPrimary}
+              </Badge>
+            )}
+            <span className="font-medium text-sm truncate max-w-48">
+              {proteinNames.main}
+            </span>
+            <ChevronRight className="h-3 w-3 text-muted-foreground flex-shrink-0 ml-1" />
+        </Button>
       </DialogTrigger>
 
       {/* Dialog Content */}
