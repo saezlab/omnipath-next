@@ -69,26 +69,29 @@ export function SidebarSearchBar({
     }
   }, [query])
 
-  const handleSearch = async (searchQuery: string) => {
+  const handleSearch = async (searchQuery: string, displayTerm?: string) => {
     if (!searchQuery.trim()) return
 
     setIsLoading(true)
 
-    // Update shared search term
-    setCurrentSearchTerm(searchQuery.trim())
+    // Use displayTerm for UI and URL, fallback to searchQuery
+    const termForDisplay = displayTerm || searchQuery.trim()
+
+    // Update shared search term with display term
+    setCurrentSearchTerm(termForDisplay)
 
     // Determine target page based on current pathname or default to interactions
     const isAnnotationsPage = pathname === '/annotations'
     const targetPath = isAnnotationsPage ? '/annotations' : '/interactions'
     const searchType = isAnnotationsPage ? 'annotation' : 'interaction'
     
-    // Create new URL with search query
+    // Create new URL with display term
     const params = new URLSearchParams()
-    params.set('q', searchQuery)
+    params.set('q', termForDisplay)
     const newUrl = `${targetPath}?${params.toString()}`
     
-    // Add to search history
-    addToSearchHistory(searchQuery, searchType, newUrl)
+    // Add to search history with display term
+    addToSearchHistory(termForDisplay, searchType, newUrl)
     
     // Navigate to search page
     router.push(newUrl)
@@ -97,12 +100,12 @@ export function SidebarSearchBar({
     setIsLoading(false)
   }
 
-  const handleSelect = (uniprotAccession: string) => {
+  const handleSelect = (identifierValue: string, uniprotAccession: string) => {
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current)
     }
-    setQuery(uniprotAccession)
-    handleSearch(uniprotAccession)
+    setQuery(identifierValue)
+    handleSearch(uniprotAccession, identifierValue)
   }
 
   const getPlaceholderText = () => {
@@ -149,7 +152,7 @@ export function SidebarSearchBar({
                 {suggestions.slice(0, 8).map((suggestion, index) => (
                   <CommandItem
                     key={`${suggestion.uniprotAccession}-${suggestion.identifierValue}-${index}`}
-                    onSelect={() => handleSelect(suggestion.uniprotAccession)}
+                    onSelect={() => handleSelect(suggestion.identifierValue, suggestion.uniprotAccession)}
                   >
                     <div className="flex flex-col min-w-0 flex-1">
                       <span className="text-sm truncate">{suggestion.identifierValue}</span>
