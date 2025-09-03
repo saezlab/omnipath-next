@@ -16,7 +16,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
-const RESULTS_PER_PAGE = 20
+const SOURCES_PER_LOAD = 4
 
 interface FilterCounts {
   sources: Record<string, number>
@@ -33,13 +33,13 @@ export function AnnotationsBrowser() {
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
+  const [loadedSources, setLoadedSources] = useState<string[]>([])
+  const [hasMoreSources, setHasMoreSources] = useState(true)
   const lastSearchedQuery = useRef('')
+  const loadMoreRef = useRef<HTMLDivElement>(null)
   
   // Get query from URL
   const annotationsQuery = searchParams.get('q') || ''
-  
-  // Get current page from URL
-  const annotationsCurrentPage = parseInt(searchParams.get('page') || '1', 10)
   
   // Parse filters from URL
   const annotationsFilters = useMemo(() => {
@@ -68,10 +68,14 @@ export function AnnotationsBrowser() {
     // Update shared search term
     setCurrentSearchTerm(searchQuery.trim())
     
+    // Reset infinite scroll state
+    setLoadedSources([])
+    setHasMoreSources(true)
+    
     // Update URL with new query - this will trigger the effect to do the actual search
     const params = new URLSearchParams(searchParams.toString())
     params.set('q', searchQuery)
-    params.set('page', '1')
+    params.delete('page') // Remove page parameter
     const newUrl = `/annotations?${params.toString()}`
     router.push(newUrl, { scroll: false })
     
@@ -96,11 +100,15 @@ export function AnnotationsBrowser() {
         setIsLoading(true)
         setIsLoadingProtein(true)
         
+        // Reset infinite scroll state for new search
+        setLoadedSources([])
+        setHasMoreSources(true)
+        
         // If no URL query but we have a shared search term, update URL
         if (!annotationsQuery && currentSearchTerm) {
           const params = new URLSearchParams(searchParams.toString())
           params.set('q', currentSearchTerm)
-          params.set('page', '1')
+          params.delete('page') // Remove page parameter
           const newUrl = `/annotations?${params.toString()}`
           router.push(newUrl, { scroll: false })
           
@@ -127,6 +135,23 @@ export function AnnotationsBrowser() {
       fetchData()
     }
   }, [annotationsQuery, currentSearchTerm, searchParams, router, addToSearchHistory, setCurrentSearchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Get all unique sources from all annotations (for infinite scroll management)
+  // Keep natural database order - don't sort to prevent layout shifts
+  const allUniqueSources = useMemo(() => {
+    const seenSources = new Set<string>()
+    const sources: string[] = []
+    
+    // Preserve order of appearance in database
+    annotationsResults.forEach(annotation => {
+      if (annotation.source && !seenSources.has(annotation.source)) {
+        seenSources.add(annotation.source)
+        sources.push(annotation.source)
+      }
+    })
+    
+    return sources
+  }, [annotationsResults])
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {
@@ -213,19 +238,69 @@ export function AnnotationsBrowser() {
     return counts
   }, [annotationsResults])
 
-  // Get unique record count for pagination and display
-  const uniqueRecordCount = new Set(filteredAnnotations.map(a => a.recordId)).size
-  const totalPages = Math.ceil(uniqueRecordCount / RESULTS_PER_PAGE)
-  const startIndex = (annotationsCurrentPage - 1) * RESULTS_PER_PAGE
-  const endIndex = startIndex + RESULTS_PER_PAGE
+  // Load more sources function
+  const loadMoreSources = useCallback(() => {
+    if (!hasMoreSources) return
+    
+    const filteredSources = allUniqueSources.filter(source => {
+      if (annotationsFilters.sources.length > 0) {
+        return annotationsFilters.sources.some(filterSource => 
+          filterSource.toLowerCase() === source.toLowerCase()
+        )
+      }
+      return true
+    })
+    
+    const nextSources = filteredSources.slice(
+      loadedSources.length, 
+      loadedSources.length + SOURCES_PER_LOAD
+    )
+    
+    if (nextSources.length === 0) {
+      setHasMoreSources(false)
+      return
+    }
+    
+    setLoadedSources(prev => [...prev, ...nextSources])
+    
+    // Check if there are more sources to load
+    if (loadedSources.length + nextSources.length >= filteredSources.length) {
+      setHasMoreSources(false)
+    }
+  }, [allUniqueSources, annotationsFilters.sources, loadedSources, hasMoreSources])
 
-  // Get unique recordIds for the current page
-  const uniqueRecordIds = Array.from(new Set(filteredAnnotations.map(a => a.recordId))).slice(startIndex, endIndex)
-  
-  // Get all annotations for the records in the current page
+  // Initialize loading the first batch of sources
+  useEffect(() => {
+    if (allUniqueSources.length > 0 && loadedSources.length === 0 && annotationsResults.length > 0) {
+      loadMoreSources()
+    }
+  }, [allUniqueSources, loadedSources.length, annotationsResults.length, loadMoreSources])
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreSources && !isLoading) {
+          loadMoreSources()
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    )
+    
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current)
+    }
+    
+    return () => observer.disconnect()
+  }, [hasMoreSources, isLoading, loadMoreSources])
+
+  // Get annotations for currently loaded sources
   const currentResults = filteredAnnotations.filter(annotation => 
-    uniqueRecordIds.includes(annotation.recordId)
+    loadedSources.includes(annotation.source || '')
   )
+
+  // Get unique record count for display
+  const uniqueRecordCount = new Set(currentResults.map(a => a.recordId)).size
 
   // Handle filter changes
   const handleFilterChange = useCallback((type: keyof SearchFilters, value: string) => {
@@ -242,13 +317,17 @@ export function AnnotationsBrowser() {
         : [...currentValues, value]
     }
     
+    // Reset infinite scroll state when filters change
+    setLoadedSources([])
+    setHasMoreSources(true)
+    
     // Update URL with new filters
     if (Object.values(newFilters).some(v => (typeof v === 'string' ? v.length > 0 : v.length > 0))) {
       params.set('filters', JSON.stringify(newFilters))
     } else {
       params.delete('filters')
     }
-    params.set('page', '1')
+    params.delete('page') // Remove page parameter
     
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, annotationsFilters, router])
@@ -256,15 +335,15 @@ export function AnnotationsBrowser() {
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('filters')
-    params.set('page', '1')
+    params.delete('page') // Remove page parameter
+    
+    // Reset infinite scroll state when filters are cleared
+    setLoadedSources([])
+    setHasMoreSources(true)
+    
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])
   
-  const setAnnotationsCurrentPage = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('page', page.toString())
-    router.push(`?${params.toString()}`, { scroll: false })
-  }
 
   // Get category icon
   const getCategoryIcon = (label: string | null) => {
@@ -330,15 +409,29 @@ export function AnnotationsBrowser() {
               <div className="w-full">
                 {isLoading ? (
                   <TableSkeleton />
-                ) : uniqueRecordCount > 0 ? (
-                  <AnnotationsTable
-                    currentResults={currentResults}
-                    getCategoryIcon={getCategoryIcon}
-                    getCategoryColor={getCategoryColor}
-                    currentPage={annotationsCurrentPage}
-                    totalPages={totalPages}
-                    onPageChange={setAnnotationsCurrentPage}
-                  />
+                ) : uniqueRecordCount > 0 || loadedSources.length > 0 ? (
+                  <>
+                    <div className="w-full">
+                      <AnnotationsTable
+                        currentResults={currentResults}
+                        getCategoryIcon={getCategoryIcon}
+                        getCategoryColor={getCategoryColor}
+                      />
+                      
+                      {/* Sentinel for infinite scroll */}
+                      {hasMoreSources && loadedSources.length >= 1 && (
+                        <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                          <div className="text-muted-foreground text-sm">Loading more sources...</div>
+                        </div>
+                      )}
+                      
+                      {!hasMoreSources && loadedSources.length > 0 && (
+                        <div className="flex justify-center py-8">
+                          <div className="text-muted-foreground text-sm">All sources loaded</div>
+                        </div>
+                      )}
+                    </div>
+                  </>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-16 text-center">
                     <Info className="h-12 w-12 text-muted-foreground mb-4" />

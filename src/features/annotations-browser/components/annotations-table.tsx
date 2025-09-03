@@ -29,9 +29,6 @@ interface AnnotationsTableProps {
   currentResults: Annotation[]
   getCategoryIcon: (label: string | null) => React.ReactNode
   getCategoryColor: (label: string | null) => string
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
 }
 
 function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnnotation[]> {
@@ -69,9 +66,6 @@ function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnno
 
 export function AnnotationsTable({
   currentResults,
-  currentPage,
-  totalPages,
-  onPageChange,
 }: AnnotationsTableProps) {
   const pivotedData = useMemo(() => pivotAnnotations(currentResults), [currentResults]);
   
@@ -139,7 +133,7 @@ export function AnnotationsTable({
                 <Download className="h-4 w-4" />
               </Button>
             </div>
-            <div className="overflow-x-auto">
+            <div className="max-h-[400px] overflow-auto">
               <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
@@ -167,28 +161,6 @@ export function AnnotationsTable({
           </div>
         );
       })}
-      
-      {totalPages > 1 && (
-        <div className="flex justify-center space-x-2 mt-4">
-          <Button
-            variant="outline"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <span className="flex items-center">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
