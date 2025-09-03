@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar"
 import { Slider } from "@/components/ui/slider"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { ArrowRight, HeartHandshake, X } from "lucide-react"
@@ -233,12 +234,21 @@ export function FilterSidebar({
                           onCheckedChange={() => onFilterChange("interactionType", type)}
                           className={isSelected ? "border-sidebar-primary" : ""}
                         />
-                        <div className="flex items-center gap-2">
-                          <div className="text-sidebar-foreground/60">
-                            {typeIcon.icon}
-                          </div>
-                          <span>{typeIcon.label}</span>
-                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center gap-2">
+                                <div className="text-sidebar-foreground/60">
+                                  {typeIcon.icon}
+                                </div>
+                                <span>{typeIcon.label}</span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{typeIcon.fullName}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </Label>
                       <SidebarMenuBadge>{count}</SidebarMenuBadge>
                     </div>
