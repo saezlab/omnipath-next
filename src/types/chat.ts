@@ -30,12 +30,14 @@ export interface ToolInvocation {
 export interface ChatSession {
   id: string;
   messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface SearchHistoryItem {
   id: string;
   query: string;
-  type: 'annotation' | 'interaction' | 'chat';
+  type: 'annotation' | 'interaction';
   timestamp: number;
   url: string;
 }

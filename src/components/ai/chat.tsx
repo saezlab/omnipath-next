@@ -31,7 +31,7 @@ export function Chat({
 }) {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
-  const { currentChatId, removeMessage, setMessages: setStoreMessages, messages: storeMessages, addChatToHistory, switchChat } = useSearchStore();
+  const { currentChatId, removeMessage, setMessages: setStoreMessages, messages: storeMessages, switchChat } = useSearchStore();
 
   const [input, setInput] = useState("");
   
@@ -54,29 +54,40 @@ export function Chat({
     },
   });
 
-  // Initialize messages when component mounts or initialMessages change
+  // Track the last initialized chat ID to prevent re-initialization
+  const [lastInitializedChatId, setLastInitializedChatId] = useState<string | null>(null);
+
+  // Initialize messages when switching chats
   useEffect(() => {
     // Ensure we're switched to the correct chat in the store
     if (chatIdToUse && currentChatId !== chatIdToUse) {
       switchChat(chatIdToUse);
+      return; // Let the next render handle message initialization
     }
     
-    let messagesToInit;
-    if (storeMessages.length > 0 && currentChatId === chatIdToUse) {
-      // Convert ChatMessage to UIMessage format
-      messagesToInit = storeMessages.map(msg => ({
-        id: msg.id,
-        role: msg.role as 'user' | 'assistant' | 'system',
-        parts: msg.parts as any
-      }));
-    } else {
-      messagesToInit = initialMessages;
-    }
-    
-    if (messagesToInit.length > 0 && messages.length === 0) {
+    // Only initialize messages when we switch to a different chat
+    if (currentChatId === chatIdToUse && lastInitializedChatId !== chatIdToUse) {
+      setIsInitializing(true);
+      
+      let messagesToInit;
+      if (storeMessages.length > 0 && currentChatId === chatIdToUse) {
+        // Convert ChatMessage to UIMessage format
+        messagesToInit = storeMessages.map(msg => ({
+          id: msg.id,
+          role: msg.role as 'user' | 'assistant' | 'system',
+          parts: msg.parts as any
+        }));
+      } else {
+        messagesToInit = initialMessages;
+      }
+      
       setMessages(messagesToInit);
+      setLastInitializedChatId(chatIdToUse);
+      
+      // Reset initialization flag after a brief delay
+      setTimeout(() => setIsInitializing(false), 100);
     }
-  }, [initialMessages, storeMessages, messages.length, setMessages, chatIdToUse, currentChatId, switchChat]);
+  }, [initialMessages, chatIdToUse, currentChatId, switchChat, storeMessages, lastInitializedChatId, setMessages]);
 
   const isLoading = status === 'streaming' || status === 'submitted';
 
@@ -97,26 +108,20 @@ export function Chat({
     }));
   };
 
-  // Sync messages to store when they change
+  // Track if we're currently initializing to prevent sync loops
+  const [isInitializing, setIsInitializing] = useState(false);
+
+  // Sync messages to store when they change (but not during initialization)
   const syncToStore = useCallback(() => {
-    if (messages.length > 0 && chatIdToUse) {
+    if (messages.length > 0 && chatIdToUse && !isInitializing) {
       const chatMessages: ChatMessage[] = messages.map(msg => ({
         id: msg.id,
         role: msg.role as 'user' | 'assistant' | 'system',
         parts: msg.parts
       }));
       setStoreMessages(chatMessages);
-      
-      // Add to history if it has user messages
-      const firstUserMessage = messages.find(msg => msg.role === 'user');
-      if (firstUserMessage) {
-        const textContent = extractTextContent(firstUserMessage.parts);
-        if (textContent) {
-          addChatToHistory(chatIdToUse, textContent);
-        }
-      }
     }
-  }, [messages, setStoreMessages, chatIdToUse, addChatToHistory]);
+  }, [messages, setStoreMessages, chatIdToUse, isInitializing]);
 
   // Sync immediately when messages change (no delay)
   useEffect(() => {

@@ -262,7 +262,6 @@ export function AppSidebar() {
             </div>
             <div className="px-3 py-2">
               <NewChatButton 
-                initialMessages={[]}
                 variant="default"
                 className="w-full"
               />
@@ -288,6 +287,7 @@ export function AppSidebar() {
                           chat.messages.length > 0 && 
                           chat.messages.some(msg => msg.role === 'user')
                         )
+                        .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
                         .map((chat) => (
                           <SidebarMenuItem key={chat.id}>
                             <div className="group relative">

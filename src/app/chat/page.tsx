@@ -15,17 +15,34 @@ export default function ChatPage() {
   const [chatIdToUse, setChatIdToUse] = useState<string | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [storeLoaded, setStoreLoaded] = useState(false);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
 
   // Wait for the store to load from localStorage
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setStoreLoaded(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
+    // Check if the store has been hydrated from localStorage
+    // The store should have at least initialized (even if empty)
+    const checkStoreReady = () => {
+      // If we have chats or if enough time has passed, consider store loaded
+      if (chats.length > 0) {
+        setStoreLoaded(true);
+        return;
+      }
+      
+      // Fallback timer in case store is truly empty
+      const timer = setTimeout(() => {
+        setStoreLoaded(true);
+      }, 150);
+      
+      return () => clearTimeout(timer);
+    };
+    
+    // Check immediately and set a short delay
+    const cleanup = checkStoreReady();
+    return cleanup;
+  }, [chats.length]);
 
   useEffect(() => {
-    if (hasInitialized || !storeLoaded) return;
+    if (hasInitialized || !storeLoaded || isCreatingChat) return;
     
     if (chatId) {
       // Try to find and load the specific chat
@@ -42,7 +59,25 @@ export default function ChatPage() {
         switchChat(chatId);
         setHasInitialized(true);
       } else {
-        // Chat ID doesn't exist, create a new one and redirect
+        // Chat ID doesn't exist - create a new empty chat with this ID to avoid redirect loop
+        console.warn(`Chat with ID ${chatId} not found, creating new empty chat`);
+        setIsCreatingChat(true);
+        
+        // Create empty chat (no default messages for invalid chat IDs)
+        const newChatId = startNewChat([]);
+        
+        // Small delay to ensure the chat is created in the store
+        setTimeout(() => {
+          router.replace(`/chat?id=${newChatId}`, { scroll: false });
+          setIsCreatingChat(false);
+        }, 50);
+        return;
+      }
+    } else {
+      // No chat ID in URL - create a new chat with greeting (first visit)
+      if (!isCreatingChat) {
+        setIsCreatingChat(true);
+        
         const defaultMessages = [
           {
             id: "1",
@@ -51,23 +86,16 @@ export default function ChatPage() {
           },
         ];
         const newChatId = startNewChat(defaultMessages);
-        router.replace(`/chat?id=${newChatId}`);
-        return;
+        
+        // Small delay to ensure the chat is created in the store
+        setTimeout(() => {
+          router.replace(`/chat?id=${newChatId}`, { scroll: false });
+          setIsCreatingChat(false);
+        }, 50);
       }
-    } else {
-      // No chat ID in URL - create a new chat
-      const defaultMessages = [
-        {
-          id: "1",
-          role: "assistant" as const,
-          parts: [{ type: 'text' as const, text: "Hello! I'm OmniPath AI. I can help you explore protein interactions, pathways, and biological annotations. What would you like to know?" }],
-        },
-      ];
-      const newChatId = startNewChat(defaultMessages);
-      router.replace(`/chat?id=${newChatId}`);
       return;
     }
-  }, [chatId, chats, switchChat, startNewChat, router, hasInitialized, storeLoaded]);
+  }, [chatId, chats, switchChat, startNewChat, router, hasInitialized, storeLoaded, isCreatingChat]);
 
   if (!chatIdToUse) {
     return <div>Loading...</div>;

@@ -28,7 +28,6 @@ interface SearchState {
 
   // Search History Actions
   addToSearchHistory: (query: string, type: SearchHistoryItem['type'], url: string) => void
-  addChatToHistory: (chatId: string, firstUserMessage: string) => void
   clearSearchHistory: () => void
 
   // Shared Search Actions
@@ -65,7 +64,13 @@ export const useSearchStore = create<SearchState>()(
       startNewChat: (initialMessages?: ChatMessage[]) => {
         const newChatId = nanoid()
         const newMessages = initialMessages || []
-        const newChat: ChatSession = { id: newChatId, messages: newMessages }
+        const now = Date.now()
+        const newChat: ChatSession = { 
+          id: newChatId, 
+          messages: newMessages,
+          createdAt: now,
+          updatedAt: now
+        }
         const currentChats = get().chats
         set({
           chats: [...currentChats, newChat],
@@ -87,8 +92,18 @@ export const useSearchStore = create<SearchState>()(
         const { currentChatId, messages, chats } = get()
         if (!currentChatId) return
 
+        const currentChat = chats.find(chat => chat.id === currentChatId)
+        if (!currentChat) return
+
+        // Only update timestamp if messages have actually changed
+        const messagesChanged = JSON.stringify(currentChat.messages) !== JSON.stringify(messages)
+        
         const updatedChats = chats.map(chat =>
-          chat.id === currentChatId ? { ...chat, messages: messages } : chat
+          chat.id === currentChatId ? { 
+            ...chat, 
+            messages: messages, 
+            updatedAt: messagesChanged ? Date.now() : chat.updatedAt
+          } : chat
         )
         set({ chats: updatedChats })
       },
@@ -135,7 +150,13 @@ export const useSearchStore = create<SearchState>()(
           } else {
             // No chats left, create a new one
             const newChatId = nanoid()
-            const newChat: ChatSession = { id: newChatId, messages: [] }
+            const now = Date.now()
+            const newChat: ChatSession = { 
+              id: newChatId, 
+              messages: [],
+              createdAt: now,
+              updatedAt: now
+            }
             set({
               chats: [newChat],
               currentChatId: newChatId,
@@ -145,30 +166,6 @@ export const useSearchStore = create<SearchState>()(
         } else {
           set({ chats: updatedChats })
         }
-      },
-      
-      addChatToHistory: (chatId: string, firstUserMessage: string) => {
-        if (!firstUserMessage.trim()) return
-        
-        const { searchHistory, maxHistoryItems } = get()
-        const chatUrl = `/chat?id=${chatId}`
-        const truncatedMessage = firstUserMessage.trim().length > 15 
-          ? firstUserMessage.trim().slice(0, 15) + '...'
-          : firstUserMessage.trim();
-          
-        const newItem: SearchHistoryItem = {
-          id: nanoid(),
-          query: truncatedMessage,
-          type: 'chat',
-          timestamp: Date.now(),
-          url: chatUrl
-        }
-        
-        // Remove existing chat entry with same chatId and add new one at the beginning
-        const filteredHistory = searchHistory.filter(item => item.url !== chatUrl)
-        const updatedHistory = [newItem, ...filteredHistory].slice(0, maxHistoryItems)
-        
-        set({ searchHistory: updatedHistory })
       },
       
       clearSearchHistory: () => set({ searchHistory: [] }),
