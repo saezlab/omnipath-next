@@ -24,6 +24,11 @@ interface InteractionResultsTableProps {
   resultsPerPage?: number;
   maxCellChars?: number;
   scrollAreaClassName?: string;
+  // Infinite scroll props
+  infiniteScroll?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
 }
 
 
@@ -46,6 +51,11 @@ export function InteractionResultsTable({
   showExport,
   resultsPerPage,
   maxCellChars = 50,
+  // Infinite scroll props
+  infiniteScroll = false,
+  hasMore = false,
+  onLoadMore,
+  loadingMore = false,
 }: InteractionResultsTableProps) {
   const handleEntityClick = (entity: string) => {
     window.open(`/interactions?q=${encodeURIComponent(entity)}`, '_blank');
@@ -63,6 +73,7 @@ export function InteractionResultsTable({
               <EntityBadge
                 geneSymbol={row.sourceGenesymbol || ''}
                 uniprotId={row.source || ''}
+                maxChars={10}
                 onClick={() => {
                   handleEntityClick(row.sourceGenesymbol || row.source || '');
                 }}
@@ -105,6 +116,7 @@ export function InteractionResultsTable({
               <EntityBadge
                 geneSymbol={row.targetGenesymbol || ''}
                 uniprotId={row.target || ''}
+                maxChars={10}
                 onClick={() => {
                   handleEntityClick(row.targetGenesymbol || row.target || '');
                 }}
@@ -177,16 +189,21 @@ export function InteractionResultsTable({
         columns={columns}
         data={dataWithReferenceCount}
         onRowClick={onSelectInteraction}
-        initialSortKey="referenceCount"
-        initialSortDirection="desc"
+        initialSortKey={infiniteScroll ? undefined : "referenceCount"}
+        initialSortDirection={infiniteScroll ? undefined : "desc"}
         bodyRowClassName="cursor-pointer hover:bg-muted/50"
-        maxHeight=""
+        maxHeight={infiniteScroll ? "h-full" : ""}
         showSearch={showSearch}
         searchKeys={searchKeys}
         searchPlaceholder={searchPlaceholder}
         showExport={showExport}
         resultsPerPage={resultsPerPage}
         maxCellChars={maxCellChars}
+        // Pass through infinite scroll props
+        infiniteScroll={infiniteScroll}
+        hasMore={hasMore}
+        onLoadMore={onLoadMore}
+        loadingMore={loadingMore}
     />
   )
 }

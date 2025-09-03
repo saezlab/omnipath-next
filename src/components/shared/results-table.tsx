@@ -55,6 +55,11 @@ interface ResultsTableProps<TData extends DataRow> {
   exportFilenamePrefix?: string;
   resultsPerPage?: number;
   maxCellChars?: number; // New prop for max characters
+  // Infinite scroll props
+  infiniteScroll?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
 }
 
 export function ResultsTable<TData extends DataRow>({
@@ -74,11 +79,17 @@ export function ResultsTable<TData extends DataRow>({
   exportFilenamePrefix = 'table_export',
   resultsPerPage = 15,
   maxCellChars, // Destructure new prop
+  // Infinite scroll props
+  infiniteScroll = false,
+  hasMore = false,
+  onLoadMore,
+  loadingMore = false,
 }: ResultsTableProps<TData>) {
   const [sortKey, setSortKey] = useState<keyof TData | string | null>(initialSortKey ?? null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(initialSortDirection ?? null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const loadMoreRef = React.useRef<HTMLDivElement>(null);
 
   const handleSort = (key: keyof TData | string) => {
     if (!columns.find(col => col.accessorKey === key)?.enableSorting) return;
@@ -128,18 +139,44 @@ export function ResultsTable<TData extends DataRow>({
     return filteredData;
   }, [data, searchTerm, showSearch, searchKeys, sortKey, sortDirection, columns]);
 
-  // Pagination logic
+  // Pagination logic (only for non-infinite scroll)
   const totalPages = Math.ceil(processedData.length / resultsPerPage);
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * resultsPerPage;
-    const end = start + resultsPerPage;
-    return processedData.slice(start, end);
-  }, [processedData, currentPage, resultsPerPage]);
+  const displayData = useMemo(() => {
+    if (infiniteScroll) {
+      return processedData; // Show all data for infinite scroll
+    } else {
+      const start = (currentPage - 1) * resultsPerPage;
+      const end = start + resultsPerPage;
+      return processedData.slice(start, end);
+    }
+  }, [processedData, currentPage, resultsPerPage, infiniteScroll]);
 
-  // Reset to page 1 when search term or sort changes
+  // Reset to page 1 when search term or sort changes (only for pagination mode)
   React.useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, sortKey, sortDirection]);
+    if (!infiniteScroll) {
+      setCurrentPage(1);
+    }
+  }, [searchTerm, sortKey, sortDirection, infiniteScroll]);
+
+  // Intersection observer for infinite scroll
+  React.useEffect(() => {
+    if (!infiniteScroll || !onLoadMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [infiniteScroll, hasMore, loadingMore, onLoadMore]);
 
   // Internal export handler
   const handleInternalExport = () => {
@@ -183,10 +220,10 @@ export function ResultsTable<TData extends DataRow>({
           )}
         </div>
       )}
-      <ScrollArea className={cn("relative", maxHeight, "overflow-auto")}>
+      <ScrollArea className={cn("relative", infiniteScroll ? "h-full" : maxHeight, "overflow-auto")}>
         <TooltipProvider>
           <Table className={cn("w-full min-w-max", tableClassName)}>
-            <TableHeader>
+            <TableHeader className={infiniteScroll ? "sticky top-0 bg-background z-10" : ""}>
               <TableRow className={headerRowClassName}>
                 {columns.map((column) => {
                   const headerContent = typeof column.header === 'function'
@@ -239,7 +276,7 @@ export function ResultsTable<TData extends DataRow>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedData.map((row, rowIndex) => (
+              {displayData.map((row, rowIndex) => (
                 <TableRow
                   key={rowIndex}
                   onClick={() => onRowClick?.(row)}
@@ -315,9 +352,26 @@ export function ResultsTable<TData extends DataRow>({
             </TableBody>
           </Table>
         </TooltipProvider>
+        {/* Infinite scroll sentinel and loading indicator */}
+        {infiniteScroll && (
+          <>
+            {hasMore && (
+              <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                <div className="text-muted-foreground text-sm">
+                  {loadingMore ? "Loading more..." : ""}
+                </div>
+              </div>
+            )}
+            {!hasMore && data.length > 0 && (
+              <div className="flex justify-center py-8">
+                <div className="text-muted-foreground text-sm">All results loaded</div>
+              </div>
+            )}
+          </>
+        )}
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-      {totalPages > 1 && (
+      {!infiniteScroll && totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

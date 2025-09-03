@@ -10,12 +10,11 @@ import { InteractionResultsTable } from "@/features/interactions-browser/compone
 import { useSearchStore } from "@/store/search-store"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { Search } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Card } from "@/components/ui/card"
 import { useFilters } from "@/contexts/filter-context"
 
-const RESULTS_PER_PAGE = 15
+const INTERACTIONS_PER_LOAD = 30
 
 interface InteractionsBrowserProps {
   onEntitySelect?: (entityName: string) => void
@@ -88,22 +87,11 @@ export function InteractionsBrowser({
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
   const lastSearchedQuery = useRef('')
-
-  const handleSearch = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim()) return
-
-    // Update shared search term
-    setCurrentSearchTerm(searchQuery.trim())
-    
-    // Update URL with new query - this will trigger the effect to do the actual search
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('q', searchQuery)
-    const newUrl = `/interactions?${params.toString()}`
-    router.push(newUrl, { scroll: false })
-    
-    // Add to search history with full URL
-    addToSearchHistory(searchQuery, 'interaction', newUrl)
-  }, [searchParams, router, addToSearchHistory, setCurrentSearchTerm])
+  
+  // Infinite scroll state
+  const [loadedInteractions, setLoadedInteractions] = useState<SearchProteinNeighborsResponse['interactions']>([])
+  const [hasMoreInteractions, setHasMoreInteractions] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   // Single effect to handle both sync and fetch
   useEffect(() => {
@@ -141,6 +129,12 @@ export function InteractionsBrowser({
           
           setInteractions(interactionsResponse.interactions)
           setProteinData(proteinResponse)
+          
+          // Initialize infinite scroll with first batch - preserve natural order
+          const firstBatch = interactionsResponse.interactions.slice(0, INTERACTIONS_PER_LOAD)
+          setLoadedInteractions(firstBatch)
+          setHasMoreInteractions(interactionsResponse.interactions.length > INTERACTIONS_PER_LOAD)
+          
           if (onEntitySelect) {
             onEntitySelect(queryToUse)
           }
@@ -303,7 +297,7 @@ export function InteractionsBrowser({
     return counts
   }, [interactions, interactionsFilters, interactionsQuery])
 
-  // Filter interactions based on selected filters
+  // Filter all interactions based on selected filters (for determining what to load)
   const filteredInteractions = useMemo(() => {
     return interactions.filter((interaction) => {
       // Filter by interaction type
@@ -359,8 +353,85 @@ export function InteractionsBrowser({
     })
   }, [interactions, interactionsFilters, interactionsQuery])
 
+  // Load more interactions function
+  const loadMoreInteractions = useCallback(() => {
+    if (!hasMoreInteractions || isLoadingMore) return
+    
+    setIsLoadingMore(true)
+    
+    // Get next batch from the filtered interactions
+    const nextBatch = filteredInteractions.slice(
+      loadedInteractions.length,
+      loadedInteractions.length + INTERACTIONS_PER_LOAD
+    )
+    
+    if (nextBatch.length === 0) {
+      setHasMoreInteractions(false)
+      setIsLoadingMore(false)
+      return
+    }
+    
+    // Add to loaded interactions - preserve the natural order
+    setLoadedInteractions(prev => [...prev, ...nextBatch])
+    
+    // Check if there are more to load
+    if (loadedInteractions.length + nextBatch.length >= filteredInteractions.length) {
+      setHasMoreInteractions(false)
+    }
+    
+    setIsLoadingMore(false)
+  }, [filteredInteractions, loadedInteractions, hasMoreInteractions, isLoadingMore])
+
+  // Get displayed interactions for the table (filtered loaded interactions)
+  const displayedInteractions = useMemo(() => {
+    return loadedInteractions.filter((interaction) => {
+      // Apply the same filters as filteredInteractions
+      if (interactionsFilters.interactionType && interactionsFilters.interactionType.length > 0 && !interactionsFilters.interactionType.includes(interaction.type || '')) {
+        return false
+      }
+      if (interactionsFilters.entityTypeSource && interactionsFilters.entityTypeSource.length > 0 && !interactionsFilters.entityTypeSource.includes(interaction.entityTypeSource || '')) {
+        return false
+      }
+      if (interactionsFilters.entityTypeTarget && interactionsFilters.entityTypeTarget.length > 0 && !interactionsFilters.entityTypeTarget.includes(interaction.entityTypeTarget || '')) {
+        return false
+      }
+      if (interactionsFilters.isDirected !== null && interaction.isDirected !== interactionsFilters.isDirected) {
+        return false
+      }
+      if (interactionsFilters.isStimulation !== null && interaction.consensusStimulation !== interactionsFilters.isStimulation) {
+        return false
+      }
+      if (interactionsFilters.isInhibition !== null && interaction.consensusInhibition !== interactionsFilters.isInhibition) {
+        return false
+      }
+      
+      const referenceCount = interaction.references ? interaction.references.split(";").length : 0
+      if (interactionsFilters.minReferences !== null && referenceCount < interactionsFilters.minReferences) {
+        return false
+      }
+
+      const queryUpper = interactionsQuery.toUpperCase()
+      const isUpstream = interaction.isDirected === true && (interaction.target === queryUpper || interaction.targetGenesymbol === queryUpper)
+      const isDownstream = interaction.isDirected === true && (interaction.source === queryUpper || interaction.sourceGenesymbol === queryUpper)
+      
+      if (interactionsFilters.isUpstream !== null && isUpstream !== interactionsFilters.isUpstream) {
+        return false
+      }
+      if (interactionsFilters.isDownstream !== null && isDownstream !== interactionsFilters.isDownstream) {
+        return false
+      }
+
+      return true
+    })
+  }, [loadedInteractions, interactionsFilters, interactionsQuery])
+
   const handleFilterChange = useCallback((type: keyof InteractionsFilters, value: string | boolean | null | number) => {
     const params = new URLSearchParams(searchParams.toString())
+    
+    // Reset infinite scroll when filters change
+    setLoadedInteractions([])
+    setHasMoreInteractions(true)
+    setIsLoadingMore(false)
     
     const newFilters = { ...interactionsFilters }
     
@@ -394,6 +465,12 @@ export function InteractionsBrowser({
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete('filters')
+    
+    // Reset infinite scroll when filters are cleared
+    setLoadedInteractions([])
+    setHasMoreInteractions(true)
+    setIsLoadingMore(false)
+    
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])
 
@@ -416,21 +493,32 @@ export function InteractionsBrowser({
     setFilterData(filterContextValue)
   }, [interactionsQuery, interactionsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
+  // Reload first batch when filters change
+  React.useEffect(() => {
+    if (filteredInteractions.length > 0 && loadedInteractions.length === 0) {
+      const firstBatch = filteredInteractions.slice(0, INTERACTIONS_PER_LOAD)
+      setLoadedInteractions(firstBatch)
+      setHasMoreInteractions(filteredInteractions.length > INTERACTIONS_PER_LOAD)
+    }
+  }, [filteredInteractions, loadedInteractions.length])
+
   return (
       <div className="w-full">
         <div className="max-w-7xl mx-auto p-4">
           {interactionsQuery ? (
             <div className="w-full space-y-4">
-              {/* Header with protein info and results count */}
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <ProteinSummaryCard 
-                  proteinData={proteinData ?? undefined}
-                  isLoading={isLoadingProtein}
-                />
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    {filteredInteractions.length} interactions
-                  </span>
+              {/* Combined Fixed Header */}
+              <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-primary/20 -mx-4 px-4 py-4">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex items-center gap-4">
+                    <ProteinSummaryCard 
+                      proteinData={proteinData ?? undefined}
+                      isLoading={isLoadingProtein}
+                    />
+                    <div className="text-sm text-muted-foreground">
+                      {filteredInteractions.length} interactions
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -438,28 +526,25 @@ export function InteractionsBrowser({
               {isLoading ? (
                 <TableSkeleton rows={5} />
               ) : interactions.length > 0 ? (
-                <div className="space-y-6"> 
-                  {/* Interactions Section */}
-                  <div className="space-y-4">
-                    {/* Results display based on view mode */}
-                  <Card className="bg-background py-0 border border-primary/20 hover:border-primary/40 transition-all duration-200">
-                          <InteractionResultsTable
-                            interactions={filteredInteractions}
-                            onSelectInteraction={handleSelectInteraction}
-                            showSearch={true}
-                            searchKeys={[
-                                'sourceGenesymbol', 
-                                'source', 
-                                'targetGenesymbol', 
-                                'target', 
-                                'type', 
-                                'sources'
-                              ]}
-                            searchPlaceholder="Search interactions..."
-                            resultsPerPage={RESULTS_PER_PAGE}
-                          />
-                  </Card>
-                  </div>
+                <div className="h-[calc(100vh-16rem)]">
+                  <InteractionResultsTable
+                    interactions={displayedInteractions}
+                    onSelectInteraction={handleSelectInteraction}
+                    showSearch={true}
+                    searchKeys={[
+                        'sourceGenesymbol', 
+                        'source', 
+                        'targetGenesymbol', 
+                        'target', 
+                        'type', 
+                        'sources'
+                      ]}
+                    searchPlaceholder="Search interactions..."
+                    infiniteScroll={true}
+                    hasMore={hasMoreInteractions}
+                    onLoadMore={loadMoreInteractions}
+                    loadingMore={isLoadingMore}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
