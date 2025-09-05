@@ -1,10 +1,9 @@
 "use client"
 
 import { TableSkeleton } from "@/components/table-skeleton"
-import { getProteinAnnotations, getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
+import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
-import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { useSearchStore } from "@/store/search-store"
 import { Annotation, SearchFilters } from "@/features/annotations-browser/types"
 import {
@@ -34,14 +33,11 @@ export function AnnotationsBrowser() {
     currentIdentifierResults,
     currentIdentifierQuery,
     currentSpeciesFilter,
-    setIdentifierResults,
-    clearIdentifierResults
+    setIdentifierResults
   } = useSearchStore()
   const { setFilterData } = useFilters()
   
   const [isLoading, setIsLoading] = useState(false)
-  const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
-  const [isLoadingProtein, setIsLoadingProtein] = useState(false)
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
   const [loadedSources, setLoadedSources] = useState<string[]>([])
   const [hasMoreSources, setHasMoreSources] = useState(true)
@@ -72,26 +68,6 @@ export function AnnotationsBrowser() {
     }
   }, [searchParams])
 
-  const handleSearch = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim()) return
-
-    // Update shared search term
-    setCurrentSearchTerm(searchQuery.trim())
-    
-    // Reset infinite scroll state
-    setLoadedSources([])
-    setHasMoreSources(true)
-    
-    // Update URL with new query - this will trigger the effect to do the actual search
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('q', searchQuery)
-    params.delete('page') // Remove page parameter
-    const newUrl = `/annotations?${params.toString()}`
-    router.push(newUrl, { scroll: false })
-    
-    // Add to search history with full URL
-    addToSearchHistory(searchQuery, 'annotation', newUrl)
-  }, [searchParams, router, addToSearchHistory, setCurrentSearchTerm])
 
   // Single effect to handle both sync and fetch
   useEffect(() => {
@@ -108,7 +84,6 @@ export function AnnotationsBrowser() {
       
       const fetchData = async () => {
         setIsLoading(true)
-        setIsLoadingProtein(true)
         
         // Reset infinite scroll state for new search
         setLoadedSources([])
@@ -139,19 +114,14 @@ export function AnnotationsBrowser() {
             console.log(`Using cached identifier results for: "${queryToUse}"`);
           }
           
-          // Now use the identifier results to get annotations and protein info
-          const [annotationsResponse, proteinResponse] = await Promise.all([
-            getProteinAnnotations(identifierResults),
-            getProteinInformation(identifierResults)
-          ])
+          // Now use the identifier results to get annotations
+          const annotationsResponse = await getProteinAnnotations(identifierResults)
           
           setAnnotationsResults(annotationsResponse.annotations)
-          setProteinData(proteinResponse)
         } catch (error) {
           console.error("Error fetching data:", error)
         } finally {
           setIsLoading(false)
-          setIsLoadingProtein(false)
         }
       }
       
@@ -417,10 +387,6 @@ export function AnnotationsBrowser() {
           <>
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <ProteinSummaryCard 
-                  proteinData={proteinData ?? undefined}
-                  isLoading={isLoadingProtein}
-                />
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
                     {uniqueRecordCount} results

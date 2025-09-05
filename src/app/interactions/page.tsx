@@ -1,11 +1,6 @@
-import { InteractionsPage } from "@/features/interactions-browser/interactions-page"
-import { Suspense } from "react"
+import { redirect } from "next/navigation"
 
 export default function Interactions() {
-  return (
-    <Suspense>
-      <InteractionsPage />
-    </Suspense>
-  )
+  redirect("/search?tab=interactions")
 }
 

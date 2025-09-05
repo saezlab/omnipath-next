@@ -1,11 +1,6 @@
-import { Suspense } from "react"
-import { AnnotationsPage } from "@/features/annotations-browser/annotations-page"
+import { redirect } from "next/navigation"
 
 export default function Annotations() {
-  return (
-    <Suspense>
-      <AnnotationsPage />
-    </Suspense>
-  )
+  redirect("/search?tab=annotations")
 }
 

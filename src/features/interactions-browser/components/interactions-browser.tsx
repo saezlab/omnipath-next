@@ -3,9 +3,7 @@
 import { TableSkeleton } from "@/components/table-skeleton"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
-import { getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
-import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
 import { useSearchStore } from "@/store/search-store"
@@ -47,8 +45,7 @@ export function InteractionsBrowser({
     currentIdentifierResults,
     currentIdentifierQuery,
     currentSpeciesFilter,
-    setIdentifierResults,
-    clearIdentifierResults
+    setIdentifierResults
   } = useSearchStore()
   const { setFilterData } = useFilters()
   
@@ -94,8 +91,6 @@ export function InteractionsBrowser({
   const [selectedInteraction, setSelectedInteraction] = useState<SearchProteinNeighborsResponse['interactions'][number] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
-  const [isLoadingProtein, setIsLoadingProtein] = useState(false)
   const lastSearchedQuery = useRef('')
   
   // Infinite scroll state
@@ -118,7 +113,6 @@ export function InteractionsBrowser({
       
       const fetchData = async () => {
         setIsLoading(true)
-        setIsLoadingProtein(true)
         
         // If no URL query but we have a shared search term, update URL
         if (!interactionsQuery && currentSearchTerm) {
@@ -144,14 +138,10 @@ export function InteractionsBrowser({
             console.log(`Using cached identifier results for: "${queryToUse}"`);
           }
           
-          // Now use the identifier results to get interactions and protein info
-          const [interactionsResponse, proteinResponse] = await Promise.all([
-            searchProteinNeighbors(identifierResults),
-            getProteinInformation(identifierResults)
-          ])
+          // Now use the identifier results to get interactions
+          const interactionsResponse = await searchProteinNeighbors(identifierResults)
           
           setInteractions(interactionsResponse.interactions)
-          setProteinData(proteinResponse)
           
           // Initialize infinite scroll with first batch - preserve natural order
           const firstBatch = interactionsResponse.interactions.slice(0, INTERACTIONS_PER_LOAD)
@@ -165,7 +155,6 @@ export function InteractionsBrowser({
           console.error("Error fetching data:", error)
         } finally {
           setIsLoading(false)
-          setIsLoadingProtein(false)
         }
       }
       
@@ -534,10 +523,6 @@ export function InteractionsBrowser({
               <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-primary/20 -mx-4 px-4 py-4">
                 <div className="flex items-center justify-between flex-wrap gap-3">
                   <div className="flex items-center gap-4">
-                    <ProteinSummaryCard 
-                      proteinData={proteinData ?? undefined}
-                      isLoading={isLoadingProtein}
-                    />
                     <div className="text-sm text-muted-foreground">
                       {filteredInteractions.length} interactions
                     </div>

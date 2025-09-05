@@ -27,9 +27,7 @@ import {
   Search, 
   Moon, 
   Sun, 
-  MessageSquare, 
-  Network, 
-  Tag,
+  MessageSquare,
   ChevronsUpDown,
   Trash2
 } from "lucide-react"
@@ -42,18 +40,12 @@ import Image from "next/image"
 import { useFilters } from "@/contexts/filter-context"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
-import { SidebarSearchBar } from "@/components/sidebar-search-bar"
 
 const navigationItems = [
   {
-    title: "Interactions",
-    url: "/interactions",
-    icon: Network,
-  },
-  {
-    title: "Annotations", 
-    url: "/annotations",
-    icon: Tag,
+    title: "Search",
+    url: "/search",
+    icon: Search,
   },
   {
     title: "Chat",
@@ -65,7 +57,7 @@ const navigationItems = [
 export function AppSidebar() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
-  const { searchHistory, clearSearchHistory, currentSearchTerm, chats, currentChatId, switchChat, deleteChat } = useSearchStore()
+  const { searchHistory, clearSearchHistory, chats, currentChatId, switchChat, deleteChat } = useSearchStore()
   const { isMobile } = useSidebar()
   const { filterData } = useFilters()
 
@@ -99,20 +91,9 @@ export function AppSidebar() {
       return item.url
     } else {
       // Fallback for old history items that don't have URL
-      if (item.type === 'annotation') {
-        return `/annotations?q=${encodeURIComponent(item.query)}`
-      } else {
-        return `/interactions?q=${encodeURIComponent(item.query)}`
-      }
+      const tabParam = item.type === 'annotation' ? 'annotations' : 'interactions'
+      return `/search?tab=${tabParam}&q=${encodeURIComponent(item.query)}`
     }
-  }
-
-  // Get navigation URL with current search term if available
-  const getNavigationUrl = (baseUrl: string) => {
-    if (currentSearchTerm && (baseUrl === '/interactions' || baseUrl === '/annotations')) {
-      return `${baseUrl}?q=${encodeURIComponent(currentSearchTerm)}`
-    }
-    return baseUrl
   }
 
   // Get chat preview text from messages
@@ -233,7 +214,7 @@ export function AppSidebar() {
             {navigationItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild isActive={pathname === item.url}>
-                  <Link href={getNavigationUrl(item.url)}>
+                  <Link href={item.url}>
                     <item.icon className="h-5 w-5" />
                     <span>{item.title}</span>
                   </Link>
@@ -243,17 +224,6 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
 
-        {/* Search bar for interactions and annotations pages */}
-        {(pathname === '/interactions' || pathname === '/annotations') && (
-          <>
-            <div className="px-3">
-              <SidebarSeparator />
-            </div>
-            <div className="px-3 py-2">
-              <SidebarSearchBar />
-            </div>
-          </>
-        )}
 
         {pathname === '/chat' && (
           <>
