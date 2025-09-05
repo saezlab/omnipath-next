@@ -3,11 +3,10 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { searchIdentifiers } from "@/db/queries"
 import { getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
-import { Search, ChevronDown } from "lucide-react"
+import { Search } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
@@ -29,7 +28,6 @@ export function SearchPage() {
   
   const [query, setQuery] = useState("")
   const [suggestions, setSuggestions] = useState<Awaited<ReturnType<typeof searchIdentifiers>>>([])
-  const [showAlternatives, setShowAlternatives] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
@@ -102,30 +100,21 @@ export function SearchPage() {
       if (results.length > 0) {
         // Auto-select the best match (first result)
         const bestMatch = results[0]
-        // Show alternatives if there are more than 1 result
-        setShowAlternatives(results.length > 1)
         
         // Use the original query (not bestMatch.identifierValue) to maintain consistency
         await handleSearch(query.trim(), bestMatch.identifierValue)
       } else {
         // No suggestions found, search with the raw query
         await handleSearch(query.trim())
-        setShowAlternatives(false)
       }
     } catch (error) {
       console.error("Error fetching suggestions:", error)
       toast.error("Failed to fetch search suggestions")
       // Fallback to searching with raw query
       await handleSearch(query)
-      setShowAlternatives(false)
     }
   }
 
-  const handleSelect = (identifierValue: string, uniprotAccession: string) => {
-    setQuery(identifierValue)
-    handleSearch(uniprotAccession, identifierValue)
-    setShowAlternatives(false)
-  }
 
   const handleTabChange = (newTab: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -145,22 +134,22 @@ export function SearchPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
-      {/* Search Bar */}
+    <div className="flex flex-col gap-4 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
+      {/* Full Width Search Bar */}
       <div className="w-full">
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
           <Input
             type="search"
             placeholder={getPlaceholderText()}
-            className="w-full pl-9 pr-24 h-12 text-base rounded-md shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-border/40 hover:border-border/60"
+            className="w-full pl-9 pr-32 h-10 text-base rounded-md shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-border/40 hover:border-border/60"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleEnterPress()}
           />
-          <div className="absolute right-12 top-1/2 -translate-y-1/2">
+          <div className="absolute right-20 top-1/2 -translate-y-1/2">
             <Select value={selectedSpecies} onValueChange={setSelectedSpecies}>
-              <SelectTrigger size="sm" className="h-8 w-20 text-sm border-0 bg-transparent shadow-none p-2">
+              <SelectTrigger size="sm" className="h-6 w-18 text-xs border-0 bg-transparent shadow-none p-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -174,54 +163,22 @@ export function SearchPage() {
             onClick={handleEnterPress}
             disabled={isLoading || !query.trim()}
             size="sm"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-10 px-4 text-sm"
+            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 text-sm"
           >
             {isLoading ? "..." : "Search"}
           </Button>
         </div>
-        
-        {/* Or did you mean section */}
-        {showAlternatives && suggestions.length > 1 && (
-          <Collapsible className="mt-2">
-            <CollapsibleTrigger className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <span>Or did you mean:</span>
-              <ChevronDown className="h-3 w-3" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2">
-              <div className="space-y-1">
-                {suggestions.slice(1, 8).map((suggestion, index) => (
-                  <button
-                    key={`${suggestion.uniprotAccession}-${suggestion.identifierValue}-${index}`}
-                    onClick={() => handleSelect(suggestion.identifierValue, suggestion.uniprotAccession)}
-                    className="w-full text-left p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
-                  >
-                    <div className="flex flex-col min-w-0 flex-1">
-                      <span className="text-sm truncate">{suggestion.identifierValue}</span>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <span className="truncate">{suggestion.uniprotAccession}</span>
-                        {suggestion.taxonId && (
-                          <>
-                            <span>•</span>
-                            <span className="truncate">{suggestion.taxonId === '9606' ? 'Human' : suggestion.taxonId === '10090' ? 'Mouse' : suggestion.taxonId === '10116' ? 'Rat' : suggestion.taxonId}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
       </div>
 
-      {/* Protein Summary Card - shown when there's a search query */}
+      {/* Centered Protein Card */}
       {urlQuery && (
-        <div className="w-full">
-          <ProteinSummaryCard 
-            proteinData={proteinData ?? undefined}
-            isLoading={isLoadingProtein}
-          />
+        <div className="flex justify-center">
+          <div className="w-full max-w-sm">
+            <ProteinSummaryCard 
+              proteinData={proteinData ?? undefined}
+              isLoading={isLoadingProtein}
+            />
+          </div>
         </div>
       )}
 

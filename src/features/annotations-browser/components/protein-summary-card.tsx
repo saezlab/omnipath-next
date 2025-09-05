@@ -162,15 +162,7 @@ export function ProteinSummaryCard({ proteinData, isLoading }: ProteinSummaryCar
   }
 
   if (!proteinData) {
-    return (
-      <Card className="w-full">
-        <CardContent className="p-6">
-          <p className="text-muted-foreground text-center">
-            No protein information available for this query.
-          </p>
-        </CardContent>
-      </Card>
-    )
+    return null
   }
 
   const goTerms = parseGOTerms(proteinData.geneOntology)
