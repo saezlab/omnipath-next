@@ -70,7 +70,7 @@ export function InteractionResultsTable({
   onSortChange,
 }: InteractionResultsTableProps) {
   const handleEntityClick = (entity: string) => {
-    window.open(`/interactions?q=${encodeURIComponent(entity)}`, '_blank');
+    window.open(`/search?tab=interactions&q=${encodeURIComponent(entity)}`, '_blank');
   };
   const columns: ColumnDef<InteractionDataWithCount>[] = [
     {

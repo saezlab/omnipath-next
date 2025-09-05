@@ -94,7 +94,7 @@ export function AnnotationsBrowser() {
           const params = new URLSearchParams(searchParams.toString())
           params.set('q', currentSearchTerm)
           params.delete('page') // Remove page parameter
-          const newUrl = `/annotations?${params.toString()}`
+          const newUrl = `/search?tab=annotations&${params.toString().replace(/^q=/, 'q=')}`
           router.push(newUrl, { scroll: false })
           
           // Add to search history

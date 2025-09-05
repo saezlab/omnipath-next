@@ -122,7 +122,7 @@ export function InteractionsBrowser({
         if (!interactionsQuery && currentSearchTerm) {
           const params = new URLSearchParams(searchParams.toString())
           params.set('q', currentSearchTerm)
-          const newUrl = `/interactions?${params.toString()}`
+          const newUrl = `/search?tab=interactions&${params.toString().replace(/^q=/, 'q=')}`
           router.push(newUrl, { scroll: false })
           
           // Add to search history

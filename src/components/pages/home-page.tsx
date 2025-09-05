@@ -34,7 +34,7 @@ export function HomePage() {
                 description: "Download results in multiple formats",
               },
             ]}
-            href="/interactions"
+            href="/search?tab=interactions"
             buttonText="Browse Interactions"
           />
 
@@ -59,7 +59,7 @@ export function HomePage() {
                 description: "Ligands, receptors, and signaling",
               },
             ]}
-            href="/annotations"
+            href="/search?tab=annotations"
             buttonText="Browse Annotations"
           />
         </div>
