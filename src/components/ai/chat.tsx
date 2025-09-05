@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Message as PreviewMessage } from "@/components/ai/message";
-import { useScrollToBottom } from "@/components/ai/use-scroll-to-bottom";
 import { Loader2, AlertTriangleIcon } from "lucide-react";
 import { ChatInput } from "./chat-input";
 import { SuggestedActions } from "./suggested-actions";
@@ -31,7 +30,7 @@ export function Chat({
 }) {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
-  const { currentChatId, removeMessage, setMessages: setStoreMessages, messages: storeMessages, switchChat } = useSearchStore();
+  const { currentChatId, updateChat, getCurrentChat, switchChat } = useSearchStore();
 
   const [input, setInput] = useState("");
   
@@ -54,40 +53,28 @@ export function Chat({
     },
   });
 
-  // Track the last initialized chat ID to prevent re-initialization
-  const [lastInitializedChatId, setLastInitializedChatId] = useState<string | null>(null);
-
-  // Initialize messages when switching chats
+  // Initialize messages when component mounts or chat changes
   useEffect(() => {
     // Ensure we're switched to the correct chat in the store
     if (chatIdToUse && currentChatId !== chatIdToUse) {
       switchChat(chatIdToUse);
-      return; // Let the next render handle message initialization
     }
     
-    // Only initialize messages when we switch to a different chat
-    if (currentChatId === chatIdToUse && lastInitializedChatId !== chatIdToUse) {
-      setIsInitializing(true);
-      
-      let messagesToInit;
-      if (storeMessages.length > 0 && currentChatId === chatIdToUse) {
-        // Convert ChatMessage to UIMessage format
-        messagesToInit = storeMessages.map(msg => ({
-          id: msg.id,
-          role: msg.role as 'user' | 'assistant' | 'system',
-          parts: msg.parts as any
-        }));
-      } else {
-        messagesToInit = initialMessages;
-      }
-      
+    // Initialize messages from store or use initial messages
+    const currentChat = getCurrentChat();
+    if (currentChat && currentChat.id === chatIdToUse) {
+      // Convert ChatMessage to UIMessage format
+      const messagesToInit = currentChat.messages.map(msg => ({
+        id: msg.id,
+        role: msg.role as 'user' | 'assistant' | 'system',
+        parts: msg.parts as any
+      }));
       setMessages(messagesToInit);
-      setLastInitializedChatId(chatIdToUse);
-      
-      // Reset initialization flag after a brief delay
-      setTimeout(() => setIsInitializing(false), 100);
+    } else {
+      // Use initial messages for new chats
+      setMessages(initialMessages);
     }
-  }, [initialMessages, chatIdToUse, currentChatId, switchChat, storeMessages, lastInitializedChatId, setMessages]);
+  }, [chatIdToUse, currentChatId, switchChat, getCurrentChat, setMessages, initialMessages]);
 
   const isLoading = status === 'streaming' || status === 'submitted';
 
@@ -108,32 +95,23 @@ export function Chat({
     }));
   };
 
-  // Track if we're currently initializing to prevent sync loops
-  const [isInitializing, setIsInitializing] = useState(false);
-
-  // Sync messages to store when they change (but not during initialization)
-  const syncToStore = useCallback(() => {
-    if (messages.length > 0 && chatIdToUse && !isInitializing) {
+  // Save messages to store when they change
+  useEffect(() => {
+    if (messages.length > 0 && chatIdToUse) {
       const chatMessages: ChatMessage[] = messages.map(msg => ({
         id: msg.id,
         role: msg.role as 'user' | 'assistant' | 'system',
         parts: msg.parts
       }));
-      setStoreMessages(chatMessages);
+      updateChat(chatIdToUse, chatMessages);
     }
-  }, [messages, setStoreMessages, chatIdToUse, isInitializing]);
+  }, [messages, chatIdToUse, updateChat]);
 
-  // Sync immediately when messages change (no delay)
-  useEffect(() => {
-    syncToStore();
-  }, [syncToStore]);
-
-  // Custom remove message function that syncs both states
+  // Remove message function
   const handleRemoveMessage = useCallback((messageId: string) => {
     const updatedMessages = messages.filter(msg => msg.id !== messageId);
     setMessages(updatedMessages);
-    removeMessage(messageId);
-  }, [messages, setMessages, removeMessage]);
+  }, [messages, setMessages]);
 
   const startEdit = useCallback((messageId: string, currentContent: string) => {
     setEditingMessageId(messageId);
@@ -183,12 +161,6 @@ export function Chat({
     setInput("");
   }, [messages, setMessages, regenerate]);
 
-  const lastMessageContent = messages.length > 0 
-    ? extractTextContent(messages[messages.length - 1].parts)
-    : undefined;
-
-  const [messagesContainerRef, messagesEndRef] =
-    useScrollToBottom<HTMLDivElement>(messages.length, lastMessageContent);
 
 
 
@@ -244,7 +216,6 @@ export function Chat({
       ) : (
         <div className="h-full w-full flex flex-col">
           <div
-            ref={messagesContainerRef}
             className="p-4 space-y-4 w-full overflow-auto flex-1 pb-24"
           >
             <div className="max-w-2xl mx-auto">
@@ -280,7 +251,7 @@ export function Chat({
                 </div>
               )}
               
-              <div ref={messagesEndRef} className="h-4" />
+              <div className="h-4" />
             </div>
           </div>
         </div>

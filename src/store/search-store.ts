@@ -5,23 +5,20 @@ import { nanoid } from 'nanoid'
 import { ChatMessage, ChatSession, SearchHistoryItem } from '@/types/chat'
 
 interface SearchState {
-  // Chat state
+  // Chat state (persistence only)
   chats: ChatSession[]
   currentChatId: string | null
-  messages: ChatMessage[]
 
   // Search history
   searchHistory: SearchHistoryItem[]
   maxHistoryItems: number
 
   // Chat Actions
-  addMessage: (message: ChatMessage) => void
-  setMessages: (messages: ChatMessage[]) => void
   startNewChat: (initialMessages?: ChatMessage[]) => string
   switchChat: (chatId: string) => void
-  saveCurrentChat: () => void
-  removeMessage: (messageId: string) => void
+  updateChat: (chatId: string, messages: ChatMessage[]) => void
   deleteChat: (chatId: string) => void
+  getCurrentChat: () => ChatSession | null
 
   // Search History Actions
   addToSearchHistory: (query: string, type: SearchHistoryItem['type'], url: string) => void
@@ -36,22 +33,12 @@ export const useSearchStore = create<SearchState>()(
       // Chat initial state
       chats: [],
       currentChatId: null,
-      messages: [],
 
       // Search history initial state
       searchHistory: [],
       maxHistoryItems: 20,
 
       // Chat Actions
-      addMessage: (message: ChatMessage) => {
-        const currentMessages = get().messages
-        set({ messages: [...currentMessages, message] })
-        get().saveCurrentChat()
-      },
-      setMessages: (messages: ChatMessage[]) => {
-        set({ messages })
-        get().saveCurrentChat()
-      },
       startNewChat: (initialMessages?: ChatMessage[]) => {
         const newChatId = nanoid()
         const newMessages = initialMessages || []
@@ -66,37 +53,61 @@ export const useSearchStore = create<SearchState>()(
         set({
           chats: [...currentChats, newChat],
           currentChatId: newChatId,
-          messages: newMessages,
         })
         return newChatId
       },
       switchChat: (chatId: string) => {
         const targetChat = get().chats.find(chat => chat.id === chatId)
         if (targetChat) {
-          set({
-            currentChatId: chatId,
-            messages: targetChat.messages,
-          })
+          set({ currentChatId: chatId })
         }
       },
-      saveCurrentChat: () => {
-        const { currentChatId, messages, chats } = get()
-        if (!currentChatId) return
-
-        const currentChat = chats.find(chat => chat.id === currentChatId)
-        if (!currentChat) return
-
-        // Only update timestamp if messages have actually changed
-        const messagesChanged = JSON.stringify(currentChat.messages) !== JSON.stringify(messages)
-        
+      updateChat: (chatId: string, messages: ChatMessage[]) => {
+        const { chats } = get()
         const updatedChats = chats.map(chat =>
-          chat.id === currentChatId ? { 
+          chat.id === chatId ? { 
             ...chat, 
             messages: messages, 
-            updatedAt: messagesChanged ? Date.now() : chat.updatedAt
+            updatedAt: Date.now()
           } : chat
         )
         set({ chats: updatedChats })
+      },
+      getCurrentChat: () => {
+        const { chats, currentChatId } = get()
+        return chats.find(chat => chat.id === currentChatId) || null
+      },
+      deleteChat: (chatId: string) => {
+        const { chats, currentChatId } = get()
+        const updatedChats = chats.filter(chat => chat.id !== chatId)
+        
+        // If deleting current chat, switch to another or create new one
+        if (currentChatId === chatId) {
+          if (updatedChats.length > 0) {
+            // Switch to the first available chat
+            const firstChat = updatedChats[0]
+            set({ 
+              chats: updatedChats,
+              currentChatId: firstChat.id
+            })
+          } else {
+            // No chats left, create a new one
+            const newChatId = nanoid()
+            const now = Date.now()
+            const newChat: ChatSession = { 
+              id: newChatId, 
+              messages: [],
+              createdAt: now,
+              updatedAt: now
+            }
+            set({
+              chats: [newChat],
+              currentChatId: newChatId
+            })
+          }
+        } else {
+          set({ chats: updatedChats })
+        }
       },
 
       // Search History Actions
@@ -117,46 +128,6 @@ export const useSearchStore = create<SearchState>()(
         const updatedHistory = [newItem, ...filteredHistory].slice(0, maxHistoryItems)
         
         set({ searchHistory: updatedHistory })
-      },
-      removeMessage: (messageId: string) => {
-        const currentMessages = get().messages
-        const updatedMessages = currentMessages.filter(msg => msg.id !== messageId)
-        set({ messages: updatedMessages })
-        get().saveCurrentChat()
-      },
-      deleteChat: (chatId: string) => {
-        const { chats, currentChatId } = get()
-        const updatedChats = chats.filter(chat => chat.id !== chatId)
-        
-        // If deleting current chat, switch to another or create new one
-        if (currentChatId === chatId) {
-          if (updatedChats.length > 0) {
-            // Switch to the first available chat
-            const firstChat = updatedChats[0]
-            set({ 
-              chats: updatedChats,
-              currentChatId: firstChat.id,
-              messages: firstChat.messages 
-            })
-          } else {
-            // No chats left, create a new one
-            const newChatId = nanoid()
-            const now = Date.now()
-            const newChat: ChatSession = { 
-              id: newChatId, 
-              messages: [],
-              createdAt: now,
-              updatedAt: now
-            }
-            set({
-              chats: [newChat],
-              currentChatId: newChatId,
-              messages: []
-            })
-          }
-        } else {
-          set({ chats: updatedChats })
-        }
       },
       
       clearSearchHistory: () => set({ searchHistory: [] }),

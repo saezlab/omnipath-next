@@ -20,8 +20,15 @@ export function NewChatButton({
   const { startNewChat } = useSearchStore();
 
   const handleNewChat = () => {
-    // Create new empty chat
-    const newChatId = startNewChat([]);
+    // Create new chat with greeting message
+    const defaultMessages = [
+      {
+        id: "1",
+        role: "assistant" as const,
+        parts: [{ type: 'text' as const, text: "Hello! I'm OmniPath AI. I can help you explore protein interactions, pathways, and biological annotations. What would you like to know?" }],
+      },
+    ];
+    const newChatId = startNewChat(defaultMessages);
     
     // Navigate to the new chat URL
     router.push(`/chat?id=${newChatId}`);
