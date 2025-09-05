@@ -13,6 +13,7 @@ import { toast } from "sonner"
 import { useSearchStore } from "@/store/search-store"
 import { InteractionsBrowser } from "@/features/interactions-browser/components/interactions-browser"
 import { AnnotationsBrowser } from "@/features/annotations-browser/components/annotations-browser"
+import { IntercellBrowser } from "@/features/intercell-browser/components/intercell-browser"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 
 export function SearchPage() {
@@ -51,7 +52,7 @@ export function SearchPage() {
     const newUrl = `/search?${params.toString()}`
     
     // Add to search history with display term
-    addToSearchHistory(termForDisplay, activeTab as 'interaction' | 'annotation', newUrl)
+    addToSearchHistory(termForDisplay, activeTab as 'interaction' | 'annotation' | 'intercell', newUrl)
     
     // Navigate to search page with query and tab
     router.push(newUrl)
@@ -113,6 +114,8 @@ export function SearchPage() {
   const getPlaceholderText = () => {
     if (activeTab === 'annotations') {
       return "Search annotations..."
+    } else if (activeTab === 'intercell') {
+      return "Search intercell data..."
     } else {
       return "Search interactions..."
     }
@@ -169,9 +172,10 @@ export function SearchPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="interactions">Interactions</TabsTrigger>
           <TabsTrigger value="annotations">Annotations</TabsTrigger>
+          <TabsTrigger value="intercell">Intercell</TabsTrigger>
         </TabsList>
         
         <TabsContent value="interactions">
@@ -180,6 +184,10 @@ export function SearchPage() {
 
         <TabsContent value="annotations">
           <AnnotationsBrowser />
+        </TabsContent>
+
+        <TabsContent value="intercell">
+          <IntercellBrowser />
         </TabsContent>
       </Tabs>
     </div>

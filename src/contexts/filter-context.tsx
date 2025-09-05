@@ -3,6 +3,7 @@
 import { createContext, useContext, ReactNode, useState } from "react"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { SearchFilters } from "@/features/annotations-browser/types"
+import { IntercellFilters } from "@/features/intercell-browser/types"
 
 // Types for filter props
 interface InteractionFilterProps {
@@ -33,7 +34,25 @@ interface AnnotationFilterProps {
   onClearFilters: () => void
 }
 
-type FilterContextValue = InteractionFilterProps | AnnotationFilterProps | null
+interface IntercellFilterProps {
+  type: "intercell"
+  filters: IntercellFilters
+  filterCounts: {
+    aspects: Record<string, number>
+    sources: Record<string, number>
+    databases: Record<string, number>
+    scopes: Record<string, number>
+    transmitter: { true: number; false: number }
+    receiver: { true: number; false: number }
+    secreted: { true: number; false: number }
+    plasmaMembraneTransmembrane: { true: number; false: number }
+    plasmaMembranePeripheral: { true: number; false: number }
+  }
+  onFilterChange: (type: keyof IntercellFilters, value: string | boolean | null) => void
+  onClearFilters: () => void
+}
+
+type FilterContextValue = InteractionFilterProps | AnnotationFilterProps | IntercellFilterProps | null
 
 interface FilterContextType {
   filterData: FilterContextValue
