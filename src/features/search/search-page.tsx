@@ -18,16 +18,9 @@ import { ProteinSummaryCard } from "@/features/annotations-browser/components/pr
 export function SearchPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { 
-    addToSearchHistory, 
-    currentSearchTerm, 
-    setCurrentSearchTerm,
-    setIdentifierResults,
-    setSpeciesFilter 
-  } = useSearchStore()
+  const { addToSearchHistory } = useSearchStore()
   
   const [query, setQuery] = useState("")
-  const [suggestions, setSuggestions] = useState<Awaited<ReturnType<typeof searchIdentifiers>>>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
@@ -37,11 +30,11 @@ export function SearchPage() {
   const activeTab = searchParams.get('tab') || 'interactions'
   const urlQuery = searchParams.get('q') || ''
 
-  // Update query when URL changes or shared search term changes
+  // Update query when URL changes
   useEffect(() => {
-    const currentQuery = urlQuery || currentSearchTerm || ''
+    const currentQuery = urlQuery || ''
     setQuery(currentQuery)
-  }, [urlQuery, currentSearchTerm])
+  }, [urlQuery])
 
   const handleSearch = async (searchQuery: string, displayTerm?: string) => {
     if (!searchQuery.trim()) return
@@ -50,9 +43,6 @@ export function SearchPage() {
 
     // Use displayTerm for UI and URL, fallback to searchQuery
     const termForDisplay = displayTerm || searchQuery.trim()
-
-    // Update shared search term with display term
-    setCurrentSearchTerm(termForDisplay)
 
     // Create new URL with display term and current tab
     const params = new URLSearchParams()
@@ -75,11 +65,6 @@ export function SearchPage() {
     try {
       // Fetch suggestions for the current query with species filter
       const results = await searchIdentifiers(query.trim(), 20, selectedSpecies)
-      setSuggestions(results)
-      
-      // Store the identifier results and species filter immediately
-      setIdentifierResults(query.trim(), results)
-      setSpeciesFilter(selectedSpecies)
       
       // Fetch protein information
       if (results.length > 0) {

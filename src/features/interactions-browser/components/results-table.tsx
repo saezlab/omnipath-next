@@ -40,8 +40,8 @@ interface InteractionResultsTableProps {
 
 
 const getInteractionTypeIcon = (type: string | null) => {
-  if (!type) return { icon: <HeartHandshake className="h-4 w-4" />, label: "Unknown" }
-  return INTERACTION_TYPE_ICONS[type] || { icon: <HeartHandshake className="h-4 w-4" />, label: type }
+  if (!type) return { icon: <HeartHandshake className="h-4 w-4" />, label: "Unknown", fullName: "Unknown" }
+  return INTERACTION_TYPE_ICONS[type] || { icon: <HeartHandshake className="h-4 w-4" />, label: type, fullName: type }
 }
 
 const getReferenceCount = (interaction: InteractionData): number => {
@@ -101,7 +101,7 @@ export function InteractionResultsTable({
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{typeIcon.label}</p>
+                    <p>{typeIcon.fullName}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

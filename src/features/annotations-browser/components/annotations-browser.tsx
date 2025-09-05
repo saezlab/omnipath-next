@@ -4,7 +4,6 @@ import { TableSkeleton } from "@/components/table-skeleton"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
-import { useSearchStore } from "@/store/search-store"
 import { Annotation, SearchFilters } from "@/features/annotations-browser/types"
 import {
   Activity,
@@ -26,15 +25,6 @@ interface FilterCounts {
 export function AnnotationsBrowser() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { 
-    addToSearchHistory, 
-    currentSearchTerm, 
-    setCurrentSearchTerm,
-    currentIdentifierResults,
-    currentIdentifierQuery,
-    currentSpeciesFilter,
-    setIdentifierResults
-  } = useSearchStore()
   const { setFilterData } = useFilters()
   
   const [isLoading, setIsLoading] = useState(false)
@@ -69,18 +59,11 @@ export function AnnotationsBrowser() {
   }, [searchParams])
 
 
-  // Single effect to handle both sync and fetch
+  // Fetch annotations when query changes
   useEffect(() => {
-    const queryToUse = annotationsQuery || currentSearchTerm
-    
-    // Sync shared search term when query changes from URL
-    if (annotationsQuery && annotationsQuery !== currentSearchTerm) {
-      setCurrentSearchTerm(annotationsQuery)
-    }
-    
-    // Prevent duplicate searches
-    if (queryToUse && queryToUse !== lastSearchedQuery.current) {
-      lastSearchedQuery.current = queryToUse
+    // Only use URL query as source of truth
+    if (annotationsQuery && annotationsQuery !== lastSearchedQuery.current) {
+      lastSearchedQuery.current = annotationsQuery
       
       const fetchData = async () => {
         setIsLoading(true)
@@ -89,30 +72,10 @@ export function AnnotationsBrowser() {
         setLoadedSources([])
         setHasMoreSources(true)
         
-        // If no URL query but we have a shared search term, update URL
-        if (!annotationsQuery && currentSearchTerm) {
-          const params = new URLSearchParams(searchParams.toString())
-          params.set('q', currentSearchTerm)
-          params.delete('page') // Remove page parameter
-          const newUrl = `/search?tab=annotations&${params.toString().replace(/^q=/, 'q=')}`
-          router.push(newUrl, { scroll: false })
-          
-          // Add to search history
-          addToSearchHistory(currentSearchTerm, 'annotation', newUrl)
-        }
-        
         try {
-          // Check if we have cached identifier results for this query
-          let identifierResults = currentIdentifierResults;
-          
-          if (!identifierResults || currentIdentifierQuery !== queryToUse) {
-            // Need to fetch identifier results
-            console.log(`Fetching identifier results for: "${queryToUse}" with species: ${currentSpeciesFilter}`);
-            identifierResults = await searchIdentifiers(queryToUse, 50, currentSpeciesFilter);
-            setIdentifierResults(queryToUse, identifierResults);
-          } else {
-            console.log(`Using cached identifier results for: "${queryToUse}"`);
-          }
+          // Always fetch fresh identifier results - no caching
+          console.log(`Fetching identifier results for: "${annotationsQuery}" with species: 9606`);
+          const identifierResults = await searchIdentifiers(annotationsQuery, 50, '9606'); // Default to human
           
           // Now use the identifier results to get annotations
           const annotationsResponse = await getProteinAnnotations(identifierResults)
@@ -127,7 +90,7 @@ export function AnnotationsBrowser() {
       
       fetchData()
     }
-  }, [annotationsQuery, currentSearchTerm, currentIdentifierResults, currentIdentifierQuery, currentSpeciesFilter, searchParams, router, addToSearchHistory, setCurrentSearchTerm, setIdentifierResults])
+  }, [annotationsQuery])
 
   // Get all unique sources from all annotations (for infinite scroll management)
   // Keep natural database order - don't sort to prevent layout shifts

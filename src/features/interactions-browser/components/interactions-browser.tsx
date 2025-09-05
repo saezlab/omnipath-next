@@ -6,7 +6,6 @@ import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/featur
 import { searchIdentifiers } from "@/db/queries"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
-import { useSearchStore } from "@/store/search-store"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { Search } from "lucide-react"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -38,15 +37,6 @@ export function InteractionsBrowser({
 }: InteractionsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { 
-    addToSearchHistory, 
-    currentSearchTerm, 
-    setCurrentSearchTerm,
-    currentIdentifierResults,
-    currentIdentifierQuery,
-    currentSpeciesFilter,
-    setIdentifierResults
-  } = useSearchStore()
   const { setFilterData } = useFilters()
   
   // Get query from URL
@@ -102,45 +92,19 @@ export function InteractionsBrowser({
   const [sortKey, setSortKey] = useState<string | null>('referenceCount')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
-  // Single effect to handle both sync and fetch
+  // Fetch interactions when query changes
   useEffect(() => {
-    const queryToUse = interactionsQuery || currentSearchTerm
-    
-    // Sync shared search term when query changes from URL
-    if (interactionsQuery && interactionsQuery !== currentSearchTerm) {
-      setCurrentSearchTerm(interactionsQuery)
-    }
-    
-    // Prevent duplicate searches
-    if (queryToUse && queryToUse !== lastSearchedQuery.current) {
-      lastSearchedQuery.current = queryToUse
+    // Only use URL query as source of truth
+    if (interactionsQuery && interactionsQuery !== lastSearchedQuery.current) {
+      lastSearchedQuery.current = interactionsQuery
       
       const fetchData = async () => {
         setIsLoading(true)
         
-        // If no URL query but we have a shared search term, update URL
-        if (!interactionsQuery && currentSearchTerm) {
-          const params = new URLSearchParams(searchParams.toString())
-          params.set('q', currentSearchTerm)
-          const newUrl = `/search?tab=interactions&${params.toString().replace(/^q=/, 'q=')}`
-          router.push(newUrl, { scroll: false })
-          
-          // Add to search history
-          addToSearchHistory(currentSearchTerm, 'interaction', newUrl)
-        }
-        
         try {
-          // Check if we have cached identifier results for this query
-          let identifierResults = currentIdentifierResults;
-          
-          if (!identifierResults || currentIdentifierQuery !== queryToUse) {
-            // Need to fetch identifier results
-            console.log(`Fetching identifier results for: "${queryToUse}" with species: ${currentSpeciesFilter}`);
-            identifierResults = await searchIdentifiers(queryToUse, 50, currentSpeciesFilter);
-            setIdentifierResults(queryToUse, identifierResults);
-          } else {
-            console.log(`Using cached identifier results for: "${queryToUse}"`);
-          }
+          // Always fetch fresh identifier results - no caching
+          console.log(`Fetching identifier results for: "${interactionsQuery}" with species: 9606`);
+          const identifierResults = await searchIdentifiers(interactionsQuery, 50, '9606'); // Default to human
           
           // Now use the identifier results to get interactions
           const interactionsResponse = await searchProteinNeighbors(identifierResults)
@@ -154,7 +118,7 @@ export function InteractionsBrowser({
           setHasMoreInteractions(interactionsResponse.interactions.length > INTERACTIONS_PER_LOAD)
           
           if (onEntitySelect) {
-            onEntitySelect(queryToUse)
+            onEntitySelect(interactionsQuery)
           }
         } catch (error) {
           console.error("Error fetching data:", error)
@@ -165,7 +129,7 @@ export function InteractionsBrowser({
       
       fetchData()
     }
-  }, [interactionsQuery, currentSearchTerm, currentIdentifierResults, currentIdentifierQuery, currentSpeciesFilter, onEntitySelect, searchParams, router, addToSearchHistory, setCurrentSearchTerm, setIdentifierResults])
+  }, [interactionsQuery, onEntitySelect])
 
   // Calculate filter counts from interactions
   const filterCounts = useMemo(() => {
