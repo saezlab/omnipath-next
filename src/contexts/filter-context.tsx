@@ -4,6 +4,7 @@ import { createContext, useContext, ReactNode, useState } from "react"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { SearchFilters } from "@/features/annotations-browser/types"
 import { IntercellFilters } from "@/features/intercell-browser/types"
+import { ComplexesFilters } from "@/features/complexes-browser/types"
 
 // Types for filter props
 interface InteractionFilterProps {
@@ -52,7 +53,17 @@ interface IntercellFilterProps {
   onClearFilters: () => void
 }
 
-type FilterContextValue = InteractionFilterProps | AnnotationFilterProps | IntercellFilterProps | null
+interface ComplexesFilterProps {
+  type: "complexes"
+  filters: ComplexesFilters
+  filterCounts: {
+    sources: Record<string, number>
+  }
+  onFilterChange: (type: keyof ComplexesFilters, value: string) => void
+  onClearFilters: () => void
+}
+
+type FilterContextValue = InteractionFilterProps | AnnotationFilterProps | IntercellFilterProps | ComplexesFilterProps | null
 
 interface FilterContextType {
   filterData: FilterContextValue

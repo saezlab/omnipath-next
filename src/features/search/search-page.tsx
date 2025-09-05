@@ -14,6 +14,7 @@ import { useSearchStore } from "@/store/search-store"
 import { InteractionsBrowser } from "@/features/interactions-browser/components/interactions-browser"
 import { AnnotationsBrowser } from "@/features/annotations-browser/components/annotations-browser"
 import { IntercellBrowser } from "@/features/intercell-browser/components/intercell-browser"
+import { ComplexesBrowser } from "@/features/complexes-browser/components/complexes-browser"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 
 export function SearchPage() {
@@ -52,7 +53,7 @@ export function SearchPage() {
     const newUrl = `/search?${params.toString()}`
     
     // Add to search history with display term
-    addToSearchHistory(termForDisplay, activeTab as 'interaction' | 'annotation' | 'intercell', newUrl)
+    addToSearchHistory(termForDisplay, activeTab as 'interaction' | 'annotation' | 'intercell' | 'complexes', newUrl)
     
     // Navigate to search page with query and tab
     router.push(newUrl)
@@ -116,6 +117,8 @@ export function SearchPage() {
       return "Search annotations..."
     } else if (activeTab === 'intercell') {
       return "Search intercell data..."
+    } else if (activeTab === 'complexes') {
+      return "Search complexes..."
     } else {
       return "Search interactions..."
     }
@@ -172,10 +175,11 @@ export function SearchPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="interactions">Interactions</TabsTrigger>
           <TabsTrigger value="annotations">Annotations</TabsTrigger>
           <TabsTrigger value="intercell">Intercell</TabsTrigger>
+          <TabsTrigger value="complexes">Complexes</TabsTrigger>
         </TabsList>
         
         <TabsContent value="interactions">
@@ -188,6 +192,10 @@ export function SearchPage() {
 
         <TabsContent value="intercell">
           <IntercellBrowser />
+        </TabsContent>
+
+        <TabsContent value="complexes">
+          <ComplexesBrowser />
         </TabsContent>
       </Tabs>
     </div>

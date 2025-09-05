@@ -37,7 +37,7 @@ export interface ChatSession {
 export interface SearchHistoryItem {
   id: string;
   query: string;
-  type: 'annotation' | 'interaction' | 'intercell';
+  type: 'annotation' | 'interaction' | 'intercell' | 'complexes';
   timestamp: number;
   url: string;
 }

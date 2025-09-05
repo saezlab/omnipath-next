@@ -41,6 +41,7 @@ import { useFilters } from "@/contexts/filter-context"
 import { FilterSidebar } from "@/features/interactions-browser/components/filter-sidebar"
 import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
 import { IntercellFilterSidebar } from "@/features/intercell-browser/components/filter-sidebar"
+import { ComplexesFilterSidebar } from "@/features/complexes-browser/components/filter-sidebar"
 
 const navigationItems = [
   {
@@ -71,6 +72,8 @@ export function AppSidebar() {
         return "bg-secondary/10 text-secondary"
       case "intercell":
         return "bg-purple-500/10 text-purple-500"
+      case "complexes":
+        return "bg-green-500/10 text-green-500"
       case "chat":
         return "bg-blue-500/10 text-blue-500"
       default:
@@ -95,7 +98,8 @@ export function AppSidebar() {
     } else {
       // Fallback for old history items that don't have URL
       const tabParam = item.type === 'annotation' ? 'annotations' : 
-                      item.type === 'intercell' ? 'intercell' : 'interactions'
+                      item.type === 'intercell' ? 'intercell' : 
+                      item.type === 'complexes' ? 'complexes' : 'interactions'
       return `/search?tab=${tabParam}&q=${encodeURIComponent(item.query)}`
     }
   }
@@ -323,6 +327,14 @@ export function AppSidebar() {
                   )}
                   {filterData.type === "intercell" && (
                     <IntercellFilterSidebar
+                      filters={filterData.filters}
+                      filterCounts={filterData.filterCounts}
+                      onFilterChange={filterData.onFilterChange}
+                      onClearFilters={filterData.onClearFilters}
+                    />
+                  )}
+                  {filterData.type === "complexes" && (
+                    <ComplexesFilterSidebar
                       filters={filterData.filters}
                       filterCounts={filterData.filterCounts}
                       onFilterChange={filterData.onFilterChange}
