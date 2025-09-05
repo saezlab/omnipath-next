@@ -15,6 +15,7 @@ import { InteractionsBrowser } from "@/features/interactions-browser/components/
 import { AnnotationsBrowser } from "@/features/annotations-browser/components/annotations-browser"
 import { IntercellBrowser } from "@/features/intercell-browser/components/intercell-browser"
 import { ComplexesBrowser } from "@/features/complexes-browser/components/complexes-browser"
+import { EnzSubBrowser } from "@/features/enzsub-browser/components/enzsub-browser"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 
 export function SearchPage() {
@@ -53,7 +54,7 @@ export function SearchPage() {
     const newUrl = `/search?${params.toString()}`
     
     // Add to search history with display term
-    addToSearchHistory(termForDisplay, activeTab as 'interaction' | 'annotation' | 'intercell' | 'complexes', newUrl)
+    addToSearchHistory(termForDisplay, activeTab as 'interaction' | 'annotation' | 'intercell' | 'complexes' | 'enzsub', newUrl)
     
     // Navigate to search page with query and tab
     router.push(newUrl)
@@ -119,6 +120,8 @@ export function SearchPage() {
       return "Search intercell data..."
     } else if (activeTab === 'complexes') {
       return "Search complexes..."
+    } else if (activeTab === 'enzsub') {
+      return "Search enzyme-substrate data..."
     } else {
       return "Search interactions..."
     }
@@ -175,11 +178,12 @@ export function SearchPage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="interactions">Interactions</TabsTrigger>
           <TabsTrigger value="annotations">Annotations</TabsTrigger>
           <TabsTrigger value="intercell">Intercell</TabsTrigger>
           <TabsTrigger value="complexes">Complexes</TabsTrigger>
+          <TabsTrigger value="enzsub">Enzyme-Substrate</TabsTrigger>
         </TabsList>
         
         <TabsContent value="interactions">
@@ -196,6 +200,10 @@ export function SearchPage() {
 
         <TabsContent value="complexes">
           <ComplexesBrowser />
+        </TabsContent>
+
+        <TabsContent value="enzsub">
+          <EnzSubBrowser />
         </TabsContent>
       </Tabs>
     </div>

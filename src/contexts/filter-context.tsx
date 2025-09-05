@@ -5,6 +5,7 @@ import { InteractionsFilters } from "@/features/interactions-browser/types"
 import { SearchFilters } from "@/features/annotations-browser/types"
 import { IntercellFilters } from "@/features/intercell-browser/types"
 import { ComplexesFilters } from "@/features/complexes-browser/types"
+import { EnzSubFilters } from "@/features/enzsub-browser/types"
 
 // Types for filter props
 interface InteractionFilterProps {
@@ -63,7 +64,19 @@ interface ComplexesFilterProps {
   onClearFilters: () => void
 }
 
-type FilterContextValue = InteractionFilterProps | AnnotationFilterProps | IntercellFilterProps | ComplexesFilterProps | null
+interface EnzSubFilterProps {
+  type: "enzsub"
+  filters: EnzSubFilters
+  filterCounts: {
+    sources: Record<string, number>
+    residueTypes: Record<string, number>
+    modifications: Record<string, number>
+  }
+  onFilterChange: (type: keyof EnzSubFilters, value: string | number | boolean | null) => void
+  onClearFilters: () => void
+}
+
+type FilterContextValue = InteractionFilterProps | AnnotationFilterProps | IntercellFilterProps | ComplexesFilterProps | EnzSubFilterProps | null
 
 interface FilterContextType {
   filterData: FilterContextValue

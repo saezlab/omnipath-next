@@ -13,7 +13,7 @@ interface FilterCounts {
 
 interface ComplexesFilterSidebarProps {
   filters: ComplexesFilters
-  onFilterChange: (type: keyof ComplexesFilters, value: string | boolean | number | null) => void
+  onFilterChange: (type: keyof ComplexesFilters, value: string) => void
   filterCounts: FilterCounts
   onClearFilters: () => void
 }
