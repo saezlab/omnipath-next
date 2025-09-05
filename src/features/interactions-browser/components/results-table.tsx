@@ -16,6 +16,7 @@ type InteractionDataWithCount = InteractionData & { referenceCount: number };
 
 interface InteractionResultsTableProps {
   interactions: InteractionData[];
+  exportData?: InteractionData[]; // Optional full dataset for export
   onSelectInteraction: (interaction: InteractionData) => void;
   showSearch?: boolean;
   searchKeys?: string[];
@@ -24,11 +25,16 @@ interface InteractionResultsTableProps {
   resultsPerPage?: number;
   maxCellChars?: number;
   scrollAreaClassName?: string;
+  resultsCount?: number; // Optional results count to display
   // Infinite scroll props
   infiniteScroll?: boolean;
   hasMore?: boolean;
   onLoadMore?: () => void;
   loadingMore?: boolean;
+  // External sort control props
+  sortKey?: string | null;
+  sortDirection?: 'asc' | 'desc' | null;
+  onSortChange?: (key: string, direction: 'asc' | 'desc') => void;
 }
 
 
@@ -44,6 +50,7 @@ const getReferenceCount = (interaction: InteractionData): number => {
 
 export function InteractionResultsTable({ 
   interactions, 
+  exportData,
   onSelectInteraction,
   showSearch,
   searchKeys,
@@ -51,11 +58,16 @@ export function InteractionResultsTable({
   showExport,
   resultsPerPage,
   maxCellChars = 50,
+  resultsCount, // Results count prop
   // Infinite scroll props
   infiniteScroll = false,
   hasMore = false,
   onLoadMore,
   loadingMore = false,
+  // External sort control props
+  sortKey,
+  sortDirection,
+  onSortChange,
 }: InteractionResultsTableProps) {
   const handleEntityClick = (entity: string) => {
     window.open(`/interactions?q=${encodeURIComponent(entity)}`, '_blank');
@@ -184,10 +196,15 @@ export function InteractionResultsTable({
       interactions.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) }))
   , [interactions]);
 
+  const exportDataWithReferenceCount = React.useMemo(() => 
+      exportData ? exportData.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) })) : undefined
+  , [exportData]);
+
   return (
     <ResultsTable<InteractionDataWithCount>
         columns={columns}
         data={dataWithReferenceCount}
+        exportData={exportDataWithReferenceCount}
         onRowClick={onSelectInteraction}
         initialSortKey={infiniteScroll ? undefined : "referenceCount"}
         initialSortDirection={infiniteScroll ? undefined : "desc"}
@@ -199,11 +216,17 @@ export function InteractionResultsTable({
         showExport={showExport}
         resultsPerPage={resultsPerPage}
         maxCellChars={maxCellChars}
+        resultsCount={resultsCount}
+        resultsLabel="interactions"
         // Pass through infinite scroll props
         infiniteScroll={infiniteScroll}
         hasMore={hasMore}
         onLoadMore={onLoadMore}
         loadingMore={loadingMore}
+        // Pass through external sort control props
+        sortKey={sortKey}
+        sortDirection={sortDirection}
+        onSortChange={onSortChange}
     />
   )
 }

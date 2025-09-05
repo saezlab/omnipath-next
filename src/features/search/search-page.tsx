@@ -189,11 +189,11 @@ export function SearchPage() {
           <TabsTrigger value="annotations">Annotations</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="interactions" className="mt-6">
+        <TabsContent value="interactions">
           <InteractionsBrowser />
         </TabsContent>
-        
-        <TabsContent value="annotations" className="mt-6">
+
+        <TabsContent value="annotations">
           <AnnotationsBrowser />
         </TabsContent>
       </Tabs>

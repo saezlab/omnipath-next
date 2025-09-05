@@ -40,6 +40,7 @@ export interface ColumnDef<TData extends DataRow> {
 interface ResultsTableProps<TData extends DataRow> {
   columns: ColumnDef<TData>[];
   data: TData[];
+  exportData?: TData[]; // Optional full dataset for export
   initialSortKey?: keyof TData | string;
   initialSortDirection?: 'asc' | 'desc';
   onRowClick?: (row: TData) => void;
@@ -55,16 +56,23 @@ interface ResultsTableProps<TData extends DataRow> {
   exportFilenamePrefix?: string;
   resultsPerPage?: number;
   maxCellChars?: number; // New prop for max characters
+  resultsCount?: number; // Optional results count to display in toolbar
+  resultsLabel?: string; // Optional label for results count (e.g., "interactions", "results")
   // Infinite scroll props
   infiniteScroll?: boolean;
   hasMore?: boolean;
   onLoadMore?: () => void;
   loadingMore?: boolean;
+  // External sort control props
+  sortKey?: keyof TData | string | null;
+  sortDirection?: 'asc' | 'desc' | null;
+  onSortChange?: (key: keyof TData | string, direction: 'asc' | 'desc') => void;
 }
 
 export function ResultsTable<TData extends DataRow>({
   columns,
   data,
+  exportData,
   initialSortKey,
   initialSortDirection,
   onRowClick,
@@ -79,26 +87,43 @@ export function ResultsTable<TData extends DataRow>({
   exportFilenamePrefix = 'table_export',
   resultsPerPage = 15,
   maxCellChars, // Destructure new prop
+  resultsCount, // Optional results count
+  resultsLabel = "results", // Default label
   // Infinite scroll props
   infiniteScroll = false,
   hasMore = false,
   onLoadMore,
   loadingMore = false,
+  // External sort control props
+  sortKey: externalSortKey,
+  sortDirection: externalSortDirection,
+  onSortChange,
 }: ResultsTableProps<TData>) {
-  const [sortKey, setSortKey] = useState<keyof TData | string | null>(initialSortKey ?? null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(initialSortDirection ?? null);
+  const [internalSortKey, setInternalSortKey] = useState<keyof TData | string | null>(initialSortKey ?? null);
+  const [internalSortDirection, setInternalSortDirection] = useState<'asc' | 'desc' | null>(initialSortDirection ?? null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const loadMoreRef = React.useRef<HTMLDivElement>(null);
 
+  // Use external sort state if provided, otherwise use internal state
+  const sortKey = externalSortKey !== undefined ? externalSortKey : internalSortKey;
+  const sortDirection = externalSortDirection !== undefined ? externalSortDirection : internalSortDirection;
+
   const handleSort = (key: keyof TData | string) => {
     if (!columns.find(col => col.accessorKey === key)?.enableSorting) return;
 
-    if (sortKey === key) {
-      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    if (onSortChange) {
+      // Use external sort control
+      const newDirection = sortKey === key ? (sortDirection === 'asc' ? 'desc' : 'asc') : 'asc';
+      onSortChange(key, newDirection);
     } else {
-      setSortKey(key);
-      setSortDirection('asc');
+      // Use internal sort control
+      if (internalSortKey === key) {
+        setInternalSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setInternalSortKey(key);
+        setInternalSortDirection('asc');
+      }
     }
   };
 
@@ -123,7 +148,8 @@ export function ResultsTable<TData extends DataRow>({
       );
     }
 
-    if (sortKey && sortDirection) {
+    // Only apply internal sorting if not using external sort control
+    if (sortKey && sortDirection && !onSortChange) {
       const columnDef = columns.find(col => col.accessorKey === sortKey);
       if (columnDef?.enableSorting) {
         filteredData.sort((a, b) => {
@@ -137,7 +163,7 @@ export function ResultsTable<TData extends DataRow>({
     }
 
     return filteredData;
-  }, [data, searchTerm, showSearch, searchKeys, sortKey, sortDirection, columns]);
+  }, [data, searchTerm, showSearch, searchKeys, sortKey, sortDirection, columns, onSortChange]);
 
   // Pagination logic (only for non-infinite scroll)
   const totalPages = Math.ceil(processedData.length / resultsPerPage);
@@ -180,12 +206,13 @@ export function ResultsTable<TData extends DataRow>({
 
   // Internal export handler
   const handleInternalExport = () => {
-    if (processedData.length === 0) {
+    const dataToExport = exportData || processedData;
+    if (dataToExport.length === 0) {
         console.warn("No data to export.");
         return;
     }
     const filename = `${exportFilenamePrefix}_${new Date().toISOString().split('T')[0]}`;
-    exportToTSV(processedData, filename); // Use processedData directly if exportToTSV handles object arrays
+    exportToTSV(dataToExport, filename); // Use exportData if available, otherwise processedData
   };
 
   if (!data || data.length === 0) {
@@ -194,9 +221,14 @@ export function ResultsTable<TData extends DataRow>({
 
   return (
     <div>
-      {(showSearch || showExport) && (
+      {(showSearch || showExport || resultsCount !== undefined) && (
         <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-primary/20">
-          <div className="flex-grow">
+          <div className="flex items-center gap-4 flex-grow">
+            {resultsCount !== undefined && (
+              <div className="text-sm text-muted-foreground">
+                {resultsCount} {resultsLabel}
+              </div>
+            )}
             {showSearch && (
               <Input
                 placeholder={searchPlaceholder}
@@ -211,7 +243,7 @@ export function ResultsTable<TData extends DataRow>({
               variant="outline"
               size="sm"
               onClick={handleInternalExport}
-              disabled={processedData.length === 0}
+              disabled={(exportData || processedData).length === 0}
               className="h-8 flex-shrink-0"
             >
               <Download className="mr-2 h-4 w-4" />

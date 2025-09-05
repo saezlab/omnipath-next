@@ -98,6 +98,10 @@ export function InteractionsBrowser({
   const [hasMoreInteractions, setHasMoreInteractions] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
+  // Sorting state
+  const [sortKey, setSortKey] = useState<string | null>('referenceCount')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
+
   // Single effect to handle both sync and fetch
   useEffect(() => {
     const queryToUse = interactionsQuery || currentSearchTerm
@@ -143,9 +147,10 @@ export function InteractionsBrowser({
           
           setInteractions(interactionsResponse.interactions)
           
-          // Initialize infinite scroll with first batch - preserve natural order
-          const firstBatch = interactionsResponse.interactions.slice(0, INTERACTIONS_PER_LOAD)
-          setLoadedInteractions(firstBatch)
+          // Reset sort to default when new data loads
+          setSortKey('referenceCount')
+          setSortDirection('desc')
+          setLoadedInteractions([])
           setHasMoreInteractions(interactionsResponse.interactions.length > INTERACTIONS_PER_LOAD)
           
           if (onEntitySelect) {
@@ -365,14 +370,38 @@ export function InteractionsBrowser({
     })
   }, [interactions, interactionsFilters, interactionsQuery])
 
+  // Apply sorting to the full filtered dataset
+  const filteredAndSortedInteractions = useMemo(() => {
+    if (!sortKey || !sortDirection) return filteredInteractions;
+    
+    return [...filteredInteractions].sort((a, b) => {
+      let valA: string | number;
+      let valB: string | number;
+      
+      if (sortKey === 'referenceCount') {
+        valA = a.references ? a.references.split(';').length : 0;
+        valB = b.references ? b.references.split(';').length : 0;
+      } else {
+        const rawA = (a as any)[sortKey];
+        const rawB = (b as any)[sortKey];
+        valA = rawA === null || rawA === undefined ? '' : String(rawA);
+        valB = rawB === null || rawB === undefined ? '' : String(rawB);
+      }
+      
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredInteractions, sortKey, sortDirection])
+
   // Load more interactions function
   const loadMoreInteractions = useCallback(() => {
     if (!hasMoreInteractions || isLoadingMore) return
     
     setIsLoadingMore(true)
     
-    // Get next batch from the filtered interactions
-    const nextBatch = filteredInteractions.slice(
+    // Get next batch from the filtered and sorted interactions
+    const nextBatch = filteredAndSortedInteractions.slice(
       loadedInteractions.length,
       loadedInteractions.length + INTERACTIONS_PER_LOAD
     )
@@ -383,16 +412,27 @@ export function InteractionsBrowser({
       return
     }
     
-    // Add to loaded interactions - preserve the natural order
+    // Add to loaded interactions - preserve the sorted order
     setLoadedInteractions(prev => [...prev, ...nextBatch])
     
     // Check if there are more to load
-    if (loadedInteractions.length + nextBatch.length >= filteredInteractions.length) {
+    if (loadedInteractions.length + nextBatch.length >= filteredAndSortedInteractions.length) {
       setHasMoreInteractions(false)
     }
     
     setIsLoadingMore(false)
-  }, [filteredInteractions, loadedInteractions, hasMoreInteractions, isLoadingMore])
+  }, [filteredAndSortedInteractions, loadedInteractions, hasMoreInteractions, isLoadingMore])
+
+  // Handle sorting changes
+  const handleSortChange = useCallback((key: string | null, direction: 'asc' | 'desc' | null) => {
+    setSortKey(key);
+    setSortDirection(direction as 'asc' | 'desc');
+    
+    // Reset infinite scroll when sort changes
+    setLoadedInteractions([]);
+    setHasMoreInteractions(true);
+    setIsLoadingMore(false);
+  }, [])
 
   // Get displayed interactions for the table (filtered loaded interactions)
   const displayedInteractions = useMemo(() => {
@@ -505,38 +545,29 @@ export function InteractionsBrowser({
     setFilterData(filterContextValue)
   }, [interactionsQuery, interactionsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
-  // Reload first batch when filters change
+  // Reload first batch when filters or sorting change
   React.useEffect(() => {
-    if (filteredInteractions.length > 0 && loadedInteractions.length === 0) {
-      const firstBatch = filteredInteractions.slice(0, INTERACTIONS_PER_LOAD)
+    if (filteredAndSortedInteractions.length > 0 && loadedInteractions.length === 0) {
+      const firstBatch = filteredAndSortedInteractions.slice(0, INTERACTIONS_PER_LOAD)
       setLoadedInteractions(firstBatch)
-      setHasMoreInteractions(filteredInteractions.length > INTERACTIONS_PER_LOAD)
+      setHasMoreInteractions(filteredAndSortedInteractions.length > INTERACTIONS_PER_LOAD)
     }
-  }, [filteredInteractions, loadedInteractions.length])
+  }, [filteredAndSortedInteractions, loadedInteractions.length])
 
   return (
       <div className="w-full">
         <div className="max-w-7xl mx-auto p-4">
           {interactionsQuery ? (
             <div className="w-full space-y-4">
-              {/* Combined Fixed Header */}
-              <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-primary/20 -mx-4 px-4 py-4">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm text-muted-foreground">
-                      {filteredInteractions.length} interactions
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               {/* Main Content */}
               {isLoading ? (
                 <TableSkeleton rows={5} />
               ) : interactions.length > 0 ? (
-                <div className="h-[calc(100vh-16rem)]">
+                <div className="h-[calc(100vh-12rem)]">
                   <InteractionResultsTable
                     interactions={displayedInteractions}
+                    exportData={filteredAndSortedInteractions}
                     onSelectInteraction={handleSelectInteraction}
                     showSearch={true}
                     searchKeys={[
@@ -547,11 +578,15 @@ export function InteractionsBrowser({
                         'type', 
                         'sources'
                       ]}
-                    searchPlaceholder="Search interactions..."
+                    searchPlaceholder={`Search in ${filteredAndSortedInteractions.length} interactions...`}
+                    showExport={true}
                     infiniteScroll={true}
                     hasMore={hasMoreInteractions}
                     onLoadMore={loadMoreInteractions}
                     loadingMore={isLoadingMore}
+                    sortKey={sortKey}
+                    sortDirection={sortDirection}
+                    onSortChange={handleSortChange}
                   />
                 </div>
               ) : (
