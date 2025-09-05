@@ -128,84 +128,94 @@ export function SearchPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
-      {/* Full Width Search Bar */}
-      <div className="w-full">
-        <div className="relative group">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
-          <Input
-            type="search"
-            placeholder={getPlaceholderText()}
-            className="w-full pl-9 pr-32 h-10 text-base rounded-md shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-border/40 hover:border-border/60"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleEnterPress()}
-          />
-          <div className="absolute right-20 top-1/2 -translate-y-1/2">
-            <Select value={selectedSpecies} onValueChange={setSelectedSpecies}>
-              <SelectTrigger size="sm" className="h-6 w-18 text-xs border-0 bg-transparent shadow-none p-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="9606">Human</SelectItem>
-                <SelectItem value="10090">Mouse</SelectItem>
-                <SelectItem value="10116">Rat</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className="grid grid-rows-[auto_1fr] h-screen max-w-7xl mx-auto px-2 sm:px-4 pb-6 pt-4 gap-4">
+      {/* Header Content */}
+      <div className="flex flex-col gap-4">
+        {/* Full Width Search Bar */}
+        <div className="w-full">
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+            <Input
+              type="search"
+              placeholder={getPlaceholderText()}
+              className="w-full pl-9 pr-32 h-10 text-base rounded-md shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-border/40 hover:border-border/60"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleEnterPress()}
+            />
+            <div className="absolute right-20 top-1/2 -translate-y-1/2">
+              <Select value={selectedSpecies} onValueChange={setSelectedSpecies}>
+                <SelectTrigger size="sm" className="h-6 w-18 text-xs border-0 bg-transparent shadow-none p-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="9606">Human</SelectItem>
+                  <SelectItem value="10090">Mouse</SelectItem>
+                  <SelectItem value="10116">Rat</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              onClick={handleEnterPress}
+              disabled={isLoading || !query.trim()}
+              size="sm"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 text-sm"
+            >
+              {isLoading ? "..." : "Search"}
+            </Button>
           </div>
-          <Button
-            onClick={handleEnterPress}
-            disabled={isLoading || !query.trim()}
-            size="sm"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 text-sm"
-          >
-            {isLoading ? "..." : "Search"}
-          </Button>
+        </div>
+
+        {/* Centered Protein Card */}
+        {urlQuery && (
+          <div className="flex justify-center">
+            <div className="w-full max-w-sm">
+              <ProteinSummaryCard 
+                proteinData={proteinData ?? undefined}
+                isLoading={isLoadingProtein}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Tabs Header */}
+        <div className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="interactions">Interactions</TabsTrigger>
+              <TabsTrigger value="annotations">Annotations</TabsTrigger>
+              <TabsTrigger value="intercell">Intercell</TabsTrigger>
+              <TabsTrigger value="complexes">Complexes</TabsTrigger>
+              <TabsTrigger value="enzsub">Enzyme-Substrate</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
-      {/* Centered Protein Card */}
-      {urlQuery && (
-        <div className="flex justify-center">
-          <div className="w-full max-w-sm">
-            <ProteinSummaryCard 
-              proteinData={proteinData ?? undefined}
-              isLoading={isLoadingProtein}
-            />
-          </div>
-        </div>
-      )}
+      {/* Tab Content Area */}
+      <div className="min-h-0">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full h-full">
+          <TabsContent value="interactions" className="h-full">
+            <InteractionsBrowser />
+          </TabsContent>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="interactions">Interactions</TabsTrigger>
-          <TabsTrigger value="annotations">Annotations</TabsTrigger>
-          <TabsTrigger value="intercell">Intercell</TabsTrigger>
-          <TabsTrigger value="complexes">Complexes</TabsTrigger>
-          <TabsTrigger value="enzsub">Enzyme-Substrate</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="interactions">
-          <InteractionsBrowser />
-        </TabsContent>
+          <TabsContent value="annotations" className="h-full">
+            <AnnotationsBrowser />
+          </TabsContent>
 
-        <TabsContent value="annotations">
-          <AnnotationsBrowser />
-        </TabsContent>
+          <TabsContent value="intercell" className="h-full">
+            <IntercellBrowser />
+          </TabsContent>
 
-        <TabsContent value="intercell">
-          <IntercellBrowser />
-        </TabsContent>
+          <TabsContent value="complexes" className="h-full">
+            <ComplexesBrowser />
+          </TabsContent>
 
-        <TabsContent value="complexes">
-          <ComplexesBrowser />
-        </TabsContent>
-
-        <TabsContent value="enzsub">
-          <EnzSubBrowser />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="enzsub" className="h-full">
+            <EnzSubBrowser />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   )
 }

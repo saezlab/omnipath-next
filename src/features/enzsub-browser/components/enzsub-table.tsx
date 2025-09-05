@@ -99,9 +99,9 @@ export function EnzSubTable({
   }
 
   return (
-    <div className="w-full">
-      <div className="overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200">
-        <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-1 overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200 flex flex-col">
+        <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background flex-shrink-0">
           <div className="flex items-center space-x-2">
             <h3 className="text-lg font-semibold">
               Enzyme-Substrate Relationships
@@ -119,7 +119,7 @@ export function EnzSubTable({
             <Download className="h-4 w-4" />
           </Button>
         </div>
-        <div className="max-h-[600px] overflow-auto">
+        <div className="flex-1 overflow-auto">
           <Table className="min-w-full">
             <TableHeader>
               <TableRow>

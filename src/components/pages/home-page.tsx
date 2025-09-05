@@ -72,7 +72,7 @@ export function HomePage() {
         {/* Combined Database Visualization Section */}
         <section className="mt-16">
           <div className="w-full overflow-x-auto">
-            <div className="min-w-[1250px] flex justify-center">
+            <div className="flex justify-center">
               <CombinedDatabaseVisualization />
             </div>
           </div>

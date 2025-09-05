@@ -257,41 +257,36 @@ export function EnzSubBrowser() {
   }, [enzSubQuery, enzSubFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
+    <div className="w-full h-full">
       {enzSubQuery ? (
-        <>
-          <div className="flex flex-col gap-4">
-
-            <div className="w-full">
-              {isLoading ? (
-                <TableSkeleton />
-              ) : filteredEnzSubData.length > 0 ? (
-                <EnzSubTable
-                  currentResults={filteredEnzSubData}
-                  searchedProteins={searchedProteins}
-                />
-              ) : enzSubResults.length > 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Info className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
-                  <p className="text-muted-foreground max-w-md">
-                    Try adjusting your filter criteria to see more enzyme-substrate relationships.
-                  </p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Info className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No enzyme-substrate relationships found</h3>
-                  <p className="text-muted-foreground max-w-md">
-                    No enzyme-substrate relationships found for &ldquo;{enzSubQuery}&rdquo;. Try searching for a different protein.
-                  </p>
-                </div>
-              )}
+        <div className="w-full h-full">
+          {isLoading ? (
+            <TableSkeleton />
+          ) : filteredEnzSubData.length > 0 ? (
+            <EnzSubTable
+              currentResults={filteredEnzSubData}
+              searchedProteins={searchedProteins}
+            />
+          ) : enzSubResults.length > 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
+              <p className="text-muted-foreground max-w-md">
+                Try adjusting your filter criteria to see more enzyme-substrate relationships.
+              </p>
             </div>
-          </div>
-        </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No enzyme-substrate relationships found</h3>
+              <p className="text-muted-foreground max-w-md">
+                No enzyme-substrate relationships found for &ldquo;{enzSubQuery}&rdquo;. Try searching for a different protein.
+              </p>
+            </div>
+          )}
+        </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="flex flex-col items-center justify-center h-full text-center">
           <Info className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">Welcome to Enzyme-Substrate Browser</h3>
           <p className="text-muted-foreground max-w-md">
