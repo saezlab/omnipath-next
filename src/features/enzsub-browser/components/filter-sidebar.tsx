@@ -1,9 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SidebarMenuBadge, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar"
 import { EnzSubFilters } from "@/features/enzsub-browser/types"
 import { X } from "lucide-react"
@@ -16,7 +14,7 @@ interface FilterCounts {
 
 interface EnzSubFilterSidebarProps {
   filters: EnzSubFilters
-  onFilterChange: (type: keyof EnzSubFilters, value: string | number | boolean | null) => void
+  onFilterChange: (type: keyof EnzSubFilters, value: string) => void
   filterCounts: FilterCounts
   onClearFilters: () => void
 }
@@ -29,11 +27,6 @@ export function EnzSubFilterSidebar({
 }: EnzSubFilterSidebarProps) {
   // Calculate active filter count
   const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
-    if (key === 'searchTerm' && !value) return count
-    if (key === 'enzymeSearch' && !value) return count
-    if (key === 'substrateSearch' && !value) return count
-    if (key === 'curationEffortMin' && value === null) return count
-    if (key === 'hasResidueOffset' && value === null) return count
     if (Array.isArray(value)) return count + value.length
     return count
   }, 0)
@@ -55,59 +48,6 @@ export function EnzSubFilterSidebar({
         </div>
       )}
 
-      {/* Search Controls */}
-      <SidebarMenu className="space-y-2">
-        <SidebarMenuItem>
-          <SidebarMenuButton className="pointer-events-none" tooltip="General Search">
-            <span>Search</span>
-          </SidebarMenuButton>
-          <SidebarMenuSub>
-            <SidebarMenuSubItem>
-              <Input
-                type="text"
-                placeholder="Search all fields..."
-                value={filters.searchTerm}
-                onChange={(e) => onFilterChange("searchTerm", e.target.value)}
-                className={`w-full ${filters.searchTerm ? "border-sidebar-primary" : ""}`}
-              />
-            </SidebarMenuSubItem>
-          </SidebarMenuSub>
-        </SidebarMenuItem>
-
-        <SidebarMenuItem>
-          <SidebarMenuButton className="pointer-events-none" tooltip="Enzyme Search">
-            <span>Enzyme Search</span>
-          </SidebarMenuButton>
-          <SidebarMenuSub>
-            <SidebarMenuSubItem>
-              <Input
-                type="text"
-                placeholder="Search enzymes..."
-                value={filters.enzymeSearch}
-                onChange={(e) => onFilterChange("enzymeSearch", e.target.value)}
-                className={`w-full ${filters.enzymeSearch ? "border-sidebar-primary" : ""}`}
-              />
-            </SidebarMenuSubItem>
-          </SidebarMenuSub>
-        </SidebarMenuItem>
-
-        <SidebarMenuItem>
-          <SidebarMenuButton className="pointer-events-none" tooltip="Substrate Search">
-            <span>Substrate Search</span>
-          </SidebarMenuButton>
-          <SidebarMenuSub>
-            <SidebarMenuSubItem>
-              <Input
-                type="text"
-                placeholder="Search substrates..."
-                value={filters.substrateSearch}
-                onChange={(e) => onFilterChange("substrateSearch", e.target.value)}
-                className={`w-full ${filters.substrateSearch ? "border-sidebar-primary" : ""}`}
-              />
-            </SidebarMenuSubItem>
-          </SidebarMenuSub>
-        </SidebarMenuItem>
-      </SidebarMenu>
 
       {/* Sources */}
       <SidebarMenu className="space-y-2">
@@ -214,60 +154,6 @@ export function EnzSubFilterSidebar({
         </SidebarMenuItem>
       </SidebarMenu>
 
-      {/* Additional Filters */}
-      <SidebarMenu className="space-y-2">
-        <SidebarMenuItem>
-          <SidebarMenuButton className="pointer-events-none" tooltip="Additional Filters">
-            <span>Additional Filters</span>
-          </SidebarMenuButton>
-          <SidebarMenuSub className="space-y-2">
-            <SidebarMenuSubItem>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="has-residue-offset"
-                  checked={filters.hasResidueOffset === true}
-                  onCheckedChange={(checked) => 
-                    onFilterChange("hasResidueOffset", checked ? true : null)
-                  }
-                  className={filters.hasResidueOffset === true ? "border-sidebar-primary" : ""}
-                />
-                <Label
-                  htmlFor="has-residue-offset"
-                  className={`text-sm font-normal cursor-pointer ${
-                    filters.hasResidueOffset === true ? "text-sidebar-primary font-medium" : ""
-                  }`}
-                >
-                  Has Position Info
-                </Label>
-              </div>
-            </SidebarMenuSubItem>
-
-            <SidebarMenuSubItem>
-              <div className="space-y-2">
-                <Label className="text-sm font-normal">Min Curation Effort</Label>
-                <Select 
-                  value={filters.curationEffortMin?.toString() || "any"} 
-                  onValueChange={(value) => 
-                    onFilterChange("curationEffortMin", value === "any" ? null : parseInt(value))
-                  }
-                >
-                  <SelectTrigger className={`w-full ${filters.curationEffortMin !== null ? "border-sidebar-primary" : ""}`}>
-                    <SelectValue placeholder="Any" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
-                    <SelectItem value="1">1+</SelectItem>
-                    <SelectItem value="2">2+</SelectItem>
-                    <SelectItem value="3">3+</SelectItem>
-                    <SelectItem value="4">4+</SelectItem>
-                    <SelectItem value="5">5+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </SidebarMenuSubItem>
-          </SidebarMenuSub>
-        </SidebarMenuItem>
-      </SidebarMenu>
     </>
   )
 }

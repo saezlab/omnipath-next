@@ -72,7 +72,7 @@ interface EnzSubFilterProps {
     residueTypes: Record<string, number>
     modifications: Record<string, number>
   }
-  onFilterChange: (type: keyof EnzSubFilters, value: string | number | boolean | null) => void
+  onFilterChange: (type: keyof EnzSubFilters, value: string) => void
   onClearFilters: () => void
 }
 

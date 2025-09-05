@@ -37,11 +37,6 @@ export function EnzSubBrowser() {
         sources: [],
         residueTypes: [],
         modifications: [],
-        hasResidueOffset: null,
-        curationEffortMin: null,
-        searchTerm: '',
-        enzymeSearch: '',
-        substrateSearch: '',
       } as EnzSubFilters
     }
     try {
@@ -51,11 +46,6 @@ export function EnzSubBrowser() {
         sources: [],
         residueTypes: [],
         modifications: [],
-        hasResidueOffset: null,
-        curationEffortMin: null,
-        searchTerm: '',
-        enzymeSearch: '',
-        substrateSearch: '',
       } as EnzSubFilters
     }
   }, [searchParams])
@@ -122,50 +112,6 @@ export function EnzSubBrowser() {
         if (!modificationMatch) return false
       }
 
-      // Filter by residue offset presence
-      if (enzSubFilters.hasResidueOffset === true) {
-        if (entry.residueOffset === null) return false
-      }
-
-      // Filter by minimum curation effort
-      if (enzSubFilters.curationEffortMin !== null) {
-        if (!entry.curationEffort || entry.curationEffort < enzSubFilters.curationEffortMin) return false
-      }
-
-      // General search term filter
-      if (enzSubFilters.searchTerm) {
-        const searchTerm = enzSubFilters.searchTerm.toLowerCase()
-        const matches = 
-          (entry.enzyme?.toLowerCase().includes(searchTerm)) ||
-          (entry.enzymeGenesymbol?.toLowerCase().includes(searchTerm)) ||
-          (entry.substrate?.toLowerCase().includes(searchTerm)) ||
-          (entry.substrateGenesymbol?.toLowerCase().includes(searchTerm)) ||
-          (entry.modification?.toLowerCase().includes(searchTerm)) ||
-          (entry.residueType?.toLowerCase().includes(searchTerm)) ||
-          (entry.sources?.toLowerCase().includes(searchTerm))
-        
-        if (!matches) return false
-      }
-
-      // Enzyme-specific search
-      if (enzSubFilters.enzymeSearch) {
-        const enzymeSearchTerm = enzSubFilters.enzymeSearch.toLowerCase()
-        const enzymeMatches = 
-          (entry.enzyme?.toLowerCase().includes(enzymeSearchTerm)) ||
-          (entry.enzymeGenesymbol?.toLowerCase().includes(enzymeSearchTerm))
-        
-        if (!enzymeMatches) return false
-      }
-
-      // Substrate-specific search
-      if (enzSubFilters.substrateSearch) {
-        const substrateSearchTerm = enzSubFilters.substrateSearch.toLowerCase()
-        const substrateMatches = 
-          (entry.substrate?.toLowerCase().includes(substrateSearchTerm)) ||
-          (entry.substrateGenesymbol?.toLowerCase().includes(substrateSearchTerm))
-        
-        if (!substrateMatches) return false
-      }
 
       return true
     })
@@ -204,29 +150,20 @@ export function EnzSubBrowser() {
   }, [enzSubResults])
 
   // Handle filter changes
-  const handleFilterChange = useCallback((type: keyof EnzSubFilters, value: string | number | boolean | null) => {
+  const handleFilterChange = useCallback((type: keyof EnzSubFilters, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     
     const newFilters = { ...enzSubFilters }
     
-    if (type === "searchTerm" || type === "enzymeSearch" || type === "substrateSearch") {
-      newFilters[type] = value as string
-    } else if (type === "curationEffortMin") {
-      newFilters[type] = value as number | null
-    } else if (type === "hasResidueOffset") {
-      newFilters[type] = value as boolean | null
-    } else {
-      const currentValues = newFilters[type] as string[]
-      newFilters[type] = currentValues.includes(value as string)
-        ? currentValues.filter((v) => v !== value)
-        : [...currentValues, value as string]
-    }
+    const currentValues = newFilters[type] as string[]
+    newFilters[type] = currentValues.includes(value as string)
+      ? currentValues.filter((v) => v !== value)
+      : [...currentValues, value as string]
     
     // Update URL with new filters
     if (Object.values(newFilters).some(v => {
-      if (typeof v === 'string') return v.length > 0
       if (Array.isArray(v)) return v.length > 0
-      return v !== null
+      return false
     })) {
       params.set('filters', JSON.stringify(newFilters))
     } else {

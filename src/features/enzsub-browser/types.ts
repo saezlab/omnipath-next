@@ -18,9 +18,4 @@ export interface EnzSubFilters {
   sources: string[]
   residueTypes: string[]
   modifications: string[]
-  hasResidueOffset: boolean | null
-  curationEffortMin: number | null
-  searchTerm: string
-  enzymeSearch: string
-  substrateSearch: string
 }
