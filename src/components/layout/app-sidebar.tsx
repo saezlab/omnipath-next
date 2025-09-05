@@ -292,8 +292,8 @@ export function AppSidebar() {
           </>
         )}
 
-        {/* Render filters based on current page */}
-        {filterData && pathname !== '/chat' && (
+        {/* Render filters only on search page with appropriate tab */}
+        {filterData && pathname === '/search' && (
           <>
             <div className="px-3">
               <SidebarSeparator />
