@@ -36,7 +36,7 @@ export function IntercellBrowser() {
   
   // Parse filters from URL
   const intercellFilters = useMemo(() => {
-    const filtersParam = searchParams.get('filters')
+    const filtersParam = searchParams.get('intercell_filters')
     if (!filtersParam) {
       return {
         aspects: [],
@@ -240,9 +240,9 @@ export function IntercellBrowser() {
     if (Object.values(newFilters).some(v => 
       Array.isArray(v) ? v.length > 0 : v !== null
     )) {
-      params.set('filters', JSON.stringify(newFilters))
+      params.set('intercell_filters', JSON.stringify(newFilters))
     } else {
-      params.delete('filters')
+      params.delete('intercell_filters')
     }
     params.delete('page')
     
@@ -251,7 +251,7 @@ export function IntercellBrowser() {
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    params.delete('filters')
+    params.delete('intercell_filters')
     params.delete('page')
     
     router.push(`?${params.toString()}`, { scroll: false })

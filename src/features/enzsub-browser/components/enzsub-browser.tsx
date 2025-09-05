@@ -31,7 +31,7 @@ export function EnzSubBrowser() {
   
   // Parse filters from URL
   const enzSubFilters = useMemo(() => {
-    const filtersParam = searchParams.get('filters')
+    const filtersParam = searchParams.get('enzsub_filters')
     if (!filtersParam) {
       return {
         sources: [],
@@ -165,9 +165,9 @@ export function EnzSubBrowser() {
       if (Array.isArray(v)) return v.length > 0
       return false
     })) {
-      params.set('filters', JSON.stringify(newFilters))
+      params.set('enzsub_filters', JSON.stringify(newFilters))
     } else {
-      params.delete('filters')
+      params.delete('enzsub_filters')
     }
     
     router.push(`?${params.toString()}`, { scroll: false })
@@ -175,7 +175,7 @@ export function EnzSubBrowser() {
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    params.delete('filters')
+    params.delete('enzsub_filters')
     
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])

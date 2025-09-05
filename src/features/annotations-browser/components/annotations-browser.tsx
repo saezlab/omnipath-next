@@ -39,7 +39,7 @@ export function AnnotationsBrowser() {
   
   // Parse filters from URL
   const annotationsFilters = useMemo(() => {
-    const filtersParam = searchParams.get('filters')
+    const filtersParam = searchParams.get('annotations_filters')
     if (!filtersParam) {
       return {
         sources: [],
@@ -279,9 +279,9 @@ export function AnnotationsBrowser() {
     
     // Update URL with new filters
     if (Object.values(newFilters).some(v => (typeof v === 'string' ? v.length > 0 : v.length > 0))) {
-      params.set('filters', JSON.stringify(newFilters))
+      params.set('annotations_filters', JSON.stringify(newFilters))
     } else {
-      params.delete('filters')
+      params.delete('annotations_filters')
     }
     params.delete('page') // Remove page parameter
     
@@ -290,7 +290,7 @@ export function AnnotationsBrowser() {
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    params.delete('filters')
+    params.delete('annotations_filters')
     params.delete('page') // Remove page parameter
     
     // Reset infinite scroll state when filters are cleared

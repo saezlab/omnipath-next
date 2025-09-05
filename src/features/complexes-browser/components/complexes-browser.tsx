@@ -28,7 +28,7 @@ export function ComplexesBrowser() {
   
   // Parse filters from URL
   const complexFilters = useMemo(() => {
-    const filtersParam = searchParams.get('filters')
+    const filtersParam = searchParams.get('complexes_filters')
     if (!filtersParam) {
       return {
         sources: [],
@@ -136,9 +136,9 @@ export function ComplexesBrowser() {
     
     // Update URL with new filters
     if (newFilters.sources.length > 0) {
-      params.set('filters', JSON.stringify(newFilters))
+      params.set('complexes_filters', JSON.stringify(newFilters))
     } else {
-      params.delete('filters')
+      params.delete('complexes_filters')
     }
     params.delete('page')
     
@@ -147,7 +147,7 @@ export function ComplexesBrowser() {
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    params.delete('filters')
+    params.delete('complexes_filters')
     params.delete('page')
     
     router.push(`?${params.toString()}`, { scroll: false })

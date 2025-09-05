@@ -44,7 +44,7 @@ export function InteractionsBrowser({
   
   // Parse filters from URL
   const interactionsFilters = useMemo(() => {
-    const filtersParam = searchParams.get('filters')
+    const filtersParam = searchParams.get('interactions_filters')
     if (!filtersParam) {
       return {
         interactionType: [],
@@ -470,9 +470,9 @@ export function InteractionsBrowser({
     
     // Update URL with new filters
     if (Object.values(newFilters).some(v => v !== null && (Array.isArray(v) ? v.length > 0 : true))) {
-      params.set('filters', JSON.stringify(newFilters))
+      params.set('interactions_filters', JSON.stringify(newFilters))
     } else {
-      params.delete('filters')
+      params.delete('interactions_filters')
     }
     
     router.push(`?${params.toString()}`, { scroll: false })
@@ -480,7 +480,7 @@ export function InteractionsBrowser({
 
   const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    params.delete('filters')
+    params.delete('interactions_filters')
     
     // Reset infinite scroll when filters are cleared
     setLoadedInteractions([])
