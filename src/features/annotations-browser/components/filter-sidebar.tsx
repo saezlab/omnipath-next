@@ -240,7 +240,7 @@ export function AnnotationsFilterSidebar({
                         />
                         {source.label}
                       </Label>
-                      <SidebarMenuBadge>{filterCounts.sources[source.value.toLowerCase()] || 0}</SidebarMenuBadge>
+                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.sources[source.value.toLowerCase()] || 0}</SidebarMenuBadge>
                     </div>
                   </SidebarMenuSubItem>
                 ))}

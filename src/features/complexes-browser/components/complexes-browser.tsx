@@ -1,6 +1,5 @@
 "use client"
 
-import { TableSkeleton } from "@/components/table-skeleton"
 import { getComplexesData } from "@/features/complexes-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
 import { ComplexesTable } from "@/features/complexes-browser/components/complexes-table"
@@ -14,12 +13,16 @@ interface FilterCounts {
   sources: Record<string, number>
 }
 
-export function ComplexesBrowser() {
+interface ComplexesBrowserProps {
+  isLoading?: boolean
+}
+
+export function ComplexesBrowser({ isLoading }: ComplexesBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [isLoading, setIsLoading] = useState(false)
+  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [complexResults, setComplexResults] = useState<ComplexEntry[]>([])
   const lastSearchedQuery = useRef('')
   
@@ -64,7 +67,7 @@ export function ComplexesBrowser() {
       lastSearchedQuery.current = complexQuery
       
       const fetchData = async () => {
-        setIsLoading(true)
+        setInternalIsLoading(true)
         
         try {
           console.log(`Fetching complexes data for: "${complexQuery}" with species: 9606`);
@@ -76,7 +79,7 @@ export function ComplexesBrowser() {
         } catch (error) {
           console.error("Error fetching complexes data:", error)
         } finally {
-          setIsLoading(false)
+          setInternalIsLoading(false)
         }
       }
       
@@ -170,9 +173,7 @@ export function ComplexesBrowser() {
     <div className="w-full h-full">
       {complexQuery ? (
         <div className="w-full h-full">
-          {isLoading ? (
-            <TableSkeleton />
-          ) : filteredComplexEntries.length > 0 ? (
+          {filteredComplexEntries.length > 0 ? (
             <ComplexesTable entries={filteredComplexEntries} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">

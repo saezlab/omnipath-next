@@ -1,6 +1,5 @@
 "use client"
 
-import { TableSkeleton } from "@/components/table-skeleton"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
@@ -22,12 +21,16 @@ interface FilterCounts {
   annotationTypes: Record<string, number>
 }
 
-export function AnnotationsBrowser() {
+interface AnnotationsBrowserProps {
+  isLoading?: boolean
+}
+
+export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [isLoading, setIsLoading] = useState(false)
+  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
   const [loadedSources, setLoadedSources] = useState<string[]>([])
   const [hasMoreSources, setHasMoreSources] = useState(true)
@@ -66,7 +69,7 @@ export function AnnotationsBrowser() {
       lastSearchedQuery.current = annotationsQuery
       
       const fetchData = async () => {
-        setIsLoading(true)
+        setInternalIsLoading(true)
         
         // Reset infinite scroll state for new search
         setLoadedSources([])
@@ -84,7 +87,7 @@ export function AnnotationsBrowser() {
         } catch (error) {
           console.error("Error fetching data:", error)
         } finally {
-          setIsLoading(false)
+          setInternalIsLoading(false)
         }
       }
       
@@ -348,9 +351,7 @@ export function AnnotationsBrowser() {
     <div className="w-full h-full max-w-full overflow-x-hidden">
       {annotationsQuery ? (
         <div className="w-full h-full max-w-full overflow-x-hidden">
-          {isLoading ? (
-            <TableSkeleton />
-          ) : uniqueRecordCount > 0 || loadedSources.length > 0 ? (
+          {uniqueRecordCount > 0 || loadedSources.length > 0 ? (
             <>
               <AnnotationsTable
                 currentResults={currentResults}

@@ -5,6 +5,8 @@ import { UIMessage } from "ai";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSearchStore } from "@/store/search-store";
 import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Sparkles } from "lucide-react";
 
 export default function ChatPage() {
   const searchParams = useSearchParams();
@@ -98,7 +100,44 @@ export default function ChatPage() {
   }, [chatId, chats, switchChat, startNewChat, router, hasInitialized, storeLoaded, isCreatingChat]);
 
   if (!chatIdToUse) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen overflow-hidden animate-pulse">
+        <div className="h-full flex items-center justify-center">
+          <div className="max-w-2xl w-full px-4 space-y-4">
+            {/* AI Welcome Message Skeleton */}
+            <div className="flex items-start gap-3 p-4">
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            </div>
+            
+            {/* Chat Input Area Skeleton */}
+            <div className="space-y-4">
+              <div className="relative">
+                <Skeleton className="w-full h-12 rounded-lg" />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <Skeleton className="h-6 w-6 rounded" />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="p-3 rounded-lg border border-muted">
+                    <Skeleton className="h-4 w-24 mb-2" />
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-3 w-2/3 mt-1" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return <Chat id={chatIdToUse} initialMessages={initialMessages} />;

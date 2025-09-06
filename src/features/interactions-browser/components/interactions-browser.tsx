@@ -1,6 +1,5 @@
 "use client"
 
-import { TableSkeleton } from "@/components/table-skeleton"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
@@ -354,9 +353,7 @@ export function InteractionsBrowser({
     <div className="flex flex-col w-full h-full">
       {interactionsQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {interactionState.isLoading ? (
-            <TableSkeleton rows={5} />
-          ) : interactionState.interactions.length > 0 ? (
+          {interactionState.interactions.length > 0 ? (
             <InteractionResultsTable
               data={processedInteractions}
               exportData={processedInteractions}

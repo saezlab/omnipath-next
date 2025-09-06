@@ -92,7 +92,7 @@ export function IntercellFilterSidebar({
                     />
                     {item.value}
                   </Label>
-                  <SidebarMenuBadge>{item.count}</SidebarMenuBadge>
+                  <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{item.count}</SidebarMenuBadge>
                 </div>
               </SidebarMenuSubItem>
             ))}
@@ -122,7 +122,7 @@ export function IntercellFilterSidebar({
                     />
                     {item.value}
                   </Label>
-                  <SidebarMenuBadge>{item.count}</SidebarMenuBadge>
+                  <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{item.count}</SidebarMenuBadge>
                 </div>
               </SidebarMenuSubItem>
             ))}
@@ -152,7 +152,7 @@ export function IntercellFilterSidebar({
                     />
                     {item.value}
                   </Label>
-                  <SidebarMenuBadge>{item.count}</SidebarMenuBadge>
+                  <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{item.count}</SidebarMenuBadge>
                 </div>
               </SidebarMenuSubItem>
             ))}
@@ -182,7 +182,7 @@ export function IntercellFilterSidebar({
                     />
                     {item.value}
                   </Label>
-                  <SidebarMenuBadge>{item.count}</SidebarMenuBadge>
+                  <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{item.count}</SidebarMenuBadge>
                 </div>
               </SidebarMenuSubItem>
             ))}
@@ -211,7 +211,7 @@ export function IntercellFilterSidebar({
                   />
                   Transmitter
                 </Label>
-                <SidebarMenuBadge>{filterCounts.transmitter.true}</SidebarMenuBadge>
+                <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.transmitter.true}</SidebarMenuBadge>
               </div>
             </SidebarMenuSubItem>
             <SidebarMenuSubItem>
@@ -230,7 +230,7 @@ export function IntercellFilterSidebar({
                   />
                   Receiver
                 </Label>
-                <SidebarMenuBadge>{filterCounts.receiver.true}</SidebarMenuBadge>
+                <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.receiver.true}</SidebarMenuBadge>
               </div>
             </SidebarMenuSubItem>
           </SidebarMenuSub>
@@ -258,7 +258,7 @@ export function IntercellFilterSidebar({
                   />
                   Secreted
                 </Label>
-                <SidebarMenuBadge>{filterCounts.secreted.true}</SidebarMenuBadge>
+                <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.secreted.true}</SidebarMenuBadge>
               </div>
             </SidebarMenuSubItem>
             <SidebarMenuSubItem>
@@ -277,7 +277,7 @@ export function IntercellFilterSidebar({
                   />
                   Transmembrane
                 </Label>
-                <SidebarMenuBadge>{filterCounts.plasmaMembraneTransmembrane.true}</SidebarMenuBadge>
+                <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.plasmaMembraneTransmembrane.true}</SidebarMenuBadge>
               </div>
             </SidebarMenuSubItem>
             <SidebarMenuSubItem>
@@ -296,7 +296,7 @@ export function IntercellFilterSidebar({
                   />
                   Peripheral
                 </Label>
-                <SidebarMenuBadge>{filterCounts.plasmaMembranePeripheral.true}</SidebarMenuBadge>
+                <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.plasmaMembranePeripheral.true}</SidebarMenuBadge>
               </div>
             </SidebarMenuSubItem>
           </SidebarMenuSub>

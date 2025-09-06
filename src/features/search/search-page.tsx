@@ -17,6 +17,7 @@ import { IntercellBrowser } from "@/features/intercell-browser/components/interc
 import { ComplexesBrowser } from "@/features/complexes-browser/components/complexes-browser"
 import { EnzSubBrowser } from "@/features/enzsub-browser/components/enzsub-browser"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
+import { TableSkeleton } from "@/components/table-skeleton"
 
 export function SearchPage() {
   const router = useRouter()
@@ -28,6 +29,7 @@ export function SearchPage() {
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
+  const [isLoadingTab, setIsLoadingTab] = useState(false)
 
   // Get active tab from URL, default to interactions
   const activeTab = searchParams.get('tab') || 'interactions'
@@ -134,6 +136,20 @@ export function SearchPage() {
   }
 
 
+  // Handle tab loading state
+  useEffect(() => {
+    if (urlQuery) {
+      setIsLoadingTab(true)
+      // Simulate loading for smooth transition
+      const timer = setTimeout(() => {
+        setIsLoadingTab(false)
+      }, 800)
+      return () => clearTimeout(timer)
+    } else {
+      setIsLoadingTab(false)
+    }
+  }, [urlQuery, activeTab])
+
   const handleTabChange = (newTab: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('tab', newTab)
@@ -203,7 +219,13 @@ export function SearchPage() {
                 size="sm"
                 className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 text-sm"
               >
-                {isLoading ? "..." : "Search"}
+                {isLoading ? (
+                  <div className="flex items-center gap-1">
+                    <div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                  </div>
+                ) : (
+                  "Search"
+                )}
               </Button>
             </div>
           </div>
@@ -239,23 +261,43 @@ export function SearchPage() {
       <div className="min-h-0 w-full max-w-full overflow-x-hidden">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full h-full">
           <TabsContent value="interactions" className="h-full w-full max-w-full overflow-x-hidden">
-            <InteractionsBrowser />
+            {isLoadingTab && urlQuery ? (
+              <TableSkeleton variant="compact" rows={10} />
+            ) : (
+              <InteractionsBrowser isLoading={isLoadingTab} />
+            )}
           </TabsContent>
 
           <TabsContent value="annotations" className="h-full w-full max-w-full overflow-x-hidden">
-            <AnnotationsBrowser />
+            {isLoadingTab && urlQuery ? (
+              <TableSkeleton variant="compact" rows={10} />
+            ) : (
+              <AnnotationsBrowser isLoading={isLoadingTab} />
+            )}
           </TabsContent>
 
           <TabsContent value="intercell" className="h-full w-full max-w-full overflow-x-hidden">
-            <IntercellBrowser />
+            {isLoadingTab && urlQuery ? (
+              <TableSkeleton variant="compact" rows={10} />
+            ) : (
+              <IntercellBrowser isLoading={isLoadingTab} />
+            )}
           </TabsContent>
 
           <TabsContent value="complexes" className="h-full w-full max-w-full overflow-x-hidden">
-            <ComplexesBrowser />
+            {isLoadingTab && urlQuery ? (
+              <TableSkeleton variant="compact" rows={10} />
+            ) : (
+              <ComplexesBrowser isLoading={isLoadingTab} />
+            )}
           </TabsContent>
 
           <TabsContent value="enzsub" className="h-full w-full max-w-full overflow-x-hidden">
-            <EnzSubBrowser />
+            {isLoadingTab && urlQuery ? (
+              <TableSkeleton variant="compact" rows={10} />
+            ) : (
+              <EnzSubBrowser isLoading={isLoadingTab} />
+            )}
           </TabsContent>
         </Tabs>
       </div>

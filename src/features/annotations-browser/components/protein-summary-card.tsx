@@ -149,12 +149,12 @@ export function ProteinSummaryCard({ proteinData, isLoading }: ProteinSummaryCar
 
   if (isLoading) {
     return (
-      <div className="w-full space-y-4">
-        <div className="animate-pulse">
-          <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-xl p-6">
-            <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mb-3"></div>
-            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2 mb-2"></div>
-            <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
+      <div className="w-fit animate-pulse">
+        <div className="h-auto p-2 border border-border rounded-lg bg-background">
+          <div className="flex items-center gap-2">
+            <div className="h-6 w-12 bg-primary/20 rounded-md"></div>
+            <div className="h-4 w-32 bg-muted-foreground/30 rounded"></div>
+            <div className="h-3 w-3 bg-muted-foreground/20 rounded"></div>
           </div>
         </div>
       </div>

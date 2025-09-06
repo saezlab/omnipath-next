@@ -1,6 +1,5 @@
 "use client"
 
-import { TableSkeleton } from "@/components/table-skeleton"
 import { getIntercellData } from "@/features/intercell-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
 import { IntercellTable } from "@/features/intercell-browser/components/intercell-table"
@@ -22,12 +21,16 @@ interface FilterCounts {
   plasmaMembranePeripheral: { true: number; false: number }
 }
 
-export function IntercellBrowser() {
+interface IntercellBrowserProps {
+  isLoading?: boolean
+}
+
+export function IntercellBrowser({ isLoading }: IntercellBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [isLoading, setIsLoading] = useState(false)
+  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [intercellResults, setIntercellResults] = useState<IntercellEntry[]>([])
   const lastSearchedQuery = useRef('')
   
@@ -73,7 +76,7 @@ export function IntercellBrowser() {
       lastSearchedQuery.current = intercellQuery
       
       const fetchData = async () => {
-        setIsLoading(true)
+        setInternalIsLoading(true)
         
         try {
           console.log(`Fetching intercell data for: "${intercellQuery}" with species: 9606`);
@@ -85,7 +88,7 @@ export function IntercellBrowser() {
         } catch (error) {
           console.error("Error fetching intercell data:", error)
         } finally {
-          setIsLoading(false)
+          setInternalIsLoading(false)
         }
       }
       
@@ -274,9 +277,7 @@ export function IntercellBrowser() {
     <div className="flex flex-col w-full h-full">
       {intercellQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {isLoading ? (
-            <TableSkeleton rows={5} />
-          ) : filteredIntercellEntries.length > 0 ? (
+          {filteredIntercellEntries.length > 0 ? (
             <IntercellTable entries={filteredIntercellEntries} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">

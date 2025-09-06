@@ -49,7 +49,6 @@ interface ResultsTableProps<TData extends DataRow> {
   resultsPerPage?: number;
   maxCellChars?: number; // New prop for max characters
   resultsCount?: number; // Optional results count to display in toolbar
-  resultsLabel?: string; // Optional label for results count (e.g., "interactions", "results")
   // Infinite scroll props
   infiniteScroll?: boolean;
   hasMore?: boolean;
@@ -83,7 +82,6 @@ export function ResultsTable<TData extends DataRow>({
   resultsPerPage = 15,
   maxCellChars, // Destructure new prop
   resultsCount, // Optional results count
-  resultsLabel = "results", // Default label
   // Infinite scroll props
   infiniteScroll = false,
   hasMore = false,

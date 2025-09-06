@@ -1,6 +1,5 @@
 "use client"
 
-import { TableSkeleton } from "@/components/table-skeleton"
 import { getEnzSubData } from "@/features/enzsub-browser/api/queries"
 import { searchIdentifiers } from "@/db/queries"
 import { EnzSubTable } from "@/features/enzsub-browser/components/enzsub-table"
@@ -16,12 +15,16 @@ interface FilterCounts {
   modifications: Record<string, number>
 }
 
-export function EnzSubBrowser() {
+interface EnzSubBrowserProps {
+  isLoading?: boolean
+}
+
+export function EnzSubBrowser({ isLoading }: EnzSubBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [isLoading, setIsLoading] = useState(false)
+  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [enzSubResults, setEnzSubResults] = useState<EnzSubEntry[]>([])
   const [searchedProteins, setSearchedProteins] = useState<Set<string>>(new Set())
   const lastSearchedQuery = useRef('')
@@ -56,7 +59,7 @@ export function EnzSubBrowser() {
       lastSearchedQuery.current = enzSubQuery
       
       const fetchData = async () => {
-        setIsLoading(true)
+        setInternalIsLoading(true)
         
         try {
           console.log(`Fetching identifier results for: "${enzSubQuery}" with species: 9606`);
@@ -79,7 +82,7 @@ export function EnzSubBrowser() {
         } catch (error) {
           console.error("Error fetching EnzSub data:", error)
         } finally {
-          setIsLoading(false)
+          setInternalIsLoading(false)
         }
       }
       
@@ -197,9 +200,7 @@ export function EnzSubBrowser() {
     <div className="flex flex-col w-full h-full">
       {enzSubQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {isLoading ? (
-            <TableSkeleton rows={5} />
-          ) : filteredEnzSubData.length > 0 ? (
+          {filteredEnzSubData.length > 0 ? (
             <EnzSubTable
               currentResults={filteredEnzSubData}
               searchedProteins={searchedProteins}

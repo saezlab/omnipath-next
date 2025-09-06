@@ -167,7 +167,7 @@ export function FilterSidebar({
                           <span className="capitalize">{option}</span>
                         </div>
                       </Label>
-                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                     </div>
                   </SidebarMenuSubItem>
                 )
@@ -205,7 +205,7 @@ export function FilterSidebar({
                           <span className="capitalize">{option}</span>
                         </div>
                       </Label>
-                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                     </div>
                   </SidebarMenuSubItem>
                 )
@@ -243,7 +243,7 @@ export function FilterSidebar({
                           <span className="capitalize">{option}</span>
                         </div>
                       </Label>
-                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                     </div>
                   </SidebarMenuSubItem>
                 )
@@ -292,7 +292,7 @@ export function FilterSidebar({
                           </Tooltip>
                         </TooltipProvider>
                       </Label>
-                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                     </div>
                   </SidebarMenuSubItem>
                 )
@@ -346,7 +346,7 @@ export function FilterSidebar({
                         />
                         {type}
                       </Label>
-                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                     </div>
                   </SidebarMenuSubItem>
                 )
@@ -380,7 +380,7 @@ export function FilterSidebar({
                         />
                         {type}
                       </Label>
-                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                     </div>
                   </SidebarMenuSubItem>
                 )

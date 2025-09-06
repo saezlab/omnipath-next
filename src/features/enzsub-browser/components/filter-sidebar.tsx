@@ -76,7 +76,7 @@ export function EnzSubFilterSidebar({
                       />
                       {source}
                     </Label>
-                    <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                    <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                   </div>
                 </SidebarMenuSubItem>
               ))}
@@ -111,7 +111,7 @@ export function EnzSubFilterSidebar({
                       />
                       {residueType}
                     </Label>
-                    <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                    <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                   </div>
                 </SidebarMenuSubItem>
               ))}
@@ -146,7 +146,7 @@ export function EnzSubFilterSidebar({
                       />
                       {modification}
                     </Label>
-                    <SidebarMenuBadge>{count}</SidebarMenuBadge>
+                    <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
                   </div>
                 </SidebarMenuSubItem>
               ))}

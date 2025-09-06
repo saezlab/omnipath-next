@@ -76,7 +76,7 @@ export function ComplexesFilterSidebar({
                     />
                     {item.value}
                   </Label>
-                  <SidebarMenuBadge>{item.count}</SidebarMenuBadge>
+                  <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{item.count}</SidebarMenuBadge>
                 </div>
               </SidebarMenuSubItem>
             ))}
