@@ -15,11 +15,9 @@ interface InteractionFilterProps {
     interactionType: Record<string, number>
     entityTypeSource: Record<string, number>
     entityTypeTarget: Record<string, number>
-    isDirected: { true: number; false: number }
-    isStimulation: { true: number; false: number }
-    isInhibition: { true: number; false: number }
-    isUpstream: { true: number; false: number }
-    isDownstream: { true: number; false: number }
+    topology: Record<string, number>
+    direction: Record<string, number>
+    sign: Record<string, number>
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void

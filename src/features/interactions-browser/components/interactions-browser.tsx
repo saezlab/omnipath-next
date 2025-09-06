@@ -25,11 +25,9 @@ interface FilterCounts {
   interactionType: Record<string, number>
   entityTypeSource: Record<string, number>
   entityTypeTarget: Record<string, number>
-  isDirected: { true: number; false: number }
-  isStimulation: { true: number; false: number }
-  isInhibition: { true: number; false: number }
-  isUpstream: { true: number; false: number }
-  isDownstream: { true: number; false: number }
+  topology: Record<string, number>
+  direction: Record<string, number>
+  sign: Record<string, number>
 }
 
 interface InteractionState {
@@ -53,11 +51,9 @@ function getDefaultFilters(): InteractionsFilters {
     interactionType: [],
     entityTypeSource: [],
     entityTypeTarget: [],
-    isDirected: null,
-    isStimulation: null,
-    isInhibition: null,
-    isUpstream: null,
-    isDownstream: null,
+    topology: [],
+    direction: [],
+    sign: [],
     minReferences: null,
   }
 }
@@ -98,16 +94,24 @@ function applyFilter(
       return filterValue.length === 0 || filterValue.includes(interaction.entityTypeSource || "")
     case 'entityTypeTarget':
       return filterValue.length === 0 || filterValue.includes(interaction.entityTypeTarget || "")
-    case 'isDirected':
-      return filterValue === null || interaction.isDirected === filterValue
-    case 'isStimulation':
-      return filterValue === null || interaction.consensusStimulation === filterValue
-    case 'isInhibition':
-      return filterValue === null || interaction.consensusInhibition === filterValue
-    case 'isUpstream':
-      return filterValue === null || isUpstreamInteraction(interaction, queryUpper) === filterValue
-    case 'isDownstream':
-      return filterValue === null || isDownstreamInteraction(interaction, queryUpper) === filterValue
+    case 'topology':
+      if (filterValue.length === 0) return true
+      const topologyMatches = []
+      if (filterValue.includes('directed') && interaction.isDirected === true) topologyMatches.push(true)
+      if (filterValue.includes('undirected') && interaction.isDirected === false) topologyMatches.push(true)
+      return topologyMatches.length > 0
+    case 'direction':
+      if (filterValue.length === 0) return true
+      const directionMatches = []
+      if (filterValue.includes('upstream') && isUpstreamInteraction(interaction, queryUpper)) directionMatches.push(true)
+      if (filterValue.includes('downstream') && isDownstreamInteraction(interaction, queryUpper)) directionMatches.push(true)
+      return directionMatches.length > 0
+    case 'sign':
+      if (filterValue.length === 0) return true
+      const signMatches = []
+      if (filterValue.includes('stimulation') && interaction.consensusStimulation === true) signMatches.push(true)
+      if (filterValue.includes('inhibition') && interaction.consensusInhibition === true) signMatches.push(true)
+      return signMatches.length > 0
     case 'minReferences':
       return filterValue === null || getReferenceCount(interaction) >= filterValue
     default:
@@ -215,11 +219,9 @@ export function InteractionsBrowser({
       interactionType: {},
       entityTypeSource: {},
       entityTypeTarget: {},
-      isDirected: { true: 0, false: 0 },
-      isStimulation: { true: 0, false: 0 },
-      isInhibition: { true: 0, false: 0 },
-      isUpstream: { true: 0, false: 0 },
-      isDownstream: { true: 0, false: 0 },
+      topology: {},
+      direction: {},
+      sign: {},
     }
 
     const queryUpper = interactionsQuery.toUpperCase()
@@ -235,22 +237,33 @@ export function InteractionsBrowser({
         counts.entityTypeTarget[interaction.entityTypeTarget] = (counts.entityTypeTarget[interaction.entityTypeTarget] || 0) + 1
       }
       
-      // Count for boolean filters (include all matching interactions)
-      if (passesFilters(interaction, interactionsFilters, interactionsQuery)) {
-        if (interaction.isDirected !== undefined) {
-          counts.isDirected[interaction.isDirected ? 'true' : 'false']++
+      // Count for new array-based filters
+      if (passesFiltersExcept(interaction, interactionsFilters, interactionsQuery, ['topology'])) {
+        if (interaction.isDirected === true) {
+          counts.topology['directed'] = (counts.topology['directed'] || 0) + 1
+        } else if (interaction.isDirected === false) {
+          counts.topology['undirected'] = (counts.topology['undirected'] || 0) + 1
         }
-        if (interaction.consensusStimulation !== undefined) {
-          counts.isStimulation[interaction.consensusStimulation ? 'true' : 'false']++
-        }
-        if (interaction.consensusInhibition !== undefined) {
-          counts.isInhibition[interaction.consensusInhibition ? 'true' : 'false']++
-        }
-        
+      }
+      
+      if (passesFiltersExcept(interaction, interactionsFilters, interactionsQuery, ['direction'])) {
         const upstream = isUpstreamInteraction(interaction, queryUpper)
         const downstream = isDownstreamInteraction(interaction, queryUpper)
-        counts.isUpstream[upstream ? 'true' : 'false']++
-        counts.isDownstream[downstream ? 'true' : 'false']++
+        if (upstream) {
+          counts.direction['upstream'] = (counts.direction['upstream'] || 0) + 1
+        }
+        if (downstream) {
+          counts.direction['downstream'] = (counts.direction['downstream'] || 0) + 1
+        }
+      }
+      
+      if (passesFiltersExcept(interaction, interactionsFilters, interactionsQuery, ['sign'])) {
+        if (interaction.consensusStimulation === true) {
+          counts.sign['stimulation'] = (counts.sign['stimulation'] || 0) + 1
+        }
+        if (interaction.consensusInhibition === true) {
+          counts.sign['inhibition'] = (counts.sign['inhibition'] || 0) + 1
+        }
       }
     })
     return counts
@@ -343,9 +356,8 @@ export function InteractionsBrowser({
     
     if (type === "minReferences") {
       (newFilters as any)[type] = Number(value) || null
-    } else if (["isDirected","isStimulation","isInhibition","isUpstream","isDownstream"].includes(type)) {
-      (newFilters as any)[type] = value as boolean | null
     } else {
+      // All other filters are now array-based
       const currentValues = (newFilters as any)[type] as string[]
       ;(newFilters as any)[type] = currentValues.includes(value as string)
         ? currentValues.filter((v) => v !== value)

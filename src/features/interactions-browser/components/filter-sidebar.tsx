@@ -17,11 +17,9 @@ interface FilterSidebarProps {
     interactionType: Record<string, number>
     entityTypeSource: Record<string, number>
     entityTypeTarget: Record<string, number>
-    isDirected: { true: number; false: number }
-    isStimulation: { true: number; false: number }
-    isInhibition: { true: number; false: number }
-    isUpstream: { true: number; false: number }
-    isDownstream: { true: number; false: number }
+    topology: Record<string, number>
+    direction: Record<string, number>
+    sign: Record<string, number>
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void
@@ -39,6 +37,9 @@ export function FilterSidebar({
   const interactionTypes = Object.keys(filterCounts.interactionType)
   const entityTypesSource = Object.keys(filterCounts.entityTypeSource)
   const entityTypesTarget = Object.keys(filterCounts.entityTypeTarget)
+  const topologyOptions = Object.keys(filterCounts.topology)
+  const directionOptions = Object.keys(filterCounts.direction)
+  const signOptions = Object.keys(filterCounts.sign)
 
   // Local state for immediate slider UI updates
   const [localMinReferences, setLocalMinReferences] = useState(filters.minReferences || 0)
@@ -92,120 +93,117 @@ export function FilterSidebar({
       {/* All Filters */}
       <SidebarMenu className="space-y-2">
           <SidebarMenuItem>
-            <SidebarMenuButton className="pointer-events-none" tooltip="Quick Filters">
-              <span>Quick Filters</span>
+            <SidebarMenuButton className="pointer-events-none" tooltip="Topology">
+              <span>Topology</span>
             </SidebarMenuButton>
             <SidebarMenuSub className="space-y-1">
-              <SidebarMenuSubItem>
-                <div className="flex items-center justify-between w-full">
-                  <Label
-                    htmlFor="filter-directed"
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.isDirected === true ? "text-sidebar-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id="filter-directed"
-                      checked={filters.isDirected === true}
-                      onCheckedChange={() => onFilterChange("isDirected", filters.isDirected === true ? null : true)}
-                      className={filters.isDirected === true ? "border-sidebar-primary" : ""}
-                    />
-                    <div className="flex items-center gap-2">
-                      <ArrowRight className="h-3 w-3" />
-                      <span>Directed</span>
+              {topologyOptions.map((option) => {
+                const count = filterCounts.topology[option] || 0
+                const isSelected = filters.topology?.includes(option) || false
+                const isDisabled = count === 0 && !isSelected
+                
+                return (
+                  <SidebarMenuSubItem key={option}>
+                    <div className={`flex items-center justify-between w-full ${isDisabled ? 'opacity-50' : ''}`}>
+                      <Label
+                        htmlFor={`topology-${option}`}
+                        className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                          isSelected ? "text-sidebar-primary font-medium" : ""
+                        }`}
+                      >
+                        <Checkbox
+                          id={`topology-${option}`}
+                          checked={isSelected}
+                          onCheckedChange={() => onFilterChange("topology", option)}
+                          className={isSelected ? "border-sidebar-primary" : ""}
+                        />
+                        <div className="flex items-center gap-2">
+                          {option === 'directed' && <ArrowRight className="h-3 w-3" />}
+                          {option === 'undirected' && <span className="h-3 w-3 text-center">—</span>}
+                          <span className="capitalize">{option}</span>
+                        </div>
+                      </Label>
+                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
                     </div>
-                  </Label>
-                  <SidebarMenuBadge>{filterCounts.isDirected.true}</SidebarMenuBadge>
-                </div>
-              </SidebarMenuSubItem>
-              <SidebarMenuSubItem>
-                <div className="flex items-center justify-between w-full">
-                  <Label
-                    htmlFor="filter-stimulation"
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.isStimulation === true ? "text-sidebar-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id="filter-stimulation"
-                      checked={filters.isStimulation === true}
-                      onCheckedChange={() => onFilterChange("isStimulation", filters.isStimulation === true ? null : true)}
-                      className={filters.isStimulation === true ? "border-sidebar-primary" : ""}
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-500">→</span>
-                      <span>Stimulation</span>
+                  </SidebarMenuSubItem>
+                )
+              })}
+            </SidebarMenuSub>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton className="pointer-events-none" tooltip="Direction">
+              <span>Direction</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub className="space-y-1">
+              {directionOptions.map((option) => {
+                const count = filterCounts.direction[option] || 0
+                const isSelected = filters.direction?.includes(option) || false
+                const isDisabled = count === 0 && !isSelected
+                
+                return (
+                  <SidebarMenuSubItem key={option}>
+                    <div className={`flex items-center justify-between w-full ${isDisabled ? 'opacity-50' : ''}`}>
+                      <Label
+                        htmlFor={`direction-${option}`}
+                        className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                          isSelected ? "text-sidebar-primary font-medium" : ""
+                        }`}
+                      >
+                        <Checkbox
+                          id={`direction-${option}`}
+                          checked={isSelected}
+                          onCheckedChange={() => onFilterChange("direction", option)}
+                          className={isSelected ? "border-sidebar-primary" : ""}
+                        />
+                        <div className="flex items-center gap-2">
+                          {option === 'upstream' && <span className="text-blue-500">↑</span>}
+                          {option === 'downstream' && <span className="text-blue-500">↓</span>}
+                          <span className="capitalize">{option}</span>
+                        </div>
+                      </Label>
+                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
                     </div>
-                  </Label>
-                  <SidebarMenuBadge>{filterCounts.isStimulation.true}</SidebarMenuBadge>
-                </div>
-              </SidebarMenuSubItem>
-              <SidebarMenuSubItem>
-                <div className="flex items-center justify-between w-full">
-                  <Label
-                    htmlFor="filter-inhibition"
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.isInhibition === true ? "text-sidebar-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id="filter-inhibition"
-                      checked={filters.isInhibition === true}
-                      onCheckedChange={() => onFilterChange("isInhibition", filters.isInhibition === true ? null : true)}
-                      className={filters.isInhibition === true ? "border-sidebar-primary" : ""}
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-red-500">⊣</span>
-                      <span>Inhibition</span>
+                  </SidebarMenuSubItem>
+                )
+              })}
+            </SidebarMenuSub>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton className="pointer-events-none" tooltip="Sign">
+              <span>Sign</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub className="space-y-1">
+              {signOptions.map((option) => {
+                const count = filterCounts.sign[option] || 0
+                const isSelected = filters.sign?.includes(option) || false
+                const isDisabled = count === 0 && !isSelected
+                
+                return (
+                  <SidebarMenuSubItem key={option}>
+                    <div className={`flex items-center justify-between w-full ${isDisabled ? 'opacity-50' : ''}`}>
+                      <Label
+                        htmlFor={`sign-${option}`}
+                        className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                          isSelected ? "text-sidebar-primary font-medium" : ""
+                        }`}
+                      >
+                        <Checkbox
+                          id={`sign-${option}`}
+                          checked={isSelected}
+                          onCheckedChange={() => onFilterChange("sign", option)}
+                          className={isSelected ? "border-sidebar-primary" : ""}
+                        />
+                        <div className="flex items-center gap-2">
+                          {option === 'stimulation' && <span className="text-green-500">→</span>}
+                          {option === 'inhibition' && <span className="text-red-500">⊣</span>}
+                          <span className="capitalize">{option}</span>
+                        </div>
+                      </Label>
+                      <SidebarMenuBadge>{count}</SidebarMenuBadge>
                     </div>
-                  </Label>
-                  <SidebarMenuBadge>{filterCounts.isInhibition.true}</SidebarMenuBadge>
-                </div>
-              </SidebarMenuSubItem>
-              <SidebarMenuSubItem>
-                <div className="flex items-center justify-between w-full">
-                  <Label
-                    htmlFor="filter-upstream"
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.isUpstream === true ? "text-sidebar-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id="filter-upstream"
-                      checked={filters.isUpstream === true}
-                      onCheckedChange={() => onFilterChange("isUpstream", filters.isUpstream === true ? null : true)}
-                      className={filters.isUpstream === true ? "border-sidebar-primary" : ""}
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-blue-500">↑</span>
-                      <span>Upstream</span>
-                    </div>
-                  </Label>
-                  <SidebarMenuBadge>{filterCounts.isUpstream.true}</SidebarMenuBadge>
-                </div>
-              </SidebarMenuSubItem>
-              <SidebarMenuSubItem>
-                <div className="flex items-center justify-between w-full">
-                  <Label
-                    htmlFor="filter-downstream"
-                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                      filters.isDownstream === true ? "text-sidebar-primary font-medium" : ""
-                    }`}
-                  >
-                    <Checkbox
-                      id="filter-downstream"
-                      checked={filters.isDownstream === true}
-                      onCheckedChange={() => onFilterChange("isDownstream", filters.isDownstream === true ? null : true)}
-                      className={filters.isDownstream === true ? "border-sidebar-primary" : ""}
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-blue-500">↓</span>
-                      <span>Downstream</span>
-                    </div>
-                  </Label>
-                  <SidebarMenuBadge>{filterCounts.isDownstream.true}</SidebarMenuBadge>
-                </div>
-              </SidebarMenuSubItem>
+                  </SidebarMenuSubItem>
+                )
+              })}
             </SidebarMenuSub>
           </SidebarMenuItem>
           <SidebarMenuItem>
