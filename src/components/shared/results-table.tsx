@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from "@/components/ui/input";
@@ -194,7 +193,7 @@ export function ResultsTable<TData extends DataRow>({
           onLoadMore();
         }
       },
-      { threshold: 0.1, rootMargin: '100px' }
+      { threshold: 0.1, rootMargin: '50px' }
     );
 
     if (loadMoreRef.current) {
@@ -252,7 +251,7 @@ export function ResultsTable<TData extends DataRow>({
           )}
         </div>
       )}
-      <ScrollArea className={cn("relative", infiniteScroll ? "h-full" : maxHeight, "overflow-auto")}>
+      <div className={cn("relative", infiniteScroll ? "h-full overflow-auto" : `${maxHeight} overflow-auto`)}>
         <TooltipProvider>
           <Table className={cn("w-full min-w-max", tableClassName)}>
             <TableHeader className={infiniteScroll ? "sticky top-0 bg-background z-10" : ""}>
@@ -401,8 +400,7 @@ export function ResultsTable<TData extends DataRow>({
             )}
           </>
         )}
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
       {!infiniteScroll && totalPages > 1 && (
           <Pagination
             currentPage={currentPage}

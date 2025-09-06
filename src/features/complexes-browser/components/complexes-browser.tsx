@@ -167,29 +167,25 @@ export function ComplexesBrowser() {
   }, [complexQuery, complexFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
+    <div className="w-full h-full">
       {complexQuery ? (
-        <>
-          <div className="flex flex-col gap-4">
-            <div className="w-full">
-              {isLoading ? (
-                <TableSkeleton />
-              ) : filteredComplexEntries.length > 0 ? (
-                <ComplexesTable entries={filteredComplexEntries} />
-              ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Info className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No complexes found</h3>
-                  <p className="text-muted-foreground max-w-md">
-                    No complexes found containing &ldquo;{complexQuery}&rdquo;. Try searching for a different protein or adjusting your filters.
-                  </p>
-                </div>
-              )}
+        <div className="w-full h-full">
+          {isLoading ? (
+            <TableSkeleton />
+          ) : filteredComplexEntries.length > 0 ? (
+            <ComplexesTable entries={filteredComplexEntries} />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No complexes found</h3>
+              <p className="text-muted-foreground max-w-md">
+                No complexes found containing &ldquo;{complexQuery}&rdquo;. Try searching for a different protein or adjusting your filters.
+              </p>
             </div>
-          </div>
-        </>
+          )}
+        </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="flex flex-col items-center justify-center h-full text-center">
           <Info className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">Welcome to Complexes Browser</h3>
           <p className="text-muted-foreground max-w-md">

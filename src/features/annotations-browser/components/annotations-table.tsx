@@ -29,6 +29,7 @@ interface AnnotationsTableProps {
   currentResults: Annotation[]
   getCategoryIcon: (label: string | null) => React.ReactNode
   getCategoryColor: (label: string | null) => string
+  uniqueRecordCount: number
 }
 
 function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnnotation[]> {
@@ -111,52 +112,70 @@ export function AnnotationsTable({
         const totalItems = rows.length;
         
         return (
-          <div 
-            key={source} 
-            className="overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200"
-          >
-            <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background">
-              <div className="flex items-center space-x-2">
-                <h3 className="text-lg font-semibold">
-                  {source}
-                </h3>
-                <span className="text-muted-foreground">
-                  ({totalItems.toLocaleString()})
-                </span>
+          <div key={source} className="w-full max-w-full flex flex-col">
+            <div className="w-full max-w-full overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200 flex flex-col">
+              <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background flex-shrink-0 min-w-0">
+                <div className="flex items-center space-x-2 min-w-0">
+                  <h3 className="text-lg font-semibold truncate">
+                    {source}
+                  </h3>
+                  <span className="text-muted-foreground whitespace-nowrap">
+                    ({totalItems.toLocaleString()})
+                  </span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => handleExport(source, rows)}
+                  className="h-8 w-8 flex-shrink-0"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
               </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={() => handleExport(source, rows)}
-                className="h-8 w-8"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="max-h-[400px] overflow-auto">
-              <Table className="min-w-full">
-                <TableHeader>
-                  <TableRow>
-                    {headers.map(header => (
-                      <TableHead key={header}>{header}</TableHead>
+              <div className="w-full max-h-[400px] overflow-x-auto overflow-y-auto" style={{ contain: 'layout' }}>
+                <Table className="w-full table-fixed" style={{ tableLayout: 'fixed', width: '100%' }}>
+                  <colgroup>
+                    {headers.map((header) => (
+                      <col key={header} style={{ width: `${100 / headers.length}%` }} />
                     ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.recordId}
-                      className="hover:bg-muted/50"
-                    >
-                      {headers.map(header => (
-                        <TableCell key={`${row.recordId}-${header}`}>
-                          {row.values[header] || "-"}
-                        </TableCell>
+                  </colgroup>
+                  <TableHeader>
+                    <TableRow>
+                      {headers.map((header) => (
+                        <TableHead 
+                          key={header} 
+                          className="px-2 py-2 text-xs border-r border-border/20 last:border-r-0 overflow-hidden"
+                          style={{ width: `${100 / headers.length}%` }}
+                        >
+                          <div className="overflow-hidden text-ellipsis whitespace-nowrap" title={header}>
+                            {header}
+                          </div>
+                        </TableHead>
                       ))}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <TableRow
+                        key={row.recordId}
+                        className="hover:bg-muted/50"
+                      >
+                        {headers.map((header) => (
+                          <TableCell 
+                            key={`${row.recordId}-${header}`} 
+                            className="px-2 py-2 text-xs border-r border-border/20 last:border-r-0 overflow-hidden"
+                            style={{ width: `${100 / headers.length}%` }}
+                          >
+                            <div className="overflow-hidden text-ellipsis whitespace-nowrap" title={row.values[header] || "-"}>
+                              {row.values[header] || "-"}
+                            </div>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         );

@@ -345,67 +345,61 @@ export function AnnotationsBrowser() {
   }, [annotationsQuery, annotationsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
   return (
-      <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
-        {annotationsQuery ? (
-          <>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    {uniqueRecordCount} results
-                  </span>
+    <div className="w-full h-full">
+      {annotationsQuery ? (
+        <div className="w-full h-full">
+          {isLoading ? (
+            <TableSkeleton />
+          ) : uniqueRecordCount > 0 || loadedSources.length > 0 ? (
+            <>
+              <AnnotationsTable
+                currentResults={currentResults}
+                getCategoryIcon={getCategoryIcon}
+                getCategoryColor={getCategoryColor}
+                uniqueRecordCount={uniqueRecordCount}
+              />
+              
+              {/* Sentinel for infinite scroll */}
+              {hasMoreSources && loadedSources.length >= 1 && (
+                <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                  <div className="text-muted-foreground text-sm">Loading more sources...</div>
                 </div>
-              </div>
-
-              {/* Main Content - Now uses full width */}
-              <div className="w-full">
-                {isLoading ? (
-                  <TableSkeleton />
-                ) : uniqueRecordCount > 0 || loadedSources.length > 0 ? (
-                  <>
-                    <div className="w-full">
-                      <AnnotationsTable
-                        currentResults={currentResults}
-                        getCategoryIcon={getCategoryIcon}
-                        getCategoryColor={getCategoryColor}
-                      />
-                      
-                      {/* Sentinel for infinite scroll */}
-                      {hasMoreSources && loadedSources.length >= 1 && (
-                        <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
-                          <div className="text-muted-foreground text-sm">Loading more sources...</div>
-                        </div>
-                      )}
-                      
-                      {!hasMoreSources && loadedSources.length > 0 && (
-                        <div className="flex justify-center py-8">
-                          <div className="text-muted-foreground text-sm">All sources loaded</div>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <Info className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No annotations found</h3>
-                    <p className="text-muted-foreground max-w-md">
-                      No annotations found for &ldquo;{annotationsQuery}&rdquo;. Try searching for a different protein.
-                    </p>
-                  </div>
-                )}
-              </div>
+              )}
+              
+              {!hasMoreSources && loadedSources.length > 0 && (
+                <div className="flex justify-center py-8">
+                  <div className="text-muted-foreground text-sm">All sources loaded</div>
+                </div>
+              )}
+            </>
+          ) : annotationsResults.length > 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
+              <p className="text-muted-foreground max-w-md">
+                Try adjusting your filter criteria to see more annotations.
+              </p>
             </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Info className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Welcome to Annotations Browser</h3>
-            <p className="text-muted-foreground max-w-md">
-              Search for a protein to explore its annotations and functional information.
-            </p>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No annotations found</h3>
+              <p className="text-muted-foreground max-w-md">
+                No annotations found for &ldquo;{annotationsQuery}&rdquo;. Try searching for a different protein.
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-full text-center">
+          <Info className="h-12 w-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium mb-2">Welcome to Annotations Browser</h3>
+          <p className="text-muted-foreground max-w-md">
+            Search for a protein to explore its annotations and functional information.
+          </p>
+        </div>
+      )}
+    </div>
   )
 }
 
