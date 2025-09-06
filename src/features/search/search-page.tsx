@@ -39,6 +39,36 @@ export function SearchPage() {
     setQuery(currentQuery)
   }, [urlQuery])
 
+  // Fetch protein data when URL query exists on mount/refresh
+  useEffect(() => {
+    const fetchProteinData = async (searchQuery: string, species: string) => {
+      if (!searchQuery.trim()) {
+        setProteinData(null)
+        return
+      }
+
+      setIsLoadingProtein(true)
+      try {
+        const results = await searchIdentifiers(searchQuery.trim(), 20, species)
+        if (results.length > 0) {
+          const proteinResponse = await getProteinInformation(results)
+          setProteinData(proteinResponse)
+        } else {
+          setProteinData(null)
+        }
+      } catch (error) {
+        console.error("Error fetching protein information on refresh:", error)
+        setProteinData(null)
+      } finally {
+        setIsLoadingProtein(false)
+      }
+    }
+
+    if (urlQuery) {
+      fetchProteinData(urlQuery, selectedSpecies)
+    }
+  }, [urlQuery, selectedSpecies])
+
   const handleSearch = async (searchQuery: string, displayTerm?: string) => {
     if (!searchQuery.trim()) return
 
@@ -133,6 +163,16 @@ export function SearchPage() {
       <div className="flex flex-col gap-4">
         {/* Search Bar and Protein Card Row */}
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full">
+          {/* Protein Card */}
+          {urlQuery && (
+            <div className="flex-shrink-0 flex sm:justify-start justify-center">
+              <ProteinSummaryCard 
+                proteinData={proteinData ?? undefined}
+                isLoading={isLoadingProtein}
+              />
+            </div>
+          )}
+
           {/* Search Bar */}
           <div className="flex-1">
             <div className="relative group">
@@ -167,16 +207,6 @@ export function SearchPage() {
               </Button>
             </div>
           </div>
-
-          {/* Protein Card */}
-          {urlQuery && (
-            <div className="flex-shrink-0 flex sm:justify-end justify-center">
-              <ProteinSummaryCard 
-                proteinData={proteinData ?? undefined}
-                isLoading={isLoadingProtein}
-              />
-            </div>
-          )}
         </div>
 
         {/* Tabs Header */}
