@@ -271,29 +271,25 @@ export function IntercellBrowser() {
   }, [intercellQuery, intercellFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6 mt-4">
+    <div className="flex flex-col w-full h-full">
       {intercellQuery ? (
-        <>
-          <div className="flex flex-col gap-4">
-            <div className="w-full">
-              {isLoading ? (
-                <TableSkeleton />
-              ) : filteredIntercellEntries.length > 0 ? (
-                <IntercellTable entries={filteredIntercellEntries} />
-              ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Info className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No intercell data found</h3>
-                  <p className="text-muted-foreground max-w-md">
-                    No intercell data found for &ldquo;{intercellQuery}&rdquo;. Try searching for a different protein or adjusting your filters.
-                  </p>
-                </div>
-              )}
+        <div className="flex flex-col w-full h-full min-h-0">
+          {isLoading ? (
+            <TableSkeleton rows={5} />
+          ) : filteredIntercellEntries.length > 0 ? (
+            <IntercellTable entries={filteredIntercellEntries} />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No intercell data found</h3>
+              <p className="text-muted-foreground max-w-md">
+                No intercell data found for &ldquo;{intercellQuery}&rdquo;. Try searching for a different protein or adjusting your filters.
+              </p>
             </div>
-          </div>
-        </>
+          )}
+        </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="flex flex-col items-center justify-center h-full text-center">
           <Info className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">Welcome to Intercell Browser</h3>
           <p className="text-muted-foreground max-w-md">

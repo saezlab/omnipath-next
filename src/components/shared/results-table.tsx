@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+// Removed Table imports - using native HTML elements instead
 import { ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from "@/components/ui/input";
@@ -225,8 +218,8 @@ export function ResultsTable<TData extends DataRow>({
   }
 
   return (
-    <div className="w-full max-w-full flex flex-col">
-      <div className="relative w-full max-w-full overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200 flex flex-col">
+    <div className={cn("w-full max-w-full flex flex-col", infiniteScroll ? "h-full" : "")}>
+      <div className={cn("relative w-full max-w-full overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200 flex flex-col", infiniteScroll ? "h-full" : "")}>
         {showExport && (
           <Button 
             variant="default"
@@ -268,13 +261,19 @@ export function ResultsTable<TData extends DataRow>({
           </div>
         )}
         <div className={cn(
-          "overflow-x-auto overflow-y-auto",
-          infiniteScroll ? "h-full" : maxHeight === "max-h-96" ? "max-h-[400px]" : maxHeight
+          "overflow-x-auto",
+          infiniteScroll ? "flex-1 overflow-y-auto relative" : `overflow-y-auto ${maxHeight === "max-h-96" ? "max-h-[400px]" : maxHeight}`
         )}>
         <TooltipProvider>
-          <Table className={cn("w-full min-w-max", tableClassName)}>
-            <TableHeader className={infiniteScroll ? "sticky top-0 bg-background z-10 h-12" : ""}>
-              <TableRow className={headerRowClassName}>
+          <table className={cn("w-full min-w-max caption-bottom text-sm", tableClassName)}>
+            <thead className={cn(
+              "[&_tr]:border-b [&_tr]:border-primary/20",
+              infiniteScroll ? "sticky top-0 bg-background z-20 shadow-sm border-b" : ""
+            )}>
+              <tr className={cn(
+                "hover:bg-muted/50 data-[state=selected]:bg-muted border-b border-primary/20 transition-colors",
+                headerRowClassName
+              )}>
                 {columns.map((column) => {
                   const headerContent = typeof column.header === 'function'
                     ? column.header({ column })
@@ -284,10 +283,11 @@ export function ResultsTable<TData extends DataRow>({
                     : String(column.accessorKey);
 
                   return (
-                    <TableHead
+                    <th
                       key={String(column.accessorKey)}
                       onClick={() => column.enableSorting && handleSort(column.accessorKey)}
                       className={cn(
+                        "text-foreground h-12 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
                         column.enableSorting ? "cursor-pointer" : "",
                         column.headerClassName
                       )}
@@ -320,17 +320,21 @@ export function ResultsTable<TData extends DataRow>({
                         }
                         return content; // Render content directly if not truncated
                       })()}
-                    </TableHead>
+                    </th>
                   );
                 })}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+              </tr>
+            </thead>
+            <tbody className="[&_tr:last-child]:border-0">
               {displayData.map((row, rowIndex) => (
-                <TableRow
+                <tr
                   key={rowIndex}
                   onClick={() => onRowClick?.(row)}
-                  className={cn(onRowClick ? "cursor-pointer hover:bg-muted/50" : "", bodyRowClassName)}
+                  className={cn(
+                    "hover:bg-muted/50 data-[state=selected]:bg-muted border-b border-primary/20 transition-colors",
+                    onRowClick ? "cursor-pointer hover:bg-muted/50" : "", 
+                    bodyRowClassName
+                  )}
                 >
                   {columns.map((column) => {
                     const cellContent = column.cell({ row });
@@ -357,10 +361,10 @@ export function ResultsTable<TData extends DataRow>({
                     }
 
                     return (
-                      <TableCell
+                      <td
                         key={`${rowIndex}-${String(column.accessorKey)}`}
                         className={cn(
-                          "text-xs",
+                          "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-xs",
                           column.cellClassName
                         )}
                       >
@@ -394,13 +398,13 @@ export function ResultsTable<TData extends DataRow>({
                           // render the original cellContent.
                           return cellContent; 
                         })()}
-                      </TableCell>
+                      </td>
                     );
                   })}
-                </TableRow>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </TooltipProvider>
         {/* Infinite scroll sentinel and loading indicator */}
         {infiniteScroll && (

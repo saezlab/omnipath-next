@@ -422,9 +422,9 @@ export function InteractionsBrowser({
   }, [processedInteractions, interactionState.loadedInteractions.length, filterVersion])
 
   return (
-    <div className="w-full h-full">
+    <div className="flex flex-col w-full h-full">
       {interactionsQuery ? (
-        <div className="w-full h-full">
+        <div className="flex flex-col w-full h-full min-h-0">
           {interactionState.isLoading ? (
             <TableSkeleton rows={5} />
           ) : interactionState.interactions.length > 0 ? (

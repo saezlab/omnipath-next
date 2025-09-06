@@ -194,11 +194,11 @@ export function EnzSubBrowser() {
   }, [enzSubQuery, enzSubFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
   return (
-    <div className="w-full h-full">
+    <div className="flex flex-col w-full h-full">
       {enzSubQuery ? (
-        <div className="w-full h-full">
+        <div className="flex flex-col w-full h-full min-h-0">
           {isLoading ? (
-            <TableSkeleton />
+            <TableSkeleton rows={5} />
           ) : filteredEnzSubData.length > 0 ? (
             <EnzSubTable
               currentResults={filteredEnzSubData}

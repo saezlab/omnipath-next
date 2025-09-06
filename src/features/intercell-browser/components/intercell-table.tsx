@@ -131,8 +131,8 @@ export function IntercellTable({ entries }: IntercellTableProps) {
       titleCount={entries.length}
       showExport={true}
       exportFilenamePrefix="intercell_data"
-      resultsPerPage={50}
-      maxHeight="max-h-[600px]"
+      infiniteScroll={true}
+      maxHeight="h-full"
     />
   );
 }
