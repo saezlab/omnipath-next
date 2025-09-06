@@ -18,8 +18,8 @@ interface FeatureCardProps {
 
 export function FeatureCard({ icon, title, description, features, href, buttonText }: FeatureCardProps) {
   return (
-    <Link href={href} className="block">
-      <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg dark:hover:shadow-primary/10 cursor-pointer">
+    <Link href={href} className="block h-full">
+      <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg dark:hover:shadow-primary/10 cursor-pointer h-full flex flex-col">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 dark:from-primary/10 dark:via-secondary/10 dark:to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <CardHeader className="pb-3 relative">
           <div className="flex items-center gap-3 mb-2">
@@ -30,7 +30,7 @@ export function FeatureCard({ icon, title, description, features, href, buttonTe
           </div>
           <CardDescription className="text-base">{description}</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 relative">
+        <CardContent className="space-y-4 relative flex-1">
           <div className="flex flex-col gap-4 sm:flex-row sm:gap-4 sm:overflow-x-auto pb-2">
             {features.map((feature, index) => (
               <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 dark:bg-muted/30 group-hover:bg-muted/70 dark:group-hover:bg-muted/50 transition-colors duration-300 sm:min-w-[200px] sm:flex-shrink-0">

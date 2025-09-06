@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export function AIAssistantCard() {
   return (
-    <Link href="/chat" className="block md:w-1/2">
-      <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg dark:hover:shadow-accent/10 cursor-pointer">
+    <Link href="/chat" className="block h-full">
+      <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg dark:hover:shadow-accent/10 cursor-pointer h-full flex flex-col">
         <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-primary/5 to-secondary/5 dark:from-accent/10 dark:via-primary/10 dark:to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <div className="absolute top-3 right-3">
           <Badge
@@ -33,7 +33,7 @@ export function AIAssistantCard() {
             Get help finding information about proteins, interactions, and biological pathways
           </CardDescription>
         </CardHeader>
-        <CardContent className="relative">
+        <CardContent className="relative flex-1">
           <div className="bg-muted/50 dark:bg-muted/30 p-4 rounded-lg group-hover:bg-muted/70 dark:group-hover:bg-muted/50 transition-colors duration-300">
             <p className="text-sm text-muted-foreground">
               Ask questions about proteins, pathways, and interactions. Get instant insights from OmniPath&apos;s comprehensive biological database.
