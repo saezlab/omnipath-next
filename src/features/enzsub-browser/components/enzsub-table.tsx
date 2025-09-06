@@ -199,6 +199,7 @@ export function EnzSubTable({
       showExport={true}
       exportFilenamePrefix="enzsub_relationships"
       infiniteScroll={true}
+      resultsPerPage={30}
       maxHeight="h-full"
       initialSortKey="curationEffort"
       initialSortDirection="desc"

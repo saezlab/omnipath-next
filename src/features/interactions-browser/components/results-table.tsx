@@ -15,7 +15,7 @@ type InteractionData = SearchProteinNeighborsResponse['interactions'][number];
 type InteractionDataWithCount = InteractionData & { referenceCount: number };
 
 interface InteractionResultsTableProps {
-  interactions: InteractionData[];
+  data: InteractionData[];
   exportData?: InteractionData[]; // Optional full dataset for export
   onSelectInteraction: (interaction: InteractionData) => void;
   showExport?: boolean;
@@ -25,9 +25,6 @@ interface InteractionResultsTableProps {
   resultsCount?: number; // Optional results count to display
   // Infinite scroll props
   infiniteScroll?: boolean;
-  hasMore?: boolean;
-  onLoadMore?: () => void;
-  loadingMore?: boolean;
   // External sort control props
   sortKey?: string | null;
   sortDirection?: 'asc' | 'desc' | null;
@@ -46,7 +43,7 @@ const getReferenceCount = (interaction: InteractionData): number => {
 };
 
 export function InteractionResultsTable({ 
-  interactions, 
+  data, 
   exportData,
   onSelectInteraction,
   showExport,
@@ -55,9 +52,6 @@ export function InteractionResultsTable({
   resultsCount, // Results count prop
   // Infinite scroll props
   infiniteScroll = false,
-  hasMore = false,
-  onLoadMore,
-  loadingMore = false,
   // External sort control props
   sortKey,
   sortDirection,
@@ -187,8 +181,8 @@ export function InteractionResultsTable({
   ];
 
   const dataWithReferenceCount = React.useMemo(() => 
-      interactions.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) }))
-  , [interactions]);
+      data.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) }))
+  , [data]);
 
   const exportDataWithReferenceCount = React.useMemo(() => 
       exportData ? exportData.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) })) : undefined
@@ -211,9 +205,6 @@ export function InteractionResultsTable({
         resultsLabel="interactions"
         // Pass through infinite scroll props
         infiniteScroll={infiniteScroll}
-        hasMore={hasMore}
-        onLoadMore={onLoadMore}
-        loadingMore={loadingMore}
         // Pass through external sort control props
         sortKey={sortKey}
         sortDirection={sortDirection}

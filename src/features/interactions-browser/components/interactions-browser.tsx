@@ -12,8 +12,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
-// Constants
-const INTERACTIONS_PER_LOAD = 30
 
 // Types
 interface InteractionsBrowserProps {
@@ -32,10 +30,7 @@ interface FilterCounts {
 
 interface InteractionState {
   interactions: SearchProteinNeighborsResponse['interactions']
-  loadedInteractions: SearchProteinNeighborsResponse['interactions']
-  hasMoreInteractions: boolean
   isLoading: boolean
-  isLoadingMore: boolean
 }
 
 interface SortState {
@@ -173,16 +168,12 @@ export function InteractionsBrowser({
   // Interaction state
   const [interactionState, setInteractionState] = useState<InteractionState>({
     interactions: [],
-    loadedInteractions: [],
-    hasMoreInteractions: true,
     isLoading: false,
-    isLoadingMore: false,
   })
 
   // UI state
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const [filterVersion, setFilterVersion] = useState(0)
 
   // Sort state
   const [sortState, setSortState] = useState<SortState>({
@@ -204,10 +195,7 @@ export function InteractionsBrowser({
           
           setInteractionState({
             interactions: interactionsResponse.interactions,
-            loadedInteractions: [],
-            hasMoreInteractions: interactionsResponse.interactions.length > INTERACTIONS_PER_LOAD,
             isLoading: false,
-            isLoadingMore: false,
           })
           
           setSortState({
@@ -299,45 +287,12 @@ export function InteractionsBrowser({
     })
   }, [interactionState.interactions, interactionsFilters, interactionsQuery, sortState])
 
-  // Infinite scroll
-  const loadMoreInteractions = useCallback(() => {
-    if (!interactionState.hasMoreInteractions || interactionState.isLoadingMore) return
-    
-    setInteractionState(prev => ({ ...prev, isLoadingMore: true }))
-    
-    const nextBatch = processedInteractions.slice(
-      interactionState.loadedInteractions.length,
-      interactionState.loadedInteractions.length + INTERACTIONS_PER_LOAD
-    )
-    
-    if (nextBatch.length === 0) {
-      setInteractionState(prev => ({ 
-        ...prev, 
-        hasMoreInteractions: false, 
-        isLoadingMore: false 
-      }))
-      return
-    }
-    
-    setInteractionState(prev => ({
-      ...prev,
-      loadedInteractions: [...prev.loadedInteractions, ...nextBatch],
-      hasMoreInteractions: prev.loadedInteractions.length + nextBatch.length < processedInteractions.length,
-      isLoadingMore: false
-    }))
-  }, [processedInteractions, interactionState.loadedInteractions, interactionState.hasMoreInteractions, interactionState.isLoadingMore])
 
   const handleSortChange = useCallback((key: string | null, direction: 'asc' | 'desc' | null) => {
     setSortState({
       sortKey: key,
       sortDirection: direction as 'asc' | 'desc'
     })
-    setInteractionState(prev => ({
-      ...prev,
-      loadedInteractions: [],
-      hasMoreInteractions: true,
-      isLoadingMore: false
-    }))
   }, [])
 
   const updateUrlWithFilters = useCallback((newFilters: InteractionsFilters) => {
@@ -357,14 +312,6 @@ export function InteractionsBrowser({
   }, [searchParams, router])
 
   const handleFilterChange = useCallback((type: keyof InteractionsFilters, value: string | boolean | null | number) => {
-    setInteractionState(prev => ({
-      ...prev,
-      loadedInteractions: [],
-      hasMoreInteractions: true,
-      isLoadingMore: false
-    }))
-    setFilterVersion(prev => prev + 1)
-    
     const newFilters = { ...interactionsFilters }
     
     if (type === "minReferences") {
@@ -383,13 +330,6 @@ export function InteractionsBrowser({
   }, [interactionsFilters, updateUrlWithFilters])
 
   const clearFilters = useCallback(() => {
-    setInteractionState(prev => ({
-      ...prev,
-      loadedInteractions: [],
-      hasMoreInteractions: true,
-      isLoadingMore: false
-    }))
-    setFilterVersion(prev => prev + 1)
     updateUrlWithFilters(getDefaultFilters())
   }, [updateUrlWithFilters])
 
@@ -409,17 +349,6 @@ export function InteractionsBrowser({
     setFilterData(filterContextValue)
   }, [interactionsQuery, interactionsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
-  // Load initial batch when interactions change
-  useEffect(() => {
-    if (processedInteractions.length > 0 && (interactionState.loadedInteractions.length === 0 || filterVersion > 0)) {
-      const firstBatch = processedInteractions.slice(0, INTERACTIONS_PER_LOAD)
-      setInteractionState(prev => ({
-        ...prev,
-        loadedInteractions: firstBatch,
-        hasMoreInteractions: processedInteractions.length > INTERACTIONS_PER_LOAD
-      }))
-    }
-  }, [processedInteractions, interactionState.loadedInteractions.length, filterVersion])
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -429,14 +358,12 @@ export function InteractionsBrowser({
             <TableSkeleton rows={5} />
           ) : interactionState.interactions.length > 0 ? (
             <InteractionResultsTable
-              interactions={interactionState.loadedInteractions}
+              data={processedInteractions}
               exportData={processedInteractions}
               onSelectInteraction={handleSelectInteraction}
               showExport={true}
               infiniteScroll={true}
-              hasMore={interactionState.hasMoreInteractions}
-              onLoadMore={loadMoreInteractions}
-              loadingMore={interactionState.isLoadingMore}
+              resultsPerPage={30}
               sortKey={sortState.sortKey}
               sortDirection={sortState.sortDirection}
               onSortChange={handleSortChange}

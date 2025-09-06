@@ -101,6 +101,8 @@ export function ResultsTable<TData extends DataRow>({
   const [internalSortDirection, setInternalSortDirection] = useState<'asc' | 'desc' | null>(initialSortDirection ?? null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  // Internal infinite scroll state
+  const [displayedBatches, setDisplayedBatches] = useState(1);
   const loadMoreRef = React.useRef<HTMLDivElement>(null);
 
   // Use external sort state if provided, otherwise use internal state
@@ -167,29 +169,46 @@ export function ResultsTable<TData extends DataRow>({
   const totalPages = Math.ceil(processedData.length / resultsPerPage);
   const displayData = useMemo(() => {
     if (infiniteScroll) {
-      return processedData; // Show all data for infinite scroll
+      // Internal infinite scroll: show batches based on displayedBatches
+      const itemsToShow = displayedBatches * resultsPerPage;
+      return processedData.slice(0, itemsToShow);
     } else {
       const start = (currentPage - 1) * resultsPerPage;
       const end = start + resultsPerPage;
       return processedData.slice(start, end);
     }
-  }, [processedData, currentPage, resultsPerPage, infiniteScroll]);
+  }, [processedData, currentPage, resultsPerPage, infiniteScroll, displayedBatches]);
 
   // Reset to page 1 when search term or sort changes (only for pagination mode)
+  // Reset displayed batches when search term or sort changes (for infinite scroll)
   React.useEffect(() => {
     if (!infiniteScroll) {
       setCurrentPage(1);
+    } else {
+      setDisplayedBatches(1);
     }
   }, [searchTerm, sortKey, sortDirection, infiniteScroll]);
 
   // Intersection observer for infinite scroll
   React.useEffect(() => {
-    if (!infiniteScroll || !onLoadMore) return;
+    if (!infiniteScroll) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          onLoadMore();
+        if (!entries[0].isIntersecting) return;
+
+        if (onLoadMore) {
+          // External infinite scroll mode
+          if (hasMore && !loadingMore) {
+            onLoadMore();
+          }
+        } else {
+          // Internal infinite scroll mode
+          const totalAvailable = processedData.length;
+          const currentlyShowing = displayedBatches * resultsPerPage;
+          if (currentlyShowing < totalAvailable) {
+            setDisplayedBatches(prev => prev + 1);
+          }
         }
       },
       { threshold: 0.1, rootMargin: '50px' }
@@ -200,7 +219,7 @@ export function ResultsTable<TData extends DataRow>({
     }
 
     return () => observer.disconnect();
-  }, [infiniteScroll, hasMore, loadingMore, onLoadMore]);
+  }, [infiniteScroll, hasMore, loadingMore, onLoadMore, processedData.length, displayedBatches, resultsPerPage]);
 
   // Internal export handler
   const handleInternalExport = () => {
@@ -409,18 +428,51 @@ export function ResultsTable<TData extends DataRow>({
         {/* Infinite scroll sentinel and loading indicator */}
         {infiniteScroll && (
           <>
-            {hasMore && (
-              <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
-                <div className="text-muted-foreground text-sm">
-                  {loadingMore ? "Loading more..." : ""}
-                </div>
-              </div>
-            )}
-            {!hasMore && data.length > 0 && (
-              <div className="flex justify-center py-8">
-                <div className="text-muted-foreground text-sm">All results loaded</div>
-              </div>
-            )}
+            {(() => {
+              if (onLoadMore) {
+                // External infinite scroll mode
+                return (
+                  <>
+                    {hasMore && (
+                      <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">
+                          {loadingMore ? "Loading more..." : ""}
+                        </div>
+                      </div>
+                    )}
+                    {!hasMore && data.length > 0 && (
+                      <div className="flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">All results loaded</div>
+                      </div>
+                    )}
+                  </>
+                );
+              } else {
+                // Internal infinite scroll mode
+                const totalAvailable = processedData.length;
+                const currentlyShowing = displayedBatches * resultsPerPage;
+                const hasMoreInternal = currentlyShowing < totalAvailable;
+                
+                return (
+                  <>
+                    {hasMoreInternal && (
+                      <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">
+                          Scroll for more...
+                        </div>
+                      </div>
+                    )}
+                    {!hasMoreInternal && processedData.length > 0 && (
+                      <div className="flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">
+                          All {processedData.length.toLocaleString()} results loaded
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              }
+            })()}
           </>
         )}
         </div>

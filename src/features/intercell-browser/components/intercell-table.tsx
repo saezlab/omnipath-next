@@ -132,6 +132,7 @@ export function IntercellTable({ entries }: IntercellTableProps) {
       showExport={true}
       exportFilenamePrefix="intercell_data"
       infiniteScroll={true}
+      resultsPerPage={30}
       maxHeight="h-full"
     />
   );
