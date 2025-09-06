@@ -236,25 +236,25 @@ export function SearchPage() {
       </div>
 
       {/* Tab Content Area */}
-      <div className="min-h-0">
+      <div className="min-h-0 w-full max-w-full overflow-x-hidden">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full h-full">
-          <TabsContent value="interactions" className="h-full">
+          <TabsContent value="interactions" className="h-full w-full max-w-full overflow-x-hidden">
             <InteractionsBrowser />
           </TabsContent>
 
-          <TabsContent value="annotations" className="h-full">
+          <TabsContent value="annotations" className="h-full w-full max-w-full overflow-x-hidden">
             <AnnotationsBrowser />
           </TabsContent>
 
-          <TabsContent value="intercell" className="h-full">
+          <TabsContent value="intercell" className="h-full w-full max-w-full overflow-x-hidden">
             <IntercellBrowser />
           </TabsContent>
 
-          <TabsContent value="complexes" className="h-full">
+          <TabsContent value="complexes" className="h-full w-full max-w-full overflow-x-hidden">
             <ComplexesBrowser />
           </TabsContent>
 
-          <TabsContent value="enzsub" className="h-full">
+          <TabsContent value="enzsub" className="h-full w-full max-w-full overflow-x-hidden">
             <EnzSubBrowser />
           </TabsContent>
         </Tabs>

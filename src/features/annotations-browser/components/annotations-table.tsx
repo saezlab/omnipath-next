@@ -106,7 +106,7 @@ export function AnnotationsTable({
   }
 
   return (
-    <div className="space-y-8 w-full">
+    <div className="space-y-8 w-full max-w-full">
       {Object.entries(pivotedData).map(([source, rows]) => {
         const headers = columnHeadersBySource[source];
         const totalItems = rows.length;
@@ -132,24 +132,13 @@ export function AnnotationsTable({
                   <Download className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="w-full max-h-[400px] overflow-x-auto overflow-y-auto" style={{ contain: 'layout' }}>
-                <Table className="w-full table-fixed" style={{ tableLayout: 'fixed', width: '100%' }}>
-                  <colgroup>
-                    {headers.map((header) => (
-                      <col key={header} style={{ width: `${100 / headers.length}%` }} />
-                    ))}
-                  </colgroup>
+              <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+                <Table className="min-w-full">
                   <TableHeader>
                     <TableRow>
-                      {headers.map((header) => (
-                        <TableHead 
-                          key={header} 
-                          className="px-2 py-2 text-xs border-r border-border/20 last:border-r-0 overflow-hidden"
-                          style={{ width: `${100 / headers.length}%` }}
-                        >
-                          <div className="overflow-hidden text-ellipsis whitespace-nowrap" title={header}>
-                            {header}
-                          </div>
+                      {headers.map(header => (
+                        <TableHead key={header} className="px-2 py-2 text-xs border-r border-border/20 last:border-r-0">
+                          {header}
                         </TableHead>
                       ))}
                     </TableRow>
@@ -160,15 +149,12 @@ export function AnnotationsTable({
                         key={row.recordId}
                         className="hover:bg-muted/50"
                       >
-                        {headers.map((header) => (
+                        {headers.map(header => (
                           <TableCell 
                             key={`${row.recordId}-${header}`} 
-                            className="px-2 py-2 text-xs border-r border-border/20 last:border-r-0 overflow-hidden"
-                            style={{ width: `${100 / headers.length}%` }}
+                            className="px-2 py-2 text-xs border-r border-border/20 last:border-r-0"
                           >
-                            <div className="overflow-hidden text-ellipsis whitespace-nowrap" title={row.values[header] || "-"}>
-                              {row.values[header] || "-"}
-                            </div>
+                            {row.values[header] || "-"}
                           </TableCell>
                         ))}
                       </TableRow>

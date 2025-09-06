@@ -345,9 +345,9 @@ export function AnnotationsBrowser() {
   }, [annotationsQuery, annotationsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full max-w-full overflow-x-hidden">
       {annotationsQuery ? (
-        <div className="w-full h-full">
+        <div className="w-full h-full max-w-full overflow-x-hidden">
           {isLoading ? (
             <TableSkeleton />
           ) : uniqueRecordCount > 0 || loadedSources.length > 0 ? (
