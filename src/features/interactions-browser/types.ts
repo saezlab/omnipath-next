@@ -1,6 +1,5 @@
 export interface InteractionsFilters {
   interactionType: string[]
-  curationEffort: string[]
   entityTypeSource: string[]
   entityTypeTarget: string[]
   isDirected: boolean | null
