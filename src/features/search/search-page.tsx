@@ -131,63 +131,76 @@ export function SearchPage() {
     <div className="grid grid-rows-[auto_1fr] h-screen max-w-7xl mx-auto px-2 sm:px-4 pb-6 pt-4 gap-4">
       {/* Header Content */}
       <div className="flex flex-col gap-4">
-        {/* Full Width Search Bar */}
-        <div className="w-full">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
-            <Input
-              type="search"
-              placeholder={getPlaceholderText()}
-              className="w-full pl-9 pr-32 h-10 text-base rounded-md shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-border/40 hover:border-border/60"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleEnterPress()}
-            />
-            <div className="absolute right-20 top-1/2 -translate-y-1/2">
-              <Select value={selectedSpecies} onValueChange={setSelectedSpecies}>
-                <SelectTrigger size="sm" className="h-6 w-18 text-xs border-0 bg-transparent shadow-none p-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="9606">Human</SelectItem>
-                  <SelectItem value="10090">Mouse</SelectItem>
-                  <SelectItem value="10116">Rat</SelectItem>
-                </SelectContent>
-              </Select>
+        {/* Search Bar and Protein Card Row */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full">
+          {/* Search Bar */}
+          <div className="flex-1">
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+              <Input
+                type="search"
+                placeholder={getPlaceholderText()}
+                className="w-full pl-9 pr-32 h-10 text-base rounded-md shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-border/40 hover:border-border/60"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleEnterPress()}
+              />
+              <div className="absolute right-20 top-1/2 -translate-y-1/2">
+                <Select value={selectedSpecies} onValueChange={setSelectedSpecies}>
+                  <SelectTrigger size="sm" className="h-6 w-18 text-xs border-0 bg-transparent shadow-none p-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="9606">Human</SelectItem>
+                    <SelectItem value="10090">Mouse</SelectItem>
+                    <SelectItem value="10116">Rat</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                onClick={handleEnterPress}
+                disabled={isLoading || !query.trim()}
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 text-sm"
+              >
+                {isLoading ? "..." : "Search"}
+              </Button>
             </div>
-            <Button
-              onClick={handleEnterPress}
-              disabled={isLoading || !query.trim()}
-              size="sm"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-3 text-sm"
-            >
-              {isLoading ? "..." : "Search"}
-            </Button>
           </div>
-        </div>
 
-        {/* Centered Protein Card */}
-        {urlQuery && (
-          <div className="flex justify-center">
-            <div className="w-full max-w-sm">
+          {/* Protein Card */}
+          {urlQuery && (
+            <div className="flex-shrink-0 flex sm:justify-end justify-center">
               <ProteinSummaryCard 
                 proteinData={proteinData ?? undefined}
                 isLoading={isLoadingProtein}
               />
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Tabs Header */}
         <div className="w-full">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="interactions">Interactions</TabsTrigger>
-              <TabsTrigger value="annotations">Annotations</TabsTrigger>
-              <TabsTrigger value="intercell">Intercell</TabsTrigger>
-              <TabsTrigger value="complexes">Complexes</TabsTrigger>
-              <TabsTrigger value="enzsub">Enzyme-Substrate</TabsTrigger>
-            </TabsList>
+            <div className="relative rounded-sm overflow-x-auto h-9 bg-muted">
+              <TabsList className="absolute flex flex-row justify-stretch w-full min-w-fit">
+                <TabsTrigger value="interactions" className="w-full flex-shrink-0 whitespace-nowrap">
+                  Interactions
+                </TabsTrigger>
+                <TabsTrigger value="annotations" className="w-full flex-shrink-0 whitespace-nowrap">
+                  Annotations
+                </TabsTrigger>
+                <TabsTrigger value="intercell" className="w-full flex-shrink-0 whitespace-nowrap">
+                  Intercell
+                </TabsTrigger>
+                <TabsTrigger value="complexes" className="w-full flex-shrink-0 whitespace-nowrap">
+                  Complexes
+                </TabsTrigger>
+                <TabsTrigger value="enzsub" className="w-full flex-shrink-0 whitespace-nowrap">
+                  Enzyme-Substrate
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </Tabs>
         </div>
       </div>
