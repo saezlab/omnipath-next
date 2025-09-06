@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem } from "@/components/ui/sidebar"
 import { Slider } from "@/components/ui/slider"
@@ -41,10 +42,11 @@ export function FilterSidebar({
   const directionOptions = Object.keys(filterCounts.direction)
   const signOptions = Object.keys(filterCounts.sign)
 
-  // Local state for immediate slider UI updates
+  // Local state for immediate UI updates
   const [localMinReferences, setLocalMinReferences] = useState(filters.minReferences || 0)
+  const [localSearch, setLocalSearch] = useState(filters.search || '')
 
-  // Debounced handler for filter changes
+  // Debounced handler for slider changes
   const debouncedSliderChange = useCallback(
     (() => {
       let timeoutId: NodeJS.Timeout
@@ -58,6 +60,20 @@ export function FilterSidebar({
     [onFilterChange]
   )
 
+  // Debounced handler for search changes
+  const debouncedSearchChange = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout
+      return (value: string) => {
+        clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => {
+          onFilterChange("search", value)
+        }, 300)
+      }
+    })(),
+    [onFilterChange]
+  )
+
   // Handle slider changes - update UI immediately, debounce filter calls
   const handleSliderChange = useCallback((value: number[]) => {
     const newValue = value[0]
@@ -65,9 +81,17 @@ export function FilterSidebar({
     debouncedSliderChange(newValue)
   }, [debouncedSliderChange])
 
+  // Handle search changes - update UI immediately, debounce filter calls
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    setLocalSearch(newValue)
+    debouncedSearchChange(newValue)
+  }, [debouncedSearchChange])
+
   // Calculate active filter count
   const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
     if (key === 'minReferences' && value === 0) return count
+    if (key === 'search' && !value) return count
     if (Array.isArray(value)) return count + value.length
     if (value !== null) return count + 1
     return count
@@ -89,6 +113,26 @@ export function FilterSidebar({
             </Button>
           </div>
         )}
+
+      {/* Search */}
+      <SidebarMenu className="space-y-2">
+        <SidebarMenuItem>
+          <SidebarMenuButton className="pointer-events-none" tooltip="Search">
+            <span>Search</span>
+          </SidebarMenuButton>
+          <SidebarMenuSub>
+            <SidebarMenuSubItem>
+              <Input
+                type="text"
+                placeholder="Search interactions..."
+                value={localSearch}
+                onChange={handleSearchChange}
+                className={`w-full ${localSearch ? "border-sidebar-primary" : ""}`}
+              />
+            </SidebarMenuSubItem>
+          </SidebarMenuSub>
+        </SidebarMenuItem>
+      </SidebarMenu>
 
       {/* All Filters */}
       <SidebarMenu className="space-y-2">

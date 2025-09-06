@@ -6,4 +6,5 @@ export interface InteractionsFilters {
   direction: string[]
   sign: string[]
   minReferences: number | null
+  search: string
 }

@@ -55,6 +55,7 @@ function getDefaultFilters(): InteractionsFilters {
     direction: [],
     sign: [],
     minReferences: null,
+    search: '',
   }
 }
 
@@ -114,6 +115,17 @@ function applyFilter(
       return signMatches.length > 0
     case 'minReferences':
       return filterValue === null || getReferenceCount(interaction) >= filterValue
+    case 'search':
+      if (!filterValue) return true
+      const searchTerm = filterValue.toLowerCase()
+      return [
+        interaction.sourceGenesymbol,
+        interaction.source,
+        interaction.targetGenesymbol,
+        interaction.target,
+        interaction.type,
+        interaction.sources
+      ].some(field => field?.toLowerCase().includes(searchTerm))
     default:
       return true
   }
@@ -330,9 +342,10 @@ export function InteractionsBrowser({
 
   const updateUrlWithFilters = useCallback((newFilters: InteractionsFilters) => {
     const params = new URLSearchParams(searchParams.toString())
-    const hasActiveFilters = Object.values(newFilters).some(v => 
-      v !== null && (Array.isArray(v) ? v.length > 0 : true)
-    )
+    const hasActiveFilters = Object.entries(newFilters).some(([key, v]) => {
+      if (key === 'search') return v !== ''
+      return v !== null && (Array.isArray(v) ? v.length > 0 : true)
+    })
     
     if (hasActiveFilters) {
       params.set('interactions_filters', JSON.stringify(newFilters))
@@ -356,8 +369,10 @@ export function InteractionsBrowser({
     
     if (type === "minReferences") {
       (newFilters as any)[type] = Number(value) || null
+    } else if (type === "search") {
+      (newFilters as any)[type] = value as string
     } else {
-      // All other filters are now array-based
+      // All other filters are array-based
       const currentValues = (newFilters as any)[type] as string[]
       ;(newFilters as any)[type] = currentValues.includes(value as string)
         ? currentValues.filter((v) => v !== value)
@@ -417,16 +432,6 @@ export function InteractionsBrowser({
               interactions={interactionState.loadedInteractions}
               exportData={processedInteractions}
               onSelectInteraction={handleSelectInteraction}
-              showSearch={true}
-              searchKeys={[
-                  'sourceGenesymbol', 
-                  'source', 
-                  'targetGenesymbol', 
-                  'target', 
-                  'type', 
-                  'sources'
-                ]}
-              searchPlaceholder={`Search in ${processedInteractions.length} interactions...`}
               showExport={true}
               infiniteScroll={true}
               hasMore={interactionState.hasMoreInteractions}
