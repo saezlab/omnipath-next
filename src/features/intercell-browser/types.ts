@@ -15,6 +15,7 @@ export interface IntercellEntry {
   secreted: boolean | null
   plasmaMembraneTransmembrane: boolean | null
   plasmaMembranePeripheral: boolean | null
+  [key: string]: unknown // Index signature for DataRow compatibility
 }
 
 export interface IntercellFilters {

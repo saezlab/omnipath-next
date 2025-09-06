@@ -66,6 +66,9 @@ interface ResultsTableProps<TData extends DataRow> {
   sortKey?: keyof TData | string | null;
   sortDirection?: 'asc' | 'desc' | null;
   onSortChange?: (key: keyof TData | string, direction: 'asc' | 'desc') => void;
+  // Simple title props
+  title?: string;
+  titleCount?: number;
 }
 
 export function ResultsTable<TData extends DataRow>({
@@ -79,7 +82,7 @@ export function ResultsTable<TData extends DataRow>({
   headerRowClassName,
   bodyRowClassName,
   maxHeight = "max-h-96",
-  showSearch = true,
+  showSearch = false,
   searchKeys,
   searchPlaceholder = "Search within table...",
   showExport = true,
@@ -97,6 +100,9 @@ export function ResultsTable<TData extends DataRow>({
   sortKey: externalSortKey,
   sortDirection: externalSortDirection,
   onSortChange,
+  // Simple title props
+  title,
+  titleCount,
 }: ResultsTableProps<TData>) {
   const [internalSortKey, setInternalSortKey] = useState<keyof TData | string | null>(initialSortKey ?? null);
   const [internalSortDirection, setInternalSortDirection] = useState<'asc' | 'desc' | null>(initialSortDirection ?? null);
@@ -219,42 +225,55 @@ export function ResultsTable<TData extends DataRow>({
   }
 
   return (
-    <div>
-      {(showSearch || showExport || resultsCount !== undefined) && (
-        <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-primary/20">
-          <div className="flex items-center gap-4 flex-grow">
-            {resultsCount !== undefined && (
-              <div className="text-sm text-muted-foreground">
-                {resultsCount} {resultsLabel}
-              </div>
-            )}
-            {showSearch && (
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-8 max-w-xs"
-              />
-            )}
+    <div className="w-full max-w-full flex flex-col">
+      <div className="relative w-full max-w-full overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200 flex flex-col">
+        {showExport && (
+          <Button 
+            variant="default"
+            size="icon" 
+            onClick={handleInternalExport}
+            disabled={(exportData || processedData).length === 0}
+            className="absolute top-2 right-4 h-8 w-8 z-50"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+        )}
+        {(showSearch || resultsCount !== undefined || title) && (
+          <div className="flex flex-row items-center justify-start space-y-0 p-4 bg-background flex-shrink-0 min-w-0">
+            <div className="flex items-center space-x-2 min-w-0 pr-12">
+              {title && (
+                <h3 className="text-lg font-semibold truncate">
+                  {title}
+                </h3>
+              )}
+              {titleCount !== undefined && (
+                <span className="text-muted-foreground whitespace-nowrap">
+                  ({titleCount.toLocaleString()})
+                </span>
+              )}
+              {resultsCount !== undefined && !title && (
+                <span className="text-muted-foreground whitespace-nowrap">
+                  ({resultsCount.toLocaleString()})
+                </span>
+              )}
+              {showSearch && (
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-8 max-w-xs"
+                />
+              )}
+            </div>
           </div>
-          {showExport && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleInternalExport}
-              disabled={(exportData || processedData).length === 0}
-              className="h-8 flex-shrink-0"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          )}
-        </div>
-      )}
-      <div className={cn("relative", infiniteScroll ? "h-full overflow-auto" : `${maxHeight} overflow-auto`)}>
+        )}
+        <div className={cn(
+          "overflow-x-auto overflow-y-auto",
+          infiniteScroll ? "h-full" : maxHeight === "max-h-96" ? "max-h-[400px]" : maxHeight
+        )}>
         <TooltipProvider>
           <Table className={cn("w-full min-w-max", tableClassName)}>
-            <TableHeader className={infiniteScroll ? "sticky top-0 bg-background z-10" : ""}>
+            <TableHeader className={infiniteScroll ? "sticky top-0 bg-background z-10 h-12" : ""}>
               <TableRow className={headerRowClassName}>
                 {columns.map((column) => {
                   const headerContent = typeof column.header === 'function'
@@ -400,6 +419,7 @@ export function ResultsTable<TData extends DataRow>({
             )}
           </>
         )}
+        </div>
       </div>
       {!infiniteScroll && totalPages > 1 && (
           <Pagination

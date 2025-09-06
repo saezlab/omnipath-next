@@ -12,6 +12,7 @@ export interface EnzSubEntry {
   references: string | null
   curationEffort: number | null
   ncbiTaxId: number | null
+  [key: string]: unknown // Index signature for DataRow compatibility
 }
 
 export interface EnzSubFilters {

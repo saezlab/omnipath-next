@@ -7,6 +7,7 @@ export interface ComplexEntry {
   sources: string | null
   references: string | null
   identifiers: string | null
+  [key: string]: unknown // Index signature for DataRow compatibility
 }
 
 export interface ComplexesFilters {
@@ -18,4 +19,5 @@ export interface ParsedComplex extends ComplexEntry {
   parsedGeneSymbols: string[]
   parsedSources: string[]
   componentCount: number
+  [key: string]: unknown // Index signature for DataRow compatibility
 }

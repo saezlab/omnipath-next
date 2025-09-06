@@ -18,9 +18,6 @@ interface InteractionResultsTableProps {
   interactions: InteractionData[];
   exportData?: InteractionData[]; // Optional full dataset for export
   onSelectInteraction: (interaction: InteractionData) => void;
-  showSearch?: boolean;
-  searchKeys?: string[];
-  searchPlaceholder?: string;
   showExport?: boolean;
   resultsPerPage?: number;
   maxCellChars?: number;
@@ -52,9 +49,6 @@ export function InteractionResultsTable({
   interactions, 
   exportData,
   onSelectInteraction,
-  showSearch,
-  searchKeys,
-  searchPlaceholder,
   showExport,
   resultsPerPage,
   maxCellChars = 50,
@@ -210,9 +204,6 @@ export function InteractionResultsTable({
         initialSortDirection={infiniteScroll ? undefined : "desc"}
         bodyRowClassName="cursor-pointer hover:bg-muted/50"
         maxHeight={infiniteScroll ? "h-full" : ""}
-        showSearch={showSearch}
-        searchKeys={searchKeys}
-        searchPlaceholder={searchPlaceholder}
         showExport={showExport}
         resultsPerPage={resultsPerPage}
         maxCellChars={maxCellChars}

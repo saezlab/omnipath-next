@@ -1,12 +1,9 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { exportToTSV } from "@/lib/utils/export"
-import { Download } from "lucide-react"
 import type React from "react"
 import { EnzSubEntry } from "../types"
+import { ColumnDef, ResultsTable } from "@/components/shared/results-table"
 
 interface EnzSubTableProps {
   currentResults: EnzSubEntry[]
@@ -73,22 +70,117 @@ export function EnzSubTable({
   currentResults,
   searchedProteins,
 }: EnzSubTableProps) {
-  const handleExport = () => {
-    const data = currentResults.map(entry => ({
-      'Enzyme': entry.enzyme || '',
-      'Enzyme Gene Symbol': entry.enzymeGenesymbol || '',
-      'Substrate': entry.substrate || '',
-      'Substrate Gene Symbol': entry.substrateGenesymbol || '',
-      'Modification': entry.modification || '',
-      'Residue': formatResidue(entry.residueType, entry.residueOffset),
-      'Isoforms': entry.isoforms || '',
-      'Sources': entry.sources || '',
-      'References': entry.references || '',
-      'Curation Effort': entry.curationEffort?.toString() || '',
-      'NCBI Tax ID': entry.ncbiTaxId?.toString() || '',
-    }))
-    exportToTSV(data, 'enzsub_relationships')
-  }
+  const columns: ColumnDef<EnzSubEntry>[] = [
+    {
+      accessorKey: 'role',
+      header: 'Role',
+      cell: ({ row }) => {
+        const role = getProteinRole(row, searchedProteins)
+        return (
+          <RoleIndicator 
+            isEnzyme={role.isEnzyme} 
+            isSubstrate={role.isSubstrate} 
+          />
+        )
+      },
+    },
+    {
+      accessorKey: 'enzyme',
+      header: 'Enzyme',
+      cell: ({ row }) => {
+        const role = getProteinRole(row, searchedProteins)
+        return (
+          <div className="space-y-1">
+            <div className={`font-medium ${role.isEnzyme ? 'text-blue-600 dark:text-blue-400' : ''}`}>
+              {row.enzymeGenesymbol || row.enzyme || "-"}
+            </div>
+            {row.enzymeGenesymbol && row.enzyme && (
+              <div className="text-xs text-muted-foreground">
+                {row.enzyme}
+              </div>
+            )}
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: 'substrate',
+      header: 'Substrate',
+      cell: ({ row }) => {
+        const role = getProteinRole(row, searchedProteins)
+        return (
+          <div className="space-y-1">
+            <div className={`font-medium ${role.isSubstrate ? 'text-green-600 dark:text-green-400' : ''}`}>
+              {row.substrateGenesymbol || row.substrate || "-"}
+            </div>
+            {row.substrateGenesymbol && row.substrate && (
+              <div className="text-xs text-muted-foreground">
+                {row.substrate}
+              </div>
+            )}
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: 'modification',
+      header: 'Modification',
+      cell: ({ row }) => row.modification ? (
+        <Badge variant="outline" className="text-xs">
+          {row.modification}
+        </Badge>
+      ) : "-",
+    },
+    {
+      accessorKey: 'residue',
+      header: 'Residue',
+      cell: ({ row }) => formatResidue(row.residueType, row.residueOffset),
+    },
+    {
+      accessorKey: 'sources',
+      header: 'Sources',
+      cell: ({ row }) => row.sources ? (
+        <div className="flex flex-wrap gap-1 max-w-[150px]">
+          {row.sources.split(';').slice(0, 3).map((source, index) => (
+            <Badge key={index} variant="secondary" className="text-xs">
+              {source.trim()}
+            </Badge>
+          ))}
+          {row.sources.split(';').length > 3 && (
+            <span className="text-xs text-muted-foreground">
+              +{row.sources.split(';').length - 3} more
+            </span>
+          )}
+        </div>
+      ) : "-",
+    },
+    {
+      accessorKey: 'curationEffort',
+      header: 'Curation',
+      enableSorting: true,
+      cell: ({ row }) => (
+        <CurationEffortIndicator effort={row.curationEffort} />
+      ),
+    },
+    {
+      accessorKey: 'references',
+      header: 'References',
+      cell: ({ row }) => row.references ? (
+        <div className="flex flex-wrap gap-1 max-w-[200px]">
+          {row.references.split(';').slice(0, 2).map((ref, index) => (
+            <span key={index} className="text-xs text-muted-foreground bg-muted px-1 py-0.5 rounded">
+              {ref.trim()}
+            </span>
+          ))}
+          {row.references.split(';').length > 2 && (
+            <span className="text-xs text-muted-foreground">
+              +{row.references.split(';').length - 2} more
+            </span>
+          )}
+        </div>
+      ) : "-",
+    },
+  ];
 
   if (currentResults.length === 0) {
     return (
@@ -99,130 +191,17 @@ export function EnzSubTable({
   }
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="flex-1 overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200 flex flex-col">
-        <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background flex-shrink-0">
-          <div className="flex items-center space-x-2">
-            <h3 className="text-lg font-semibold">
-              Enzyme-Substrate Relationships
-            </h3>
-            <span className="text-muted-foreground">
-              ({currentResults.length.toLocaleString()})
-            </span>
-          </div>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={handleExport}
-            className="h-8 w-8"
-          >
-            <Download className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="flex-1 overflow-auto">
-          <Table className="min-w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Role</TableHead>
-                <TableHead>Enzyme</TableHead>
-                <TableHead>Substrate</TableHead>
-                <TableHead>Modification</TableHead>
-                <TableHead>Residue</TableHead>
-                <TableHead>Sources</TableHead>
-                <TableHead>Curation</TableHead>
-                <TableHead>References</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentResults.map((entry) => {
-                const role = getProteinRole(entry, searchedProteins)
-                return (
-                  <TableRow
-                    key={entry.id}
-                    className="hover:bg-muted/50"
-                  >
-                    <TableCell>
-                      <RoleIndicator 
-                        isEnzyme={role.isEnzyme} 
-                        isSubstrate={role.isSubstrate} 
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className={`font-medium ${role.isEnzyme ? 'text-blue-600 dark:text-blue-400' : ''}`}>
-                          {entry.enzymeGenesymbol || entry.enzyme || "-"}
-                        </div>
-                        {entry.enzymeGenesymbol && entry.enzyme && (
-                          <div className="text-xs text-muted-foreground">
-                            {entry.enzyme}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className={`font-medium ${role.isSubstrate ? 'text-green-600 dark:text-green-400' : ''}`}>
-                          {entry.substrateGenesymbol || entry.substrate || "-"}
-                        </div>
-                        {entry.substrateGenesymbol && entry.substrate && (
-                          <div className="text-xs text-muted-foreground">
-                            {entry.substrate}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {entry.modification ? (
-                        <Badge variant="outline" className="text-xs">
-                          {entry.modification}
-                        </Badge>
-                      ) : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {formatResidue(entry.residueType, entry.residueOffset)}
-                    </TableCell>
-                    <TableCell>
-                      {entry.sources ? (
-                        <div className="flex flex-wrap gap-1 max-w-[150px]">
-                          {entry.sources.split(';').slice(0, 3).map((source, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {source.trim()}
-                            </Badge>
-                          ))}
-                          {entry.sources.split(';').length > 3 && (
-                            <span className="text-xs text-muted-foreground">
-                              +{entry.sources.split(';').length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      ) : "-"}
-                    </TableCell>
-                    <TableCell>
-                      <CurationEffortIndicator effort={entry.curationEffort} />
-                    </TableCell>
-                    <TableCell>
-                      {entry.references ? (
-                        <div className="flex flex-wrap gap-1 max-w-[200px]">
-                          {entry.references.split(';').slice(0, 2).map((ref, index) => (
-                            <span key={index} className="text-xs text-muted-foreground bg-muted px-1 py-0.5 rounded">
-                              {ref.trim()}
-                            </span>
-                          ))}
-                          {entry.references.split(';').length > 2 && (
-                            <span className="text-xs text-muted-foreground">
-                              +{entry.references.split(';').length - 2} more
-                            </span>
-                          )}
-                        </div>
-                      ) : "-"}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    </div>
+    <ResultsTable<EnzSubEntry>
+      columns={columns}
+      data={currentResults}
+      title="Enzyme-Substrate Relationships"
+      titleCount={currentResults.length}
+      showExport={true}
+      exportFilenamePrefix="enzsub_relationships"
+      resultsPerPage={50}
+      maxHeight="h-full"
+      initialSortKey="curationEffort"
+      initialSortDirection="desc"
+    />
   )
 }
