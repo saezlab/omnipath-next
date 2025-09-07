@@ -33,57 +33,12 @@ function getProteinRole(
   }
 }
 
-function RoleIndicator({ isEnzyme, isSubstrate }: { isEnzyme: boolean; isSubstrate: boolean }) {
-  return (
-    <div className="flex gap-1">
-      {isEnzyme && (
-        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-          E
-        </Badge>
-      )}
-      {isSubstrate && (
-        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-          S
-        </Badge>
-      )}
-    </div>
-  )
-}
-
-function CurationEffortIndicator({ effort }: { effort: number | null }) {
-  if (effort === null) return <span className="text-muted-foreground">-</span>
-  
-  const getColor = () => {
-    if (effort >= 3) return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-    if (effort >= 2) return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100"
-    return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
-  }
-  
-  return (
-    <Badge variant="secondary" className={`text-xs ${getColor()}`}>
-      {effort}
-    </Badge>
-  )
-}
 
 export function EnzSubTable({
   currentResults,
   searchedProteins,
 }: EnzSubTableProps) {
   const columns: ColumnDef<EnzSubEntry>[] = [
-    {
-      accessorKey: 'role',
-      header: 'Role',
-      cell: ({ row }) => {
-        const role = getProteinRole(row, searchedProteins)
-        return (
-          <RoleIndicator 
-            isEnzyme={role.isEnzyme} 
-            isSubstrate={role.isSubstrate} 
-          />
-        )
-      },
-    },
     {
       accessorKey: 'enzyme',
       header: 'Enzyme',
@@ -155,14 +110,6 @@ export function EnzSubTable({
       ) : "-",
     },
     {
-      accessorKey: 'curationEffort',
-      header: 'Curation',
-      enableSorting: true,
-      cell: ({ row }) => (
-        <CurationEffortIndicator effort={row.curationEffort} />
-      ),
-    },
-    {
       accessorKey: 'references',
       header: 'References',
       cell: ({ row }) => row.references ? (
@@ -201,8 +148,6 @@ export function EnzSubTable({
       infiniteScroll={true}
       resultsPerPage={30}
       maxHeight="h-full"
-      initialSortKey="curationEffort"
-      initialSortDirection="desc"
     />
   )
 }
