@@ -27,6 +27,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
   
   const [enzSubResults, setEnzSubResults] = useState<EnzSubEntry[]>([])
   const [searchedProteins, setSearchedProteins] = useState<Set<string>>(new Set())
+  const [isDataLoading, setIsDataLoading] = useState(false)
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -59,6 +60,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
       lastSearchedQuery.current = enzSubQuery
       
       const fetchData = async () => {
+        setIsDataLoading(true)
         
         try {
           console.log(`Fetching enzyme-substrate data for: "${enzSubQuery}"`);
@@ -80,6 +82,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
         } catch (error) {
           console.error("Error fetching EnzSub data:", error)
         } finally {
+          setIsDataLoading(false)
         }
       }
       
@@ -197,7 +200,12 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     <div className="flex flex-col w-full h-full">
       {enzSubQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {filteredEnzSubData.length > 0 ? (
+          {isDataLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
+              <p className="text-muted-foreground">Loading enzyme-substrate data...</p>
+            </div>
+          ) : filteredEnzSubData.length > 0 ? (
             <EnzSubTable
               currentResults={filteredEnzSubData}
               searchedProteins={searchedProteins}

@@ -24,6 +24,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
   const { setFilterData } = useFilters()
   
   const [complexResults, setComplexResults] = useState<ComplexEntry[]>([])
+  const [isDataLoading, setIsDataLoading] = useState(false)
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -67,6 +68,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
       lastSearchedQuery.current = complexQuery
       
       const fetchData = async () => {
+        setIsDataLoading(true)
         
         try {
           console.log(`Fetching complexes data for: "${complexQuery}"`);
@@ -77,6 +79,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
         } catch (error) {
           console.error("Error fetching complexes data:", error)
         } finally {
+          setIsDataLoading(false)
         }
       }
       
@@ -170,7 +173,12 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     <div className="w-full h-full">
       {complexQuery ? (
         <div className="w-full h-full">
-          {filteredComplexEntries.length > 0 ? (
+          {isDataLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
+              <p className="text-muted-foreground">Loading complexes data...</p>
+            </div>
+          ) : filteredComplexEntries.length > 0 ? (
             <ComplexesTable entries={filteredComplexEntries} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">

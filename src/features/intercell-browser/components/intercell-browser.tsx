@@ -32,6 +32,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
   const { setFilterData } = useFilters()
   
   const [intercellResults, setIntercellResults] = useState<IntercellEntry[]>([])
+  const [isDataLoading, setIsDataLoading] = useState(false)
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -76,6 +77,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
       lastSearchedQuery.current = intercellQuery
       
       const fetchData = async () => {
+        setIsDataLoading(true)
         
         try {
           console.log(`Fetching intercell data for: "${intercellQuery}"`);
@@ -86,6 +88,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
         } catch (error) {
           console.error("Error fetching intercell data:", error)
         } finally {
+          setIsDataLoading(false)
         }
       }
       
@@ -274,7 +277,12 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
     <div className="flex flex-col w-full h-full">
       {intercellQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {filteredIntercellEntries.length > 0 ? (
+          {isDataLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
+              <p className="text-muted-foreground">Loading intercell data...</p>
+            </div>
+          ) : filteredIntercellEntries.length > 0 ? (
             <IntercellTable entries={filteredIntercellEntries} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">

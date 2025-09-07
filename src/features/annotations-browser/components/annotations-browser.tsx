@@ -34,6 +34,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
   const [loadedSources, setLoadedSources] = useState<string[]>([])
   const [hasMoreSources, setHasMoreSources] = useState(true)
+  const [isDataLoading, setIsDataLoading] = useState(false)
   const lastSearchedQuery = useRef('')
   const loadMoreRef = useRef<HTMLDivElement>(null)
   
@@ -69,6 +70,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
       lastSearchedQuery.current = annotationsQuery
       
       const fetchData = async () => {
+        setIsDataLoading(true)
         
         // Reset infinite scroll state for new search
         setLoadedSources([])
@@ -84,6 +86,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
         } catch (error) {
           console.error("Error fetching data:", error)
         } finally {
+          setIsDataLoading(false)
         }
       }
       
@@ -347,7 +350,12 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     <div className="w-full h-full max-w-full overflow-x-hidden">
       {annotationsQuery ? (
         <div className="w-full h-full max-w-full overflow-x-hidden">
-          {uniqueRecordCount > 0 || loadedSources.length > 0 ? (
+          {isDataLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
+              <p className="text-muted-foreground">Loading annotations...</p>
+            </div>
+          ) : uniqueRecordCount > 0 || loadedSources.length > 0 ? (
             <>
               <AnnotationsTable
                 currentResults={currentResults}
