@@ -349,11 +349,17 @@ export function InteractionsBrowser({
   }, [interactionsQuery, interactionsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
 
 
+
   return (
     <div className="flex flex-col w-full h-full">
       {interactionsQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {interactionState.interactions.length > 0 ? (
+          {interactionState.isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
+              <p className="text-muted-foreground">Loading interactions...</p>
+            </div>
+          ) : interactionState.interactions.length > 0 ? (
             <InteractionResultsTable
               data={processedInteractions}
               exportData={processedInteractions}

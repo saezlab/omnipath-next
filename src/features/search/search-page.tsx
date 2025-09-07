@@ -17,7 +17,6 @@ import { IntercellBrowser } from "@/features/intercell-browser/components/interc
 import { ComplexesBrowser } from "@/features/complexes-browser/components/complexes-browser"
 import { EnzSubBrowser } from "@/features/enzsub-browser/components/enzsub-browser"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
-import { TableSkeleton } from "@/components/table-skeleton"
 
 export function SearchPage() {
   const router = useRouter()
@@ -29,7 +28,6 @@ export function SearchPage() {
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
   const [isLoadingProtein, setIsLoadingProtein] = useState(false)
-  const [isLoadingTab, setIsLoadingTab] = useState(false)
 
   // Get active tab from URL, default to interactions
   const activeTab = searchParams.get('tab') || 'interactions'
@@ -136,19 +134,6 @@ export function SearchPage() {
   }
 
 
-  // Handle tab loading state
-  useEffect(() => {
-    if (urlQuery) {
-      setIsLoadingTab(true)
-      // Simulate loading for smooth transition
-      const timer = setTimeout(() => {
-        setIsLoadingTab(false)
-      }, 800)
-      return () => clearTimeout(timer)
-    } else {
-      setIsLoadingTab(false)
-    }
-  }, [urlQuery, activeTab])
 
   const handleTabChange = (newTab: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -261,43 +246,23 @@ export function SearchPage() {
       <div className="min-h-0 w-full max-w-full overflow-x-hidden">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full h-full">
           <TabsContent value="interactions" className="h-full w-full max-w-full overflow-x-hidden">
-            {isLoadingTab && urlQuery ? (
-              <TableSkeleton variant="compact" rows={10} />
-            ) : (
-              <InteractionsBrowser isLoading={isLoadingTab} />
-            )}
+            <InteractionsBrowser />
           </TabsContent>
 
           <TabsContent value="annotations" className="h-full w-full max-w-full overflow-x-hidden">
-            {isLoadingTab && urlQuery ? (
-              <TableSkeleton variant="compact" rows={10} />
-            ) : (
-              <AnnotationsBrowser isLoading={isLoadingTab} />
-            )}
+            <AnnotationsBrowser />
           </TabsContent>
 
           <TabsContent value="intercell" className="h-full w-full max-w-full overflow-x-hidden">
-            {isLoadingTab && urlQuery ? (
-              <TableSkeleton variant="compact" rows={10} />
-            ) : (
-              <IntercellBrowser />
-            )}
+            <IntercellBrowser />
           </TabsContent>
 
           <TabsContent value="complexes" className="h-full w-full max-w-full overflow-x-hidden">
-            {isLoadingTab && urlQuery ? (
-              <TableSkeleton variant="compact" rows={10} />
-            ) : (
-              <ComplexesBrowser />
-            )}
+            <ComplexesBrowser />
           </TabsContent>
 
           <TabsContent value="enzsub" className="h-full w-full max-w-full overflow-x-hidden">
-            {isLoadingTab && urlQuery ? (
-              <TableSkeleton variant="compact" rows={10} />
-            ) : (
-              <EnzSubBrowser />
-            )}
+            <EnzSubBrowser />
           </TabsContent>
         </Tabs>
       </div>
