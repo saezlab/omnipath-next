@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { ColumnDef, ResultsTable } from "@/components/shared/results-table"
 import { IntercellEntry } from "@/features/intercell-browser/types"
+import { EntityBadge } from "@/components/EntityBadge"
 
 interface IntercellTableProps {
   entries: IntercellEntry[]
@@ -20,18 +21,14 @@ const getCategoryColor = (category: string | null) => {
 export function IntercellTable({ entries }: IntercellTableProps) {
   const columns: ColumnDef<IntercellEntry>[] = [
     {
-      accessorKey: 'genesymbol',
-      header: 'Gene Symbol',
+      accessorKey: 'protein',
+      header: 'Protein',
       cell: ({ row }) => (
-        <span className="font-medium">
-          {row.genesymbol || "-"}
-        </span>
+        <EntityBadge 
+          geneSymbol={row.genesymbol || ""} 
+          uniprotId={row.uniprot || ""} 
+        />
       ),
-    },
-    {
-      accessorKey: 'uniprot',
-      header: 'UniProt ID',
-      cell: ({ row }) => row.uniprot || "-",
     },
     {
       accessorKey: 'category',

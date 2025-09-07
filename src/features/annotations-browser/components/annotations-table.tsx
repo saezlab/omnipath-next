@@ -3,6 +3,7 @@
 import { ColumnDef, ResultsTable } from "@/components/shared/results-table"
 import type React from "react"
 import { useMemo } from "react"
+import { EntityBadge } from "@/components/EntityBadge"
 
 interface Annotation {
   uniprot: string | null
@@ -101,14 +102,19 @@ export function AnnotationsTable({
         // Create dynamic columns based on headers
         const columns: ColumnDef<PivotedAnnotation>[] = [];
         
-        // Add gene symbol column for multi-query scenarios
+        // Add protein column for multi-query scenarios
         if (isMultiQuery) {
           columns.push({
-            accessorKey: "geneSymbol",
-            header: "Gene Symbol",
-            headerClassName: "px-2 py-2 text-xs border-r border-border/20 bg-muted/50 font-medium",
-            cellClassName: "px-2 py-2 text-xs border-r border-border/20 bg-muted/20 font-medium",
-            cell: ({ row }) => row.geneSymbol || "-"
+            accessorKey: "protein",
+            header: "Protein",
+            headerClassName: "px-2 py-2 text-xs font-medium",
+            cellClassName: "px-2 py-2 text-xs font-medium",
+            cell: ({ row }) => (
+              <EntityBadge 
+                geneSymbol={row.geneSymbol || ""} 
+                uniprotId={row.uniprotId || ""} 
+              />
+            )
           });
         }
         

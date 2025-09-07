@@ -4,9 +4,12 @@ import React from "react"
 import { Badge } from "@/components/ui/badge"
 import { ComplexEntry, ParsedComplex } from "@/features/complexes-browser/types"
 import { ColumnDef, ResultsTable } from "@/components/shared/results-table"
+import { SourcesDisplay } from "@/components/shared/sources-display"
+import { EntityBadge } from "@/components/EntityBadge"
 
 interface ComplexesTableProps {
   entries: ComplexEntry[]
+  onSelectEntry?: (entry: ComplexEntry) => void
 }
 
 function parseComplexData(complex: ComplexEntry): ParsedComplex {
@@ -38,7 +41,7 @@ const formatStoichiometry = (stoichiometry: string | null) => {
   )
 }
 
-export function ComplexesTable({ entries }: ComplexesTableProps) {
+export function ComplexesTable({ entries, onSelectEntry }: ComplexesTableProps) {
   const parsedEntries = entries.map(parseComplexData)
   
   const columns: ColumnDef<ParsedComplex>[] = [
@@ -52,46 +55,32 @@ export function ComplexesTable({ entries }: ComplexesTableProps) {
       ),
     },
     {
-      accessorKey: 'componentsGenesymbols',
-      header: 'Components (Gene Symbols)',
-      cell: ({ row }) => (
-        <div className="flex gap-1 flex-wrap max-w-md">
-          {row.parsedGeneSymbols.slice(0, 5).map((gene, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
-              {gene}
-            </Badge>
-          ))}
-          {row.parsedGeneSymbols.length > 5 && (
-            <Badge variant="outline" className="text-xs">
-              +{row.parsedGeneSymbols.length - 5} more
-            </Badge>
-          )}
-          {row.parsedGeneSymbols.length === 0 && (
-            <span className="text-muted-foreground text-xs">No gene symbols</span>
-          )}
-        </div>
-      ),
-    },
-    {
       accessorKey: 'components',
-      header: 'Components (UniProt)',
-      cell: ({ row }) => (
-        <div className="flex gap-1 flex-wrap max-w-md">
-          {row.parsedComponents.slice(0, 3).map((comp, index) => (
-            <Badge key={index} variant="outline" className="text-xs font-mono">
-              {comp}
-            </Badge>
-          ))}
-          {row.parsedComponents.length > 3 && (
-            <Badge variant="outline" className="text-xs">
-              +{row.parsedComponents.length - 3} more
-            </Badge>
-          )}
-          {row.parsedComponents.length === 0 && (
-            <span className="text-muted-foreground text-xs">No UniProt IDs</span>
-          )}
-        </div>
-      ),
+      header: 'Components',
+      cell: ({ row }) => {
+        const maxVisible = 3
+        const totalComponents = Math.max(row.parsedGeneSymbols.length, row.parsedComponents.length)
+        
+        return (
+          <div className="flex gap-1 flex-wrap max-w-md">
+            {Array.from({ length: Math.min(totalComponents, maxVisible) }).map((_, index) => (
+              <EntityBadge 
+                key={index}
+                geneSymbol={row.parsedGeneSymbols[index] || ""} 
+                uniprotId={row.parsedComponents[index] || ""} 
+              />
+            ))}
+            {totalComponents > maxVisible && (
+              <Badge variant="outline" className="text-xs">
+                +{totalComponents - maxVisible} more
+              </Badge>
+            )}
+            {totalComponents === 0 && (
+              <span className="text-muted-foreground text-xs">No components</span>
+            )}
+          </div>
+        )
+      },
     },
     {
       accessorKey: 'stoichiometry',
@@ -101,28 +90,21 @@ export function ComplexesTable({ entries }: ComplexesTableProps) {
     {
       accessorKey: 'sources',
       header: 'Sources',
-      cell: ({ row }) => (
-        <div className="flex gap-1 flex-wrap max-w-xs">
-          {row.parsedSources.slice(0, 2).map((source, index) => (
-            <Badge key={index} variant="outline" className="text-xs">
-              {source}
-            </Badge>
-          ))}
-          {row.parsedSources.length > 2 && (
-            <Badge variant="outline" className="text-xs">
-              +{row.parsedSources.length - 2}
-            </Badge>
-          )}
-        </div>
-      ),
+      cell: ({ row }) => {
+        // Convert back to string for SourcesDisplay
+        const sourcesString = row.parsedSources.join(';')
+        return (
+          <SourcesDisplay sources={sourcesString} maxVisible={2} inline className="max-w-xs" />
+        )
+      },
     },
     {
       accessorKey: 'references',
       header: 'References',
       cell: ({ row }) => row.references ? (
         <div className="max-w-xs">
-          <span className="text-xs text-muted-foreground truncate block">
-            {row.references.length > 100 ? `${row.references.substring(0, 100)}...` : row.references}
+          <span className="text-xs text-muted-foreground">
+            {row.references.split(';').length} reference{row.references.split(';').length > 1 ? 's' : ''}
           </span>
         </div>
       ) : (
@@ -185,6 +167,7 @@ export function ComplexesTable({ entries }: ComplexesTableProps) {
       maxHeight="max-h-[600px]"
       initialSortKey="componentCount"
       initialSortDirection="desc"
+      onRowClick={(row) => onSelectEntry?.(row)}
     />
   );
 }

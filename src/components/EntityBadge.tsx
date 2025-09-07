@@ -7,6 +7,7 @@ interface EntityBadgeProps {
   uniprotId?: string;   // Keep for backward compatibility
   onClick?: () => void;
   maxChars?: number;    // Maximum characters before truncation
+  maxWidth?: string;    // Maximum width (e.g., "w-32", "max-w-xs")
 }
 
 export const EntityBadge: React.FC<EntityBadgeProps> = ({ 
@@ -14,6 +15,7 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   uniprotId,
   onClick,
   maxChars = 12, // Default to 12 characters
+  maxWidth = "max-w-[120px]", // Default max width
 }) => {
   // Use new props if provided, fallback to old props for backward compatibility
   const name = geneSymbol || '';
@@ -32,7 +34,7 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   const identifierRef = useRef<HTMLSpanElement>(null);
 
   const content = (
-    <div className="relative">
+    <div className={`relative ${maxWidth}`}>
       {/* Modern glass-morphism card */}
       <div 
         className={`relative bg-gradient-to-br from-slate-50/80 to-slate-100/80 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-md px-2 py-1 shadow-sm min-w-[80px] w-full transition-all duration-200 ${

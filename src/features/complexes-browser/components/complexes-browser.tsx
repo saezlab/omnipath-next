@@ -1,8 +1,10 @@
 "use client"
 
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { getComplexesData } from "@/features/complexes-browser/api/queries"
 import { SearchIdentifiersResponse } from "@/db/queries"
 import { ComplexesTable } from "@/features/complexes-browser/components/complexes-table"
+import { ComplexDetails } from "@/features/complexes-browser/components/complex-details"
 import { ComplexEntry, ComplexesFilters, ParsedComplex } from "@/features/complexes-browser/types"
 import { Info } from "lucide-react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -27,6 +29,8 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     results: [] as ComplexEntry[],
     isLoading: false,
   })
+  const [selectedEntry, setSelectedEntry] = useState<ComplexEntry | null>(null)
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -160,6 +164,11 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])
 
+  const handleSelectEntry = (entry: ComplexEntry) => {
+    setSelectedEntry(entry)
+    setIsDetailsOpen(true)
+  }
+
   // Update filter data in context when query or data changes
   useEffect(() => {
     const filterContextValue = complexQuery ? {
@@ -183,7 +192,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
               <p className="text-muted-foreground">Loading complexes data...</p>
             </div>
           ) : filteredComplexEntries.length > 0 ? (
-            <ComplexesTable entries={filteredComplexEntries} />
+            <ComplexesTable entries={filteredComplexEntries} onSelectEntry={handleSelectEntry} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
@@ -203,6 +212,16 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
           </p>
         </div>
       )}
+      
+      {/* Complex Details Dialog */}
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle>
+            Complex Details
+          </DialogTitle>
+          <ComplexDetails selectedEntry={selectedEntry} />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

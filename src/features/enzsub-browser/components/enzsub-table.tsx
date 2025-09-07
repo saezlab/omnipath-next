@@ -4,10 +4,13 @@ import { Badge } from "@/components/ui/badge"
 import type React from "react"
 import { EnzSubEntry } from "../types"
 import { ColumnDef, ResultsTable } from "@/components/shared/results-table"
+import { SourcesDisplay } from "@/components/shared/sources-display"
+import { EntityBadge } from "@/components/EntityBadge"
 
 interface EnzSubTableProps {
   currentResults: EnzSubEntry[]
   searchedProteins: Set<string>
+  onSelectEntry?: (entry: EnzSubEntry) => void
 }
 
 function formatResidue(residueType: string | null, residueOffset: number | null): string {
@@ -37,6 +40,7 @@ function getProteinRole(
 export function EnzSubTable({
   currentResults,
   searchedProteins,
+  onSelectEntry,
 }: EnzSubTableProps) {
   const columns: ColumnDef<EnzSubEntry>[] = [
     {
@@ -45,16 +49,10 @@ export function EnzSubTable({
       cell: ({ row }) => {
         const role = getProteinRole(row, searchedProteins)
         return (
-          <div className="space-y-1">
-            <div className={`font-medium ${role.isEnzyme ? 'text-blue-600 dark:text-blue-400' : ''}`}>
-              {row.enzymeGenesymbol || row.enzyme || "-"}
-            </div>
-            {row.enzymeGenesymbol && row.enzyme && (
-              <div className="text-xs text-muted-foreground">
-                {row.enzyme}
-              </div>
-            )}
-          </div>
+            <EntityBadge 
+              geneSymbol={row.enzymeGenesymbol || ""} 
+              uniprotId={row.enzyme || ""} 
+            />
         )
       },
     },
@@ -64,16 +62,10 @@ export function EnzSubTable({
       cell: ({ row }) => {
         const role = getProteinRole(row, searchedProteins)
         return (
-          <div className="space-y-1">
-            <div className={`font-medium ${role.isSubstrate ? 'text-green-600 dark:text-green-400' : ''}`}>
-              {row.substrateGenesymbol || row.substrate || "-"}
-            </div>
-            {row.substrateGenesymbol && row.substrate && (
-              <div className="text-xs text-muted-foreground">
-                {row.substrate}
-              </div>
-            )}
-          </div>
+            <EntityBadge 
+              geneSymbol={row.substrateGenesymbol || ""} 
+              uniprotId={row.substrate || ""} 
+            />
         )
       },
     },
@@ -94,38 +86,22 @@ export function EnzSubTable({
     {
       accessorKey: 'sources',
       header: 'Sources',
-      cell: ({ row }) => row.sources ? (
-        <div className="flex flex-wrap gap-1 max-w-[150px]">
-          {row.sources.split(';').slice(0, 3).map((source, index) => (
-            <Badge key={index} variant="secondary" className="text-xs">
-              {source.trim()}
-            </Badge>
-          ))}
-          {row.sources.split(';').length > 3 && (
-            <span className="text-xs text-muted-foreground">
-              +{row.sources.split(';').length - 3} more
-            </span>
-          )}
-        </div>
-      ) : "-",
+      cell: ({ row }) => (
+        <SourcesDisplay sources={row.sources} maxVisible={3} inline className="max-w-[150px]" />
+      ),
     },
     {
       accessorKey: 'references',
       header: 'References',
       cell: ({ row }) => row.references ? (
-        <div className="flex flex-wrap gap-1 max-w-[200px]">
-          {row.references.split(';').slice(0, 2).map((ref, index) => (
-            <span key={index} className="text-xs text-muted-foreground bg-muted px-1 py-0.5 rounded">
-              {ref.trim()}
-            </span>
-          ))}
-          {row.references.split(';').length > 2 && (
-            <span className="text-xs text-muted-foreground">
-              +{row.references.split(';').length - 2} more
-            </span>
-          )}
+        <div className="max-w-[200px]">
+          <span className="text-xs text-muted-foreground">
+            {row.references.split(';').length} reference{row.references.split(';').length > 1 ? 's' : ''}
+          </span>
         </div>
-      ) : "-",
+      ) : (
+        <span className="text-muted-foreground text-xs">No references</span>
+      ),
     },
   ];
 
@@ -148,6 +124,7 @@ export function EnzSubTable({
       infiniteScroll={true}
       resultsPerPage={30}
       maxHeight="h-full"
+      onRowClick={onSelectEntry}
     />
   )
 }

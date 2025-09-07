@@ -1,8 +1,10 @@
 "use client"
 
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { getEnzSubData, getEnzSubDataAmongProteins } from "@/features/enzsub-browser/api/queries"
 import { SearchIdentifiersResponse } from "@/db/queries"
 import { EnzSubTable } from "@/features/enzsub-browser/components/enzsub-table"
+import { EnzSubDetails } from "@/features/enzsub-browser/components/enzsub-details"
 import { EnzSubEntry, EnzSubFilters } from "@/features/enzsub-browser/types"
 import { Info } from "lucide-react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -42,6 +44,8 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     isLoading: false,
   })
   const [searchedProteins, setSearchedProteins] = useState<Set<string>>(new Set())
+  const [selectedEntry, setSelectedEntry] = useState<EnzSubEntry | null>(null)
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -214,6 +218,11 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])
 
+  const handleSelectEntry = (entry: EnzSubEntry) => {
+    setSelectedEntry(entry)
+    setIsDetailsOpen(true)
+  }
+
   // Update filter data in context when query or data changes
   useEffect(() => {
     const filterContextValue = enzSubQuery ? {
@@ -245,6 +254,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
             <EnzSubTable
               currentResults={filteredEnzSubData}
               searchedProteins={searchedProteins}
+              onSelectEntry={handleSelectEntry}
             />
           ) : enzSubState.results.length > 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
@@ -276,6 +286,16 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
           </p>
         </div>
       )}
+      
+      {/* EnzSub Details Dialog */}
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogTitle>
+            Enzyme-Substrate Relationship Details
+          </DialogTitle>
+          <EnzSubDetails selectedEntry={selectedEntry} />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
