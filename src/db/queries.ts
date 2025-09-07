@@ -4,7 +4,13 @@ import { db } from ".";
 import { uniprotIdentifiers    } from "./drizzle/schema";
 import { sql } from "drizzle-orm";
 
-export async function searchIdentifiers(query: string, limit: number = 20) {
+export async function searchIdentifiers(query: string, limit: number = 20, taxonId?: string) {
+  let whereCondition = sql`${uniprotIdentifiers.identifierValue} ILIKE ${query + '%'}`;
+  
+  if (taxonId) {
+    whereCondition = sql`${whereCondition} AND ${uniprotIdentifiers.taxonId} = ${taxonId}`;
+  }
+
   const results = await db
     .select({
       uniprotAccession: uniprotIdentifiers.uniprotAccession,
@@ -13,9 +19,7 @@ export async function searchIdentifiers(query: string, limit: number = 20) {
       taxonId: uniprotIdentifiers.taxonId,
     })
     .from(uniprotIdentifiers)
-    .where(
-            sql`${uniprotIdentifiers.identifierValue} ILIKE ${query + '%'}`,
-    )
+    .where(whereCondition)
     .orderBy(
       sql`CASE 
         WHEN ${uniprotIdentifiers.identifierValue} ILIKE ${query} THEN 1 
@@ -29,6 +33,20 @@ export async function searchIdentifiers(query: string, limit: number = 20) {
 }
 
 export type SearchIdentifiersResponse = Awaited<ReturnType<typeof searchIdentifiers>>;
+
+export async function searchMultipleIdentifiers(queries: string[], limit: number = 1, taxonId?: string) {
+  const allResults: SearchIdentifiersResponse = [];
+  
+  for (const query of queries) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
+      const results = await searchIdentifiers(trimmedQuery, limit, taxonId);
+      allResults.push(...results);
+    }
+  }
+  
+  return allResults;
+}
 
 
 export async function executeReadOnlyQuery(query: string): Promise<Record<string, unknown>[]> {

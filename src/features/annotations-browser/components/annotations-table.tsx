@@ -1,11 +1,9 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { exportToTSV } from "@/lib/utils/export"
-import { Download } from "lucide-react"
+import { ColumnDef, ResultsTable } from "@/components/shared/results-table"
 import type React from "react"
 import { useMemo } from "react"
+import { EntityBadge } from "@/components/EntityBadge"
 
 interface Annotation {
   uniprot: string | null
@@ -23,15 +21,15 @@ interface PivotedAnnotation {
   geneSymbol: string | null
   uniprotId: string | null
   values: Record<string, string> // key: "source:label", value: annotation value
+  [key: string]: unknown // Index signature for DataRow compatibility
 }
 
 interface AnnotationsTableProps {
   currentResults: Annotation[]
   getCategoryIcon: (label: string | null) => React.ReactNode
   getCategoryColor: (label: string | null) => string
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
+  uniqueRecordCount: number
+  isMultiQuery?: boolean
 }
 
 function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnnotation[]> {
@@ -69,9 +67,7 @@ function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnno
 
 export function AnnotationsTable({
   currentResults,
-  currentPage,
-  totalPages,
-  onPageChange,
+  isMultiQuery = false,
 }: AnnotationsTableProps) {
   const pivotedData = useMemo(() => pivotAnnotations(currentResults), [currentResults]);
   
@@ -90,18 +86,6 @@ export function AnnotationsTable({
     return headers;
   }, [pivotedData]);
 
-  const handleExport = (source: string, rows: PivotedAnnotation[]) => {
-    const data = rows.map(row => {
-      const rowData: Record<string, string> = {
-        'Gene Symbol': row.geneSymbol || '',
-        'UniProt ID': row.uniprotId || '',
-        ...row.values
-      };
-      return rowData;
-    });
-    exportToTSV(data, `${source}_annotations`);
-  };
-
   if (currentResults.length === 0) {
     return (
       <div className="p-8 text-center">
@@ -111,84 +95,57 @@ export function AnnotationsTable({
   }
 
   return (
-    <div className="space-y-8 w-full">
+    <div className="space-y-8 w-full max-w-full">
       {Object.entries(pivotedData).map(([source, rows]) => {
         const headers = columnHeadersBySource[source];
-        const totalItems = rows.length;
+        
+        // Create dynamic columns based on headers
+        const columns: ColumnDef<PivotedAnnotation>[] = [];
+        
+        // Add protein column for multi-query scenarios
+        if (isMultiQuery) {
+          columns.push({
+            accessorKey: "protein",
+            header: "Protein",
+            headerClassName: "px-2 py-2 text-xs font-medium",
+            cellClassName: "px-2 py-2 text-xs font-medium",
+            cell: ({ row }) => (
+              <EntityBadge 
+                geneSymbol={row.geneSymbol || ""} 
+                uniprotId={row.uniprotId || ""} 
+              />
+            )
+          });
+        }
+        
+        // Add annotation value columns
+        headers.forEach(header => {
+          columns.push({
+            accessorKey: header,
+            header: header,
+            headerClassName: "px-2 py-2 text-xs border-r border-border/20 last:border-r-0",
+            cellClassName: "px-2 py-2 text-xs border-r border-border/20 last:border-r-0",
+            cell: ({ row }) => row.values[header] || "-"
+          });
+        });
         
         return (
-          <div 
-            key={source} 
-            className="overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200"
-          >
-            <div className="flex flex-row items-center justify-between space-y-0 p-4 bg-background">
-              <div className="flex items-center space-x-2">
-                <h3 className="text-lg font-semibold">
-                  {source}
-                </h3>
-                <span className="text-muted-foreground">
-                  ({totalItems.toLocaleString()})
-                </span>
-              </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={() => handleExport(source, rows)}
-                className="h-8 w-8"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="overflow-x-auto">
-              <Table className="min-w-full">
-                <TableHeader>
-                  <TableRow>
-                    {headers.map(header => (
-                      <TableHead key={header}>{header}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.recordId}
-                      className="cursor-pointer hover:bg-muted/50"
-                    >
-                      {headers.map(header => (
-                        <TableCell key={`${row.recordId}-${header}`}>
-                          {row.values[header] || "-"}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+          <ResultsTable<PivotedAnnotation>
+            key={source}
+            columns={columns}
+            data={rows}
+            title={source}
+            titleCount={rows.length}
+            showExport={true}
+            exportFilenamePrefix={`${source}_annotations`}
+            showSearch={false}
+            resultsPerPage={100}
+            infiniteScroll={false}
+            maxHeight="max-h-[400px]"
+            tableClassName="min-w-full"
+          />
         );
       })}
-      
-      {totalPages > 1 && (
-        <div className="flex justify-center space-x-2 mt-4">
-          <Button
-            variant="outline"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <span className="flex items-center">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </div>
-      )}
     </div>
   )
 }

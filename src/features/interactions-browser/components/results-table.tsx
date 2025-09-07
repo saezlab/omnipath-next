@@ -15,22 +15,27 @@ type InteractionData = SearchProteinNeighborsResponse['interactions'][number];
 type InteractionDataWithCount = InteractionData & { referenceCount: number };
 
 interface InteractionResultsTableProps {
-  interactions: InteractionData[];
+  data: InteractionData[];
+  exportData?: InteractionData[]; // Optional full dataset for export
   onSelectInteraction: (interaction: InteractionData) => void;
-  showSearch?: boolean;
-  searchKeys?: string[];
-  searchPlaceholder?: string;
   showExport?: boolean;
   resultsPerPage?: number;
   maxCellChars?: number;
   scrollAreaClassName?: string;
+  resultsCount?: number; // Optional results count to display
+  // Infinite scroll props
+  infiniteScroll?: boolean;
+  // External sort control props
+  sortKey?: string | null;
+  sortDirection?: 'asc' | 'desc' | null;
+  onSortChange?: (key: string, direction: 'asc' | 'desc') => void;
 }
 
 
 
 const getInteractionTypeIcon = (type: string | null) => {
-  if (!type) return { icon: <HeartHandshake className="h-4 w-4" />, label: "Unknown" }
-  return INTERACTION_TYPE_ICONS[type] || { icon: <HeartHandshake className="h-4 w-4" />, label: type }
+  if (!type) return { icon: <HeartHandshake className="h-4 w-4" />, label: "Unknown", fullName: "Unknown" }
+  return INTERACTION_TYPE_ICONS[type] || { icon: <HeartHandshake className="h-4 w-4" />, label: type, fullName: type }
 }
 
 const getReferenceCount = (interaction: InteractionData): number => {
@@ -38,17 +43,22 @@ const getReferenceCount = (interaction: InteractionData): number => {
 };
 
 export function InteractionResultsTable({ 
-  interactions, 
+  data, 
+  exportData,
   onSelectInteraction,
-  showSearch,
-  searchKeys,
-  searchPlaceholder,
   showExport,
   resultsPerPage,
   maxCellChars = 50,
+  resultsCount, // Results count prop
+  // Infinite scroll props
+  infiniteScroll = false,
+  // External sort control props
+  sortKey,
+  sortDirection,
+  onSortChange,
 }: InteractionResultsTableProps) {
   const handleEntityClick = (entity: string) => {
-    window.open(`/interactions?q=${encodeURIComponent(entity)}`, '_blank');
+    window.open(`/search?tab=interactions&q=${encodeURIComponent(entity)}`, '_blank');
   };
   const columns: ColumnDef<InteractionDataWithCount>[] = [
     {
@@ -63,6 +73,7 @@ export function InteractionResultsTable({
               <EntityBadge
                 geneSymbol={row.sourceGenesymbol || ''}
                 uniprotId={row.source || ''}
+                maxChars={10}
                 onClick={() => {
                   handleEntityClick(row.sourceGenesymbol || row.source || '');
                 }}
@@ -78,7 +89,7 @@ export function InteractionResultsTable({
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{typeIcon.label}</p>
+                    <p>{typeIcon.fullName}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -105,6 +116,7 @@ export function InteractionResultsTable({
               <EntityBadge
                 geneSymbol={row.targetGenesymbol || ''}
                 uniprotId={row.target || ''}
+                maxChars={10}
                 onClick={() => {
                   handleEntityClick(row.targetGenesymbol || row.target || '');
                 }}
@@ -169,24 +181,34 @@ export function InteractionResultsTable({
   ];
 
   const dataWithReferenceCount = React.useMemo(() => 
-      interactions.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) }))
-  , [interactions]);
+      data.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) }))
+  , [data]);
+
+  const exportDataWithReferenceCount = React.useMemo(() => 
+      exportData ? exportData.map(interaction => ({ ...interaction, referenceCount: getReferenceCount(interaction) })) : undefined
+  , [exportData]);
 
   return (
     <ResultsTable<InteractionDataWithCount>
         columns={columns}
         data={dataWithReferenceCount}
+        exportData={exportDataWithReferenceCount}
         onRowClick={onSelectInteraction}
-        initialSortKey="referenceCount"
-        initialSortDirection="desc"
+        initialSortKey={infiniteScroll ? undefined : "referenceCount"}
+        initialSortDirection={infiniteScroll ? undefined : "desc"}
         bodyRowClassName="cursor-pointer hover:bg-muted/50"
-        maxHeight=""
-        showSearch={showSearch}
-        searchKeys={searchKeys}
-        searchPlaceholder={searchPlaceholder}
+        maxHeight={infiniteScroll ? "h-full" : ""}
         showExport={showExport}
         resultsPerPage={resultsPerPage}
         maxCellChars={maxCellChars}
+        resultsCount={resultsCount}
+        resultsLabel="interactions"
+        // Pass through infinite scroll props
+        infiniteScroll={infiniteScroll}
+        // Pass through external sort control props
+        sortKey={sortKey}
+        sortDirection={sortDirection}
+        onSortChange={onSortChange}
     />
   )
 }

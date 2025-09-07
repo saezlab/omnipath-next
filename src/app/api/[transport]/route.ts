@@ -1,17 +1,26 @@
 import { createMcpHandler } from '@vercel/mcp-adapter';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { executeReadOnlyQuery } from '@/db/queries';
 import { DATABASE_SCHEMA_DESCRIPTION, handleSqlError, validateSqlQuery, SQL_VALIDATION_ERROR } from '@/lib/api-constants';
 
 const handler = createMcpHandler(
-  server => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (server: any) => {
     server.tool(
       'execute_sql_query_on_omnipath_db',
       DATABASE_SCHEMA_DESCRIPTION,
       {
         sqlQuery: z.string().describe("The read-only SQL query (starting with SELECT) to execute.")
       },
-      async ({ sqlQuery }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (params: any) => {
+        const sqlQuery = params.sqlQuery;
+        if (!sqlQuery || typeof sqlQuery !== 'string') {
+          return {
+            content: [{ type: 'text', text: 'Error: sqlQuery parameter is required and must be a string' }],
+          };
+        }
+        
         console.log(`Executing SQL query: ${sqlQuery}`);
         try {
           if (!validateSqlQuery(sqlQuery)) {

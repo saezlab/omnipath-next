@@ -1,13 +1,19 @@
-import { google } from "@/ai";
+import {google} from "@ai-sdk/google"
 import { executeReadOnlyQuery } from '@/db/queries';
-import { convertToCoreMessages, smoothStream, streamText } from "ai";
-import { z } from "zod";
+import { smoothStream, streamText, stepCountIs } from "ai";
+import { z } from 'zod/v3';
 import { DATABASE_SCHEMA_DESCRIPTION, SYSTEM_PROMPT, handleSqlError, validateSqlQuery, SQL_VALIDATION_ERROR } from '@/lib/api-constants';
 
-// Define the message schema
+// Define the message schema for UIMessage format with parts only
+const messagePartSchema = z.object({
+  type: z.string(),
+  text: z.string().optional(),
+});
+
 const messageSchema = z.object({
+  id: z.string().optional(),
   role: z.enum(["user", "assistant", "system"]),
-  content: z.string(),
+  parts: z.array(messagePartSchema),
 });
 
 // Define the request schema
@@ -19,7 +25,7 @@ const requestSchema = z.object({
 const tools = {
   executeSql: {
     description: DATABASE_SCHEMA_DESCRIPTION,
-    parameters: z.object({
+    inputSchema: z.object({
       sqlQuery: z.string().describe("The read-only SQL query (starting with SELECT) to execute."),
     }),
     execute: async ({ sqlQuery }: { sqlQuery: string }) => {
@@ -46,10 +52,29 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { messages } = requestSchema.parse(body);
     
-    // Convert messages to core format
-    const coreMessages = convertToCoreMessages(messages).filter(
-      (message) => message.content.length > 0,
-    );
+    // Convert messages to UIMessage format
+    const uiMessages = messages.map((msg, index) => ({
+      id: msg.id || `msg-${index}`,
+      role: msg.role,
+      parts: msg.parts.map(part => ({
+        ...part,
+        type: part.type as 'text' | 'image' | 'reasoning'
+      }))
+    }));
+    
+    // Convert UIMessages to CoreMessages format
+    const coreMessages = uiMessages.map(msg => {
+      // Extract text content from parts
+      const textContent = msg.parts
+        .filter(part => part.type === 'text')
+        .map(part => part.text || '')
+        .join('');
+      
+      return {
+        role: msg.role,
+        content: textContent
+      };
+    }).filter(message => message.content && message.content.length > 0);
 
     // Add system message if not present
     if (!coreMessages.some(m => m.role === "system")) {
@@ -64,21 +89,20 @@ export async function POST(req: Request) {
       messages: coreMessages,
       tools,
       toolChoice: "auto",
+
       experimental_transform: [
         smoothStream({
           chunking: "word",
         }),
       ],
-      // onFinish: async (result) => {
-      //   // Here you could save the chat history if needed
-      // },
-      maxSteps: 5,
-      temperature: 0.7,
+
+      stopWhen: stepCountIs(5),
+      temperature: 0.7
     });
 
-    return stream.toDataStreamResponse({
+    return stream.toUIMessageStreamResponse({
       sendReasoning: true,
-      getErrorMessage: () => {
+      onError: () => {
         return `An error occurred, please try again!`;
       },
     });

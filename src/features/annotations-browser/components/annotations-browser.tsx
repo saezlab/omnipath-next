@@ -1,51 +1,63 @@
 "use client"
 
-import { SearchBar } from "@/components/search-bar"
-import { TableSkeleton } from "@/components/table-skeleton"
-import { Button } from "@/components/ui/button"
-import { getProteinAnnotations, getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
+import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
+import { SearchIdentifiersResponse } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
-import { AnnotationsFilterSidebar } from "@/features/annotations-browser/components/filter-sidebar"
-import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
-import { useSearchStore } from "@/store/search-store"
 import { Annotation, SearchFilters } from "@/features/annotations-browser/types"
 import {
   Activity,
   Info,
   MapPin,
-  SlidersHorizontal,
   Tag
 } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
+import { useFilters } from "@/contexts/filter-context"
 
-const RESULTS_PER_PAGE = 20
+// Helper functions for multi-query detection
+function parseQueries(queryString: string): string[] {
+  return queryString
+    .split(/[,;]/)
+    .map(q => q.trim())
+    .filter(q => q.length > 0)
+}
+
+function isMultiQuery(queryString: string): boolean {
+  return parseQueries(queryString).length > 1
+}
+
+const SOURCES_PER_LOAD = 4
 
 interface FilterCounts {
   sources: Record<string, number>
   annotationTypes: Record<string, number>
 }
 
-export function AnnotationsBrowser() {
+interface AnnotationsBrowserProps {
+  isLoading?: boolean
+  identifierResults?: SearchIdentifiersResponse
+}
+
+export function AnnotationsBrowser({ isLoading, identifierResults = [] }: AnnotationsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { addToSearchHistory } = useSearchStore()
+  const { setFilterData } = useFilters()
   
-  const [isLoading, setIsLoading] = useState(false)
-  const [showMobileFilters, setShowMobileFilters] = useState(false)
-  const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
-  const [isLoadingProtein, setIsLoadingProtein] = useState(false)
-  const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
+  const [annotationState, setAnnotationState] = useState({
+    results: [] as Annotation[],
+    isLoading: false,
+  })
+  const [loadedSources, setLoadedSources] = useState<string[]>([])
+  const [hasMoreSources, setHasMoreSources] = useState(true)
+  const lastSearchedQuery = useRef('')
+  const loadMoreRef = useRef<HTMLDivElement>(null)
   
   // Get query from URL
   const annotationsQuery = searchParams.get('q') || ''
   
-  // Get current page from URL
-  const annotationsCurrentPage = parseInt(searchParams.get('page') || '1', 10)
-  
   // Parse filters from URL
   const annotationsFilters = useMemo(() => {
-    const filtersParam = searchParams.get('filters')
+    const filtersParam = searchParams.get('annotations_filters')
     if (!filtersParam) {
       return {
         sources: [],
@@ -64,51 +76,63 @@ export function AnnotationsBrowser() {
     }
   }, [searchParams])
 
-  const handleSearch = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim()) return
-
-    setIsLoading(true)
-    setIsLoadingProtein(true)
-    
-    // Update URL with new query
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('q', searchQuery)
-    params.set('page', '1')
-    const newUrl = `/annotations?${params.toString()}`
-    router.push(newUrl, { scroll: false })
-    
-    // Add to search history with full URL
-    addToSearchHistory(searchQuery, 'annotation', newUrl)
-
-    try {
-      const [annotationsResponse, proteinResponse] = await Promise.all([
-        getProteinAnnotations(searchQuery),
-        getProteinInformation(searchQuery)
-      ])
-      
-      setAnnotationsResults(annotationsResponse.annotations)
-      setProteinData(proteinResponse)
-    } catch (error) {
-      console.error("Error fetching data:", error)
-    } finally {
-      setIsLoading(false)
-      setIsLoadingProtein(false)
-    }
-  }, [searchParams, router, addToSearchHistory])
 
   // Fetch annotations when query changes
   useEffect(() => {
-    if (annotationsQuery) {
-      handleSearch(annotationsQuery)
+    // Only use URL query as source of truth
+    if (annotationsQuery && annotationsQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
+      lastSearchedQuery.current = annotationsQuery
+      
+      const fetchData = async () => {
+        setAnnotationState(prev => ({ ...prev, isLoading: true }))
+        
+        // Reset infinite scroll state for new search
+        setLoadedSources([])
+        setHasMoreSources(true)
+        
+        try {
+          console.log(`Fetching annotations for: "${annotationsQuery}"`);
+          
+          // Use the passed identifier results to get annotations
+          const annotationsResponse = await getProteinAnnotations(identifierResults)
+          
+          setAnnotationState({
+            results: annotationsResponse.annotations,
+            isLoading: false,
+          })
+        } catch (error) {
+          console.error("Error fetching data:", error)
+          setAnnotationState(prev => ({ ...prev, isLoading: false }))
+        }
+      }
+      
+      fetchData()
     }
-  }, [annotationsQuery]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [annotationsQuery, identifierResults])
+
+  // Get all unique sources from all annotations (for infinite scroll management)
+  // Keep natural database order - don't sort to prevent layout shifts
+  const allUniqueSources = useMemo(() => {
+    const seenSources = new Set<string>()
+    const sources: string[] = []
+    
+    // Preserve order of appearance in database
+    annotationState.results.forEach(annotation => {
+      if (annotation.source && !seenSources.has(annotation.source)) {
+        seenSources.add(annotation.source)
+        sources.push(annotation.source)
+      }
+    })
+    
+    return sources
+  }, [annotationState.results])
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {
     // First, find all recordIds that match the value search in any field
     const matchingRecordIds = new Set<number>()
     
-    annotationsResults.forEach((annotation) => {
+    annotationState.results.forEach((annotation) => {
       const searchTerm = annotationsFilters.valueSearch.toLowerCase()
       if (searchTerm) {
         // Check if any field contains the search term
@@ -126,7 +150,7 @@ export function AnnotationsBrowser() {
     })
 
     // Then filter annotations based on all criteria
-    return annotationsResults.filter((annotation) => {
+    return annotationState.results.filter((annotation) => {
       // Filter by source
       if (annotationsFilters.sources.length > 0 && annotation.source) {
         const sourceMatch = annotationsFilters.sources.some(filterSource => 
@@ -152,7 +176,7 @@ export function AnnotationsBrowser() {
 
       return true
     })
-  }, [annotationsResults, annotationsFilters])
+  }, [annotationState.results, annotationsFilters])
 
   // Calculate filter counts based on unique records
   const filterCounts = useMemo(() => {
@@ -162,11 +186,11 @@ export function AnnotationsBrowser() {
     }
 
     // Get unique records first
-    const uniqueRecords = new Set(annotationsResults.map(a => a.recordId))
+    const uniqueRecords = new Set(annotationState.results.map(a => a.recordId))
     
     // For each unique record, count its sources and types
     uniqueRecords.forEach(recordId => {
-      const recordAnnotations = annotationsResults.filter(a => a.recordId === recordId)
+      const recordAnnotations = annotationState.results.filter(a => a.recordId === recordId)
       
       // Count unique sources for this record
       const uniqueSources = new Set(recordAnnotations.map(a => a.source?.toLowerCase()))
@@ -186,24 +210,74 @@ export function AnnotationsBrowser() {
     })
 
     return counts
-  }, [annotationsResults])
+  }, [annotationState.results])
 
-  // Get unique record count for pagination and display
-  const uniqueRecordCount = new Set(filteredAnnotations.map(a => a.recordId)).size
-  const totalPages = Math.ceil(uniqueRecordCount / RESULTS_PER_PAGE)
-  const startIndex = (annotationsCurrentPage - 1) * RESULTS_PER_PAGE
-  const endIndex = startIndex + RESULTS_PER_PAGE
+  // Load more sources function
+  const loadMoreSources = useCallback(() => {
+    if (!hasMoreSources) return
+    
+    const filteredSources = allUniqueSources.filter(source => {
+      if (annotationsFilters.sources.length > 0) {
+        return annotationsFilters.sources.some(filterSource => 
+          filterSource.toLowerCase() === source.toLowerCase()
+        )
+      }
+      return true
+    })
+    
+    const nextSources = filteredSources.slice(
+      loadedSources.length, 
+      loadedSources.length + SOURCES_PER_LOAD
+    )
+    
+    if (nextSources.length === 0) {
+      setHasMoreSources(false)
+      return
+    }
+    
+    setLoadedSources(prev => [...prev, ...nextSources])
+    
+    // Check if there are more sources to load
+    if (loadedSources.length + nextSources.length >= filteredSources.length) {
+      setHasMoreSources(false)
+    }
+  }, [allUniqueSources, annotationsFilters.sources, loadedSources, hasMoreSources])
 
-  // Get unique recordIds for the current page
-  const uniqueRecordIds = Array.from(new Set(filteredAnnotations.map(a => a.recordId))).slice(startIndex, endIndex)
-  
-  // Get all annotations for the records in the current page
+  // Initialize loading the first batch of sources
+  useEffect(() => {
+    if (allUniqueSources.length > 0 && loadedSources.length === 0 && annotationState.results.length > 0) {
+      loadMoreSources()
+    }
+  }, [allUniqueSources, loadedSources.length, annotationState.results.length, loadMoreSources])
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreSources && !isLoading) {
+          loadMoreSources()
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    )
+    
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current)
+    }
+    
+    return () => observer.disconnect()
+  }, [hasMoreSources, isLoading, loadMoreSources])
+
+  // Get annotations for currently loaded sources
   const currentResults = filteredAnnotations.filter(annotation => 
-    uniqueRecordIds.includes(annotation.recordId)
+    loadedSources.includes(annotation.source || '')
   )
 
+  // Get unique record count for display
+  const uniqueRecordCount = new Set(currentResults.map(a => a.recordId)).size
+
   // Handle filter changes
-  const handleFilterChange = (type: keyof SearchFilters, value: string) => {
+  const handleFilterChange = useCallback((type: keyof SearchFilters, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
     
     const newFilters = { ...annotationsFilters }
@@ -217,29 +291,33 @@ export function AnnotationsBrowser() {
         : [...currentValues, value]
     }
     
+    // Reset infinite scroll state when filters change
+    setLoadedSources([])
+    setHasMoreSources(true)
+    
     // Update URL with new filters
     if (Object.values(newFilters).some(v => (typeof v === 'string' ? v.length > 0 : v.length > 0))) {
-      params.set('filters', JSON.stringify(newFilters))
+      params.set('annotations_filters', JSON.stringify(newFilters))
     } else {
-      params.delete('filters')
+      params.delete('annotations_filters')
     }
-    params.set('page', '1')
+    params.delete('page') // Remove page parameter
     
     router.push(`?${params.toString()}`, { scroll: false })
-  }
+  }, [searchParams, annotationsFilters, router])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    params.delete('filters')
-    params.set('page', '1')
+    params.delete('annotations_filters')
+    params.delete('page') // Remove page parameter
+    
+    // Reset infinite scroll state when filters are cleared
+    setLoadedSources([])
+    setHasMoreSources(true)
+    
     router.push(`?${params.toString()}`, { scroll: false })
-  }
+  }, [searchParams, router])
   
-  const setAnnotationsCurrentPage = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('page', page.toString())
-    router.push(`?${params.toString()}`, { scroll: false })
-  }
 
   // Get category icon
   const getCategoryIcon = (label: string | null) => {
@@ -271,83 +349,79 @@ export function AnnotationsBrowser() {
     return "bg-gray-100 text-gray-800 hover:bg-gray-200"
   }
 
+  // Update filter data in context when query or data changes
+  useEffect(() => {
+    const filterContextValue = annotationsQuery ? {
+      type: "annotations" as const,
+      filters: annotationsFilters,
+      filterCounts,
+      onFilterChange: handleFilterChange,
+      onClearFilters: clearFilters,
+    } : null
+    
+    setFilterData(filterContextValue)
+  }, [annotationsQuery, annotationsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
+
   return (
-      <div className="flex flex-col gap-6 max-w-7xl mx-auto px-2 sm:px-4 pb-6">
-        <SearchBar
-          placeholder="Search for a protein..."
-          onSearch={handleSearch}
-          initialQuery={annotationsQuery}
-          isLoading={isLoading}
-        />
-        
-        {annotationsQuery ? (
-          <>
-            <ProteinSummaryCard 
-              proteinData={proteinData ?? undefined}
-              isLoading={isLoadingProtein}
-            />
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowMobileFilters(!showMobileFilters)}
-                    className="lg:hidden"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                    Filters
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    {uniqueRecordCount} results
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex gap-6">
-                <AnnotationsFilterSidebar
-                  filterCounts={filterCounts}
-                  filters={annotationsFilters}
-                  onFilterChange={handleFilterChange}
-                  onClearFilters={clearFilters}
-                  showMobileFilters={showMobileFilters}
-                />
-
-                <div className="flex-1 min-w-0 overflow-hidden">
-                  {isLoading ? (
-                    <TableSkeleton />
-                  ) : uniqueRecordCount > 0 ? (
-                    <AnnotationsTable
-                      currentResults={currentResults}
-                      getCategoryIcon={getCategoryIcon}
-                      getCategoryColor={getCategoryColor}
-                      currentPage={annotationsCurrentPage}
-                      totalPages={totalPages}
-                      onPageChange={setAnnotationsCurrentPage}
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                      <Info className="h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium mb-2">No annotations found</h3>
-                      <p className="text-muted-foreground max-w-md">
-                        No annotations found for &ldquo;{annotationsQuery}&rdquo;. Try searching for a different protein.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
+    <div className="w-full h-full max-w-full overflow-x-hidden">
+      {annotationsQuery ? (
+        <div className="w-full h-full max-w-full overflow-x-hidden">
+          {annotationState.isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
+              <p className="text-muted-foreground">Loading annotations...</p>
             </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Info className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Welcome to Annotations Browser</h3>
-            <p className="text-muted-foreground max-w-md">
-              Search for a protein to explore its annotations and functional information.
-            </p>
-          </div>
-        )}
-      </div>
+          ) : uniqueRecordCount > 0 || loadedSources.length > 0 ? (
+            <>
+              <AnnotationsTable
+                currentResults={currentResults}
+                getCategoryIcon={getCategoryIcon}
+                getCategoryColor={getCategoryColor}
+                uniqueRecordCount={uniqueRecordCount}
+                isMultiQuery={isMultiQuery(annotationsQuery)}
+              />
+              
+              {/* Sentinel for infinite scroll */}
+              {hasMoreSources && loadedSources.length >= 1 && (
+                <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                  <div className="text-muted-foreground text-sm">Loading more sources...</div>
+                </div>
+              )}
+              
+              {!hasMoreSources && loadedSources.length > 0 && (
+                <div className="flex justify-center py-8">
+                  <div className="text-muted-foreground text-sm">All sources loaded</div>
+                </div>
+              )}
+            </>
+          ) : annotationState.results.length > 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
+              <p className="text-muted-foreground max-w-md">
+                Try adjusting your filter criteria to see more annotations.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <Info className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No annotations found</h3>
+              <p className="text-muted-foreground max-w-md">
+                No annotations found for &ldquo;{annotationsQuery}&rdquo;. Try searching for a different protein.
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-full text-center">
+          <Info className="h-12 w-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium mb-2">Welcome to Annotations Browser</h3>
+          <p className="text-muted-foreground max-w-md">
+            Search for a protein to explore its annotations and functional information.
+          </p>
+        </div>
+      )}
+    </div>
   )
 }
 

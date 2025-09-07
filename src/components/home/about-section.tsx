@@ -56,7 +56,7 @@ export function AboutSection() {
           <h3 className="font-medium text-lg mb-6">OmniPath Statistics</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-muted/50 dark:bg-muted/30 p-4 text-center hover:bg-muted/70 dark:hover:bg-muted/50 transition-colors duration-300">
-              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">150+</div>
+              <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">160+</div>
               <div className="text-sm text-muted-foreground">Data Resources</div>
             </div>
             <div className="rounded-lg bg-muted/50 dark:bg-muted/30 p-4 text-center hover:bg-muted/70 dark:hover:bg-muted/50 transition-colors duration-300">

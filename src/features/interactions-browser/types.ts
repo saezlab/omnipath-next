@@ -1,12 +1,10 @@
 export interface InteractionsFilters {
   interactionType: string[]
-  curationEffort: string[]
   entityTypeSource: string[]
   entityTypeTarget: string[]
-  isDirected: boolean | null
-  isStimulation: boolean | null
-  isInhibition: boolean | null
-  isUpstream: boolean | null
-  isDownstream: boolean | null
+  topology: string[]
+  direction: string[]
+  sign: string[]
   minReferences: number | null
+  search: string
 }

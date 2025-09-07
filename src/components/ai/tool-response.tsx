@@ -1,60 +1,35 @@
-// --- Import the new shared table and its types --- 
 import { ResultsTable, ColumnDef } from "@/components/shared/results-table";
-import { useState } from 'react'; // Import useState
-import { Textarea } from '@/components/ui/textarea'; // Assuming Textarea component exists
-import { Button } from '@/components/ui/button'; // Assuming Button component exists
-import { AlertCircle, Pencil } from 'lucide-react'; // Icon for errors and Pencil icon
-
-// Type for a single row in the SQL results
-type SqlResultRow = Record<string, unknown>;
-
-// Type for the result object returned by the executeSql tool
-interface SqlToolResult {
-  results: SqlResultRow[];
-  totalCount: number;
-  limited: boolean;
-}
-
-// Update ToolResult to include SqlToolResult and explicit error type
-interface SqlToolError {
-    error: string;
-}
-type ToolResult = SqlToolResult | SqlToolError; 
-
-// Update CustomToolInvocation args
-interface CustomToolInvocation {
-  toolName: string;
-  args: { sqlQuery: string }; // Changed from query to sqlQuery
-  state: string; // e.g., "pending", "success", "error"
-  result?: ToolResult;
-}
+import { useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Pencil } from 'lucide-react';
+import { SqlResultRow, SqlToolResult, SqlToolError, ToolInvocation } from '@/types/chat';
 
 // Add onRerunQuery prop
 export const ToolResponse = ({ 
     toolInvocation,
     onRerunQuery 
 }: { 
-    toolInvocation: CustomToolInvocation,
+    toolInvocation: ToolInvocation,
     onRerunQuery?: (newQuery: string) => void 
 }) => {
   const { toolName, result, args, state } = toolInvocation;
-  const [editedQuery, setEditedQuery] = useState(args.sqlQuery);
+  const sqlQuery = 'sqlQuery' in args && typeof args.sqlQuery === 'string' ? args.sqlQuery : '';
+  const [editedQuery, setEditedQuery] = useState(sqlQuery);
   const [isEditingQuery, setIsEditingQuery] = useState(false); // State for edit mode
 
-  // Early exit for pending or unknown states without results yet
-  if (state === 'pending' || !result) {
-     // Optionally render a loading indicator or nothing
-     // console.log("Tool state is pending or no result yet:", state);
+  // Early exit for call state or when no result is available yet
+  if (state === 'call' || !result) {
      return null; 
   }
 
   switch (toolName) {
     case "executeSql":
-      const isError = 'error' in result;
+      const isError = result && typeof result === 'object' && 'error' in result;
       const sqlResult = result as SqlToolResult; // Cast for success case
       const sqlError = result as SqlToolError; // Cast for error case
 
-      // --- Define columns for the ResultsTable (only if not error and data is valid) ---
+      // Define columns for the ResultsTable (only if not error and data is valid)
       const columns: ColumnDef<SqlResultRow>[] = !isError && sqlResult?.results?.length > 0
         ? Object.keys(sqlResult.results[0]).map(key => ({
             accessorKey: key,
@@ -68,9 +43,8 @@ export const ToolResponse = ({
             enableSorting: true,
         }))
         : [];
-      // --- End of column definition --- 
+ 
 
-      // --- Handle Rerun ---
       const handleRerun = () => {
         if (onRerunQuery) {
             onRerunQuery(editedQuery);
@@ -104,7 +78,7 @@ export const ToolResponse = ({
                 {/* Show query text only when not editing */}
                 {!isEditingQuery && (
                      <pre className="p-2 text-xs font-mono bg-zinc-100 dark:bg-zinc-900 rounded overflow-x-auto">
-                        <code>{args.sqlQuery}</code>
+                        <code>{sqlQuery}</code>
                     </pre>
                 )}
             </div>
@@ -165,9 +139,7 @@ export const ToolResponse = ({
             )}
         </div>
       );
-    // --- Removed cases for searchInteractions and getAnnotations ---
     default:
-       console.warn(`Received response for unknown tool: ${toolName}`);
       return <p className="text-sm text-muted-foreground">Unknown tool response format.</p>;
   }
 }; 

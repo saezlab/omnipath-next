@@ -2,44 +2,23 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { StateCreator } from 'zustand'
 import { nanoid } from 'nanoid'
-import { ToolInvocation } from 'ai'
-
-export interface ChatMessage {
-  id: string
-  role: 'user' | 'assistant' | 'system' | 'function' | 'tool'
-  content: string
-  toolInvocations?: ToolInvocation[]
-}
-
-export interface ChatSession {
-  id: string
-  messages: ChatMessage[]
-}
-
-export interface SearchHistoryItem {
-  id: string
-  query: string
-  type: 'annotation' | 'interaction'
-  timestamp: number
-  url: string
-}
+import { ChatMessage, ChatSession, SearchHistoryItem } from '@/types/chat'
 
 interface SearchState {
-  // Chat state
+  // Chat state (persistence only)
   chats: ChatSession[]
   currentChatId: string | null
-  messages: ChatMessage[]
 
   // Search history
   searchHistory: SearchHistoryItem[]
   maxHistoryItems: number
 
   // Chat Actions
-  addMessage: (message: ChatMessage) => void
-  setMessages: (messages: ChatMessage[]) => void
-  startNewChat: () => void
+  startNewChat: (initialMessages?: ChatMessage[]) => string
   switchChat: (chatId: string) => void
-  saveCurrentChat: () => void
+  updateChat: (chatId: string, messages: ChatMessage[]) => void
+  deleteChat: (chatId: string) => void
+  getCurrentChat: () => ChatSession | null
 
   // Search History Actions
   addToSearchHistory: (query: string, type: SearchHistoryItem['type'], url: string) => void
@@ -48,59 +27,87 @@ interface SearchState {
 
 type SearchStateCreator = StateCreator<SearchState, [], []>
 
-const initialChatId = nanoid()
-
 export const useSearchStore = create<SearchState>()(
   persist(
     ((set, get) => ({
       // Chat initial state
-      chats: [{ id: initialChatId, messages: [] }],
-      currentChatId: initialChatId,
-      messages: [],
+      chats: [],
+      currentChatId: null,
 
       // Search history initial state
       searchHistory: [],
       maxHistoryItems: 20,
 
       // Chat Actions
-      addMessage: (message: ChatMessage) => {
-        const currentMessages = get().messages
-        set({ messages: [...currentMessages, message] })
-        get().saveCurrentChat()
-      },
-      setMessages: (messages: ChatMessage[]) => {
-        set({ messages })
-        get().saveCurrentChat()
-      },
-      startNewChat: () => {
+      startNewChat: (initialMessages?: ChatMessage[]) => {
         const newChatId = nanoid()
-        const newChat: ChatSession = { id: newChatId, messages: [] }
+        const newMessages = initialMessages || []
+        const now = Date.now()
+        const newChat: ChatSession = { 
+          id: newChatId, 
+          messages: newMessages,
+          createdAt: now,
+          updatedAt: now
+        }
         const currentChats = get().chats
         set({
           chats: [...currentChats, newChat],
           currentChatId: newChatId,
-          messages: [],
         })
+        return newChatId
       },
       switchChat: (chatId: string) => {
         const targetChat = get().chats.find(chat => chat.id === chatId)
         if (targetChat) {
-          set({
-            currentChatId: chatId,
-            messages: targetChat.messages,
-          })
-        } else {
-          console.warn(`Chat with id ${chatId} not found.`)
+          set({ currentChatId: chatId })
         }
       },
-      saveCurrentChat: () => {
-        const { currentChatId, messages, chats } = get()
-        if (!currentChatId) return
-
+      updateChat: (chatId: string, messages: ChatMessage[]) => {
+        const { chats } = get()
         const updatedChats = chats.map(chat =>
-          chat.id === currentChatId ? { ...chat, messages: messages } : chat
+          chat.id === chatId ? { 
+            ...chat, 
+            messages: messages, 
+            updatedAt: Date.now()
+          } : chat
         )
         set({ chats: updatedChats })
+      },
+      getCurrentChat: () => {
+        const { chats, currentChatId } = get()
+        return chats.find(chat => chat.id === currentChatId) || null
+      },
+      deleteChat: (chatId: string) => {
+        const { chats, currentChatId } = get()
+        const updatedChats = chats.filter(chat => chat.id !== chatId)
+        
+        // If deleting current chat, switch to another or create new one
+        if (currentChatId === chatId) {
+          if (updatedChats.length > 0) {
+            // Switch to the first available chat
+            const firstChat = updatedChats[0]
+            set({ 
+              chats: updatedChats,
+              currentChatId: firstChat.id
+            })
+          } else {
+            // No chats left, create a new one
+            const newChatId = nanoid()
+            const now = Date.now()
+            const newChat: ChatSession = { 
+              id: newChatId, 
+              messages: [],
+              createdAt: now,
+              updatedAt: now
+            }
+            set({
+              chats: [newChat],
+              currentChatId: newChatId
+            })
+          }
+        } else {
+          set({ chats: updatedChats })
+        }
       },
 
       // Search History Actions

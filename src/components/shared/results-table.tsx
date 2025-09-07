@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+// Removed Table imports - using native HTML elements instead
 import { ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from "@/components/ui/input";
@@ -40,6 +32,7 @@ export interface ColumnDef<TData extends DataRow> {
 interface ResultsTableProps<TData extends DataRow> {
   columns: ColumnDef<TData>[];
   data: TData[];
+  exportData?: TData[]; // Optional full dataset for export
   initialSortKey?: keyof TData | string;
   initialSortDirection?: 'asc' | 'desc';
   onRowClick?: (row: TData) => void;
@@ -55,11 +48,26 @@ interface ResultsTableProps<TData extends DataRow> {
   exportFilenamePrefix?: string;
   resultsPerPage?: number;
   maxCellChars?: number; // New prop for max characters
+  resultsCount?: number; // Optional results count to display in toolbar
+  resultsLabel?: string; // Label for the results count (e.g., "interactions", "entities")
+  // Infinite scroll props
+  infiniteScroll?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  loadingMore?: boolean;
+  // External sort control props
+  sortKey?: keyof TData | string | null;
+  sortDirection?: 'asc' | 'desc' | null;
+  onSortChange?: (key: keyof TData | string, direction: 'asc' | 'desc') => void;
+  // Simple title props
+  title?: string;
+  titleCount?: number;
 }
 
 export function ResultsTable<TData extends DataRow>({
   columns,
   data,
+  exportData,
   initialSortKey,
   initialSortDirection,
   onRowClick,
@@ -67,27 +75,55 @@ export function ResultsTable<TData extends DataRow>({
   headerRowClassName,
   bodyRowClassName,
   maxHeight = "max-h-96",
-  showSearch = true,
+  showSearch = false,
   searchKeys,
   searchPlaceholder = "Search within table...",
   showExport = true,
   exportFilenamePrefix = 'table_export',
   resultsPerPage = 15,
   maxCellChars, // Destructure new prop
+  resultsCount, // Optional results count
+  resultsLabel = "results", // Default label
+  // Infinite scroll props
+  infiniteScroll = false,
+  hasMore = false,
+  onLoadMore,
+  loadingMore = false,
+  // External sort control props
+  sortKey: externalSortKey,
+  sortDirection: externalSortDirection,
+  onSortChange,
+  // Simple title props
+  title,
+  titleCount,
 }: ResultsTableProps<TData>) {
-  const [sortKey, setSortKey] = useState<keyof TData | string | null>(initialSortKey ?? null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(initialSortDirection ?? null);
+  const [internalSortKey, setInternalSortKey] = useState<keyof TData | string | null>(initialSortKey ?? null);
+  const [internalSortDirection, setInternalSortDirection] = useState<'asc' | 'desc' | null>(initialSortDirection ?? null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  // Internal infinite scroll state
+  const [displayedBatches, setDisplayedBatches] = useState(1);
+  const loadMoreRef = React.useRef<HTMLDivElement>(null);
+
+  // Use external sort state if provided, otherwise use internal state
+  const sortKey = externalSortKey !== undefined ? externalSortKey : internalSortKey;
+  const sortDirection = externalSortDirection !== undefined ? externalSortDirection : internalSortDirection;
 
   const handleSort = (key: keyof TData | string) => {
     if (!columns.find(col => col.accessorKey === key)?.enableSorting) return;
 
-    if (sortKey === key) {
-      setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    if (onSortChange) {
+      // Use external sort control
+      const newDirection = sortKey === key ? (sortDirection === 'asc' ? 'desc' : 'asc') : 'asc';
+      onSortChange(key, newDirection);
     } else {
-      setSortKey(key);
-      setSortDirection('asc');
+      // Use internal sort control
+      if (internalSortKey === key) {
+        setInternalSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setInternalSortKey(key);
+        setInternalSortDirection('asc');
+      }
     }
   };
 
@@ -112,7 +148,8 @@ export function ResultsTable<TData extends DataRow>({
       );
     }
 
-    if (sortKey && sortDirection) {
+    // Only apply internal sorting if not using external sort control
+    if (sortKey && sortDirection && !onSortChange) {
       const columnDef = columns.find(col => col.accessorKey === sortKey);
       if (columnDef?.enableSorting) {
         filteredData.sort((a, b) => {
@@ -126,29 +163,73 @@ export function ResultsTable<TData extends DataRow>({
     }
 
     return filteredData;
-  }, [data, searchTerm, showSearch, searchKeys, sortKey, sortDirection, columns]);
+  }, [data, searchTerm, showSearch, searchKeys, sortKey, sortDirection, columns, onSortChange]);
 
-  // Pagination logic
+  // Pagination logic (only for non-infinite scroll)
   const totalPages = Math.ceil(processedData.length / resultsPerPage);
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * resultsPerPage;
-    const end = start + resultsPerPage;
-    return processedData.slice(start, end);
-  }, [processedData, currentPage, resultsPerPage]);
+  const displayData = useMemo(() => {
+    if (infiniteScroll) {
+      // Internal infinite scroll: show batches based on displayedBatches
+      const itemsToShow = displayedBatches * resultsPerPage;
+      return processedData.slice(0, itemsToShow);
+    } else {
+      const start = (currentPage - 1) * resultsPerPage;
+      const end = start + resultsPerPage;
+      return processedData.slice(start, end);
+    }
+  }, [processedData, currentPage, resultsPerPage, infiniteScroll, displayedBatches]);
 
-  // Reset to page 1 when search term or sort changes
+  // Reset to page 1 when search term or sort changes (only for pagination mode)
+  // Reset displayed batches when search term or sort changes (for infinite scroll)
   React.useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, sortKey, sortDirection]);
+    if (!infiniteScroll) {
+      setCurrentPage(1);
+    } else {
+      setDisplayedBatches(1);
+    }
+  }, [searchTerm, sortKey, sortDirection, infiniteScroll]);
+
+  // Intersection observer for infinite scroll
+  React.useEffect(() => {
+    if (!infiniteScroll) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) return;
+
+        if (onLoadMore) {
+          // External infinite scroll mode
+          if (hasMore && !loadingMore) {
+            onLoadMore();
+          }
+        } else {
+          // Internal infinite scroll mode
+          const totalAvailable = processedData.length;
+          const currentlyShowing = displayedBatches * resultsPerPage;
+          if (currentlyShowing < totalAvailable) {
+            setDisplayedBatches(prev => prev + 1);
+          }
+        }
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [infiniteScroll, hasMore, loadingMore, onLoadMore, processedData.length, displayedBatches, resultsPerPage]);
 
   // Internal export handler
   const handleInternalExport = () => {
-    if (processedData.length === 0) {
+    const dataToExport = exportData || processedData;
+    if (dataToExport.length === 0) {
         console.warn("No data to export.");
         return;
     }
     const filename = `${exportFilenamePrefix}_${new Date().toISOString().split('T')[0]}`;
-    exportToTSV(processedData, filename); // Use processedData directly if exportToTSV handles object arrays
+    exportToTSV(dataToExport, filename); // Use exportData if available, otherwise processedData
   };
 
   if (!data || data.length === 0) {
@@ -156,38 +237,62 @@ export function ResultsTable<TData extends DataRow>({
   }
 
   return (
-    <div>
-      {(showSearch || showExport) && (
-        <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-primary/20">
-          <div className="flex-grow">
-            {showSearch && (
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-8 max-w-xs"
-              />
-            )}
+    <div className={cn("w-full max-w-full flex flex-col", infiniteScroll ? "h-full" : "")}>
+      <div className={cn("relative w-full max-w-full overflow-hidden border border-primary/20 hover:border-primary/40 shadow-sm hover:shadow-md bg-background rounded-lg transition-all duration-200 flex flex-col", infiniteScroll ? "h-full" : "")}>
+        {showExport && (
+          <Button 
+            variant="default"
+            size="icon" 
+            onClick={handleInternalExport}
+            disabled={(exportData || processedData).length === 0}
+            className="absolute top-2 right-4 h-8 w-8 z-50"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+        )}
+        {(showSearch || resultsCount !== undefined || title) && (
+          <div className="flex flex-row items-center justify-start space-y-0 p-4 bg-background flex-shrink-0 min-w-0">
+            <div className="flex items-center space-x-2 min-w-0 pr-12">
+              {title && (
+                <h3 className="text-lg font-semibold truncate">
+                  {title}
+                </h3>
+              )}
+              {titleCount !== undefined && (
+                <span className="text-muted-foreground whitespace-nowrap">
+                  ({titleCount.toLocaleString()})
+                </span>
+              )}
+              {resultsCount !== undefined && !title && (
+                <span className="text-muted-foreground whitespace-nowrap">
+                  ({resultsCount.toLocaleString()} {resultsLabel})
+                </span>
+              )}
+              {showSearch && (
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="h-8 max-w-xs"
+                />
+              )}
+            </div>
           </div>
-          {showExport && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleInternalExport}
-              disabled={processedData.length === 0}
-              className="h-8 flex-shrink-0"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          )}
-        </div>
-      )}
-      <ScrollArea className={cn("relative", maxHeight, "overflow-auto")}>
+        )}
+        <div className={cn(
+          "overflow-x-auto",
+          infiniteScroll ? "flex-1 overflow-y-auto relative" : `overflow-y-auto ${maxHeight === "max-h-96" ? "max-h-[400px]" : maxHeight}`
+        )}>
         <TooltipProvider>
-          <Table className={cn("w-full min-w-max", tableClassName)}>
-            <TableHeader>
-              <TableRow className={headerRowClassName}>
+          <table className={cn("w-full min-w-max caption-bottom text-sm", tableClassName)}>
+            <thead className={cn(
+              "[&_tr]:border-b [&_tr]:border-primary/20",
+              infiniteScroll ? "sticky top-0 bg-background z-20 shadow-sm border-b" : ""
+            )}>
+              <tr className={cn(
+                "hover:bg-muted/50 data-[state=selected]:bg-muted border-b border-primary/20 transition-colors",
+                headerRowClassName
+              )}>
                 {columns.map((column) => {
                   const headerContent = typeof column.header === 'function'
                     ? column.header({ column })
@@ -197,10 +302,11 @@ export function ResultsTable<TData extends DataRow>({
                     : String(column.accessorKey);
 
                   return (
-                    <TableHead
+                    <th
                       key={String(column.accessorKey)}
                       onClick={() => column.enableSorting && handleSort(column.accessorKey)}
                       className={cn(
+                        "text-foreground h-12 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
                         column.enableSorting ? "cursor-pointer" : "",
                         column.headerClassName
                       )}
@@ -233,17 +339,21 @@ export function ResultsTable<TData extends DataRow>({
                         }
                         return content; // Render content directly if not truncated
                       })()}
-                    </TableHead>
+                    </th>
                   );
                 })}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedData.map((row, rowIndex) => (
-                <TableRow
+              </tr>
+            </thead>
+            <tbody className="[&_tr:last-child]:border-0">
+              {displayData.map((row, rowIndex) => (
+                <tr
                   key={rowIndex}
                   onClick={() => onRowClick?.(row)}
-                  className={cn(onRowClick ? "cursor-pointer hover:bg-muted/50" : "", bodyRowClassName)}
+                  className={cn(
+                    "hover:bg-muted/50 data-[state=selected]:bg-muted border-b border-primary/20 transition-colors",
+                    onRowClick ? "cursor-pointer hover:bg-muted/50" : "", 
+                    bodyRowClassName
+                  )}
                 >
                   {columns.map((column) => {
                     const cellContent = column.cell({ row });
@@ -270,10 +380,10 @@ export function ResultsTable<TData extends DataRow>({
                     }
 
                     return (
-                      <TableCell
+                      <td
                         key={`${rowIndex}-${String(column.accessorKey)}`}
                         className={cn(
-                          "text-xs",
+                          "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-xs",
                           column.cellClassName
                         )}
                       >
@@ -307,17 +417,67 @@ export function ResultsTable<TData extends DataRow>({
                           // render the original cellContent.
                           return cellContent; 
                         })()}
-                      </TableCell>
+                      </td>
                     );
                   })}
-                </TableRow>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </TooltipProvider>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
-      {totalPages > 1 && (
+        {/* Infinite scroll sentinel and loading indicator */}
+        {infiniteScroll && (
+          <>
+            {(() => {
+              if (onLoadMore) {
+                // External infinite scroll mode
+                return (
+                  <>
+                    {hasMore && (
+                      <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">
+                          {loadingMore ? "Loading more..." : ""}
+                        </div>
+                      </div>
+                    )}
+                    {!hasMore && data.length > 0 && (
+                      <div className="flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">All results loaded</div>
+                      </div>
+                    )}
+                  </>
+                );
+              } else {
+                // Internal infinite scroll mode
+                const totalAvailable = processedData.length;
+                const currentlyShowing = displayedBatches * resultsPerPage;
+                const hasMoreInternal = currentlyShowing < totalAvailable;
+                
+                return (
+                  <>
+                    {hasMoreInternal && (
+                      <div ref={loadMoreRef} className="h-4 flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">
+                          Scroll for more...
+                        </div>
+                      </div>
+                    )}
+                    {!hasMoreInternal && processedData.length > 0 && (
+                      <div className="flex justify-center py-8">
+                        <div className="text-muted-foreground text-sm">
+                          All {processedData.length.toLocaleString()} results loaded
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              }
+            })()}
+          </>
+        )}
+        </div>
+      </div>
+      {!infiniteScroll && totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
