@@ -1,10 +1,9 @@
 "use client"
 import { AboutSection } from "@/components/home/about-section"
-import { AIAssistantCard } from "@/components/home/ai-assistant-card"
 import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { ResourcesTable } from "@/components/home/resources-table"
-import { Database, Download, FileText, Filter, FlaskConical, MapPin, Network, Search, Tag, Users } from "lucide-react"
+import { Database, MessageSquare, Filter, Download, FileText, History, Code } from "lucide-react"
 import CombinedDatabaseVisualization from '@/components/home/combined-database-visualization';
 export function HomePage() {
   return (
@@ -16,29 +15,52 @@ export function HomePage() {
           <FeatureCard
             icon={<Database className="h-6 w-6 text-primary" />}
             title="Explore 5 Integrated Databases"
-            description="Search across all molecular data types in one unified interface"
+            description="Explore general molecular- and enzyme-substrate interactions, annotations, intercellular communication, complexes in one unified interface"
             features={[
               {
-                icon: <Network className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />,
-                title: "Molecular Interactions",
-                description: "Protein-protein, transcriptional, and signaling interactions",
+                icon: <Filter className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />,
+                title: "Advanced Filtering",
+                description: "Filter by organism, data source, and more",
               },
               {
-                icon: <Tag className="h-4 w-4 mt-0.5 text-secondary flex-shrink-0" />,
-                title: "Functional Annotations",
-                description: "GO terms, pathways, localization, and biological properties",
+                icon: <FileText className="h-4 w-4 mt-0.5 text-secondary flex-shrink-0" />,
+                title: "Provenance Tracking",
+                description: "Track data sources and original publications",
               },
               {
-                icon: <Users className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" />,
-                title: "Complexes & Communication",
-                description: "Protein complexes, enzyme-substrate, and intercellular roles",
+                icon: <Download className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" />,
+                title: "Data Export (TSV)",
+                description: "Export filtered results in tab-separated format",
               },
             ]}
             href="/search"
             buttonText="Search All Databases"
           />
 
-          <AIAssistantCard />
+          <FeatureCard
+            icon={<MessageSquare className="h-6 w-6 text-accent-foreground" />}
+            title="OmniPath AI Assistant"
+            description="Get help finding information about proteins, interactions, pathways and more."
+            features={[
+              {
+                icon: <Code className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />,
+                title: "Transform Queries to SQL",
+                description: "Convert natural language to database queries",
+              },
+              {
+                icon: <History className="h-4 w-4 mt-0.5 text-secondary flex-shrink-0" />,
+                title: "Message History",
+                description: "Access and continue previous conversations",
+              },
+              {
+                icon: <MessageSquare className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" />,
+                title: "Interactive Chat",
+                description: "Ask follow-up questions and get detailed explanations",
+              },
+            ]}
+            href="/chat"
+            buttonText="Start Chat"
+          />
         </div>
 
 
