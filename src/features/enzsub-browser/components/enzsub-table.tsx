@@ -47,7 +47,6 @@ export function EnzSubTable({
       accessorKey: 'enzyme',
       header: 'Enzyme',
       cell: ({ row }) => {
-        const role = getProteinRole(row, searchedProteins)
         return (
             <EntityBadge 
               geneSymbol={row.enzymeGenesymbol || ""} 
@@ -60,7 +59,6 @@ export function EnzSubTable({
       accessorKey: 'substrate',
       header: 'Substrate',
       cell: ({ row }) => {
-        const role = getProteinRole(row, searchedProteins)
         return (
             <EntityBadge 
               geneSymbol={row.substrateGenesymbol || ""} 

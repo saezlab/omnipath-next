@@ -45,6 +45,7 @@ import { AnnotationsFilterSidebar } from "@/features/annotations-browser/compone
 import { IntercellFilterSidebar } from "@/features/intercell-browser/components/filter-sidebar"
 import { ComplexesFilterSidebar } from "@/features/complexes-browser/components/filter-sidebar"
 import { EnzSubFilterSidebar } from "@/features/enzsub-browser/components/filter-sidebar"
+import { FeedbackDialog } from "@/components/ui/feedback-dialog"
 
 const navigationItems = [
   {
@@ -366,7 +367,8 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-between px-4 py-2">
+          <FeedbackDialog />
           <Button
             variant="ghost"
             size="icon"

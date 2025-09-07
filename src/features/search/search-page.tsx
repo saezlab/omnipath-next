@@ -38,6 +38,7 @@ export function SearchPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
   const [identifierResults, setIdentifierResults] = useState<Record<string, SearchIdentifiersResponse>>({})
+  const [lastQueryType, setLastQueryType] = useState<'single' | 'multi' | null>(null)
   
   // Get active tab from URL, default to interactions
   const activeTab = searchParams.get('tab') || 'interactions'
@@ -52,6 +53,14 @@ export function SearchPage() {
   // Fetch identifier results for all queries (single and multi)
   useEffect(() => {
     if (urlQuery) {
+      const currentQueryType = isMultiQuery(urlQuery) ? 'multi' : 'single'
+      
+      // Clear cache if query type changed
+      if (lastQueryType !== null && lastQueryType !== currentQueryType) {
+        setIdentifierResults({})
+      }
+      setLastQueryType(currentQueryType)
+      
       const fetchIdentifiers = async () => {
         if (isMultiQuery(urlQuery)) {
           // For multi-query, use searchMultipleIdentifiers with limit=1
@@ -98,6 +107,10 @@ export function SearchPage() {
         }
       }
       fetchIdentifiers()
+    } else {
+      // Clear results when no query
+      setIdentifierResults({})
+      setLastQueryType(null)
     }
   }, [urlQuery, selectedSpecies])
 
