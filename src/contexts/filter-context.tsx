@@ -21,6 +21,7 @@ interface InteractionFilterProps {
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void
+  isMultiQuery?: boolean
 }
 
 interface AnnotationFilterProps {

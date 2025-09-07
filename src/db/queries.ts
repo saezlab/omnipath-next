@@ -34,6 +34,20 @@ export async function searchIdentifiers(query: string, limit: number = 20, taxon
 
 export type SearchIdentifiersResponse = Awaited<ReturnType<typeof searchIdentifiers>>;
 
+export async function searchMultipleIdentifiers(queries: string[], limit: number = 1, taxonId?: string) {
+  const allResults: SearchIdentifiersResponse = [];
+  
+  for (const query of queries) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
+      const results = await searchIdentifiers(trimmedQuery, limit, taxonId);
+      allResults.push(...results);
+    }
+  }
+  
+  return allResults;
+}
+
 
 export async function executeReadOnlyQuery(query: string): Promise<Record<string, unknown>[]> {
   const trimmedQuery = query.trim().toUpperCase();

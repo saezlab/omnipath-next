@@ -321,6 +321,7 @@ export function AppSidebar() {
                       filterCounts={filterData.filterCounts}
                       onFilterChange={filterData.onFilterChange}
                       onClearFilters={filterData.onClearFilters}
+                      isMultiQuery={filterData.isMultiQuery}
                     />
                   )}
                   {filterData.type === "annotations" && (

@@ -24,6 +24,7 @@ interface FilterSidebarProps {
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void
+  isMultiQuery?: boolean
 }
 
 
@@ -33,6 +34,7 @@ export function FilterSidebar({
   filterCounts,
   onFilterChange,
   onClearFilters,
+  isMultiQuery = false,
 }: FilterSidebarProps) {
   // Get unique values for each filter type
   const interactionTypes = Object.keys(filterCounts.interactionType)
@@ -174,44 +176,46 @@ export function FilterSidebar({
               })}
             </SidebarMenuSub>
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="pointer-events-none" tooltip="Direction">
-              <span>Direction</span>
-            </SidebarMenuButton>
-            <SidebarMenuSub className="space-y-1">
-              {directionOptions.map((option) => {
-                const count = filterCounts.direction[option] || 0
-                const isSelected = filters.direction?.includes(option) || false
-                const isDisabled = count === 0 && !isSelected
-                
-                return (
-                  <SidebarMenuSubItem key={option}>
-                    <div className={`flex items-center justify-between w-full ${isDisabled ? 'opacity-50' : ''}`}>
-                      <Label
-                        htmlFor={`direction-${option}`}
-                        className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                          isSelected ? "text-sidebar-primary font-medium" : ""
-                        }`}
-                      >
-                        <Checkbox
-                          id={`direction-${option}`}
-                          checked={isSelected}
-                          onCheckedChange={() => onFilterChange("direction", option)}
-                          className={isSelected ? "border-sidebar-primary" : ""}
-                        />
-                        <div className="flex items-center gap-2">
-                          {option === 'upstream' && <span className="text-blue-500">↑</span>}
-                          {option === 'downstream' && <span className="text-blue-500">↓</span>}
-                          <span className="capitalize">{option}</span>
-                        </div>
-                      </Label>
-                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
-                    </div>
-                  </SidebarMenuSubItem>
-                )
-              })}
-            </SidebarMenuSub>
-          </SidebarMenuItem>
+          {!isMultiQuery && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Direction">
+                <span>Direction</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                {directionOptions.map((option) => {
+                  const count = filterCounts.direction[option] || 0
+                  const isSelected = filters.direction?.includes(option) || false
+                  const isDisabled = count === 0 && !isSelected
+                  
+                  return (
+                    <SidebarMenuSubItem key={option}>
+                      <div className={`flex items-center justify-between w-full ${isDisabled ? 'opacity-50' : ''}`}>
+                        <Label
+                          htmlFor={`direction-${option}`}
+                          className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                            isSelected ? "text-sidebar-primary font-medium" : ""
+                          }`}
+                        >
+                          <Checkbox
+                            id={`direction-${option}`}
+                            checked={isSelected}
+                            onCheckedChange={() => onFilterChange("direction", option)}
+                            className={isSelected ? "border-sidebar-primary" : ""}
+                          />
+                          <div className="flex items-center gap-2">
+                            {option === 'upstream' && <span className="text-blue-500">↑</span>}
+                            {option === 'downstream' && <span className="text-blue-500">↓</span>}
+                            <span className="capitalize">{option}</span>
+                          </div>
+                        </Label>
+                        <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{count}</SidebarMenuBadge>
+                      </div>
+                    </SidebarMenuSubItem>
+                  )
+                })}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton className="pointer-events-none" tooltip="Sign">
               <span>Sign</span>

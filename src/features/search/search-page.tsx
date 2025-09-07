@@ -18,6 +18,18 @@ import { ComplexesBrowser } from "@/features/complexes-browser/components/comple
 import { EnzSubBrowser } from "@/features/enzsub-browser/components/enzsub-browser"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
 
+// Helper functions
+function parseQueries(queryString: string): string[] {
+  return queryString
+    .split(/[,;]/)
+    .map(q => q.trim())
+    .filter(q => q.length > 0)
+}
+
+function isMultiQuery(queryString: string): boolean {
+  return parseQueries(queryString).length > 1
+}
+
 export function SearchPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -26,9 +38,8 @@ export function SearchPage() {
   const [query, setQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
-  const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
-  const [isLoadingProtein, setIsLoadingProtein] = useState(false)
-
+  const [proteinIdentifiers, setProteinIdentifiers] = useState<Record<string, any[]>>({})
+  
   // Get active tab from URL, default to interactions
   const activeTab = searchParams.get('tab') || 'interactions'
   const urlQuery = searchParams.get('q') || ''
@@ -39,35 +50,29 @@ export function SearchPage() {
     setQuery(currentQuery)
   }, [urlQuery])
 
-  // Fetch protein data when URL query exists on mount/refresh
+  // Fetch identifier results for all queries (single and multi)
   useEffect(() => {
-    const fetchProteinData = async (searchQuery: string, species: string) => {
-      if (!searchQuery.trim()) {
-        setProteinData(null)
-        return
-      }
-
-      setIsLoadingProtein(true)
-      try {
-        const results = await searchIdentifiers(searchQuery.trim(), 20, species)
-        if (results.length > 0) {
-          const proteinResponse = await getProteinInformation(results)
-          setProteinData(proteinResponse)
-        } else {
-          setProteinData(null)
-        }
-      } catch (error) {
-        console.error("Error fetching protein information on refresh:", error)
-        setProteinData(null)
-      } finally {
-        setIsLoadingProtein(false)
-      }
-    }
-
     if (urlQuery) {
-      fetchProteinData(urlQuery, selectedSpecies)
+      const proteins = isMultiQuery(urlQuery) ? parseQueries(urlQuery) : [urlQuery]
+      const fetchIdentifiers = async () => {
+        const identifiers: Record<string, any[]> = {}
+        for (const protein of proteins) {
+          if (!proteinIdentifiers[protein]) {
+            try {
+              const results = await searchIdentifiers(protein.trim(), 20, selectedSpecies)
+              identifiers[protein] = results
+            } catch (error) {
+              console.error(`Error fetching identifiers for ${protein}:`, error)
+              identifiers[protein] = []
+            }
+          }
+        }
+        setProteinIdentifiers(prev => ({ ...prev, ...identifiers }))
+      }
+      fetchIdentifiers()
     }
   }, [urlQuery, selectedSpecies])
+
 
   const handleSearch = async (searchQuery: string, displayTerm?: string) => {
     if (!searchQuery.trim()) return
@@ -98,23 +103,6 @@ export function SearchPage() {
     try {
       // Fetch suggestions for the current query with species filter
       const results = await searchIdentifiers(query.trim(), 20, selectedSpecies)
-      
-      // Fetch protein information
-      if (results.length > 0) {
-        setIsLoadingProtein(true)
-        try {
-          const proteinResponse = await getProteinInformation(results)
-          setProteinData(proteinResponse)
-        } catch (error) {
-          console.error("Error fetching protein information:", error)
-          setProteinData(null)
-        } finally {
-          setIsLoadingProtein(false)
-        }
-      } else {
-        setProteinData(null)
-      }
-      
       if (results.length > 0) {
         // Auto-select the best match (first result)
         const bestMatch = results[0]
@@ -164,12 +152,12 @@ export function SearchPage() {
       <div className="flex flex-col gap-4">
         {/* Search Bar and Protein Card Row */}
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full">
-          {/* Protein Card */}
-          {urlQuery && (
+          {/* Protein Card - only for single queries */}
+          {urlQuery && !isMultiQuery(urlQuery) && (
             <div className="flex-shrink-0 flex sm:justify-start justify-center">
               <ProteinSummaryCard 
-                proteinData={proteinData ?? undefined}
-                isLoading={isLoadingProtein}
+                geneSymbol={urlQuery}
+                identifierResults={proteinIdentifiers[urlQuery] || []}
               />
             </div>
           )}
@@ -213,6 +201,28 @@ export function SearchPage() {
                 )}
               </Button>
             </div>
+            
+            {/* Multi-query protein cards */}
+            {urlQuery && isMultiQuery(urlQuery) && (
+              <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                {parseQueries(urlQuery).map((term, index) => (
+                  <ProteinSummaryCard
+                    key={index}
+                    geneSymbol={term}
+                    identifierResults={proteinIdentifiers[term] || []}
+                    onRemove={() => {
+                      const remaining = parseQueries(urlQuery).filter((_, i) => i !== index)
+                      const newQuery = remaining.join(', ')
+                      if (newQuery) {
+                        router.push(`/search?q=${encodeURIComponent(newQuery)}&tab=${activeTab}`)
+                      } else {
+                        router.push(`/search?tab=${activeTab}`)
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
