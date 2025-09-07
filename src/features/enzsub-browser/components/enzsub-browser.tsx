@@ -43,7 +43,6 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     results: [] as EnzSubEntry[],
     isLoading: false,
   })
-  const [searchedProteins, setSearchedProteins] = useState<Set<string>>(new Set())
   const [selectedEntry, setSelectedEntry] = useState<EnzSubEntry | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const lastSearchedQuery = useRef('')
@@ -82,17 +81,6 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
         
         try {
           console.log(`Fetching enzyme-substrate data for: "${enzSubQuery}"`);
-          
-          // Store searched proteins for highlighting
-          const searchedSet = new Set<string>()
-          identifierResults.forEach(result => {
-            searchedSet.add(result.uniprotAccession)
-            if (result.identifierType.includes('gene')) {
-              searchedSet.add(result.identifierValue.toUpperCase())
-            }
-          })
-          setSearchedProteins(searchedSet)
-          
           // Get enzyme-substrate relationships
           let enzSubResponse;
           if (isMultiQuery(enzSubQuery)) {
@@ -253,7 +241,6 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
           ) : filteredEnzSubData.length > 0 ? (
             <EnzSubTable
               currentResults={filteredEnzSubData}
-              searchedProteins={searchedProteins}
               onSelectEntry={handleSelectEntry}
             />
           ) : enzSubState.results.length > 0 ? (

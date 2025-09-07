@@ -9,7 +9,6 @@ import { EntityBadge } from "@/components/EntityBadge"
 
 interface EnzSubTableProps {
   currentResults: EnzSubEntry[]
-  searchedProteins: Set<string>
   onSelectEntry?: (entry: EnzSubEntry) => void
 }
 
@@ -21,25 +20,10 @@ function formatResidue(residueType: string | null, residueOffset: number | null)
   return residueType
 }
 
-function getProteinRole(
-  entry: EnzSubEntry, 
-  searchedProteins: Set<string>
-): { isEnzyme: boolean; isSubstrate: boolean } {
-  const enzymeMatches = searchedProteins.has(entry.enzyme || '') || 
-                       searchedProteins.has(entry.enzymeGenesymbol || '')
-  const substrateMatches = searchedProteins.has(entry.substrate || '') || 
-                          searchedProteins.has(entry.substrateGenesymbol || '')
-  
-  return {
-    isEnzyme: enzymeMatches,
-    isSubstrate: substrateMatches
-  }
-}
 
 
 export function EnzSubTable({
   currentResults,
-  searchedProteins,
   onSelectEntry,
 }: EnzSubTableProps) {
   const columns: ColumnDef<EnzSubEntry>[] = [
