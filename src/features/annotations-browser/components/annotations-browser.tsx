@@ -91,8 +91,6 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
         setHasMoreSources(true)
         
         try {
-          console.log(`Fetching annotations for: "${annotationsQuery}"`);
-          
           // Use the passed identifier results to get annotations
           const annotationsResponse = await getProteinAnnotations(identifierResults)
           
@@ -110,25 +108,10 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     }
   }, [annotationsQuery, identifierResults])
 
-  // Get all unique sources from all annotations (for infinite scroll management)
-  // Keep natural database order - don't sort to prevent layout shifts
-  const allUniqueSources = useMemo(() => {
-    const seenSources = new Set<string>()
-    const sources: string[] = []
-    
-    // Preserve order of appearance in database
-    annotationState.results.forEach(annotation => {
-      if (annotation.source && !seenSources.has(annotation.source)) {
-        seenSources.add(annotation.source)
-        sources.push(annotation.source)
-      }
-    })
-    
-    return sources
-  }, [annotationState.results])
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {
+    
     // First, find all recordIds that match the value search in any field
     const matchingRecordIds = new Set<number>()
     
@@ -150,7 +133,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     })
 
     // Then filter annotations based on all criteria
-    return annotationState.results.filter((annotation) => {
+    const filtered = annotationState.results.filter((annotation) => {
       // Filter by source
       if (annotationsFilters.sources.length > 0 && annotation.source) {
         const sourceMatch = annotationsFilters.sources.some(filterSource => 
@@ -176,6 +159,8 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
 
       return true
     })
+    
+    return filtered
   }, [annotationState.results, annotationsFilters])
 
   // Calculate filter counts based on unique records
@@ -216,16 +201,13 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
   const loadMoreSources = useCallback(() => {
     if (!hasMoreSources) return
     
-    const filteredSources = allUniqueSources.filter(source => {
-      if (annotationsFilters.sources.length > 0) {
-        return annotationsFilters.sources.some(filterSource => 
-          filterSource.toLowerCase() === source.toLowerCase()
-        )
-      }
-      return true
-    })
-    
-    const nextSources = filteredSources.slice(
+    // Get sources that have filtered data
+    const sourcesWithData = [...new Set(
+      filteredAnnotations
+        .map(annotation => annotation.source)
+        .filter((source): source is string => Boolean(source))
+    )]
+    const nextSources = sourcesWithData.slice(
       loadedSources.length, 
       loadedSources.length + SOURCES_PER_LOAD
     )
@@ -237,18 +219,27 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     
     setLoadedSources(prev => [...prev, ...nextSources])
     
-    // Check if there are more sources to load
-    if (loadedSources.length + nextSources.length >= filteredSources.length) {
+    if (loadedSources.length + nextSources.length >= sourcesWithData.length) {
       setHasMoreSources(false)
     }
-  }, [allUniqueSources, annotationsFilters.sources, loadedSources, hasMoreSources])
+  }, [filteredAnnotations, loadedSources, hasMoreSources])
 
-  // Initialize loading the first batch of sources
+  // Reset and load sources when filters change
   useEffect(() => {
-    if (allUniqueSources.length > 0 && loadedSources.length === 0 && annotationState.results.length > 0) {
+    if (filteredAnnotations.length > 0) {
+      // Always reset and reload when filtered data changes
+      setLoadedSources([])
+      setHasMoreSources(true)
+      // loadMoreSources will be called in the next effect cycle when loadedSources.length becomes 0
+    }
+  }, [filteredAnnotations.length])
+
+  // Load first batch when loadedSources is empty
+  useEffect(() => {
+    if (filteredAnnotations.length > 0 && loadedSources.length === 0) {
       loadMoreSources()
     }
-  }, [allUniqueSources, loadedSources.length, annotationState.results.length, loadMoreSources])
+  }, [filteredAnnotations.length, loadedSources.length, loadMoreSources])
 
   // Intersection observer for infinite scroll
   useEffect(() => {
@@ -272,7 +263,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
   const currentResults = filteredAnnotations.filter(annotation => 
     loadedSources.includes(annotation.source || '')
   )
-
+  
   // Get unique record count for display
   const uniqueRecordCount = new Set(currentResults.map(a => a.recordId)).size
 

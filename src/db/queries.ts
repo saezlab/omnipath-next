@@ -4,7 +4,7 @@ import { db } from ".";
 import { uniprotIdentifiers    } from "./drizzle/schema";
 import { sql } from "drizzle-orm";
 
-export async function searchIdentifiers(query: string, limit: number = 20, taxonId?: string) {
+export async function searchIdentifiers(query: string, limit: number = 1, taxonId?: string) {
   let whereCondition = sql`${uniprotIdentifiers.identifierValue} ILIKE ${query + '%'}`;
   
   if (taxonId) {

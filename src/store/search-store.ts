@@ -133,7 +133,7 @@ export const useSearchStore = create<SearchState>()(
       clearSearchHistory: () => set({ searchHistory: [] }),
     })) as SearchStateCreator,
     {
-      name: 'search-store',
+      name: 'omnipath-store',
       partialize: (state) => ({
         chats: state.chats,
         currentChatId: state.currentChatId,
