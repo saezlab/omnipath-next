@@ -45,7 +45,7 @@ export function IntercellFilterSidebar({
   ) => {
     const counts = filterCounts[filterKey] as Record<string, number>
     return Object.entries(counts)
-      .filter(([_, count]) => count > 0)
+      .filter(([, count]) => count > 0)
       .map(([value, count]) => ({ value, count }))
       .sort((a, b) => b.count - a.count)
   }

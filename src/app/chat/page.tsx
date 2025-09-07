@@ -6,7 +6,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useSearchStore } from "@/store/search-store";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Sparkles } from "lucide-react";
 
 export default function ChatPage() {
   const searchParams = useSearchParams();

@@ -79,38 +79,38 @@ function isDownstreamInteraction(interaction: Interaction, queryUpper: string): 
 function applyFilter(
   interaction: Interaction,
   filterType: keyof InteractionsFilters,
-  filterValue: any,
+  filterValue: string[] | number | string | null,
   queryUpper: string
 ): boolean {
   switch (filterType) {
     case 'interactionType':
-      return filterValue.length === 0 || filterValue.includes(interaction.type || "")
+      return Array.isArray(filterValue) && (filterValue.length === 0 || filterValue.includes(interaction.type || ""))
     case 'entityTypeSource':
-      return filterValue.length === 0 || filterValue.includes(interaction.entityTypeSource || "")
+      return Array.isArray(filterValue) && (filterValue.length === 0 || filterValue.includes(interaction.entityTypeSource || ""))
     case 'entityTypeTarget':
-      return filterValue.length === 0 || filterValue.includes(interaction.entityTypeTarget || "")
+      return Array.isArray(filterValue) && (filterValue.length === 0 || filterValue.includes(interaction.entityTypeTarget || ""))
     case 'topology':
-      if (filterValue.length === 0) return true
+      if (!Array.isArray(filterValue) || filterValue.length === 0) return true
       const topologyMatches = []
       if (filterValue.includes('directed') && interaction.isDirected === true) topologyMatches.push(true)
       if (filterValue.includes('undirected') && interaction.isDirected === false) topologyMatches.push(true)
       return topologyMatches.length > 0
     case 'direction':
-      if (filterValue.length === 0) return true
+      if (!Array.isArray(filterValue) || filterValue.length === 0) return true
       const directionMatches = []
       if (filterValue.includes('upstream') && isUpstreamInteraction(interaction, queryUpper)) directionMatches.push(true)
       if (filterValue.includes('downstream') && isDownstreamInteraction(interaction, queryUpper)) directionMatches.push(true)
       return directionMatches.length > 0
     case 'sign':
-      if (filterValue.length === 0) return true
+      if (!Array.isArray(filterValue) || filterValue.length === 0) return true
       const signMatches = []
       if (filterValue.includes('stimulation') && interaction.consensusStimulation === true) signMatches.push(true)
       if (filterValue.includes('inhibition') && interaction.consensusInhibition === true) signMatches.push(true)
       return signMatches.length > 0
     case 'minReferences':
-      return filterValue === null || getReferenceCount(interaction) >= filterValue
+      return filterValue === null || (typeof filterValue === 'number' && getReferenceCount(interaction) >= filterValue)
     case 'search':
-      if (!filterValue) return true
+      if (!filterValue || typeof filterValue !== 'string') return true
       const searchTerm = filterValue.toLowerCase()
       return [
         interaction.sourceGenesymbol,
@@ -314,13 +314,13 @@ export function InteractionsBrowser({
     const newFilters = { ...interactionsFilters }
     
     if (type === "minReferences") {
-      (newFilters as any)[type] = Number(value) || null
+      newFilters[type] = Number(value) || null
     } else if (type === "search") {
-      (newFilters as any)[type] = value as string
+      newFilters[type] = value as string
     } else {
       // All other filters are array-based
-      const currentValues = (newFilters as any)[type] as string[]
-      ;(newFilters as any)[type] = currentValues.includes(value as string)
+      const currentValues = newFilters[type] as string[]
+      newFilters[type] = currentValues.includes(value as string)
         ? currentValues.filter((v) => v !== value)
         : [...currentValues, value as string]
     }

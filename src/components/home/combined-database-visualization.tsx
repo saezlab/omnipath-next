@@ -1,8 +1,6 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";

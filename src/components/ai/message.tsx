@@ -1,6 +1,6 @@
 "use client";
 
-import { ToolInvocation } from "ai";
+import { ToolInvocation } from "@/types/chat";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
@@ -88,7 +88,7 @@ export const Message = ({
             {toolInvocations.map((toolInvocation) => (
               <ToolDetails 
                 key={toolInvocation.toolCallId} 
-                toolInvocation={toolInvocation} 
+                toolInvocation={toolInvocation as ExtendedToolInvocation} 
                 onRerunQuery={onRerunQuery}
               />
             ))}

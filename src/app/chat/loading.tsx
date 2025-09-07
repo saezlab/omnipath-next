@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton"
-import { MessageCircle, Sparkles } from "lucide-react"
 
 export default function Loading() {
   return (

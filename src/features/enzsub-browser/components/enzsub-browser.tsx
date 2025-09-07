@@ -15,16 +15,12 @@ interface FilterCounts {
   modifications: Record<string, number>
 }
 
-interface EnzSubBrowserProps {
-  isLoading?: boolean
-}
 
-export function EnzSubBrowser({ isLoading }: EnzSubBrowserProps) {
+export function EnzSubBrowser() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [enzSubResults, setEnzSubResults] = useState<EnzSubEntry[]>([])
   const [searchedProteins, setSearchedProteins] = useState<Set<string>>(new Set())
   const lastSearchedQuery = useRef('')
@@ -59,7 +55,6 @@ export function EnzSubBrowser({ isLoading }: EnzSubBrowserProps) {
       lastSearchedQuery.current = enzSubQuery
       
       const fetchData = async () => {
-        setInternalIsLoading(true)
         
         try {
           console.log(`Fetching identifier results for: "${enzSubQuery}" with species: 9606`);
@@ -82,7 +77,6 @@ export function EnzSubBrowser({ isLoading }: EnzSubBrowserProps) {
         } catch (error) {
           console.error("Error fetching EnzSub data:", error)
         } finally {
-          setInternalIsLoading(false)
         }
       }
       

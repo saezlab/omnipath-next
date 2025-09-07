@@ -21,16 +21,12 @@ interface FilterCounts {
   plasmaMembranePeripheral: { true: number; false: number }
 }
 
-interface IntercellBrowserProps {
-  isLoading?: boolean
-}
 
-export function IntercellBrowser({ isLoading }: IntercellBrowserProps) {
+export function IntercellBrowser() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [intercellResults, setIntercellResults] = useState<IntercellEntry[]>([])
   const lastSearchedQuery = useRef('')
   
@@ -76,7 +72,6 @@ export function IntercellBrowser({ isLoading }: IntercellBrowserProps) {
       lastSearchedQuery.current = intercellQuery
       
       const fetchData = async () => {
-        setInternalIsLoading(true)
         
         try {
           console.log(`Fetching intercell data for: "${intercellQuery}" with species: 9606`);
@@ -88,7 +83,6 @@ export function IntercellBrowser({ isLoading }: IntercellBrowserProps) {
         } catch (error) {
           console.error("Error fetching intercell data:", error)
         } finally {
-          setInternalIsLoading(false)
         }
       }
       

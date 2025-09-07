@@ -3,28 +3,29 @@ import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, Pencil } from 'lucide-react';
-import { SqlResultRow, SqlToolResult, SqlToolError, ToolResult, CustomToolInvocation } from '@/types/chat';
+import { SqlResultRow, SqlToolResult, SqlToolError, ToolInvocation } from '@/types/chat';
 
 // Add onRerunQuery prop
 export const ToolResponse = ({ 
     toolInvocation,
     onRerunQuery 
 }: { 
-    toolInvocation: CustomToolInvocation,
+    toolInvocation: ToolInvocation,
     onRerunQuery?: (newQuery: string) => void 
 }) => {
   const { toolName, result, args, state } = toolInvocation;
-  const [editedQuery, setEditedQuery] = useState(args.sqlQuery);
+  const sqlQuery = 'sqlQuery' in args && typeof args.sqlQuery === 'string' ? args.sqlQuery : '';
+  const [editedQuery, setEditedQuery] = useState(sqlQuery);
   const [isEditingQuery, setIsEditingQuery] = useState(false); // State for edit mode
 
-  // Early exit for pending or unknown states without results yet
-  if (state === 'pending' || !result) {
+  // Early exit for call state or when no result is available yet
+  if (state === 'call' || !result) {
      return null; 
   }
 
   switch (toolName) {
     case "executeSql":
-      const isError = 'error' in result;
+      const isError = result && typeof result === 'object' && 'error' in result;
       const sqlResult = result as SqlToolResult; // Cast for success case
       const sqlError = result as SqlToolError; // Cast for error case
 
@@ -77,7 +78,7 @@ export const ToolResponse = ({
                 {/* Show query text only when not editing */}
                 {!isEditingQuery && (
                      <pre className="p-2 text-xs font-mono bg-zinc-100 dark:bg-zinc-900 rounded overflow-x-auto">
-                        <code>{args.sqlQuery}</code>
+                        <code>{sqlQuery}</code>
                     </pre>
                 )}
             </div>

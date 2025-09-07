@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { interactions } from "@/db/drizzle/schema";
-import { and, eq, inArray, or } from "drizzle-orm";
+import { and, inArray, or } from "drizzle-orm";
 import { SearchIdentifiersResponse } from "@/db/queries";
 
 export async function searchProteinNeighbors(identifierResults: SearchIdentifiersResponse) {

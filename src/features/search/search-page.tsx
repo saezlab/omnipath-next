@@ -280,7 +280,7 @@ export function SearchPage() {
             {isLoadingTab && urlQuery ? (
               <TableSkeleton variant="compact" rows={10} />
             ) : (
-              <IntercellBrowser isLoading={isLoadingTab} />
+              <IntercellBrowser />
             )}
           </TabsContent>
 
@@ -288,7 +288,7 @@ export function SearchPage() {
             {isLoadingTab && urlQuery ? (
               <TableSkeleton variant="compact" rows={10} />
             ) : (
-              <ComplexesBrowser isLoading={isLoadingTab} />
+              <ComplexesBrowser />
             )}
           </TabsContent>
 
@@ -296,7 +296,7 @@ export function SearchPage() {
             {isLoadingTab && urlQuery ? (
               <TableSkeleton variant="compact" rows={10} />
             ) : (
-              <EnzSubBrowser isLoading={isLoadingTab} />
+              <EnzSubBrowser />
             )}
           </TabsContent>
         </Tabs>

@@ -5,11 +5,11 @@ export interface MessagePart {
   text?: string;
   toolCallId?: string;
   id?: string;
-  input?: any;
-  output?: any;
-  result?: any;
-  args?: any;
-  arguments?: any;
+  input?: Record<string, unknown>;
+  output?: unknown;
+  result?: unknown;
+  args?: Record<string, unknown>;
+  arguments?: Record<string, unknown>;
   state?: 'output-available' | 'call' | 'result' | string;
 }
 
@@ -22,9 +22,9 @@ export interface ChatMessage {
 export interface ToolInvocation {
   toolCallId: string;
   toolName: string;
-  args: Record<string, any>;
+  args: Record<string, unknown>;
   state: 'call' | 'result';
-  result?: any;
+  result?: unknown;
 }
 
 export interface ChatSession {
@@ -59,9 +59,3 @@ export interface SqlToolError {
 
 export type ToolResult = SqlToolResult | SqlToolError;
 
-export interface CustomToolInvocation {
-  toolName: string;
-  args: { sqlQuery: string };
-  state: string;
-  result?: ToolResult;
-}

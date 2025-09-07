@@ -13,16 +13,12 @@ interface FilterCounts {
   sources: Record<string, number>
 }
 
-interface ComplexesBrowserProps {
-  isLoading?: boolean
-}
 
-export function ComplexesBrowser({ isLoading }: ComplexesBrowserProps) {
+export function ComplexesBrowser() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [complexResults, setComplexResults] = useState<ComplexEntry[]>([])
   const lastSearchedQuery = useRef('')
   
@@ -67,7 +63,6 @@ export function ComplexesBrowser({ isLoading }: ComplexesBrowserProps) {
       lastSearchedQuery.current = complexQuery
       
       const fetchData = async () => {
-        setInternalIsLoading(true)
         
         try {
           console.log(`Fetching complexes data for: "${complexQuery}" with species: 9606`);
@@ -79,7 +74,6 @@ export function ComplexesBrowser({ isLoading }: ComplexesBrowserProps) {
         } catch (error) {
           console.error("Error fetching complexes data:", error)
         } finally {
-          setInternalIsLoading(false)
         }
       }
       

@@ -30,7 +30,6 @@ export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [internalIsLoading, setInternalIsLoading] = useState(false)
   const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
   const [loadedSources, setLoadedSources] = useState<string[]>([])
   const [hasMoreSources, setHasMoreSources] = useState(true)
@@ -69,7 +68,6 @@ export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
       lastSearchedQuery.current = annotationsQuery
       
       const fetchData = async () => {
-        setInternalIsLoading(true)
         
         // Reset infinite scroll state for new search
         setLoadedSources([])
@@ -87,7 +85,6 @@ export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
         } catch (error) {
           console.error("Error fetching data:", error)
         } finally {
-          setInternalIsLoading(false)
         }
       }
       

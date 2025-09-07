@@ -26,7 +26,7 @@ export function EnzSubFilterSidebar({
   onClearFilters,
 }: EnzSubFilterSidebarProps) {
   // Calculate active filter count
-  const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
+  const activeFilterCount = Object.entries(filters).reduce((count, [, value]) => {
     if (Array.isArray(value)) return count + value.length
     return count
   }, 0)
@@ -57,7 +57,7 @@ export function EnzSubFilterSidebar({
           </SidebarMenuButton>
           <SidebarMenuSub className="space-y-1">
             {Object.entries(filterCounts.sources)
-              .filter(([_, count]) => count > 0)
+              .filter(([, count]) => count > 0)
               .sort(([, countA], [, countB]) => countB - countA)
               .map(([source, count]) => (
                 <SidebarMenuSubItem key={source}>
@@ -92,7 +92,7 @@ export function EnzSubFilterSidebar({
           </SidebarMenuButton>
           <SidebarMenuSub className="space-y-1">
             {Object.entries(filterCounts.residueTypes)
-              .filter(([_, count]) => count > 0)
+              .filter(([, count]) => count > 0)
               .sort(([, countA], [, countB]) => countB - countA)
               .map(([residueType, count]) => (
                 <SidebarMenuSubItem key={residueType}>
@@ -127,7 +127,7 @@ export function EnzSubFilterSidebar({
           </SidebarMenuButton>
           <SidebarMenuSub className="space-y-1">
             {Object.entries(filterCounts.modifications)
-              .filter(([_, count]) => count > 0)
+              .filter(([, count]) => count > 0)
               .sort(([, countA], [, countB]) => countB - countA)
               .map(([modification, count]) => (
                 <SidebarMenuSubItem key={modification}>

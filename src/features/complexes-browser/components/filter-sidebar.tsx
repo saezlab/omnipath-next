@@ -30,7 +30,7 @@ export function ComplexesFilterSidebar({
   // Get unique sources with counts
   const getSourcesWithCounts = () => {
     return Object.entries(filterCounts.sources)
-      .filter(([_, count]) => count > 0)
+      .filter(([, count]) => count > 0)
       .map(([value, count]) => ({ value, count }))
       .sort((a, b) => b.count - a.count)
   }

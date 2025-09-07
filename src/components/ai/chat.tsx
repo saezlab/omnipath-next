@@ -10,10 +10,10 @@ import { Loader2, AlertTriangleIcon } from "lucide-react";
 import { ChatInput } from "./chat-input";
 import { SuggestedActions } from "./suggested-actions";
 import { useSearchStore } from "@/store/search-store";
-import { ChatMessage } from "@/types/chat";
+import { ChatMessage, MessagePart } from "@/types/chat";
 
 // Helper function to extract text content from message parts
-const extractTextContent = (parts: any[]): string => {
+const extractTextContent = (parts: MessagePart[]): string => {
   return parts
     .filter(part => part.type === 'text')
     .map(part => part.text || '')
@@ -67,7 +67,7 @@ export function Chat({
       const messagesToInit = currentChat.messages.map(msg => ({
         id: msg.id,
         role: msg.role as 'user' | 'assistant' | 'system',
-        parts: msg.parts as any
+        parts: msg.parts as UIMessage['parts']
       }));
       setMessages(messagesToInit);
     } else {
@@ -81,7 +81,7 @@ export function Chat({
 
 
   // Helper function to extract tool invocations from message parts
-  const extractToolInvocations = (parts: any[]) => {
+  const extractToolInvocations = (parts: MessagePart[]) => {
     const toolParts = parts.filter(part => part.type?.startsWith('tool-'));
     
     if (toolParts.length === 0) return undefined;
@@ -89,8 +89,8 @@ export function Chat({
     return toolParts.map((part, index) => ({
       toolCallId: part.toolCallId || part.id || `tool-${index}-${Date.now()}`,
       toolName: part.type.replace('tool-', '') || 'unknown',
-      args: part.input || part.args || part.arguments || {},
-      state: part.state === 'output-available' || part.output !== undefined ? 'result' : 'call',
+      args: (part.input || part.args || part.arguments || {}) as Record<string, unknown>,
+      state: (part.state === 'output-available' || part.output !== undefined ? 'result' : 'call') as 'call' | 'result',
       result: part.output || part.result || undefined
     }));
   };
@@ -101,7 +101,7 @@ export function Chat({
       const chatMessages: ChatMessage[] = messages.map(msg => ({
         id: msg.id,
         role: msg.role as 'user' | 'assistant' | 'system',
-        parts: msg.parts
+        parts: msg.parts as MessagePart[]
       }));
       updateChat(chatIdToUse, chatMessages);
     }
@@ -188,8 +188,8 @@ export function Chat({
                 <PreviewMessage
                   id={message.id}
                   role={message.role}
-                  content={extractTextContent(message.parts)}
-                  toolInvocations={extractToolInvocations(message.parts)}
+                  content={extractTextContent(message.parts as MessagePart[])}
+                  toolInvocations={extractToolInvocations(message.parts as MessagePart[])}
                   isInitialMessage={true}
                   onRerunQuery={handleRerunQuery}
                   startEdit={startEdit}
@@ -227,8 +227,8 @@ export function Chat({
                   <PreviewMessage
                     id={message.id}
                     role={message.role}
-                    content={extractTextContent(message.parts)}
-                    toolInvocations={extractToolInvocations(message.parts)}
+                    content={extractTextContent(message.parts as MessagePart[])}
+                    toolInvocations={extractToolInvocations(message.parts as MessagePart[])}
                     isInitialMessage={false}
                     onRerunQuery={handleRerunQuery}
                     startEdit={startEdit}
