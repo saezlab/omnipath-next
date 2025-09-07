@@ -23,8 +23,10 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [complexResults, setComplexResults] = useState<ComplexEntry[]>([])
-  const [isDataLoading, setIsDataLoading] = useState(false)
+  const [complexState, setComplexState] = useState({
+    results: [] as ComplexEntry[],
+    isLoading: false,
+  })
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -68,18 +70,20 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
       lastSearchedQuery.current = complexQuery
       
       const fetchData = async () => {
-        setIsDataLoading(true)
+        setComplexState(prev => ({ ...prev, isLoading: true }))
         
         try {
           console.log(`Fetching complexes data for: "${complexQuery}"`);
           
           const complexesResponse = await getComplexesData(identifierResults)
           
-          setComplexResults(complexesResponse.complexEntries)
+          setComplexState({
+            results: complexesResponse.complexEntries,
+            isLoading: false,
+          })
         } catch (error) {
           console.error("Error fetching complexes data:", error)
-        } finally {
-          setIsDataLoading(false)
+          setComplexState(prev => ({ ...prev, isLoading: false }))
         }
       }
       
@@ -89,7 +93,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
 
   // Filter complex results based on selected filters
   const filteredComplexEntries = useMemo(() => {
-    return complexResults.filter((entry) => {
+    return complexState.results.filter((entry) => {
       const parsedEntry = parseComplexData(entry)
       
       // Filter by sources
@@ -104,7 +108,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
 
       return true
     })
-  }, [complexResults, complexFilters, parseComplexData])
+  }, [complexState.results, complexFilters, parseComplexData])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
@@ -112,7 +116,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
       sources: {},
     }
 
-    complexResults.forEach(entry => {
+    complexState.results.forEach(entry => {
       const parsedEntry = parseComplexData(entry)
       
       // Count sources
@@ -122,7 +126,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     })
 
     return counts
-  }, [complexResults, parseComplexData])
+  }, [complexState.results, parseComplexData])
 
   // Handle filter changes
   const handleFilterChange = useCallback((type: keyof ComplexesFilters, value: string) => {
@@ -173,7 +177,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     <div className="w-full h-full">
       {complexQuery ? (
         <div className="w-full h-full">
-          {isDataLoading ? (
+          {complexState.isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">Loading complexes data...</p>

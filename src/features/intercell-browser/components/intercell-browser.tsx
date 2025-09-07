@@ -31,8 +31,10 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [intercellResults, setIntercellResults] = useState<IntercellEntry[]>([])
-  const [isDataLoading, setIsDataLoading] = useState(false)
+  const [intercellState, setIntercellState] = useState({
+    results: [] as IntercellEntry[],
+    isLoading: false,
+  })
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -77,18 +79,20 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
       lastSearchedQuery.current = intercellQuery
       
       const fetchData = async () => {
-        setIsDataLoading(true)
+        setIntercellState(prev => ({ ...prev, isLoading: true }))
         
         try {
           console.log(`Fetching intercell data for: "${intercellQuery}"`);
           
           const intercellResponse = await getIntercellData(identifierResults)
           
-          setIntercellResults(intercellResponse.intercellEntries)
+          setIntercellState({
+            results: intercellResponse.intercellEntries,
+            isLoading: false,
+          })
         } catch (error) {
           console.error("Error fetching intercell data:", error)
-        } finally {
-          setIsDataLoading(false)
+          setIntercellState(prev => ({ ...prev, isLoading: false }))
         }
       }
       
@@ -98,7 +102,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
 
   // Filter intercell results based on selected filters
   const filteredIntercellEntries = useMemo(() => {
-    return intercellResults.filter((entry) => {
+    return intercellState.results.filter((entry) => {
       // Filter by aspects
       if (intercellFilters.aspects.length > 0 && entry.aspect) {
         const aspectMatch = intercellFilters.aspects.some(filterAspect => 
@@ -154,7 +158,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
 
       return true
     })
-  }, [intercellResults, intercellFilters])
+  }, [intercellState.results, intercellFilters])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
@@ -170,7 +174,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
       plasmaMembranePeripheral: { true: 0, false: 0 },
     }
 
-    intercellResults.forEach(entry => {
+    intercellState.results.forEach(entry => {
       // Count aspects
       if (entry.aspect) {
         counts.aspects[entry.aspect] = (counts.aspects[entry.aspect] || 0) + 1
@@ -209,7 +213,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
     })
 
     return counts
-  }, [intercellResults])
+  }, [intercellState.results])
 
   // Handle filter changes
   const handleFilterChange = useCallback((type: keyof IntercellFilters, value: string | boolean | null) => {
@@ -277,7 +281,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
     <div className="flex flex-col w-full h-full">
       {intercellQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {isDataLoading ? (
+          {intercellState.isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">Loading intercell data...</p>

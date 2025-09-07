@@ -25,9 +25,11 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [enzSubResults, setEnzSubResults] = useState<EnzSubEntry[]>([])
+  const [enzSubState, setEnzSubState] = useState({
+    results: [] as EnzSubEntry[],
+    isLoading: false,
+  })
   const [searchedProteins, setSearchedProteins] = useState<Set<string>>(new Set())
-  const [isDataLoading, setIsDataLoading] = useState(false)
   const lastSearchedQuery = useRef('')
   
   // Get query from URL
@@ -60,7 +62,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
       lastSearchedQuery.current = enzSubQuery
       
       const fetchData = async () => {
-        setIsDataLoading(true)
+        setEnzSubState(prev => ({ ...prev, isLoading: true }))
         
         try {
           console.log(`Fetching enzyme-substrate data for: "${enzSubQuery}"`);
@@ -78,11 +80,13 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
           // Get enzyme-substrate relationships
           const enzSubResponse = await getEnzSubData(identifierResults)
           
-          setEnzSubResults(enzSubResponse.enzSubData)
+          setEnzSubState({
+            results: enzSubResponse.enzSubData,
+            isLoading: false,
+          })
         } catch (error) {
           console.error("Error fetching EnzSub data:", error)
-        } finally {
-          setIsDataLoading(false)
+          setEnzSubState(prev => ({ ...prev, isLoading: false }))
         }
       }
       
@@ -92,7 +96,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
 
   // Filter enzyme-substrate data based on selected filters
   const filteredEnzSubData = useMemo(() => {
-    return enzSubResults.filter((entry) => {
+    return enzSubState.results.filter((entry) => {
       // Filter by sources
       if (enzSubFilters.sources.length > 0 && entry.sources) {
         const entrySources = entry.sources.split(';').map(s => s.trim().toLowerCase())
@@ -118,7 +122,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
 
       return true
     })
-  }, [enzSubResults, enzSubFilters])
+  }, [enzSubState.results, enzSubFilters])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
@@ -128,7 +132,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
       modifications: {},
     }
 
-    enzSubResults.forEach(entry => {
+    enzSubState.results.forEach(entry => {
       // Count sources (split by semicolon)
       if (entry.sources) {
         const sources = entry.sources.split(';').map(s => s.trim().toLowerCase()).filter(s => s.length > 0)
@@ -150,7 +154,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     })
 
     return counts
-  }, [enzSubResults])
+  }, [enzSubState.results])
 
   // Handle filter changes
   const handleFilterChange = useCallback((type: keyof EnzSubFilters, value: string) => {
@@ -200,7 +204,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     <div className="flex flex-col w-full h-full">
       {enzSubQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {isDataLoading ? (
+          {enzSubState.isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">Loading enzyme-substrate data...</p>
@@ -210,7 +214,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
               currentResults={filteredEnzSubData}
               searchedProteins={searchedProteins}
             />
-          ) : enzSubResults.length > 0 ? (
+          ) : enzSubState.results.length > 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No results match your filters</h3>

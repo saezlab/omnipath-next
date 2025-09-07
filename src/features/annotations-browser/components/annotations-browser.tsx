@@ -31,10 +31,12 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [annotationsResults, setAnnotationsResults] = useState<Annotation[]>([])
+  const [annotationState, setAnnotationState] = useState({
+    results: [] as Annotation[],
+    isLoading: false,
+  })
   const [loadedSources, setLoadedSources] = useState<string[]>([])
   const [hasMoreSources, setHasMoreSources] = useState(true)
-  const [isDataLoading, setIsDataLoading] = useState(false)
   const lastSearchedQuery = useRef('')
   const loadMoreRef = useRef<HTMLDivElement>(null)
   
@@ -70,7 +72,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
       lastSearchedQuery.current = annotationsQuery
       
       const fetchData = async () => {
-        setIsDataLoading(true)
+        setAnnotationState(prev => ({ ...prev, isLoading: true }))
         
         // Reset infinite scroll state for new search
         setLoadedSources([])
@@ -82,11 +84,13 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
           // Use the passed identifier results to get annotations
           const annotationsResponse = await getProteinAnnotations(identifierResults)
           
-          setAnnotationsResults(annotationsResponse.annotations)
+          setAnnotationState({
+            results: annotationsResponse.annotations,
+            isLoading: false,
+          })
         } catch (error) {
           console.error("Error fetching data:", error)
-        } finally {
-          setIsDataLoading(false)
+          setAnnotationState(prev => ({ ...prev, isLoading: false }))
         }
       }
       
@@ -101,7 +105,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     const sources: string[] = []
     
     // Preserve order of appearance in database
-    annotationsResults.forEach(annotation => {
+    annotationState.results.forEach(annotation => {
       if (annotation.source && !seenSources.has(annotation.source)) {
         seenSources.add(annotation.source)
         sources.push(annotation.source)
@@ -109,14 +113,14 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     })
     
     return sources
-  }, [annotationsResults])
+  }, [annotationState.results])
 
   // Filter annotations based on selected filters
   const filteredAnnotations = useMemo(() => {
     // First, find all recordIds that match the value search in any field
     const matchingRecordIds = new Set<number>()
     
-    annotationsResults.forEach((annotation) => {
+    annotationState.results.forEach((annotation) => {
       const searchTerm = annotationsFilters.valueSearch.toLowerCase()
       if (searchTerm) {
         // Check if any field contains the search term
@@ -134,7 +138,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     })
 
     // Then filter annotations based on all criteria
-    return annotationsResults.filter((annotation) => {
+    return annotationState.results.filter((annotation) => {
       // Filter by source
       if (annotationsFilters.sources.length > 0 && annotation.source) {
         const sourceMatch = annotationsFilters.sources.some(filterSource => 
@@ -160,7 +164,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
 
       return true
     })
-  }, [annotationsResults, annotationsFilters])
+  }, [annotationState.results, annotationsFilters])
 
   // Calculate filter counts based on unique records
   const filterCounts = useMemo(() => {
@@ -170,11 +174,11 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     }
 
     // Get unique records first
-    const uniqueRecords = new Set(annotationsResults.map(a => a.recordId))
+    const uniqueRecords = new Set(annotationState.results.map(a => a.recordId))
     
     // For each unique record, count its sources and types
     uniqueRecords.forEach(recordId => {
-      const recordAnnotations = annotationsResults.filter(a => a.recordId === recordId)
+      const recordAnnotations = annotationState.results.filter(a => a.recordId === recordId)
       
       // Count unique sources for this record
       const uniqueSources = new Set(recordAnnotations.map(a => a.source?.toLowerCase()))
@@ -194,7 +198,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     })
 
     return counts
-  }, [annotationsResults])
+  }, [annotationState.results])
 
   // Load more sources function
   const loadMoreSources = useCallback(() => {
@@ -229,10 +233,10 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
 
   // Initialize loading the first batch of sources
   useEffect(() => {
-    if (allUniqueSources.length > 0 && loadedSources.length === 0 && annotationsResults.length > 0) {
+    if (allUniqueSources.length > 0 && loadedSources.length === 0 && annotationState.results.length > 0) {
       loadMoreSources()
     }
-  }, [allUniqueSources, loadedSources.length, annotationsResults.length, loadMoreSources])
+  }, [allUniqueSources, loadedSources.length, annotationState.results.length, loadMoreSources])
 
   // Intersection observer for infinite scroll
   useEffect(() => {
@@ -350,7 +354,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     <div className="w-full h-full max-w-full overflow-x-hidden">
       {annotationsQuery ? (
         <div className="w-full h-full max-w-full overflow-x-hidden">
-          {isDataLoading ? (
+          {annotationState.isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">Loading annotations...</p>
@@ -377,7 +381,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
                 </div>
               )}
             </>
-          ) : annotationsResults.length > 0 ? (
+          ) : annotationState.results.length > 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
