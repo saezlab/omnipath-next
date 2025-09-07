@@ -1,7 +1,7 @@
 "use client"
 
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
-import { searchIdentifiers } from "@/db/queries"
+import { SearchIdentifiersResponse } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
 import { Annotation, SearchFilters } from "@/features/annotations-browser/types"
 import {
@@ -23,9 +23,10 @@ interface FilterCounts {
 
 interface AnnotationsBrowserProps {
   isLoading?: boolean
+  identifierResults?: SearchIdentifiersResponse
 }
 
-export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
+export function AnnotationsBrowser({ isLoading, identifierResults = [] }: AnnotationsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
@@ -64,7 +65,7 @@ export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
   // Fetch annotations when query changes
   useEffect(() => {
     // Only use URL query as source of truth
-    if (annotationsQuery && annotationsQuery !== lastSearchedQuery.current) {
+    if (annotationsQuery && annotationsQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
       lastSearchedQuery.current = annotationsQuery
       
       const fetchData = async () => {
@@ -74,11 +75,9 @@ export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
         setHasMoreSources(true)
         
         try {
-          // Always fetch fresh identifier results - no caching
-          console.log(`Fetching identifier results for: "${annotationsQuery}" with species: 9606`);
-          const identifierResults = await searchIdentifiers(annotationsQuery, 50, '9606'); // Default to human
+          console.log(`Fetching annotations for: "${annotationsQuery}"`);
           
-          // Now use the identifier results to get annotations
+          // Use the passed identifier results to get annotations
           const annotationsResponse = await getProteinAnnotations(identifierResults)
           
           setAnnotationsResults(annotationsResponse.annotations)
@@ -90,7 +89,7 @@ export function AnnotationsBrowser({ isLoading }: AnnotationsBrowserProps) {
       
       fetchData()
     }
-  }, [annotationsQuery])
+  }, [annotationsQuery, identifierResults])
 
   // Get all unique sources from all annotations (for infinite scroll management)
   // Keep natural database order - don't sort to prevent layout shifts

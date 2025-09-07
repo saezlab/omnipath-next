@@ -2,10 +2,10 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { searchProteinNeighbors, SearchProteinNeighborsResponse, getInteractionsAmongProteins } from "@/features/interactions-browser/api/queries"
-import { searchIdentifiers, searchMultipleIdentifiers } from "@/db/queries"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
+import { SearchIdentifiersResponse } from "@/db/queries"
 import { Search } from "lucide-react"
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -16,6 +16,7 @@ import { useFilters } from "@/contexts/filter-context"
 interface InteractionsBrowserProps {
   onEntitySelect?: (entityName: string) => void
   isLoading?: boolean
+  identifierResults?: SearchIdentifiersResponse
 }
 
 interface FilterCounts {
@@ -165,6 +166,7 @@ function passesFiltersExcept(
 
 export function InteractionsBrowser({ 
   onEntitySelect,
+  identifierResults = [],
 }: InteractionsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -196,20 +198,17 @@ export function InteractionsBrowser({
 
   // Fetch interactions when query changes
   useEffect(() => {
-    if (interactionsQuery && interactionsQuery !== lastSearchedQuery.current) {
+    if (interactionsQuery && interactionsQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
       lastSearchedQuery.current = interactionsQuery
       
       const fetchData = async () => {
         setInteractionState(prev => ({ ...prev, isLoading: true }))
         try {
-          console.log(`Fetching identifier results for: "${interactionsQuery}" with species: 9606`);
+          console.log(`Fetching interactions for: "${interactionsQuery}" with species: 9606`);
           
           let interactionsResponse;
           if (isMultiQuery(interactionsQuery)) {
             // For multi-query, get interactions between the searched proteins only
-            const queries = parseQueries(interactionsQuery);
-            const identifierResults = await searchMultipleIdentifiers(queries, 1, '9606');
-            
             // Extract all protein IDs (uniprot accessions and gene symbols)
             const proteinIds = [
               ...identifierResults.map(r => r.uniprotAccession),
@@ -221,7 +220,6 @@ export function InteractionsBrowser({
             interactionsResponse = await getInteractionsAmongProteins(proteinIds);
           } else {
             // For single query, get all neighbor interactions
-            const identifierResults = await searchIdentifiers(interactionsQuery, 50, '9606');
             interactionsResponse = await searchProteinNeighbors(identifierResults);
           }
           
@@ -243,7 +241,7 @@ export function InteractionsBrowser({
       }
       fetchData()
     }
-  }, [interactionsQuery, onEntitySelect])
+  }, [interactionsQuery, identifierResults, onEntitySelect])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {

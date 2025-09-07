@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { searchIdentifiers } from "@/db/queries"
+import { searchIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
 import { getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
 import { Search } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useSearchStore } from "@/store/search-store"
@@ -38,7 +38,7 @@ export function SearchPage() {
   const [query, setQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
-  const [proteinIdentifiers, setProteinIdentifiers] = useState<Record<string, any[]>>({})
+  const [identifierResults, setIdentifierResults] = useState<Record<string, SearchIdentifiersResponse>>({})
   
   // Get active tab from URL, default to interactions
   const activeTab = searchParams.get('tab') || 'interactions'
@@ -55,9 +55,9 @@ export function SearchPage() {
     if (urlQuery) {
       const proteins = isMultiQuery(urlQuery) ? parseQueries(urlQuery) : [urlQuery]
       const fetchIdentifiers = async () => {
-        const identifiers: Record<string, any[]> = {}
+        const identifiers: Record<string, SearchIdentifiersResponse> = {}
         for (const protein of proteins) {
-          if (!proteinIdentifiers[protein]) {
+          if (!identifierResults[protein]) {
             try {
               const results = await searchIdentifiers(protein.trim(), 20, selectedSpecies)
               identifiers[protein] = results
@@ -67,11 +67,28 @@ export function SearchPage() {
             }
           }
         }
-        setProteinIdentifiers(prev => ({ ...prev, ...identifiers }))
+        if (Object.keys(identifiers).length > 0) {
+          setIdentifierResults(prev => ({ ...prev, ...identifiers }))
+        }
       }
       fetchIdentifiers()
     }
   }, [urlQuery, selectedSpecies])
+
+  // Create flattened list of all identifier results for InteractionsBrowser
+  const resolvedIdentifiers = useMemo(() => {
+    if (!urlQuery) return []
+    
+    const proteins = isMultiQuery(urlQuery) ? parseQueries(urlQuery) : [urlQuery]
+    const flattened: SearchIdentifiersResponse = []
+    
+    proteins.forEach(protein => {
+      const results = identifierResults[protein] || []
+      flattened.push(...results)
+    })
+    
+    return flattened
+  }, [urlQuery, identifierResults])
 
 
   const handleSearch = async (searchQuery: string, displayTerm?: string) => {
@@ -157,7 +174,7 @@ export function SearchPage() {
             <div className="flex-shrink-0 flex sm:justify-start justify-center">
               <ProteinSummaryCard 
                 geneSymbol={urlQuery}
-                identifierResults={proteinIdentifiers[urlQuery] || []}
+                identifierResults={identifierResults[urlQuery] || []}
               />
             </div>
           )}
@@ -209,7 +226,7 @@ export function SearchPage() {
                   <ProteinSummaryCard
                     key={index}
                     geneSymbol={term}
-                    identifierResults={proteinIdentifiers[term] || []}
+                    identifierResults={identifierResults[term] || []}
                     onRemove={() => {
                       const remaining = parseQueries(urlQuery).filter((_, i) => i !== index)
                       const newQuery = remaining.join(', ')
@@ -256,23 +273,23 @@ export function SearchPage() {
       <div className="min-h-0 w-full max-w-full overflow-x-hidden">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full h-full">
           <TabsContent value="interactions" className="h-full w-full max-w-full overflow-x-hidden">
-            <InteractionsBrowser />
+            <InteractionsBrowser identifierResults={resolvedIdentifiers} />
           </TabsContent>
 
           <TabsContent value="annotations" className="h-full w-full max-w-full overflow-x-hidden">
-            <AnnotationsBrowser />
+            <AnnotationsBrowser identifierResults={resolvedIdentifiers} />
           </TabsContent>
 
           <TabsContent value="intercell" className="h-full w-full max-w-full overflow-x-hidden">
-            <IntercellBrowser />
+            <IntercellBrowser identifierResults={resolvedIdentifiers} />
           </TabsContent>
 
           <TabsContent value="complexes" className="h-full w-full max-w-full overflow-x-hidden">
-            <ComplexesBrowser />
+            <ComplexesBrowser identifierResults={resolvedIdentifiers} />
           </TabsContent>
 
           <TabsContent value="enzsub" className="h-full w-full max-w-full overflow-x-hidden">
-            <EnzSubBrowser />
+            <EnzSubBrowser identifierResults={resolvedIdentifiers} />
           </TabsContent>
         </Tabs>
       </div>

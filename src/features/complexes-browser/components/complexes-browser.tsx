@@ -1,7 +1,7 @@
 "use client"
 
 import { getComplexesData } from "@/features/complexes-browser/api/queries"
-import { searchIdentifiers } from "@/db/queries"
+import { SearchIdentifiersResponse } from "@/db/queries"
 import { ComplexesTable } from "@/features/complexes-browser/components/complexes-table"
 import { ComplexEntry, ComplexesFilters, ParsedComplex } from "@/features/complexes-browser/types"
 import { Info } from "lucide-react"
@@ -14,7 +14,11 @@ interface FilterCounts {
 }
 
 
-export function ComplexesBrowser() {
+interface ComplexesBrowserProps {
+  identifierResults?: SearchIdentifiersResponse
+}
+
+export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
@@ -59,14 +63,13 @@ export function ComplexesBrowser() {
 
   // Fetch complexes data when query changes
   useEffect(() => {
-    if (complexQuery && complexQuery !== lastSearchedQuery.current) {
+    if (complexQuery && complexQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
       lastSearchedQuery.current = complexQuery
       
       const fetchData = async () => {
         
         try {
-          console.log(`Fetching complexes data for: "${complexQuery}" with species: 9606`);
-          const identifierResults = await searchIdentifiers(complexQuery, 50, '9606');
+          console.log(`Fetching complexes data for: "${complexQuery}"`);
           
           const complexesResponse = await getComplexesData(identifierResults)
           
@@ -79,7 +82,7 @@ export function ComplexesBrowser() {
       
       fetchData()
     }
-  }, [complexQuery])
+  }, [complexQuery, identifierResults])
 
   // Filter complex results based on selected filters
   const filteredComplexEntries = useMemo(() => {

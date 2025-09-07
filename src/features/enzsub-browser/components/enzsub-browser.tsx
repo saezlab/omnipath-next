@@ -1,7 +1,7 @@
 "use client"
 
 import { getEnzSubData } from "@/features/enzsub-browser/api/queries"
-import { searchIdentifiers } from "@/db/queries"
+import { SearchIdentifiersResponse } from "@/db/queries"
 import { EnzSubTable } from "@/features/enzsub-browser/components/enzsub-table"
 import { EnzSubEntry, EnzSubFilters } from "@/features/enzsub-browser/types"
 import { Info } from "lucide-react"
@@ -16,7 +16,11 @@ interface FilterCounts {
 }
 
 
-export function EnzSubBrowser() {
+interface EnzSubBrowserProps {
+  identifierResults?: SearchIdentifiersResponse
+}
+
+export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
@@ -51,14 +55,13 @@ export function EnzSubBrowser() {
 
   // Fetch enzyme-substrate data when query changes
   useEffect(() => {
-    if (enzSubQuery && enzSubQuery !== lastSearchedQuery.current) {
+    if (enzSubQuery && enzSubQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
       lastSearchedQuery.current = enzSubQuery
       
       const fetchData = async () => {
         
         try {
-          console.log(`Fetching identifier results for: "${enzSubQuery}" with species: 9606`);
-          const identifierResults = await searchIdentifiers(enzSubQuery, 50, '9606');
+          console.log(`Fetching enzyme-substrate data for: "${enzSubQuery}"`);
           
           // Store searched proteins for highlighting
           const searchedSet = new Set<string>()
@@ -82,7 +85,7 @@ export function EnzSubBrowser() {
       
       fetchData()
     }
-  }, [enzSubQuery])
+  }, [enzSubQuery, identifierResults])
 
   // Filter enzyme-substrate data based on selected filters
   const filteredEnzSubData = useMemo(() => {

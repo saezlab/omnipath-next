@@ -1,7 +1,7 @@
 "use client"
 
 import { getIntercellData } from "@/features/intercell-browser/api/queries"
-import { searchIdentifiers } from "@/db/queries"
+import { SearchIdentifiersResponse } from "@/db/queries"
 import { IntercellTable } from "@/features/intercell-browser/components/intercell-table"
 import { IntercellEntry, IntercellFilters } from "@/features/intercell-browser/types"
 import { Info } from "lucide-react"
@@ -22,7 +22,11 @@ interface FilterCounts {
 }
 
 
-export function IntercellBrowser() {
+interface IntercellBrowserProps {
+  identifierResults?: SearchIdentifiersResponse
+}
+
+export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
@@ -68,14 +72,13 @@ export function IntercellBrowser() {
 
   // Fetch intercell data when query changes
   useEffect(() => {
-    if (intercellQuery && intercellQuery !== lastSearchedQuery.current) {
+    if (intercellQuery && intercellQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
       lastSearchedQuery.current = intercellQuery
       
       const fetchData = async () => {
         
         try {
-          console.log(`Fetching intercell data for: "${intercellQuery}" with species: 9606`);
-          const identifierResults = await searchIdentifiers(intercellQuery, 50, '9606');
+          console.log(`Fetching intercell data for: "${intercellQuery}"`);
           
           const intercellResponse = await getIntercellData(identifierResults)
           
@@ -88,7 +91,7 @@ export function IntercellBrowser() {
       
       fetchData()
     }
-  }, [intercellQuery])
+  }, [intercellQuery, identifierResults])
 
   // Filter intercell results based on selected filters
   const filteredIntercellEntries = useMemo(() => {
