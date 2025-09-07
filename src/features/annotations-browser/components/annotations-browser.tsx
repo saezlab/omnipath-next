@@ -14,6 +14,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
+// Helper functions for multi-query detection
+function parseQueries(queryString: string): string[] {
+  return queryString
+    .split(/[,;]/)
+    .map(q => q.trim())
+    .filter(q => q.length > 0)
+}
+
+function isMultiQuery(queryString: string): boolean {
+  return parseQueries(queryString).length > 1
+}
+
 const SOURCES_PER_LOAD = 4
 
 interface FilterCounts {
@@ -366,6 +378,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
                 getCategoryIcon={getCategoryIcon}
                 getCategoryColor={getCategoryColor}
                 uniqueRecordCount={uniqueRecordCount}
+                isMultiQuery={isMultiQuery(annotationsQuery)}
               />
               
               {/* Sentinel for infinite scroll */}

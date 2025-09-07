@@ -28,6 +28,7 @@ interface AnnotationsTableProps {
   getCategoryIcon: (label: string | null) => React.ReactNode
   getCategoryColor: (label: string | null) => string
   uniqueRecordCount: number
+  isMultiQuery?: boolean
 }
 
 function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnnotation[]> {
@@ -65,6 +66,7 @@ function pivotAnnotations(annotations: Annotation[]): Record<string, PivotedAnno
 
 export function AnnotationsTable({
   currentResults,
+  isMultiQuery = false,
 }: AnnotationsTableProps) {
   const pivotedData = useMemo(() => pivotAnnotations(currentResults), [currentResults]);
   
@@ -97,13 +99,29 @@ export function AnnotationsTable({
         const headers = columnHeadersBySource[source];
         
         // Create dynamic columns based on headers
-        const columns: ColumnDef<PivotedAnnotation>[] = headers.map(header => ({
-          accessorKey: header,
-          header: header,
-          headerClassName: "px-2 py-2 text-xs border-r border-border/20 last:border-r-0",
-          cellClassName: "px-2 py-2 text-xs border-r border-border/20 last:border-r-0",
-          cell: ({ row }) => row.values[header] || "-"
-        }));
+        const columns: ColumnDef<PivotedAnnotation>[] = [];
+        
+        // Add gene symbol column for multi-query scenarios
+        if (isMultiQuery) {
+          columns.push({
+            accessorKey: "geneSymbol",
+            header: "Gene Symbol",
+            headerClassName: "px-2 py-2 text-xs border-r border-border/20 bg-muted/50 font-medium",
+            cellClassName: "px-2 py-2 text-xs border-r border-border/20 bg-muted/20 font-medium",
+            cell: ({ row }) => row.geneSymbol || "-"
+          });
+        }
+        
+        // Add annotation value columns
+        headers.forEach(header => {
+          columns.push({
+            accessorKey: header,
+            header: header,
+            headerClassName: "px-2 py-2 text-xs border-r border-border/20 last:border-r-0",
+            cellClassName: "px-2 py-2 text-xs border-r border-border/20 last:border-r-0",
+            cell: ({ row }) => row.values[header] || "-"
+          });
+        });
         
         return (
           <ResultsTable<PivotedAnnotation>

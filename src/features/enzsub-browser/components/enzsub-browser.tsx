@@ -1,6 +1,6 @@
 "use client"
 
-import { getEnzSubData } from "@/features/enzsub-browser/api/queries"
+import { getEnzSubData, getEnzSubDataAmongProteins } from "@/features/enzsub-browser/api/queries"
 import { SearchIdentifiersResponse } from "@/db/queries"
 import { EnzSubTable } from "@/features/enzsub-browser/components/enzsub-table"
 import { EnzSubEntry, EnzSubFilters } from "@/features/enzsub-browser/types"
@@ -8,6 +8,18 @@ import { Info } from "lucide-react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
+
+// Helper functions for multi-query detection
+function parseQueries(queryString: string): string[] {
+  return queryString
+    .split(/[,;]/)
+    .map(q => q.trim())
+    .filter(q => q.length > 0)
+}
+
+function isMultiQuery(queryString: string): boolean {
+  return parseQueries(queryString).length > 1
+}
 
 interface FilterCounts {
   sources: Record<string, number>
@@ -78,7 +90,22 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
           setSearchedProteins(searchedSet)
           
           // Get enzyme-substrate relationships
-          const enzSubResponse = await getEnzSubData(identifierResults)
+          let enzSubResponse;
+          if (isMultiQuery(enzSubQuery)) {
+            // For multi-query, get relationships between the searched proteins only
+            // Extract all protein IDs (uniprot accessions and gene symbols)
+            const proteinIds = [
+              ...identifierResults.map(r => r.uniprotAccession),
+              ...identifierResults
+                .filter(r => r.identifierType.includes('gene'))
+                .map(r => r.identifierValue.toUpperCase())
+            ];
+            
+            enzSubResponse = await getEnzSubDataAmongProteins(proteinIds);
+          } else {
+            // For single query, get all enzyme-substrate relationships
+            enzSubResponse = await getEnzSubData(identifierResults);
+          }
           
           setEnzSubState({
             results: enzSubResponse.enzSubData,
@@ -207,7 +234,12 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
           {enzSubState.isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
-              <p className="text-muted-foreground">Loading enzyme-substrate data...</p>
+              <p className="text-muted-foreground">
+                {isMultiQuery(enzSubQuery) 
+                  ? "Loading enzyme-substrate relationships between proteins..." 
+                  : "Loading enzyme-substrate data..."
+                }
+              </p>
             </div>
           ) : filteredEnzSubData.length > 0 ? (
             <EnzSubTable
@@ -227,7 +259,10 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No enzyme-substrate relationships found</h3>
               <p className="text-muted-foreground max-w-md">
-                No enzyme-substrate relationships found for &ldquo;{enzSubQuery}&rdquo;. Try searching for a different protein.
+                {isMultiQuery(enzSubQuery) 
+                  ? `No enzyme-substrate relationships found between ${parseQueries(enzSubQuery).join(", ")}. Try searching for different proteins or genes.`
+                  : `No enzyme-substrate relationships found for "${enzSubQuery}". Try searching for a different protein.`
+                }
               </p>
             </div>
           )}

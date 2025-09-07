@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { searchIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
-import { getProteinInformation, GetProteinInformationResponse } from "@/features/annotations-browser/api/queries"
+import { searchIdentifiers, searchMultipleIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
 import { Search } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -53,22 +52,49 @@ export function SearchPage() {
   // Fetch identifier results for all queries (single and multi)
   useEffect(() => {
     if (urlQuery) {
-      const proteins = isMultiQuery(urlQuery) ? parseQueries(urlQuery) : [urlQuery]
       const fetchIdentifiers = async () => {
-        const identifiers: Record<string, SearchIdentifiersResponse> = {}
-        for (const protein of proteins) {
+        if (isMultiQuery(urlQuery)) {
+          // For multi-query, use searchMultipleIdentifiers with limit=1
+          const proteins = parseQueries(urlQuery)
+          const newProteins = proteins.filter(protein => !identifierResults[protein])
+          
+          if (newProteins.length > 0) {
+            try {
+              const results = await searchMultipleIdentifiers(newProteins, 1, selectedSpecies)
+              const identifiers: Record<string, SearchIdentifiersResponse> = {}
+              
+              // Group results by protein (since searchMultipleIdentifiers returns flattened results)
+              newProteins.forEach((protein) => {
+                // Find results for this protein
+                const proteinResults = results.filter(result => 
+                  result.identifierValue.toLowerCase().startsWith(protein.trim().toLowerCase())
+                )
+                identifiers[protein] = proteinResults
+              })
+              
+              setIdentifierResults(prev => ({ ...prev, ...identifiers }))
+            } catch (error) {
+              console.error("Error fetching multi identifiers:", error)
+              // Fallback to empty results
+              const identifiers: Record<string, SearchIdentifiersResponse> = {}
+              newProteins.forEach(protein => {
+                identifiers[protein] = []
+              })
+              setIdentifierResults(prev => ({ ...prev, ...identifiers }))
+            }
+          }
+        } else {
+          // For single query, use searchIdentifiers with limit=20
+          const protein = urlQuery
           if (!identifierResults[protein]) {
             try {
               const results = await searchIdentifiers(protein.trim(), 20, selectedSpecies)
-              identifiers[protein] = results
+              setIdentifierResults(prev => ({ ...prev, [protein]: results }))
             } catch (error) {
               console.error(`Error fetching identifiers for ${protein}:`, error)
-              identifiers[protein] = []
+              setIdentifierResults(prev => ({ ...prev, [protein]: [] }))
             }
           }
-        }
-        if (Object.keys(identifiers).length > 0) {
-          setIdentifierResults(prev => ({ ...prev, ...identifiers }))
         }
       }
       fetchIdentifiers()
