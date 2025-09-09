@@ -146,8 +146,9 @@ export class InteractionsFilterService {
         }
       }
       
-      // Count for direction filters
-      if (this.passesFiltersExcept(interaction, filters, query, ['direction'])) {
+      // Count for direction filters - only for single protein queries
+      const isMultiQuery = query.split(/[,;]/).filter(q => q.trim().length > 0).length > 1
+      if (!isMultiQuery && this.passesFiltersExcept(interaction, filters, query, ['direction'])) {
         const upstream = this.isUpstreamInteraction(interaction, queryUpper)
         const downstream = this.isDownstreamInteraction(interaction, queryUpper)
         if (upstream) {

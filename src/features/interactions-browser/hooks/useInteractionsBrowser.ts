@@ -29,7 +29,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
   const router = useRouter()
   
   // URL-derived state
-  const query = searchParams.get('q') || ''
+  const query = (searchParams.get('q') || '').replace(/[,;]+$/, '')
   
   // Parse filters from URL using flat query params
   const filters = useMemo((): InteractionsFilters => {
