@@ -13,14 +13,14 @@ import { IntercellBrowser } from "@/features/intercell-browser/components/interc
 import { ComplexesBrowser } from "@/features/complexes-browser/components/complexes-browser"
 import { EnzSubBrowser } from "@/features/enzsub-browser/components/enzsub-browser"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
 import useSWR from "swr"
 
 interface SearchTabsProps {
   query: string
   activeTab: string
   identifierResults: Record<string, SearchIdentifiersResponse>
-  initialTabData: any
+  initialTabData: unknown
   selectedSpecies?: string
 }
 
@@ -97,7 +97,6 @@ export function SearchTabs({ query, activeTab, identifierResults, initialTabData
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full h-full">
           <TabsContent value="interactions" className="h-full w-full max-w-full overflow-x-hidden">
             <InteractionsBrowser 
-              identifierResults={resolvedIdentifiers} 
               data={activeTab === 'interactions' ? data as SearchProteinNeighborsResponse | undefined : undefined}
               isLoading={activeTab === 'interactions' ? isLoading : false}
             />

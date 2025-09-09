@@ -21,7 +21,6 @@ interface InteractionsBrowserProps {
 
 export function InteractionsBrowser({ 
   onEntitySelect,
-  identifierResults = [],
   data,
   isLoading = false,
 }: InteractionsBrowserProps) {

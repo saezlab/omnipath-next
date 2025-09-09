@@ -1,4 +1,4 @@
-import { searchMultipleIdentifiers } from "@/db/queries"
+import { searchMultipleIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
 import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { getIntercellData } from "@/features/intercell-browser/api/queries"
@@ -28,8 +28,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const activeTab = resolvedSearchParams.tab || 'interactions'
   const selectedSpecies = resolvedSearchParams.species || "9606"
 
-  let identifierResults: Record<string, any> = {}
-  let initialTabData: any = null
+  const identifierResults: Record<string, SearchIdentifiersResponse> = {}
+  let initialTabData: unknown = null
 
   if (query) {
     try {

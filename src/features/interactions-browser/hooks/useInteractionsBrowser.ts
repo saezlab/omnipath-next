@@ -23,18 +23,6 @@ function isMultiQuery(queryString: string): boolean {
   return parseQueries(queryString).length > 1
 }
 
-function getDefaultFilters(): InteractionsFilters {
-  return {
-    interactionType: [],
-    entityTypeSource: [],
-    entityTypeTarget: [],
-    topology: [],
-    direction: [],
-    sign: [],
-    minReferences: null,
-    search: '',
-  }
-}
 
 export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
   const searchParams = useSearchParams()

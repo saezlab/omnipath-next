@@ -1,4 +1,4 @@
-import { searchMultipleIdentifiers } from "@/db/queries"
+import { searchMultipleIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
 import { getIntercellData } from "@/features/intercell-browser/api/queries"
 import { NextRequest, NextResponse } from "next/server"
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const results = await searchMultipleIdentifiers(proteins, 1, species)
     
     // Group results by protein
-    const identifierResults: Record<string, any> = {}
+    const identifierResults: Record<string, SearchIdentifiersResponse> = {}
     proteins.forEach((protein) => {
       const proteinResults = results.filter(result => 
         result.identifierValue.toLowerCase().includes(protein.trim().toLowerCase()) ||
