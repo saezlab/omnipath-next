@@ -61,7 +61,20 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
   }
 
   const handleEnterPress = async () => {
-    if (!query.trim()) return
+    // Check if query contains badges (comma-separated values ending with comma)
+    const hasSelectedBadges = query.endsWith(',') && query.split(',').some(part => part.trim())
+    const hasCurrentTyping = query.trim() && !query.endsWith(',')
+    
+    // If there are selected badges but no current typing, trigger search
+    if (hasSelectedBadges && !hasCurrentTyping) {
+      await handleSearch(query.trim())
+      return
+    }
+    
+    // If there's no meaningful content at all, don't search
+    if (!query.trim()) {
+      return
+    }
 
     try {
       // Fetch suggestions for the current query with species filter
@@ -135,6 +148,7 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
               value={query}
               onChange={setQuery}
               onKeyDown={handleKeyDown}
+              onSearch={(searchQuery) => handleSearch(searchQuery)}
               placeholder={getPlaceholderText()}
               className="w-full pl-9 pr-32 h-10 text-base rounded-md shadow-sm transition-all focus:shadow-md focus:ring-2 focus:ring-primary/20 border border-border/40 hover:border-border/60"
               selectedSpecies={selectedSpecies}
