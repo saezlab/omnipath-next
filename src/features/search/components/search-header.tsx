@@ -199,9 +199,10 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
                   identifierResults={identifierResults[term] || []}
                   onRemove={() => {
                     const remaining = parseQueries(initialQuery).filter((_, i) => i !== index)
-                    const newQuery = remaining.join(', ')
-                    if (newQuery) {
-                      router.push(`/search?q=${encodeURIComponent(newQuery)}&tab=${activeTab}`)
+                    const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
+                    setQuery(newQuery)
+                    if (remaining.length > 0) {
+                      router.push(`/search?q=${encodeURIComponent(remaining.join(', '))}&tab=${activeTab}`)
                     } else {
                       router.push(`/search?tab=${activeTab}`)
                     }
