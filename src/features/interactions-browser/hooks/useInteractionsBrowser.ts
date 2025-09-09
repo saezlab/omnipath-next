@@ -64,8 +64,11 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   
-  // Get interactions from data
-  const interactions = data?.interactions || []
+  // Get interactions from data - memoized to prevent infinite loops
+  const interactions = useMemo(() => 
+    data?.interactions || [],
+    [data]
+  )
   
   // Filter data using service
   const filteredInteractions = useMemo(() => 

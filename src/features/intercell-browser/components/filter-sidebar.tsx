@@ -39,6 +39,14 @@ export function IntercellFilterSidebar({
     return count
   }, 0)
 
+  // Check if there's data to filter
+  const hasData = Object.values(filterCounts).some(counts => {
+    if (typeof counts === 'object' && counts !== null) {
+      return Object.values(counts).some((count: any) => (typeof count === 'number' ? count > 0 : false))
+    }
+    return false
+  })
+
   // Helper to get items with counts for string array filters
   const getFilterItemsWithCounts = (
     filterKey: keyof FilterCounts
@@ -68,7 +76,9 @@ export function IntercellFilterSidebar({
         </div>
       )}
 
-      <SidebarMenu className="space-y-2">
+      {/* All Filters */}
+      {hasData && (
+        <SidebarMenu className="space-y-2">
         {/* Aspect Filter */}
         <SidebarMenuItem>
           <SidebarMenuButton className="pointer-events-none" tooltip="Aspect">
@@ -302,6 +312,7 @@ export function IntercellFilterSidebar({
           </SidebarMenuSub>
         </SidebarMenuItem>
       </SidebarMenu>
+      )}
     </>
   )
 }

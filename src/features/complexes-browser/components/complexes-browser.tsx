@@ -7,7 +7,7 @@ import { ComplexDetails } from "@/features/complexes-browser/components/complex-
 import { ComplexEntry } from "@/features/complexes-browser/types"
 import { useComplexesBrowser } from "@/features/complexes-browser/hooks/useComplexesBrowser"
 import { Info } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { useSearchParams } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
@@ -40,18 +40,21 @@ export function ComplexesBrowser({ data, isLoading = false }: ComplexesBrowserPr
     setIsDetailsOpen(true)
   }
 
-  // Update filter data in context when query or data changes
-  useEffect(() => {
-    const filterContextValue = complexQuery ? {
+  // Memoize filter context value to prevent infinite updates
+  const filterContextValue = useMemo(() => {
+    return complexQuery ? {
       type: "complexes" as const,
       filters,
       filterCounts,
       onFilterChange: updateFilter,
       onClearFilters: clearFilters,
     } : null
-    
+  }, [complexQuery, filters, filterCounts])
+
+  // Update filter context only when memoized value changes
+  useEffect(() => {
     setFilterData(filterContextValue)
-  }, [complexQuery, filters, filterCounts, updateFilter, clearFilters, setFilterData])
+  }, [filterContextValue, setFilterData])
 
   return (
     <div className="w-full h-full">

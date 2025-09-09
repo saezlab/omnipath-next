@@ -154,6 +154,11 @@ export function AnnotationsFilterSidebar({
     return count
   }, 0)
 
+  // Check if there's data to filter
+  const hasData = Object.values(filterCounts).some(counts => 
+    Object.values(counts).some(count => typeof count === 'number' && count > 0)
+  )
+
   return (
     <>
       {/* Main Filters Group with Clear Action */}
@@ -171,104 +176,105 @@ export function AnnotationsFilterSidebar({
             </div>
           )}
 
-      {/* Source Groups */}
-      <SidebarMenu className="space-y-2">
-        {Object.entries(SOURCE_GROUPS).map(([groupName, sources]) => {
-          let filteredSources = sources
-            .filter(source => (filterCounts.sources[source.value.toLowerCase()] || 0) > 0)
-            .sort((a, b) => {
-              const countA = filterCounts.sources[a.value.toLowerCase()] || 0;
-              const countB = filterCounts.sources[b.value.toLowerCase()] || 0;
-              return countB - countA;
-            });
-
-          // For "Other" category, add any uncategorized sources
-          if (groupName === "Other") {
-            // Get all sources that exist in filterCounts
-            const allAvailableSources = Object.keys(filterCounts.sources);
-
-            // Get all categorized sources (excluding "Other")
-            const categorizedSources = new Set();
-            Object.entries(SOURCE_GROUPS).forEach(([key, groupSources]) => {
-              if (key !== "Other") {
-                groupSources.forEach(source => {
-                  categorizedSources.add(source.value.toLowerCase());
-                });
-              }
-            });
-
-            // Find uncategorized sources
-            const uncategorizedSources = allAvailableSources
-              .filter(source => !categorizedSources.has(source) && (filterCounts.sources[source] || 0) > 0)
-              .map(source => ({
-                value: source,
-                label: source.charAt(0).toUpperCase() + source.slice(1).replace(/_/g, ' ')
-              }));
-
-            // Add uncategorized sources to the "Other" category
-            filteredSources = [...filteredSources, ...uncategorizedSources]
+      {/* All Filters */}
+      {hasData && (
+        <SidebarMenu className="space-y-2">
+          {/* Source Groups */}
+          {Object.entries(SOURCE_GROUPS).map(([groupName, sources]) => {
+            let filteredSources = sources
+              .filter(source => (filterCounts.sources[source.value.toLowerCase()] || 0) > 0)
               .sort((a, b) => {
                 const countA = filterCounts.sources[a.value.toLowerCase()] || 0;
                 const countB = filterCounts.sources[b.value.toLowerCase()] || 0;
                 return countB - countA;
               });
-          }
 
-          // Only render the group if it has sources with non-zero counts
-          if (filteredSources.length === 0) return null;
+            // For "Other" category, add any uncategorized sources
+            if (groupName === "Other") {
+              // Get all sources that exist in filterCounts
+              const allAvailableSources = Object.keys(filterCounts.sources);
 
-          return (
-            <SidebarMenuItem key={groupName}>
-              <SidebarMenuButton className="pointer-events-none" tooltip={groupName}>
-                <span>{groupName}</span>
-              </SidebarMenuButton>
-              <SidebarMenuSub className="space-y-1">
-                {filteredSources.map((source) => (
-                  <SidebarMenuSubItem key={source.value}>
-                    <div className="flex items-center justify-between w-full">
-                      <Label
-                        htmlFor={`source-${source.value}`}
-                        className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
-                          filters.sources.includes(source.value) ? "text-sidebar-primary font-medium" : ""
-                        }`}
-                      >
-                        <Checkbox
-                          id={`source-${source.value}`}
-                          checked={filters.sources.includes(source.value)}
-                          onCheckedChange={() => onFilterChange("sources", source.value)}
-                          className={filters.sources.includes(source.value) ? "border-sidebar-primary" : ""}
-                        />
-                        {source.label}
-                      </Label>
-                      <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.sources[source.value.toLowerCase()] || 0}</SidebarMenuBadge>
-                    </div>
-                  </SidebarMenuSubItem>
-                ))}
-              </SidebarMenuSub>
-            </SidebarMenuItem>
-          );
-        })}
-      </SidebarMenu>
+              // Get all categorized sources (excluding "Other")
+              const categorizedSources = new Set();
+              Object.entries(SOURCE_GROUPS).forEach(([key, groupSources]) => {
+                if (key !== "Other") {
+                  groupSources.forEach(source => {
+                    categorizedSources.add(source.value.toLowerCase());
+                  });
+                }
+              });
 
-      {/* Value Search */}
-      <SidebarMenu className="mt-4">
-        <SidebarMenuItem>
-          <SidebarMenuButton className="pointer-events-none" tooltip="Value Search">
-            <span>Value Search</span>
-          </SidebarMenuButton>
-          <SidebarMenuSub>
-            <SidebarMenuSubItem>
-              <Input
-                type="text"
-                placeholder="Search annotation values..."
-                value={filters.valueSearch}
-                onChange={(e) => onFilterChange("search", e.target.value)}
-                className={`w-full ${filters.valueSearch ? "border-sidebar-primary" : ""}`}
-              />
-            </SidebarMenuSubItem>
-          </SidebarMenuSub>
-        </SidebarMenuItem>
-      </SidebarMenu>
+              // Find uncategorized sources
+              const uncategorizedSources = allAvailableSources
+                .filter(source => !categorizedSources.has(source) && (filterCounts.sources[source] || 0) > 0)
+                .map(source => ({
+                  value: source,
+                  label: source.charAt(0).toUpperCase() + source.slice(1).replace(/_/g, ' ')
+                }));
+
+              // Add uncategorized sources to the "Other" category
+              filteredSources = [...filteredSources, ...uncategorizedSources]
+                .sort((a, b) => {
+                  const countA = filterCounts.sources[a.value.toLowerCase()] || 0;
+                  const countB = filterCounts.sources[b.value.toLowerCase()] || 0;
+                  return countB - countA;
+                });
+            }
+
+            // Only render the group if it has sources with non-zero counts
+            if (filteredSources.length === 0) return null;
+
+            return (
+              <SidebarMenuItem key={groupName}>
+                <SidebarMenuButton className="pointer-events-none" tooltip={groupName}>
+                  <span>{groupName}</span>
+                </SidebarMenuButton>
+                <SidebarMenuSub className="space-y-1">
+                  {filteredSources.map((source) => (
+                    <SidebarMenuSubItem key={source.value}>
+                      <div className="flex items-center justify-between w-full">
+                        <Label
+                          htmlFor={`source-${source.value}`}
+                          className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                            filters.sources.includes(source.value) ? "text-sidebar-primary font-medium" : ""
+                          }`}
+                        >
+                          <Checkbox
+                            id={`source-${source.value}`}
+                            checked={filters.sources.includes(source.value)}
+                            onCheckedChange={() => onFilterChange("sources", source.value)}
+                            className={filters.sources.includes(source.value) ? "border-sidebar-primary" : ""}
+                          />
+                          {source.label}
+                        </Label>
+                        <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{filterCounts.sources[source.value.toLowerCase()] || 0}</SidebarMenuBadge>
+                      </div>
+                    </SidebarMenuSubItem>
+                  ))}
+                </SidebarMenuSub>
+              </SidebarMenuItem>
+            );
+          })}
+
+          {/* Value Search */}
+          <SidebarMenuItem>
+            <SidebarMenuButton className="pointer-events-none" tooltip="Value Search">
+              <span>Value Search</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+              <SidebarMenuSubItem>
+                <Input
+                  type="text"
+                  placeholder="Search annotation values..."
+                  value={filters.valueSearch}
+                  onChange={(e) => onFilterChange("valueSearch", e.target.value)}
+                  className={`w-full ${filters.valueSearch ? "border-sidebar-primary" : ""}`}
+                />
+              </SidebarMenuSubItem>
+            </SidebarMenuSub>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      )}
 
     </>
   )

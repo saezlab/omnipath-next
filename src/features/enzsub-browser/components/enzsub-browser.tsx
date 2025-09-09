@@ -7,7 +7,7 @@ import { EnzSubDetails } from "@/features/enzsub-browser/components/enzsub-detai
 import { EnzSubEntry } from "@/features/enzsub-browser/types"
 import { useEnzSubBrowser } from "@/features/enzsub-browser/hooks/useEnzSubBrowser"
 import { Info } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { useSearchParams } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
@@ -52,18 +52,21 @@ export function EnzSubBrowser({ data, isLoading = false }: EnzSubBrowserProps) {
     setIsDetailsOpen(true)
   }
 
-  // Update filter data in context when query or data changes
-  useEffect(() => {
-    const filterContextValue = enzSubQuery ? {
+  // Memoize filter context value to prevent infinite updates
+  const filterContextValue = useMemo(() => {
+    return enzSubQuery ? {
       type: "enzsub" as const,
       filters,
       filterCounts,
       onFilterChange: updateFilter,
       onClearFilters: clearFilters,
     } : null
-    
+  }, [enzSubQuery, filters, filterCounts])
+
+  // Update filter context only when memoized value changes
+  useEffect(() => {
     setFilterData(filterContextValue)
-  }, [enzSubQuery, filters, filterCounts, updateFilter, clearFilters, setFilterData])
+  }, [filterContextValue, setFilterData])
 
   return (
     <div className="w-full h-full">

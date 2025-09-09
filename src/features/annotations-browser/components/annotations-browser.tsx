@@ -10,7 +10,7 @@ import {
   MapPin,
   Tag
 } from "lucide-react"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { useSearchParams } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
@@ -102,18 +102,21 @@ export function AnnotationsBrowser({ isLoading = false, data }: AnnotationsBrows
     return "bg-gray-100 text-gray-800 hover:bg-gray-200"
   }
 
-  // Update filter data in context when query or data changes
-  useEffect(() => {
-    const filterContextValue = annotationsQuery ? {
+  // Memoize filter context value to prevent infinite updates
+  const filterContextValue = useMemo(() => {
+    return annotationsQuery ? {
       type: "annotations" as const,
       filters,
       filterCounts,
       onFilterChange: updateFilter,
       onClearFilters: clearFilters,
     } : null
-    
+  }, [annotationsQuery, filters, filterCounts])
+
+  // Update filter context only when memoized value changes
+  useEffect(() => {
     setFilterData(filterContextValue)
-  }, [annotationsQuery, filters, filterCounts, updateFilter, clearFilters, setFilterData])
+  }, [filterContextValue, setFilterData])
 
   return (
     <div className="w-full h-full max-w-full overflow-x-hidden">

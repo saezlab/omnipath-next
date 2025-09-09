@@ -99,6 +99,11 @@ export function FilterSidebar({
     return count
   }, 0)
 
+  // Check if there's data to filter
+  const hasData = Object.values(filterCounts).some(counts => 
+    Object.values(counts).some(count => typeof count === 'number' && count > 0)
+  )
+
   return (
     <>
       {/* Main Filters Group with Clear Action */}
@@ -116,34 +121,33 @@ export function FilterSidebar({
           </div>
         )}
 
-      {/* Search */}
-      <SidebarMenu className="space-y-2">
-        <SidebarMenuItem>
-          <SidebarMenuButton className="pointer-events-none" tooltip="Search">
-            <span>Search</span>
-          </SidebarMenuButton>
-          <SidebarMenuSub>
-            <SidebarMenuSubItem>
-              <Input
-                type="text"
-                placeholder="Search interactions..."
-                value={localSearch}
-                onChange={handleSearchChange}
-                className={`w-full ${localSearch ? "border-sidebar-primary" : ""}`}
-              />
-            </SidebarMenuSubItem>
-          </SidebarMenuSub>
-        </SidebarMenuItem>
-      </SidebarMenu>
-
       {/* All Filters */}
-      <SidebarMenu className="space-y-2">
+      {hasData && (
+        <SidebarMenu className="space-y-2">
+          {/* Search */}
           <SidebarMenuItem>
-            <SidebarMenuButton className="pointer-events-none" tooltip="Topology">
-              <span>Topology</span>
+            <SidebarMenuButton className="pointer-events-none" tooltip="Search">
+              <span>Search</span>
             </SidebarMenuButton>
-            <SidebarMenuSub className="space-y-1">
-              {topologyOptions.map((option) => {
+            <SidebarMenuSub>
+              <SidebarMenuSubItem>
+                <Input
+                  type="text"
+                  placeholder="Search interactions..."
+                  value={localSearch}
+                  onChange={handleSearchChange}
+                  className={`w-full ${localSearch ? "border-sidebar-primary" : ""}`}
+                />
+              </SidebarMenuSubItem>
+            </SidebarMenuSub>
+          </SidebarMenuItem>
+          {topologyOptions.length > 0 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Topology">
+                <span>Topology</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                {topologyOptions.map((option) => {
                 const count = filterCounts.topology[option] || 0
                 const isSelected = filters.topology?.includes(option) || false
                 const isDisabled = count === 0 && !isSelected
@@ -173,10 +177,11 @@ export function FilterSidebar({
                     </div>
                   </SidebarMenuSubItem>
                 )
-              })}
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-          {!isMultiQuery && (
+                })}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
+          {!isMultiQuery && directionOptions.length > 0 && (
             <SidebarMenuItem>
               <SidebarMenuButton className="pointer-events-none" tooltip="Direction">
                 <span>Direction</span>
@@ -216,12 +221,13 @@ export function FilterSidebar({
               </SidebarMenuSub>
             </SidebarMenuItem>
           )}
-          <SidebarMenuItem>
-            <SidebarMenuButton className="pointer-events-none" tooltip="Sign">
-              <span>Sign</span>
-            </SidebarMenuButton>
-            <SidebarMenuSub className="space-y-1">
-              {signOptions.map((option) => {
+          {signOptions.length > 0 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Sign">
+                <span>Sign</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                {signOptions.map((option) => {
                 const count = filterCounts.sign[option] || 0
                 const isSelected = filters.sign?.includes(option) || false
                 const isDisabled = count === 0 && !isSelected
@@ -251,15 +257,17 @@ export function FilterSidebar({
                     </div>
                   </SidebarMenuSubItem>
                 )
-              })}
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="pointer-events-none" tooltip="Interaction Type">
-              <span>Interaction Type</span>
-            </SidebarMenuButton>
-            <SidebarMenuSub className="space-y-1">
-              {interactionTypes.map((type) => {
+                })}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
+          {interactionTypes.length > 0 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Interaction Type">
+                <span>Interaction Type</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                {interactionTypes.map((type) => {
                 const typeIcon = INTERACTION_TYPE_ICONS[type] || { icon: <HeartHandshake className="h-4 w-4" />, label: type }
                 const count = filterCounts.interactionType[type] || 0
                 const isSelected = filters.interactionType?.includes(type) || false
@@ -300,9 +308,10 @@ export function FilterSidebar({
                     </div>
                   </SidebarMenuSubItem>
                 )
-              })}
-            </SidebarMenuSub>
-          </SidebarMenuItem>
+                })}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton className="pointer-events-none" tooltip="Minimum References">
               <span>Minimum References</span>
@@ -323,12 +332,13 @@ export function FilterSidebar({
               </SidebarMenuSubItem>
             </SidebarMenuSub>
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="pointer-events-none" tooltip="Source Entity Type">
-              <span>Source Entity Type</span>
-            </SidebarMenuButton>
-            <SidebarMenuSub className="space-y-1">
-              {entityTypesSource.map((type) => {
+          {entityTypesSource.length > 0 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Source Entity Type">
+                <span>Source Entity Type</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                {entityTypesSource.map((type) => {
                 const count = filterCounts.entityTypeSource[type] || 0
                 const isSelected = filters.entityTypeSource?.includes(type) || false
                 const isDisabled = count === 0 && !isSelected
@@ -354,15 +364,17 @@ export function FilterSidebar({
                     </div>
                   </SidebarMenuSubItem>
                 )
-              })}
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="pointer-events-none" tooltip="Target Entity Type">
-              <span>Target Entity Type</span>
-            </SidebarMenuButton>
-            <SidebarMenuSub className="space-y-1">
-              {entityTypesTarget.map((type) => {
+                })}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
+          {entityTypesTarget.length > 0 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Target Entity Type">
+                <span>Target Entity Type</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                {entityTypesTarget.map((type) => {
                 const count = filterCounts.entityTypeTarget[type] || 0
                 const isSelected = filters.entityTypeTarget?.includes(type) || false
                 const isDisabled = count === 0 && !isSelected
@@ -388,10 +400,12 @@ export function FilterSidebar({
                     </div>
                   </SidebarMenuSubItem>
                 )
-              })}
-            </SidebarMenuSub>
-          </SidebarMenuItem>
+                })}
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
+      )}
 
     </>
   )

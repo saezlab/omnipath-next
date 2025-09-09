@@ -6,7 +6,7 @@ import { InteractionDetails } from "@/features/interactions-browser/components/i
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
 import { SearchIdentifiersResponse } from "@/db/queries"
 import { Search } from "lucide-react"
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
 import { useFilters } from "@/contexts/filter-context"
 import { useInteractionsBrowser } from "../hooks/useInteractionsBrowser"
 
@@ -52,9 +52,9 @@ export function InteractionsBrowser({
     }
   }, [data, interactionsQuery, onEntitySelect])
 
-  // Update filter context
-  useEffect(() => {
-    const filterContextValue = interactionsQuery ? {
+  // Memoize filter context value to prevent infinite updates
+  const filterContextValue = useMemo(() => {
+    return interactionsQuery ? {
       type: "interactions" as const,
       filters: interactionsFilters,
       filterCounts,
@@ -62,8 +62,12 @@ export function InteractionsBrowser({
       onClearFilters: clearFilters,
       isMultiQuery: isMultiQueryValue,
     } : null
+  }, [interactionsQuery, interactionsFilters, filterCounts, isMultiQueryValue])
+
+  // Update filter context only when memoized value changes
+  useEffect(() => {
     setFilterData(filterContextValue)
-  }, [interactionsQuery, interactionsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData, isMultiQueryValue])
+  }, [filterContextValue, setFilterData])
 
 
 
