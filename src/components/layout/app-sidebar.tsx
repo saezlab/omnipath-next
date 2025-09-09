@@ -31,7 +31,8 @@ import {
   Sun, 
   MessageSquare,
   ChevronsUpDown,
-  Trash2
+  Trash2,
+  Home
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -48,6 +49,11 @@ import { EnzSubFilterSidebar } from "@/features/enzsub-browser/components/filter
 import { FeedbackDialog } from "@/components/ui/feedback-dialog"
 
 const navigationItems = [
+  {
+    title: "Home",
+    url: "/",
+    icon: Home,
+  },
   {
     title: "Search",
     url: "/search",
@@ -208,15 +214,6 @@ export function AppSidebar() {
                     <p className="text-sm">No recent activity</p>
                   </div>
                 )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link 
-                    href="/"
-                    className="gap-2 p-2 text-muted-foreground"
-                  >
-                    Go to Home
-                  </Link>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
