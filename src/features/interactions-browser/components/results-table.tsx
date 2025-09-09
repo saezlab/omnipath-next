@@ -57,9 +57,6 @@ export function InteractionResultsTable({
   sortDirection,
   onSortChange,
 }: InteractionResultsTableProps) {
-  const handleEntityClick = (entity: string) => {
-    window.open(`/search?tab=interactions&q=${encodeURIComponent(entity)}`, '_blank');
-  };
   const columns: ColumnDef<InteractionDataWithCount>[] = [
     {
       accessorKey: 'interaction',
@@ -74,9 +71,6 @@ export function InteractionResultsTable({
                 geneSymbol={row.sourceGenesymbol || ''}
                 uniprotId={row.source || ''}
                 maxChars={10}
-                onClick={() => {
-                  handleEntityClick(row.sourceGenesymbol || row.source || '');
-                }}
               />
             </div>
 
@@ -117,9 +111,6 @@ export function InteractionResultsTable({
                 geneSymbol={row.targetGenesymbol || ''}
                 uniprotId={row.target || ''}
                 maxChars={10}
-                onClick={() => {
-                  handleEntityClick(row.targetGenesymbol || row.target || '');
-                }}
               />
             </div>
           </div>

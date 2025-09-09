@@ -1,11 +1,11 @@
 "use client"
 import React, { useRef } from 'react';
+import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 interface EntityBadgeProps {
-  geneSymbol?: string;  // Keep for backward compatibility
-  uniprotId?: string;   // Keep for backward compatibility
-  onClick?: () => void;
+  geneSymbol?: string;
+  uniprotId?: string;
   maxChars?: number;    // Maximum characters before truncation
   maxWidth?: string;    // Maximum width (e.g., "w-32", "max-w-xs")
 }
@@ -13,13 +13,14 @@ interface EntityBadgeProps {
 export const EntityBadge: React.FC<EntityBadgeProps> = ({ 
   geneSymbol, 
   uniprotId,
-  onClick,
   maxChars = 12, // Default to 12 characters
   maxWidth = "max-w-[120px]", // Default max width
 }) => {
-  // Use new props if provided, fallback to old props for backward compatibility
   const name = geneSymbol || '';
   const identifier = uniprotId || '';
+  
+  // Create the search URL with the gene symbol
+  const searchUrl = `/search?q=${encodeURIComponent(name || identifier)}&tab=interactions`;
 
   // Helper function to truncate text
   const truncateText = (text: string, maxLength: number) => {
@@ -34,13 +35,10 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   const identifierRef = useRef<HTMLSpanElement>(null);
 
   const content = (
-    <div className={`relative ${maxWidth}`}>
-      {/* Modern glass-morphism card */}
+    <Link href={searchUrl} className={`block relative ${maxWidth}`}>
       <div 
-        className={`relative bg-gradient-to-br from-slate-50/80 to-slate-100/80 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-md px-2 py-1 shadow-sm min-w-[80px] w-full transition-all duration-200 ${
-          onClick ? 'cursor-pointer hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-700 dark:hover:to-slate-800 hover:shadow-md hover:scale-105' : ''
-        }`}
-        onClick={onClick}>
+        className="relative bg-gradient-to-br from-slate-50/80 to-slate-100/80 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-md px-2 py-1 shadow-sm min-w-[80px] w-full transition-all duration-200 cursor-pointer hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-700 dark:hover:to-slate-800 hover:shadow-md hover:scale-105"
+      >
         
         
         {/* Content */}
@@ -105,9 +103,8 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
             )}
           </div>
         </div>
-
       </div>
-    </div>
+    </Link>
   );
 
   return content;
