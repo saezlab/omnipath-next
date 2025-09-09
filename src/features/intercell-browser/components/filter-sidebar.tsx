@@ -42,7 +42,7 @@ export function IntercellFilterSidebar({
   // Check if there's data to filter
   const hasData = Object.values(filterCounts).some(counts => {
     if (typeof counts === 'object' && counts !== null) {
-      return Object.values(counts).some((count: any) => (typeof count === 'number' ? count > 0 : false))
+      return Object.values(counts).some((count: unknown) => (typeof count === 'number' ? count > 0 : false))
     }
     return false
   })

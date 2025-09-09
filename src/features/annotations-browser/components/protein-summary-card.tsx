@@ -127,10 +127,6 @@ export function ProteinSummaryCard({
     }
   }
 
-  // Handle click - just trigger onClick if provided
-  const handleClick = () => {
-    onClick?.()
-  }
   
   const parseProteinNames = (proteinNames: string | null) => {
     if (!proteinNames) return { main: 'Unknown Protein', alternatives: [] }
@@ -298,7 +294,7 @@ export function ProteinSummaryCard({
             </TooltipTrigger>
             <TooltipContent>
               {isUnresolved ? (
-                <p>Identifier "{geneSymbol}" could not be resolved</p>
+                <p>Identifier &quot;{geneSymbol}&quot; could not be resolved</p>
               ) : (
                 <p>Show more info</p>
               )}

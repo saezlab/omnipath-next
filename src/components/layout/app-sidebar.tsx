@@ -70,7 +70,7 @@ const navigationItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const { theme, setTheme, resolvedTheme } = useTheme()
+  const { setTheme, resolvedTheme } = useTheme()
   const { searchHistory, clearSearchHistory, chats, currentChatId, switchChat, deleteChat } = useSearchStore()
   const { isMobile } = useSidebar()
   const { filterData } = useFilters()
