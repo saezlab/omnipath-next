@@ -5,6 +5,11 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { searchIdentifiers, searchMultipleIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
+import { searchProteinNeighbors, SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
+import { getProteinAnnotations, GetProteinAnnotationsResponse } from "@/features/annotations-browser/api/queries"
+import { getIntercellData, GetIntercellDataResponse } from "@/features/intercell-browser/api/queries"
+import { getComplexesData, GetComplexesDataResponse } from "@/features/complexes-browser/api/queries"
+import { getEnzSubData, getEnzSubDataAmongProteins, GetEnzSubDataResponse } from "@/features/enzsub-browser/api/queries"
 import { Search } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -25,10 +30,6 @@ function parseQueries(queryString: string): string[] {
     .filter(q => q.length > 0)
 }
 
-function isMultiQuery(queryString: string): boolean {
-  return parseQueries(queryString).length > 1
-}
-
 export function SearchPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -38,7 +39,22 @@ export function SearchPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSpecies, setSelectedSpecies] = useState("9606")
   const [identifierResults, setIdentifierResults] = useState<Record<string, SearchIdentifiersResponse>>({})
-  const [lastQueryType, setLastQueryType] = useState<'single' | 'multi' | null>(null)
+  
+  // Centralized browser data state
+  const [browserData, setBrowserData] = useState<{
+    interactions?: SearchProteinNeighborsResponse
+    annotations?: GetProteinAnnotationsResponse
+    intercell?: GetIntercellDataResponse
+    complexes?: GetComplexesDataResponse
+    enzsub?: GetEnzSubDataResponse
+  }>({})
+  const [browserDataLoading, setBrowserDataLoading] = useState<{
+    interactions: boolean
+    annotations: boolean
+    intercell: boolean
+    complexes: boolean
+    enzsub: boolean
+  }>({ interactions: false, annotations: false, intercell: false, complexes: false, enzsub: false })
   
   // Get active tab from URL, default to interactions
   const activeTab = searchParams.get('tab') || 'interactions'
@@ -50,59 +66,39 @@ export function SearchPage() {
     setQuery(currentQuery)
   }, [urlQuery])
 
-  // Fetch identifier results for all queries (single and multi)
+  // Fetch identifier results for all queries
   useEffect(() => {
     if (urlQuery) {
-      const currentQueryType = isMultiQuery(urlQuery) ? 'multi' : 'single'
-      
-      // Clear cache if query type changed
-      if (lastQueryType !== null && lastQueryType !== currentQueryType) {
-        setIdentifierResults({})
-      }
-      setLastQueryType(currentQueryType)
-      
       const fetchIdentifiers = async () => {
-        if (isMultiQuery(urlQuery)) {
-          // For multi-query, use searchMultipleIdentifiers with limit=1
-          const proteins = parseQueries(urlQuery)
-          const newProteins = proteins.filter(protein => !identifierResults[protein])
-          
-          if (newProteins.length > 0) {
-            try {
-              const results = await searchMultipleIdentifiers(newProteins, 1, selectedSpecies)
-              const identifiers: Record<string, SearchIdentifiersResponse> = {}
-              
-              // Group results by protein (since searchMultipleIdentifiers returns flattened results)
-              newProteins.forEach((protein) => {
-                // Find results for this protein
-                const proteinResults = results.filter(result => 
-                  result.identifierValue.toLowerCase().startsWith(protein.trim().toLowerCase())
-                )
-                identifiers[protein] = proteinResults
-              })
-              
-              setIdentifierResults(prev => ({ ...prev, ...identifiers }))
-            } catch (error) {
-              console.error("Error fetching multi identifiers:", error)
-              // Fallback to empty results
-              const identifiers: Record<string, SearchIdentifiersResponse> = {}
-              newProteins.forEach(protein => {
-                identifiers[protein] = []
-              })
-              setIdentifierResults(prev => ({ ...prev, ...identifiers }))
-            }
-          }
-        } else {
-          // For single query, use searchIdentifiers with limit=20
-          const protein = urlQuery
-          if (!identifierResults[protein]) {
-            try {
-              const results = await searchIdentifiers(protein.trim(), 20, selectedSpecies)
-              setIdentifierResults(prev => ({ ...prev, [protein]: results }))
-            } catch (error) {
-              console.error(`Error fetching identifiers for ${protein}:`, error)
-              setIdentifierResults(prev => ({ ...prev, [protein]: [] }))
-            }
+        const proteins = parseQueries(urlQuery)
+        const newProteins = proteins.filter(protein => !identifierResults[protein])
+        
+        if (newProteins.length > 0) {
+          try {
+            // Always use limit of 1 for consistency
+            const limit = 1
+            const results = await searchMultipleIdentifiers(newProteins, limit, selectedSpecies)
+            const identifiers: Record<string, SearchIdentifiersResponse> = {}
+            
+            // Group results by protein (since searchMultipleIdentifiers returns flattened results)
+            newProteins.forEach((protein) => {
+              // Find results for this protein
+              const proteinResults = results.filter(result => 
+                result.identifierValue.toLowerCase().includes(protein.trim().toLowerCase()) ||
+                protein.trim().toLowerCase().includes(result.identifierValue.toLowerCase())
+              )
+              identifiers[protein] = proteinResults
+            })
+            
+            setIdentifierResults(prev => ({ ...prev, ...identifiers }))
+          } catch (error) {
+            console.error("Error fetching identifiers:", error)
+            // Fallback to empty results
+            const identifiers: Record<string, SearchIdentifiersResponse> = {}
+            newProteins.forEach(protein => {
+              identifiers[protein] = []
+            })
+            setIdentifierResults(prev => ({ ...prev, ...identifiers }))
           }
         }
       }
@@ -110,15 +106,14 @@ export function SearchPage() {
     } else {
       // Clear results when no query
       setIdentifierResults({})
-      setLastQueryType(null)
     }
   }, [urlQuery, selectedSpecies])
 
-  // Create flattened list of all identifier results for InteractionsBrowser
+  // Create flattened list of all identifier results for browsers
   const resolvedIdentifiers = useMemo(() => {
     if (!urlQuery) return []
     
-    const proteins = isMultiQuery(urlQuery) ? parseQueries(urlQuery) : [urlQuery]
+    const proteins = parseQueries(urlQuery)
     const flattened: SearchIdentifiersResponse = []
     
     proteins.forEach(protein => {
@@ -128,6 +123,83 @@ export function SearchPage() {
     
     return flattened
   }, [urlQuery, identifierResults])
+
+  // Fetch browser data when identifiers are resolved
+  useEffect(() => {
+    if (resolvedIdentifiers.length > 0 && urlQuery) {
+      const fetchAllBrowserData = async () => {
+        // Set all loading states to true
+        setBrowserDataLoading({
+          interactions: true,
+          annotations: true,
+          intercell: true,
+          complexes: true,
+          enzsub: true
+        })
+        
+        // Clear previous data
+        setBrowserData({})
+        
+        try {
+                    // Fetch all browser data in parallel
+          const [interactionsData, annotationsData, intercellData, complexesData, enzsubData] = await Promise.allSettled([
+            searchProteinNeighbors(resolvedIdentifiers),
+            getProteinAnnotations(resolvedIdentifiers),
+            getIntercellData(resolvedIdentifiers),
+            getComplexesData(resolvedIdentifiers),
+            getEnzSubData(resolvedIdentifiers)
+          ])
+          
+          // Update data and loading states
+          setBrowserData({
+            interactions: interactionsData.status === 'fulfilled' ? interactionsData.value : { interactions: [] },
+            annotations: annotationsData.status === 'fulfilled' ? annotationsData.value : { annotations: [] },
+            intercell: intercellData.status === 'fulfilled' ? intercellData.value : { intercellEntries: [] },
+            complexes: complexesData.status === 'fulfilled' ? complexesData.value : { complexEntries: [] },
+            enzsub: enzsubData.status === 'fulfilled' ? enzsubData.value : { enzSubData: [] }
+          })
+          
+          setBrowserDataLoading({
+            interactions: false,
+            annotations: false,
+            intercell: false,
+            complexes: false,
+            enzsub: false
+          })
+          
+          // Log any errors
+          if (interactionsData.status === 'rejected') console.error('Error fetching interactions:', interactionsData.reason)
+          if (annotationsData.status === 'rejected') console.error('Error fetching annotations:', annotationsData.reason)
+          if (intercellData.status === 'rejected') console.error('Error fetching intercell data:', intercellData.reason)
+          if (complexesData.status === 'rejected') console.error('Error fetching complexes:', complexesData.reason)
+          if (enzsubData.status === 'rejected') console.error('Error fetching enzsub data:', enzsubData.reason)
+          
+        } catch (error) {
+          console.error('Error fetching browser data:', error)
+          // Set loading states to false on error
+          setBrowserDataLoading({
+            interactions: false,
+            annotations: false,
+            intercell: false,
+            complexes: false,
+            enzsub: false
+          })
+        }
+      }
+      
+      fetchAllBrowserData()
+    } else {
+      // Clear data when no query or no identifiers
+      setBrowserData({})
+      setBrowserDataLoading({
+        interactions: false,
+        annotations: false,
+        intercell: false,
+        complexes: false,
+        enzsub: false
+      })
+    }
+  }, [resolvedIdentifiers, urlQuery])
 
 
   const handleSearch = async (searchQuery: string, displayTerm?: string) => {
@@ -209,11 +281,11 @@ export function SearchPage() {
         {/* Search Bar and Protein Card Row */}
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full">
           {/* Protein Card - only for single queries */}
-          {urlQuery && !isMultiQuery(urlQuery) && (
+          {urlQuery && parseQueries(urlQuery).length === 1 && (
             <div className="flex-shrink-0 flex sm:justify-start justify-center">
               <ProteinSummaryCard 
-                geneSymbol={urlQuery}
-                identifierResults={identifierResults[urlQuery] || []}
+                geneSymbol={parseQueries(urlQuery)[0]}
+                identifierResults={identifierResults[parseQueries(urlQuery)[0]] || []}
               />
             </div>
           )}
@@ -259,7 +331,7 @@ export function SearchPage() {
             </div>
             
             {/* Multi-query protein cards */}
-            {urlQuery && isMultiQuery(urlQuery) && (
+            {urlQuery && parseQueries(urlQuery).length > 1 && (
               <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                 {parseQueries(urlQuery).map((term, index) => (
                   <ProteinSummaryCard
@@ -312,23 +384,43 @@ export function SearchPage() {
       <div className="min-h-0 w-full max-w-full overflow-x-hidden">
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full h-full">
           <TabsContent value="interactions" className="h-full w-full max-w-full overflow-x-hidden">
-            <InteractionsBrowser identifierResults={resolvedIdentifiers} />
+            <InteractionsBrowser 
+              identifierResults={resolvedIdentifiers} 
+              data={browserData.interactions}
+              isLoading={browserDataLoading.interactions}
+            />
           </TabsContent>
 
           <TabsContent value="annotations" className="h-full w-full max-w-full overflow-x-hidden">
-            <AnnotationsBrowser identifierResults={resolvedIdentifiers} />
+            <AnnotationsBrowser 
+              identifierResults={resolvedIdentifiers}
+              data={browserData.annotations}
+              isLoading={browserDataLoading.annotations}
+            />
           </TabsContent>
 
           <TabsContent value="intercell" className="h-full w-full max-w-full overflow-x-hidden">
-            <IntercellBrowser identifierResults={resolvedIdentifiers} />
+            <IntercellBrowser 
+              identifierResults={resolvedIdentifiers}
+              data={browserData.intercell}
+              isLoading={browserDataLoading.intercell}
+            />
           </TabsContent>
 
           <TabsContent value="complexes" className="h-full w-full max-w-full overflow-x-hidden">
-            <ComplexesBrowser identifierResults={resolvedIdentifiers} />
+            <ComplexesBrowser 
+              identifierResults={resolvedIdentifiers}
+              data={browserData.complexes}
+              isLoading={browserDataLoading.complexes}
+            />
           </TabsContent>
 
           <TabsContent value="enzsub" className="h-full w-full max-w-full overflow-x-hidden">
-            <EnzSubBrowser identifierResults={resolvedIdentifiers} />
+            <EnzSubBrowser 
+              identifierResults={resolvedIdentifiers}
+              data={browserData.enzsub}
+              isLoading={browserDataLoading.enzsub}
+            />
           </TabsContent>
         </Tabs>
       </div>

@@ -1,13 +1,12 @@
 "use client"
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { getEnzSubData, getEnzSubDataAmongProteins } from "@/features/enzsub-browser/api/queries"
-import { SearchIdentifiersResponse } from "@/db/queries"
+import { GetEnzSubDataResponse } from "@/features/enzsub-browser/api/queries"
 import { EnzSubTable } from "@/features/enzsub-browser/components/enzsub-table"
 import { EnzSubDetails } from "@/features/enzsub-browser/components/enzsub-details"
 import { EnzSubEntry, EnzSubFilters } from "@/features/enzsub-browser/types"
 import { Info } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
@@ -31,21 +30,20 @@ interface FilterCounts {
 
 
 interface EnzSubBrowserProps {
-  identifierResults?: SearchIdentifiersResponse
+  data?: GetEnzSubDataResponse
+  isLoading?: boolean
 }
 
-export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
+export function EnzSubBrowser({ data, isLoading = false }: EnzSubBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [enzSubState, setEnzSubState] = useState({
-    results: [] as EnzSubEntry[],
-    isLoading: false,
-  })
+  // Use data directly from props instead of internal state
+  const enzSubData = data?.enzSubData || []
+  
   const [selectedEntry, setSelectedEntry] = useState<EnzSubEntry | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const lastSearchedQuery = useRef('')
   
   // Get query from URL
   const enzSubQuery = searchParams.get('q') || ''
@@ -71,51 +69,10 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     }
   }, [searchParams])
 
-  // Fetch enzyme-substrate data when query changes
-  useEffect(() => {
-    if (enzSubQuery && enzSubQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
-      lastSearchedQuery.current = enzSubQuery
-      
-      const fetchData = async () => {
-        setEnzSubState(prev => ({ ...prev, isLoading: true }))
-        
-        try {
-          console.log(`Fetching enzyme-substrate data for: "${enzSubQuery}"`);
-          // Get enzyme-substrate relationships
-          let enzSubResponse;
-          if (isMultiQuery(enzSubQuery)) {
-            // For multi-query, get relationships between the searched proteins only
-            // Extract all protein IDs (uniprot accessions and gene symbols)
-            const proteinIds = [
-              ...identifierResults.map(r => r.uniprotAccession),
-              ...identifierResults
-                .filter(r => r.identifierType.includes('gene'))
-                .map(r => r.identifierValue.toUpperCase())
-            ];
-            
-            enzSubResponse = await getEnzSubDataAmongProteins(proteinIds);
-          } else {
-            // For single query, get all enzyme-substrate relationships
-            enzSubResponse = await getEnzSubData(identifierResults);
-          }
-          
-          setEnzSubState({
-            results: enzSubResponse.enzSubData,
-            isLoading: false,
-          })
-        } catch (error) {
-          console.error("Error fetching EnzSub data:", error)
-          setEnzSubState(prev => ({ ...prev, isLoading: false }))
-        }
-      }
-      
-      fetchData()
-    }
-  }, [enzSubQuery, identifierResults])
 
   // Filter enzyme-substrate data based on selected filters
   const filteredEnzSubData = useMemo(() => {
-    return enzSubState.results.filter((entry) => {
+    return enzSubData.filter((entry) => {
       // Filter by sources
       if (enzSubFilters.sources.length > 0 && entry.sources) {
         const entrySources = entry.sources.split(';').map(s => s.trim().toLowerCase())
@@ -141,7 +98,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
 
       return true
     })
-  }, [enzSubState.results, enzSubFilters])
+  }, [enzSubData, enzSubFilters])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
@@ -151,7 +108,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
       modifications: {},
     }
 
-    enzSubState.results.forEach(entry => {
+    enzSubData.forEach(entry => {
       // Count sources (split by semicolon)
       if (entry.sources) {
         const sources = entry.sources.split(';').map(s => s.trim().toLowerCase()).filter(s => s.length > 0)
@@ -173,7 +130,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     })
 
     return counts
-  }, [enzSubState.results])
+  }, [enzSubData])
 
   // Handle filter changes
   const handleFilterChange = useCallback((type: keyof EnzSubFilters, value: string) => {
@@ -228,7 +185,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
     <div className="flex flex-col w-full h-full">
       {enzSubQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {enzSubState.isLoading ? (
+          {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">
@@ -243,7 +200,7 @@ export function EnzSubBrowser({ identifierResults = [] }: EnzSubBrowserProps) {
               currentResults={filteredEnzSubData}
               onSelectEntry={handleSelectEntry}
             />
-          ) : enzSubState.results.length > 0 ? (
+          ) : enzSubData.length > 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No results match your filters</h3>

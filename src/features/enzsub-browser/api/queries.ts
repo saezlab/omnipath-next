@@ -19,24 +19,24 @@ export async function getEnzSubData(identifierResults: SearchIdentifiersResponse
     .map(r => r.identifierValue.toUpperCase())
   )];
   
-  // Build the where conditions for both enzyme and substrate fields
-  const whereConditions = [];
+  // Build comprehensive OR conditions - get all relationships involving any of the queried proteins
+  const allConditions = [];
   
   if (uniprotAccessions.length > 0) {
-    whereConditions.push(
+    allConditions.push(
       inArray(enzSub.enzyme, uniprotAccessions),
       inArray(enzSub.substrate, uniprotAccessions)
     );
   }
   
   if (geneSymbols.length > 0) {
-    whereConditions.push(
+    allConditions.push(
       inArray(enzSub.enzymeGenesymbol, geneSymbols),
       inArray(enzSub.substrateGenesymbol, geneSymbols)
     );
   }
   
-  if (whereConditions.length === 0) {
+  if (allConditions.length === 0) {
     return {
       enzSubData: [],
     };
@@ -59,7 +59,7 @@ export async function getEnzSubData(identifierResults: SearchIdentifiersResponse
       ncbiTaxId: enzSub.ncbiTaxId,
     })
     .from(enzSub)
-    .where(or(...whereConditions));
+    .where(or(...allConditions));
     
   return {
     enzSubData: results,

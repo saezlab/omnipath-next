@@ -1,7 +1,7 @@
 "use client"
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { searchProteinNeighbors, SearchProteinNeighborsResponse, getInteractionsAmongProteins } from "@/features/interactions-browser/api/queries"
+import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { InteractionDetails } from "@/features/interactions-browser/components/interaction-details"
 import { InteractionResultsTable } from "@/features/interactions-browser/components/results-table"
 import { InteractionsFilters } from "@/features/interactions-browser/types"
@@ -17,6 +17,7 @@ interface InteractionsBrowserProps {
   onEntitySelect?: (entityName: string) => void
   isLoading?: boolean
   identifierResults?: SearchIdentifiersResponse
+  data?: SearchProteinNeighborsResponse
 }
 
 interface FilterCounts {
@@ -28,10 +29,6 @@ interface FilterCounts {
   sign: Record<string, number>
 }
 
-interface InteractionState {
-  interactions: SearchProteinNeighborsResponse['interactions']
-  isLoading: boolean
-}
 
 interface SortState {
   sortKey: string | null
@@ -109,8 +106,6 @@ function applyFilter(
       if (filterValue.includes('undirected') && interaction.isDirected === false) topologyMatches.push(true)
       return topologyMatches.length > 0
     case 'direction':
-      // Disable direction filter for multi-queries
-      if (originalQuery && isMultiQuery(originalQuery)) return true
       if (!Array.isArray(filterValue) || filterValue.length === 0) return true
       const directionMatches = []
       if (filterValue.includes('upstream') && isUpstreamInteraction(interaction, queryUpper)) directionMatches.push(true)
@@ -167,11 +162,12 @@ function passesFiltersExcept(
 export function InteractionsBrowser({ 
   onEntitySelect,
   identifierResults = [],
+  data,
+  isLoading = false,
 }: InteractionsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
-  const lastSearchedQuery = useRef('')
   
   // URL-derived state
   const interactionsQuery = searchParams.get('q') || ''
@@ -180,11 +176,8 @@ export function InteractionsBrowser({
     [searchParams]
   )
 
-  // Interaction state
-  const [interactionState, setInteractionState] = useState<InteractionState>({
-    interactions: [],
-    isLoading: false,
-  })
+  // Use data directly from props instead of internal state
+  const interactions = data?.interactions || []
 
   // UI state
   const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null)
@@ -196,52 +189,17 @@ export function InteractionsBrowser({
     sortDirection: 'desc'
   })
 
-  // Fetch interactions when query changes
+  // Reset sort and call onEntitySelect when data changes
   useEffect(() => {
-    if (interactionsQuery && interactionsQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
-      lastSearchedQuery.current = interactionsQuery
+    if (data && interactionsQuery) {
+      setSortState({
+        sortKey: 'referenceCount',
+        sortDirection: 'desc'
+      })
       
-      const fetchData = async () => {
-        setInteractionState(prev => ({ ...prev, isLoading: true }))
-        try {
-          console.log(`Fetching interactions for: "${interactionsQuery}" with species: 9606`);
-          
-          let interactionsResponse;
-          if (isMultiQuery(interactionsQuery)) {
-            // For multi-query, get interactions between the searched proteins only
-            // Extract all protein IDs (uniprot accessions and gene symbols)
-            const proteinIds = [
-              ...identifierResults.map(r => r.uniprotAccession),
-              ...identifierResults
-                .filter(r => r.identifierType.includes('gene'))
-                .map(r => r.identifierValue.toUpperCase())
-            ];
-            
-            interactionsResponse = await getInteractionsAmongProteins(proteinIds);
-          } else {
-            // For single query, get all neighbor interactions
-            interactionsResponse = await searchProteinNeighbors(identifierResults);
-          }
-          
-          setInteractionState({
-            interactions: interactionsResponse.interactions,
-            isLoading: false,
-          })
-          
-          setSortState({
-            sortKey: 'referenceCount',
-            sortDirection: 'desc'
-          })
-          
-          if (onEntitySelect) onEntitySelect(interactionsQuery)
-        } catch (error) {
-          console.error("Error fetching data:", error)
-          setInteractionState(prev => ({ ...prev, isLoading: false }))
-        }
-      }
-      fetchData()
+      if (onEntitySelect) onEntitySelect(interactionsQuery)
     }
-  }, [interactionsQuery, identifierResults, onEntitySelect])
+  }, [data, interactionsQuery, onEntitySelect])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
@@ -255,7 +213,7 @@ export function InteractionsBrowser({
     }
 
     const queryUpper = interactionsQuery.toUpperCase()
-    interactionState.interactions.forEach((interaction) => {
+    interactions.forEach((interaction) => {
       // Count for array-based filters (excluding the filter being counted)
       if (passesFiltersExcept(interaction, interactionsFilters, interactionsQuery, ['interactionType']) && interaction.type) {
         counts.interactionType[interaction.type] = (counts.interactionType[interaction.type] || 0) + 1
@@ -276,8 +234,7 @@ export function InteractionsBrowser({
         }
       }
       
-      // Skip direction counting for multi-queries
-      if (!isMultiQuery(interactionsQuery) && passesFiltersExcept(interaction, interactionsFilters, interactionsQuery, ['direction'])) {
+      if (passesFiltersExcept(interaction, interactionsFilters, interactionsQuery, ['direction'])) {
         const upstream = isUpstreamInteraction(interaction, queryUpper)
         const downstream = isDownstreamInteraction(interaction, queryUpper)
         if (upstream) {
@@ -298,11 +255,11 @@ export function InteractionsBrowser({
       }
     })
     return counts
-  }, [interactionState.interactions, interactionsFilters, interactionsQuery])
+  }, [interactions, interactionsFilters, interactionsQuery])
 
   // Filtered and sorted interactions
   const processedInteractions = useMemo(() => {
-    const filtered = interactionState.interactions.filter(i => 
+    const filtered = interactions.filter(i => 
       passesFilters(i, interactionsFilters, interactionsQuery)
     )
     
@@ -316,7 +273,7 @@ export function InteractionsBrowser({
       if (valA > valB) return sortState.sortDirection === 'asc' ? 1 : -1
       return 0
     })
-  }, [interactionState.interactions, interactionsFilters, interactionsQuery, sortState])
+  }, [interactions, interactionsFilters, interactionsQuery, sortState])
 
 
   const handleSortChange = useCallback((key: string | null, direction: 'asc' | 'desc' | null) => {
@@ -387,17 +344,14 @@ export function InteractionsBrowser({
     <div className="flex flex-col w-full h-full">
       {interactionsQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {interactionState.isLoading ? (
+          {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">
-                {isMultiQuery(interactionsQuery) 
-                  ? "Loading interactions between proteins..." 
-                  : "Loading interactions..."
-                }
+                Loading interactions...
               </p>
             </div>
-          ) : interactionState.interactions.length > 0 ? (
+          ) : interactions.length > 0 ? (
             <InteractionResultsTable
               data={processedInteractions}
               exportData={processedInteractions}
@@ -414,8 +368,8 @@ export function InteractionsBrowser({
               <Search className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No interactions found</h3>
               <p className="text-muted-foreground max-w-md">
-                {isMultiQuery(interactionsQuery) 
-                  ? `No interactions found between ${parseQueries(interactionsQuery).join(", ")}. Try searching for different proteins or genes.`
+                {parseQueries(interactionsQuery).length > 1
+                  ? `No interactions found for ${parseQueries(interactionsQuery).join(", ")}. Try searching for different proteins or genes.`
                   : `No interactions found for "${interactionsQuery}". Try searching for a different protein or gene.`
                 }
               </p>

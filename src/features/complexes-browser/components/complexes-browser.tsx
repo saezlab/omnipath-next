@@ -1,13 +1,12 @@
 "use client"
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { getComplexesData } from "@/features/complexes-browser/api/queries"
-import { SearchIdentifiersResponse } from "@/db/queries"
+import { GetComplexesDataResponse } from "@/features/complexes-browser/api/queries"
 import { ComplexesTable } from "@/features/complexes-browser/components/complexes-table"
 import { ComplexDetails } from "@/features/complexes-browser/components/complex-details"
 import { ComplexEntry, ComplexesFilters, ParsedComplex } from "@/features/complexes-browser/types"
 import { Info } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
@@ -17,21 +16,20 @@ interface FilterCounts {
 
 
 interface ComplexesBrowserProps {
-  identifierResults?: SearchIdentifiersResponse
+  data?: GetComplexesDataResponse
+  isLoading?: boolean
 }
 
-export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserProps) {
+export function ComplexesBrowser({ data, isLoading = false }: ComplexesBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [complexState, setComplexState] = useState({
-    results: [] as ComplexEntry[],
-    isLoading: false,
-  })
+  // Use data directly from props instead of internal state
+  const complexEntries = data?.complexEntries || []
+  
   const [selectedEntry, setSelectedEntry] = useState<ComplexEntry | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const lastSearchedQuery = useRef('')
   
   // Get query from URL
   const complexQuery = searchParams.get('q') || ''
@@ -68,36 +66,10 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     }
   }, [])
 
-  // Fetch complexes data when query changes
-  useEffect(() => {
-    if (complexQuery && complexQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
-      lastSearchedQuery.current = complexQuery
-      
-      const fetchData = async () => {
-        setComplexState(prev => ({ ...prev, isLoading: true }))
-        
-        try {
-          console.log(`Fetching complexes data for: "${complexQuery}"`);
-          
-          const complexesResponse = await getComplexesData(identifierResults)
-          
-          setComplexState({
-            results: complexesResponse.complexEntries,
-            isLoading: false,
-          })
-        } catch (error) {
-          console.error("Error fetching complexes data:", error)
-          setComplexState(prev => ({ ...prev, isLoading: false }))
-        }
-      }
-      
-      fetchData()
-    }
-  }, [complexQuery, identifierResults])
 
   // Filter complex results based on selected filters
   const filteredComplexEntries = useMemo(() => {
-    return complexState.results.filter((entry) => {
+    return complexEntries.filter((entry) => {
       const parsedEntry = parseComplexData(entry)
       
       // Filter by sources
@@ -112,7 +84,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
 
       return true
     })
-  }, [complexState.results, complexFilters, parseComplexData])
+  }, [complexEntries, complexFilters, parseComplexData])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
@@ -120,7 +92,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
       sources: {},
     }
 
-    complexState.results.forEach(entry => {
+    complexEntries.forEach(entry => {
       const parsedEntry = parseComplexData(entry)
       
       // Count sources
@@ -130,7 +102,7 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     })
 
     return counts
-  }, [complexState.results, parseComplexData])
+  }, [complexEntries, parseComplexData])
 
   // Handle filter changes
   const handleFilterChange = useCallback((type: keyof ComplexesFilters, value: string) => {
@@ -186,19 +158,29 @@ export function ComplexesBrowser({ identifierResults = [] }: ComplexesBrowserPro
     <div className="w-full h-full">
       {complexQuery ? (
         <div className="w-full h-full">
-          {complexState.isLoading ? (
+          {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">Loading complexes data...</p>
             </div>
-          ) : filteredComplexEntries.length > 0 ? (
-            <ComplexesTable entries={filteredComplexEntries} onSelectEntry={handleSelectEntry} />
+          ) : complexEntries.length > 0 ? (
+            filteredComplexEntries.length > 0 ? (
+              <ComplexesTable entries={filteredComplexEntries} onSelectEntry={handleSelectEntry} />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <Info className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
+                <p className="text-muted-foreground max-w-md">
+                  Try adjusting your filter criteria to see more complexes.
+                </p>
+              </div>
+            )
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No complexes found</h3>
               <p className="text-muted-foreground max-w-md">
-                No complexes found containing &ldquo;{complexQuery}&rdquo;. Try searching for a different protein or adjusting your filters.
+                No complexes found containing &ldquo;{complexQuery}&rdquo;. Try searching for a different protein.
               </p>
             </div>
           )}

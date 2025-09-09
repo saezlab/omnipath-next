@@ -1,9 +1,9 @@
 "use client"
 
-import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
+import { GetProteinAnnotationsResponse } from "@/features/annotations-browser/api/queries"
 import { SearchIdentifiersResponse } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
-import { Annotation, SearchFilters } from "@/features/annotations-browser/types"
+import { SearchFilters } from "@/features/annotations-browser/types"
 import {
   Activity,
   Info,
@@ -36,20 +36,19 @@ interface FilterCounts {
 interface AnnotationsBrowserProps {
   isLoading?: boolean
   identifierResults?: SearchIdentifiersResponse
+  data?: GetProteinAnnotationsResponse
 }
 
-export function AnnotationsBrowser({ isLoading, identifierResults = [] }: AnnotationsBrowserProps) {
+export function AnnotationsBrowser({ isLoading = false, data }: AnnotationsBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [annotationState, setAnnotationState] = useState({
-    results: [] as Annotation[],
-    isLoading: false,
-  })
+  // Use data directly from props instead of internal state
+  const annotations = data?.annotations || []
+  
   const [loadedSources, setLoadedSources] = useState<string[]>([])
   const [hasMoreSources, setHasMoreSources] = useState(true)
-  const lastSearchedQuery = useRef('')
   const loadMoreRef = useRef<HTMLDivElement>(null)
   
   // Get query from URL
@@ -77,36 +76,13 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
   }, [searchParams])
 
 
-  // Fetch annotations when query changes
+  // Reset infinite scroll state when new data arrives
   useEffect(() => {
-    // Only use URL query as source of truth
-    if (annotationsQuery && annotationsQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
-      lastSearchedQuery.current = annotationsQuery
-      
-      const fetchData = async () => {
-        setAnnotationState(prev => ({ ...prev, isLoading: true }))
-        
-        // Reset infinite scroll state for new search
-        setLoadedSources([])
-        setHasMoreSources(true)
-        
-        try {
-          // Use the passed identifier results to get annotations
-          const annotationsResponse = await getProteinAnnotations(identifierResults)
-          
-          setAnnotationState({
-            results: annotationsResponse.annotations,
-            isLoading: false,
-          })
-        } catch (error) {
-          console.error("Error fetching data:", error)
-          setAnnotationState(prev => ({ ...prev, isLoading: false }))
-        }
-      }
-      
-      fetchData()
+    if (data && annotationsQuery) {
+      setLoadedSources([])
+      setHasMoreSources(true)
     }
-  }, [annotationsQuery, identifierResults])
+  }, [data, annotationsQuery])
 
 
   // Filter annotations based on selected filters
@@ -115,7 +91,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     // First, find all recordIds that match the value search in any field
     const matchingRecordIds = new Set<number>()
     
-    annotationState.results.forEach((annotation) => {
+    annotations.forEach((annotation) => {
       const searchTerm = annotationsFilters.valueSearch.toLowerCase()
       if (searchTerm) {
         // Check if any field contains the search term
@@ -133,7 +109,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     })
 
     // Then filter annotations based on all criteria
-    const filtered = annotationState.results.filter((annotation) => {
+    const filtered = annotations.filter((annotation) => {
       // Filter by source
       if (annotationsFilters.sources.length > 0 && annotation.source) {
         const sourceMatch = annotationsFilters.sources.some(filterSource => 
@@ -161,7 +137,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     })
     
     return filtered
-  }, [annotationState.results, annotationsFilters])
+  }, [annotations, annotationsFilters])
 
   // Calculate filter counts based on unique records
   const filterCounts = useMemo(() => {
@@ -171,11 +147,11 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     }
 
     // Get unique records first
-    const uniqueRecords = new Set(annotationState.results.map(a => a.recordId))
+    const uniqueRecords = new Set(annotations.map(a => a.recordId))
     
     // For each unique record, count its sources and types
     uniqueRecords.forEach(recordId => {
-      const recordAnnotations = annotationState.results.filter(a => a.recordId === recordId)
+      const recordAnnotations = annotations.filter(a => a.recordId === recordId)
       
       // Count unique sources for this record
       const uniqueSources = new Set(recordAnnotations.map(a => a.source?.toLowerCase()))
@@ -195,7 +171,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     })
 
     return counts
-  }, [annotationState.results])
+  }, [annotations])
 
   // Load more sources function
   const loadMoreSources = useCallback(() => {
@@ -357,7 +333,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
     <div className="w-full h-full max-w-full overflow-x-hidden">
       {annotationsQuery ? (
         <div className="w-full h-full max-w-full overflow-x-hidden">
-          {annotationState.isLoading ? (
+          {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">Loading annotations...</p>
@@ -385,7 +361,7 @@ export function AnnotationsBrowser({ isLoading, identifierResults = [] }: Annota
                 </div>
               )}
             </>
-          ) : annotationState.results.length > 0 ? (
+          ) : annotations.length > 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No results match your filters</h3>

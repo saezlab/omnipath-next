@@ -1,11 +1,10 @@
 "use client"
 
-import { getIntercellData } from "@/features/intercell-browser/api/queries"
-import { SearchIdentifiersResponse } from "@/db/queries"
+import { GetIntercellDataResponse } from "@/features/intercell-browser/api/queries"
 import { IntercellTable } from "@/features/intercell-browser/components/intercell-table"
-import { IntercellEntry, IntercellFilters } from "@/features/intercell-browser/types"
+import { IntercellFilters } from "@/features/intercell-browser/types"
 import { Info } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
@@ -23,19 +22,17 @@ interface FilterCounts {
 
 
 interface IntercellBrowserProps {
-  identifierResults?: SearchIdentifiersResponse
+  data?: GetIntercellDataResponse
+  isLoading?: boolean
 }
 
-export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserProps) {
+export function IntercellBrowser({ data, isLoading = false }: IntercellBrowserProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { setFilterData } = useFilters()
   
-  const [intercellState, setIntercellState] = useState({
-    results: [] as IntercellEntry[],
-    isLoading: false,
-  })
-  const lastSearchedQuery = useRef('')
+  // Use data directly from props instead of internal state
+  const intercellEntries = data?.intercellEntries || []
   
   // Get query from URL
   const intercellQuery = searchParams.get('q') || ''
@@ -73,36 +70,10 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
     }
   }, [searchParams])
 
-  // Fetch intercell data when query changes
-  useEffect(() => {
-    if (intercellQuery && intercellQuery !== lastSearchedQuery.current && identifierResults.length > 0) {
-      lastSearchedQuery.current = intercellQuery
-      
-      const fetchData = async () => {
-        setIntercellState(prev => ({ ...prev, isLoading: true }))
-        
-        try {
-          console.log(`Fetching intercell data for: "${intercellQuery}"`);
-          
-          const intercellResponse = await getIntercellData(identifierResults)
-          
-          setIntercellState({
-            results: intercellResponse.intercellEntries,
-            isLoading: false,
-          })
-        } catch (error) {
-          console.error("Error fetching intercell data:", error)
-          setIntercellState(prev => ({ ...prev, isLoading: false }))
-        }
-      }
-      
-      fetchData()
-    }
-  }, [intercellQuery, identifierResults])
 
   // Filter intercell results based on selected filters
   const filteredIntercellEntries = useMemo(() => {
-    return intercellState.results.filter((entry) => {
+    return intercellEntries.filter((entry) => {
       // Filter by aspects
       if (intercellFilters.aspects.length > 0 && entry.aspect) {
         const aspectMatch = intercellFilters.aspects.some(filterAspect => 
@@ -158,7 +129,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
 
       return true
     })
-  }, [intercellState.results, intercellFilters])
+  }, [intercellEntries, intercellFilters])
 
   // Calculate filter counts
   const filterCounts = useMemo(() => {
@@ -174,7 +145,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
       plasmaMembranePeripheral: { true: 0, false: 0 },
     }
 
-    intercellState.results.forEach(entry => {
+    intercellEntries.forEach(entry => {
       // Count aspects
       if (entry.aspect) {
         counts.aspects[entry.aspect] = (counts.aspects[entry.aspect] || 0) + 1
@@ -213,7 +184,7 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
     })
 
     return counts
-  }, [intercellState.results])
+  }, [intercellEntries])
 
   // Handle filter changes
   const handleFilterChange = useCallback((type: keyof IntercellFilters, value: string | boolean | null) => {
@@ -281,19 +252,29 @@ export function IntercellBrowser({ identifierResults = [] }: IntercellBrowserPro
     <div className="flex flex-col w-full h-full">
       {intercellQuery ? (
         <div className="flex flex-col w-full h-full min-h-0">
-          {intercellState.isLoading ? (
+          {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent mb-4"></div>
               <p className="text-muted-foreground">Loading intercell data...</p>
             </div>
-          ) : filteredIntercellEntries.length > 0 ? (
-            <IntercellTable entries={filteredIntercellEntries} />
+          ) : intercellEntries.length > 0 ? (
+            filteredIntercellEntries.length > 0 ? (
+              <IntercellTable entries={filteredIntercellEntries} />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <Info className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
+                <p className="text-muted-foreground max-w-md">
+                  Try adjusting your filter criteria to see more intercell data.
+                </p>
+              </div>
+            )
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No intercell data found</h3>
               <p className="text-muted-foreground max-w-md">
-                No intercell data found for &ldquo;{intercellQuery}&rdquo;. Try searching for a different protein or adjusting your filters.
+                No intercell data found for &ldquo;{intercellQuery}&rdquo;. Try searching for a different protein.
               </p>
             </div>
           )}

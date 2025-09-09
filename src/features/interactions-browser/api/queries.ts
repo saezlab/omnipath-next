@@ -7,7 +7,6 @@ import { SearchIdentifiersResponse } from "@/db/queries";
 
 export async function searchProteinNeighbors(identifierResults: SearchIdentifiersResponse) {
   if (identifierResults.length === 0) {
-    // No identifiers found, return empty results
     return {
       interactions: [],
     };
@@ -20,7 +19,17 @@ export async function searchProteinNeighbors(identifierResults: SearchIdentifier
     .map(r => r.identifierValue.toUpperCase())
   )];
   
-  // Build the where conditions for both source and target
+  // Combine all protein identifiers
+  const allProteinIds = [...uniprotAccessions, ...geneSymbols].filter(Boolean);
+  
+  if (allProteinIds.length === 0) {
+    return {
+      interactions: [],
+    };
+  }
+  
+  // Always get all interactions involving these proteins (neighbors approach)
+  // This works for both single and multiple proteins
   const whereConditions = [];
   
   if (uniprotAccessions.length > 0) {
@@ -35,12 +44,6 @@ export async function searchProteinNeighbors(identifierResults: SearchIdentifier
       inArray(interactions.sourceGenesymbol, geneSymbols),
       inArray(interactions.targetGenesymbol, geneSymbols)
     );
-  }
-  
-  if (whereConditions.length === 0) {
-    return {
-      interactions: [],
-    };
   }
   
   const results = await db
