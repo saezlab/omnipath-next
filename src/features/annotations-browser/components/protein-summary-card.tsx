@@ -18,7 +18,8 @@ import {
   Microscope,
   Network,
   Tag,
-  X
+  X,
+  AlertTriangle
 } from "lucide-react"
 import { useState } from "react"
 
@@ -260,27 +261,47 @@ export function ProteinSummaryCard({
     </Card>
   )
 
+  // Check if identifier couldn't be resolved
+  const isUnresolved = !identifierResults || identifierResults.length === 0
+
   // Always render minimal card, regardless of fetchOnClick
   return (
     <Dialog open={dialogOpen} onOpenChange={handleDialogOpen}>
       {/* Integrated Badge with Icons */}
-      <Badge className="h-8 bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 h-auto font-semibold flex items-center gap-1">
+      <Badge className={`h-8 text-xs px-2 py-0.5 h-auto font-semibold flex items-center gap-1 ${
+        isUnresolved 
+          ? "bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/50" 
+          : "bg-primary hover:bg-primary/90 text-primary-foreground"
+      }`}>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <DialogTrigger asChild>
-                <button
-                  className="flex items-center gap-1 hover:bg-primary/80 rounded px-1 py-0.5 -mx-1 -my-0.5"
-                  onClick={() => onClick?.()}
-                >
-                  <Info className="h-4 w-4" />
-                  <Dna className="h-4 w-4" />
-                  {geneSymbol}
-                </button>
-              </DialogTrigger>
+              {isUnresolved ? (
+                <div className="flex items-center gap-1">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="line-through decoration-2 decoration-orange-600 dark:decoration-orange-400">
+                    {geneSymbol}
+                  </span>
+                </div>
+              ) : (
+                <DialogTrigger asChild>
+                  <button
+                    className="flex items-center gap-1 hover:bg-primary/80 rounded px-1 py-0.5 -mx-1 -my-0.5"
+                    onClick={() => onClick?.()}
+                  >
+                    <Info className="h-4 w-4" />
+                    <Dna className="h-4 w-4" />
+                    {geneSymbol}
+                  </button>
+                </DialogTrigger>
+              )}
             </TooltipTrigger>
             <TooltipContent>
-              <p>Show more info</p>
+              {isUnresolved ? (
+                <p>Identifier "{geneSymbol}" could not be resolved</p>
+              ) : (
+                <p>Show more info</p>
+              )}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
