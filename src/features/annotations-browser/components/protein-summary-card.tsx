@@ -13,6 +13,7 @@ import {
   FlaskConical,
   Globe,
   Heart,
+  Info,
   MapPin,
   Microscope,
   Network,
@@ -262,28 +263,48 @@ export function ProteinSummaryCard({
   // Always render minimal card, regardless of fetchOnClick
   return (
     <Dialog open={dialogOpen} onOpenChange={handleDialogOpen}>
-      {/* Minimal Card Trigger */}
-      <DialogTrigger asChild>
-        <div className="relative">
-          <div className="flex items-center gap-2 p-2 border border-border rounded-lg bg-background hover:bg-muted/50 transition-colors cursor-pointer min-w-0 flex-shrink-0" onClick={handleClick}>
-            <Badge className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 h-auto font-semibold">
-              <Dna className="h-3 w-3 mr-1" />
-              {geneSymbol}
-            </Badge>
-          </div>
-          {onRemove && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onRemove()
-              }}
-              className="absolute -top-1 -right-1 hover:bg-secondary-foreground/20 rounded-full p-1 bg-background border border-border shadow-sm"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          )}
-        </div>
-      </DialogTrigger>
+      {/* Integrated Badge with Icons */}
+      <Badge className="h-8 bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-2 py-0.5 h-auto font-semibold flex items-center gap-1">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DialogTrigger asChild>
+                <button
+                  className="flex items-center gap-1 hover:bg-primary/80 rounded px-1 py-0.5 -mx-1 -my-0.5"
+                  onClick={() => onClick?.()}
+                >
+                  <Info className="h-4 w-4" />
+                  <Dna className="h-4 w-4" />
+                  {geneSymbol}
+                </button>
+              </DialogTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Show more info</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        {onRemove && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onRemove()
+                  }}
+                  className="ml-1 hover:bg-red-500/20 rounded p-0.5 -mr-1"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Remove</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </Badge>
 
       {/* Dialog Content */}
       <DialogContent className="max-w-[95vw] sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-[85vw] max-h-[90vh] overflow-y-auto">
