@@ -1,8 +1,10 @@
 "use client"
 
+import {useEffect, useState} from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Switch } from "@/components/ui/switch"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,12 +29,12 @@ import {
 } from "@/components/ui/sidebar"
 import { 
   Search, 
-  Moon, 
-  Sun, 
   MessageSquare,
   ChevronsUpDown,
   Trash2,
-  Home
+  Home,
+  Sun,
+  Moon
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -68,10 +70,15 @@ const navigationItems = [
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const { searchHistory, clearSearchHistory, chats, currentChatId, switchChat, deleteChat } = useSearchStore()
   const { isMobile } = useSidebar()
   const { filterData } = useFilters()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Get entity type color
   const getEntityTypeColor = (type: string) => {
@@ -218,6 +225,7 @@ export function AppSidebar() {
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
+        
       </SidebarHeader>
 
       <SidebarContent>
@@ -364,24 +372,36 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t">
-        <div className="flex items-center justify-between px-4 py-2">
+        {/* Theme Toggle */}
+        <div className="flex items-center justify-center px-4 py-2">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <Sun className="h-3 w-3 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">Light</span>
+            </div>
+{mounted ? (
+              <Switch
+                checked={resolvedTheme === "dark"}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setTheme("dark")
+                  } else {
+                    setTheme("light")
+                  }
+                }}
+                className="data-[state=checked]:bg-primary"
+              />
+            ) : (
+              <div className="h-[1.15rem] w-8 rounded-full bg-input animate-pulse" />
+            )}
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-medium text-muted-foreground">Dark</span>
+              <Moon className="h-3 w-3 text-muted-foreground" />
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-center px-4 py-2">
           <FeedbackDialog />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10"
-            onClick={() => {
-              if (theme === "dark") {
-                setTheme("light")
-              } else {
-                setTheme("dark")
-              }
-            }}
-          >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
         </div>
       </SidebarFooter>
       <SidebarRail/>

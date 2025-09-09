@@ -78,11 +78,11 @@ export function EnzSubTable({
       cell: ({ row }) => row.references ? (
         <div className="max-w-[200px]">
           <span className="text-xs text-muted-foreground">
-            {row.references.split(';').length} reference{row.references.split(';').length > 1 ? 's' : ''}
+            {row.references.split(';').length}
           </span>
         </div>
       ) : (
-        <span className="text-muted-foreground text-xs">No references</span>
+        <span className="text-muted-foreground text-xs">0</span>
       ),
     },
   ];
