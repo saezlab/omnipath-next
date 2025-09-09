@@ -3,15 +3,15 @@
 import { GetProteinAnnotationsResponse } from "@/features/annotations-browser/api/queries"
 import { SearchIdentifiersResponse } from "@/db/queries"
 import { AnnotationsTable } from "@/features/annotations-browser/components/annotations-table"
-import { SearchFilters } from "@/features/annotations-browser/types"
+import { useAnnotationsBrowser } from "@/features/annotations-browser/hooks/useAnnotationsBrowser"
 import {
   Activity,
   Info,
   MapPin,
   Tag
 } from "lucide-react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useEffect } from "react"
+import { useSearchParams } from 'next/navigation'
 import { useFilters } from "@/contexts/filter-context"
 
 // Helper functions for multi-query detection
@@ -26,13 +26,6 @@ function isMultiQuery(queryString: string): boolean {
   return parseQueries(queryString).length > 1
 }
 
-const SOURCES_PER_LOAD = 4
-
-interface FilterCounts {
-  sources: Record<string, number>
-  annotationTypes: Record<string, number>
-}
-
 interface AnnotationsBrowserProps {
   isLoading?: boolean
   identifierResults?: SearchIdentifiersResponse
@@ -41,181 +34,24 @@ interface AnnotationsBrowserProps {
 
 export function AnnotationsBrowser({ isLoading = false, data }: AnnotationsBrowserProps) {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const { setFilterData } = useFilters()
   
-  // Use data directly from props instead of internal state
-  const annotations = data?.annotations || []
-  
-  const [loadedSources, setLoadedSources] = useState<string[]>([])
-  const [hasMoreSources, setHasMoreSources] = useState(true)
-  const loadMoreRef = useRef<HTMLDivElement>(null)
+  const {
+    filters,
+    filterCounts,
+    updateFilter,
+    clearFilters,
+    loadedSources,
+    hasMoreSources,
+    loadMoreSources,
+    loadMoreRef,
+    currentResults,
+    uniqueRecordCount
+  } = useAnnotationsBrowser(data)
   
   // Get query from URL
   const annotationsQuery = searchParams.get('q') || ''
-  
-  // Parse filters from URL
-  const annotationsFilters = useMemo(() => {
-    const filtersParam = searchParams.get('annotations_filters')
-    if (!filtersParam) {
-      return {
-        sources: [],
-        annotationTypes: [],
-        valueSearch: '',
-      } as SearchFilters
-    }
-    try {
-      return JSON.parse(filtersParam) as SearchFilters
-    } catch {
-      return {
-        sources: [],
-        annotationTypes: [],
-        valueSearch: '',
-      } as SearchFilters
-    }
-  }, [searchParams])
 
-
-  // Reset infinite scroll state when new data arrives
-  useEffect(() => {
-    if (data && annotationsQuery) {
-      setLoadedSources([])
-      setHasMoreSources(true)
-    }
-  }, [data, annotationsQuery])
-
-
-  // Filter annotations based on selected filters
-  const filteredAnnotations = useMemo(() => {
-    
-    // First, find all recordIds that match the value search in any field
-    const matchingRecordIds = new Set<number>()
-    
-    annotations.forEach((annotation) => {
-      const searchTerm = annotationsFilters.valueSearch.toLowerCase()
-      if (searchTerm) {
-        // Check if any field contains the search term
-        const matches = 
-          (annotation.value?.toLowerCase().includes(searchTerm) || false) ||
-          (annotation.label?.toLowerCase().includes(searchTerm) || false) ||
-          (annotation.source?.toLowerCase().includes(searchTerm) || false) ||
-          (annotation.genesymbol?.toLowerCase().includes(searchTerm) || false) ||
-          (annotation.uniprot?.toLowerCase().includes(searchTerm) || false)
-        
-        if (matches && annotation.recordId) {
-          matchingRecordIds.add(annotation.recordId)
-        }
-      }
-    })
-
-    // Then filter annotations based on all criteria
-    const filtered = annotations.filter((annotation) => {
-      // Filter by source
-      if (annotationsFilters.sources.length > 0 && annotation.source) {
-        const sourceMatch = annotationsFilters.sources.some(filterSource => 
-          filterSource.toLowerCase() === annotation.source?.toLowerCase()
-        )
-        if (!sourceMatch) return false
-      }
-
-      // Filter by annotation type
-      if (annotationsFilters.annotationTypes.length > 0 && annotation.label) {
-        const typeMatch = annotationsFilters.annotationTypes.some(filterType => 
-          filterType.toLowerCase() === annotation.label?.toLowerCase()
-        )
-        if (!typeMatch) return false
-      }
-
-      // Filter by value search - include all annotations for matching records
-      if (annotationsFilters.valueSearch && matchingRecordIds.size > 0) {
-        if (!annotation.recordId || !matchingRecordIds.has(annotation.recordId)) {
-          return false
-        }
-      }
-
-      return true
-    })
-    
-    return filtered
-  }, [annotations, annotationsFilters])
-
-  // Calculate filter counts based on unique records
-  const filterCounts = useMemo(() => {
-    const counts: FilterCounts = {
-      sources: {},
-      annotationTypes: {},
-    }
-
-    // Get unique records first
-    const uniqueRecords = new Set(annotations.map(a => a.recordId))
-    
-    // For each unique record, count its sources and types
-    uniqueRecords.forEach(recordId => {
-      const recordAnnotations = annotations.filter(a => a.recordId === recordId)
-      
-      // Count unique sources for this record
-      const uniqueSources = new Set(recordAnnotations.map(a => a.source?.toLowerCase()))
-      uniqueSources.forEach(source => {
-        if (source) {
-          counts.sources[source] = (counts.sources[source] || 0) + 1
-        }
-      })
-
-      // Count unique types for this record
-      const uniqueTypes = new Set(recordAnnotations.map(a => a.label?.toLowerCase()))
-      uniqueTypes.forEach(type => {
-        if (type) {
-          counts.annotationTypes[type] = (counts.annotationTypes[type] || 0) + 1
-        }
-      })
-    })
-
-    return counts
-  }, [annotations])
-
-  // Load more sources function
-  const loadMoreSources = useCallback(() => {
-    if (!hasMoreSources) return
-    
-    // Get sources that have filtered data
-    const sourcesWithData = [...new Set(
-      filteredAnnotations
-        .map(annotation => annotation.source)
-        .filter((source): source is string => Boolean(source))
-    )]
-    const nextSources = sourcesWithData.slice(
-      loadedSources.length, 
-      loadedSources.length + SOURCES_PER_LOAD
-    )
-    
-    if (nextSources.length === 0) {
-      setHasMoreSources(false)
-      return
-    }
-    
-    setLoadedSources(prev => [...prev, ...nextSources])
-    
-    if (loadedSources.length + nextSources.length >= sourcesWithData.length) {
-      setHasMoreSources(false)
-    }
-  }, [filteredAnnotations, loadedSources, hasMoreSources])
-
-  // Reset and load sources when filters change
-  useEffect(() => {
-    if (filteredAnnotations.length > 0) {
-      // Always reset and reload when filtered data changes
-      setLoadedSources([])
-      setHasMoreSources(true)
-      // loadMoreSources will be called in the next effect cycle when loadedSources.length becomes 0
-    }
-  }, [filteredAnnotations.length])
-
-  // Load first batch when loadedSources is empty
-  useEffect(() => {
-    if (filteredAnnotations.length > 0 && loadedSources.length === 0) {
-      loadMoreSources()
-    }
-  }, [filteredAnnotations.length, loadedSources.length, loadMoreSources])
 
   // Intersection observer for infinite scroll
   useEffect(() => {
@@ -234,56 +70,6 @@ export function AnnotationsBrowser({ isLoading = false, data }: AnnotationsBrows
     
     return () => observer.disconnect()
   }, [hasMoreSources, isLoading, loadMoreSources])
-
-  // Get annotations for currently loaded sources
-  const currentResults = filteredAnnotations.filter(annotation => 
-    loadedSources.includes(annotation.source || '')
-  )
-  
-  // Get unique record count for display
-  const uniqueRecordCount = new Set(currentResults.map(a => a.recordId)).size
-
-  // Handle filter changes
-  const handleFilterChange = useCallback((type: keyof SearchFilters, value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    
-    const newFilters = { ...annotationsFilters }
-    
-    if (type === "valueSearch") {
-      newFilters[type] = value
-    } else {
-      const currentValues = newFilters[type] as string[]
-      newFilters[type] = currentValues.includes(value)
-        ? currentValues.filter((v) => v !== value)
-        : [...currentValues, value]
-    }
-    
-    // Reset infinite scroll state when filters change
-    setLoadedSources([])
-    setHasMoreSources(true)
-    
-    // Update URL with new filters
-    if (Object.values(newFilters).some(v => (typeof v === 'string' ? v.length > 0 : v.length > 0))) {
-      params.set('annotations_filters', JSON.stringify(newFilters))
-    } else {
-      params.delete('annotations_filters')
-    }
-    params.delete('page') // Remove page parameter
-    
-    router.push(`?${params.toString()}`, { scroll: false })
-  }, [searchParams, annotationsFilters, router])
-
-  const clearFilters = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.delete('annotations_filters')
-    params.delete('page') // Remove page parameter
-    
-    // Reset infinite scroll state when filters are cleared
-    setLoadedSources([])
-    setHasMoreSources(true)
-    
-    router.push(`?${params.toString()}`, { scroll: false })
-  }, [searchParams, router])
   
 
   // Get category icon
@@ -320,14 +106,14 @@ export function AnnotationsBrowser({ isLoading = false, data }: AnnotationsBrows
   useEffect(() => {
     const filterContextValue = annotationsQuery ? {
       type: "annotations" as const,
-      filters: annotationsFilters,
+      filters,
       filterCounts,
-      onFilterChange: handleFilterChange,
+      onFilterChange: updateFilter,
       onClearFilters: clearFilters,
     } : null
     
     setFilterData(filterContextValue)
-  }, [annotationsQuery, annotationsFilters, filterCounts, handleFilterChange, clearFilters, setFilterData])
+  }, [annotationsQuery, filters, filterCounts, updateFilter, clearFilters, setFilterData])
 
   return (
     <div className="w-full h-full max-w-full overflow-x-hidden">
@@ -361,7 +147,7 @@ export function AnnotationsBrowser({ isLoading = false, data }: AnnotationsBrows
                 </div>
               )}
             </>
-          ) : annotations.length > 0 ? (
+          ) : data?.annotations?.length ?? 0 > 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <Info className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No results match your filters</h3>
