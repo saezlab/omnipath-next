@@ -262,7 +262,7 @@ export function AnnotationsFilterSidebar({
                 type="text"
                 placeholder="Search annotation values..."
                 value={filters.valueSearch}
-                onChange={(e) => onFilterChange("valueSearch", e.target.value)}
+                onChange={(e) => onFilterChange("search", e.target.value)}
                 className={`w-full ${filters.valueSearch ? "border-sidebar-primary" : ""}`}
               />
             </SidebarMenuSubItem>
