@@ -3,10 +3,11 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { searchIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
 import { Search } from "lucide-react"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useSearchStore } from "@/store/search-store"
 import { ProteinSummaryCard } from "@/features/annotations-browser/components/protein-summary-card"
@@ -27,6 +28,7 @@ interface SearchHeaderProps {
 
 export function SearchHeader({ initialQuery, identifierResults, activeTab, selectedSpecies = "9606" }: SearchHeaderProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { addToSearchHistory } = useSearchStore()
   
   const [query, setQuery] = useState(initialQuery)
@@ -78,6 +80,15 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
       // Fallback to searching with raw query
       await handleSearch(query)
     }
+  }
+
+  const handleTabChange = (newTab: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('tab', newTab)
+    if (query) {
+      params.set('q', query)
+    }
+    router.push(`/search?${params.toString()}`)
   }
 
   const getPlaceholderText = () => {
@@ -177,6 +188,29 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
             </div>
           )}
         </div>
+      </div>
+
+      {/* Tabs Header */}
+      <div className="relative rounded-sm overflow-x-auto h-9 bg-muted flex-shrink-0">
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
+          <TabsList className="absolute flex flex-row justify-stretch w-full min-w-fit">
+            <TabsTrigger value="interactions" className="w-full flex-shrink-0 whitespace-nowrap">
+              Interactions
+            </TabsTrigger>
+            <TabsTrigger value="annotations" className="w-full flex-shrink-0 whitespace-nowrap">
+              Annotations
+            </TabsTrigger>
+            <TabsTrigger value="intercell" className="w-full flex-shrink-0 whitespace-nowrap">
+              Intercell
+            </TabsTrigger>
+            <TabsTrigger value="complexes" className="w-full flex-shrink-0 whitespace-nowrap">
+              Complexes
+            </TabsTrigger>
+            <TabsTrigger value="enzsub" className="w-full flex-shrink-0 whitespace-nowrap">
+              Enzyme-Substrate
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
     </div>
   )
