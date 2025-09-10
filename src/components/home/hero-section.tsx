@@ -1,4 +1,5 @@
 import { SearchHeader } from "@/features/search/components/search-header"
+import { Suspense } from "react"
 
 export function HeroSection() {
   return (
@@ -12,11 +13,13 @@ OmniPath integrates data from 160+ resources to provide a comprehensive view of 
         
         {/* Search Component */}
         <div className="max-w-4xl mx-auto mb-8">
-          <SearchHeader 
-            identifierResults={{}}
-            activeTab="interactions"
-            selectedSpecies="9606"
-          />
+          <Suspense fallback={<div className="h-24 animate-pulse bg-muted rounded-md" />}>
+            <SearchHeader 
+              identifierResults={{}}
+              activeTab="interactions"
+              selectedSpecies="9606"
+            />
+          </Suspense>
         </div>
 
       </div>
