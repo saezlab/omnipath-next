@@ -5,11 +5,11 @@ import { ColumnDef, ResultsTable } from "@/components/shared/results-table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries";
-import { cn } from "@/lib/utils";
-import { ArrowRight, Minus, HeartHandshake } from "lucide-react";
-import { getInteractionSymbol } from "@/features/interactions-browser/utils/interaction-symbols";
-import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons";
 import { getInteractionColor, getInteractionColorMeaning } from "@/features/interactions-browser/constants/interaction-colors";
+import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons";
+import { getInteractionSymbol } from "@/features/interactions-browser/utils/interaction-symbols";
+import { cn } from "@/lib/utils";
+import { HeartHandshake } from "lucide-react";
 import React from 'react';
 
 type InteractionData = SearchProteinNeighborsResponse['interactions'][number];
