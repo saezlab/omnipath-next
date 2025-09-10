@@ -11,6 +11,7 @@ interface FilterCounts {
   direction: Record<string, number>
   sign: Record<string, number>
   onlyBetweenQueryProteins: { true: number; false: number }
+  excludeSelfLoops: { true: number; false: number }
 }
 
 export class InteractionsFilterService {
@@ -40,6 +41,32 @@ export class InteractionsFilterService {
                           queryUpperSet.has(interaction.targetGenesymbol?.toUpperCase() || '')
     
     return sourceInQuery && targetInQuery
+  }
+
+  static isSelfLoop(interaction: Interaction): boolean {
+    // Check if source and target are the same protein using both accession and gene symbol
+    const sourceAccession = interaction.source?.toUpperCase()
+    const targetAccession = interaction.target?.toUpperCase()
+    const sourceSymbol = interaction.sourceGenesymbol?.toUpperCase()
+    const targetSymbol = interaction.targetGenesymbol?.toUpperCase()
+    
+    // Same if accessions match (and both exist)
+    if (sourceAccession && targetAccession && sourceAccession === targetAccession) {
+      return true
+    }
+    
+    // Same if gene symbols match (and both exist)
+    if (sourceSymbol && targetSymbol && sourceSymbol === targetSymbol) {
+      return true
+    }
+    
+    // Cross-check: source accession matches target symbol or vice versa
+    if ((sourceAccession && targetSymbol && sourceAccession === targetSymbol) ||
+        (sourceSymbol && targetAccession && sourceSymbol === targetAccession)) {
+      return true
+    }
+    
+    return false
   }
 
   static applyFilter(
@@ -90,6 +117,9 @@ export class InteractionsFilterService {
       case 'onlyBetweenQueryProteins':
         if (typeof filterValue !== 'boolean' || !filterValue || !queryProteins) return true
         return this.isBetweenQueryProteins(interaction, queryProteins)
+      case 'excludeSelfLoops':
+        if (typeof filterValue !== 'boolean' || !filterValue) return true
+        return !this.isSelfLoop(interaction)
       default:
         return true
     }
@@ -146,6 +176,7 @@ export class InteractionsFilterService {
       direction: {},
       sign: {},
       onlyBetweenQueryProteins: { true: 0, false: 0 },
+      excludeSelfLoops: { true: 0, false: 0 },
     }
 
     const queryUpper = query.toUpperCase()
@@ -199,6 +230,15 @@ export class InteractionsFilterService {
           counts.onlyBetweenQueryProteins.true += 1
         } else {
           counts.onlyBetweenQueryProteins.false += 1
+        }
+      }
+      
+      // Count for excludeSelfLoops filter
+      if (this.passesFiltersExcept(interaction, filters, query, ['excludeSelfLoops'], queryProteins)) {
+        if (this.isSelfLoop(interaction)) {
+          counts.excludeSelfLoops.false += 1  // false count = self-loops (would be excluded)
+        } else {
+          counts.excludeSelfLoops.true += 1   // true count = non-self-loops (would be included)
         }
       }
     })

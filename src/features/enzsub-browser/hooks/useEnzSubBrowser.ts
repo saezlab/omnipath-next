@@ -14,12 +14,14 @@ export function useEnzSubBrowser(data?: GetEnzSubDataResponse) {
     const residueTypes = searchParams.get('residueTypes')?.split(',').filter(Boolean) || []
     const modifications = searchParams.get('modifications')?.split(',').filter(Boolean) || []
     const onlyBetweenQueryProteins = searchParams.get('onlyBetweenQueryProteins') === 'true'
+    const excludeSelfLoops = searchParams.get('excludeSelfLoops') === 'true'
     
     return { 
       sources,
       residueTypes,
       modifications,
-      onlyBetweenQueryProteins
+      onlyBetweenQueryProteins,
+      excludeSelfLoops
     }
   }, [searchParams])
   
@@ -42,7 +44,8 @@ export function useEnzSubBrowser(data?: GetEnzSubDataResponse) {
       sources: {}, 
       residueTypes: {}, 
       modifications: {},
-      onlyBetweenQueryProteins: { true: 0, false: 0 }
+      onlyBetweenQueryProteins: { true: 0, false: 0 },
+      excludeSelfLoops: { true: 0, false: 0 }
     },
     [data, filters, queryProteins]
   )
@@ -94,6 +97,13 @@ export function useEnzSubBrowser(data?: GetEnzSubDataResponse) {
       } else {
         params.delete('onlyBetweenQueryProteins')
       }
+    } else if (key === 'excludeSelfLoops') {
+      const boolValue = value as boolean
+      if (boolValue) {
+        params.set('excludeSelfLoops', 'true')
+      } else {
+        params.delete('excludeSelfLoops')
+      }
     }
     
     params.delete('page')
@@ -106,6 +116,7 @@ export function useEnzSubBrowser(data?: GetEnzSubDataResponse) {
     params.delete('residueTypes')
     params.delete('modifications')
     params.delete('onlyBetweenQueryProteins')
+    params.delete('excludeSelfLoops')
     params.delete('page')
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])

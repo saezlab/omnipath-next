@@ -19,6 +19,7 @@ interface InteractionFilterProps {
     direction: Record<string, number>
     sign: Record<string, number>
     onlyBetweenQueryProteins: { true: number; false: number }
+    excludeSelfLoops: { true: number; false: number }
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void
@@ -72,6 +73,7 @@ interface EnzSubFilterProps {
     residueTypes: Record<string, number>
     modifications: Record<string, number>
     onlyBetweenQueryProteins: { true: number; false: number }
+    excludeSelfLoops: { true: number; false: number }
   }
   onFilterChange: (type: keyof EnzSubFilters, value: string | boolean) => void
   onClearFilters: () => void

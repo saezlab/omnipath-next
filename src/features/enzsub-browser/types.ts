@@ -20,4 +20,5 @@ export interface EnzSubFilters {
   residueTypes: string[]
   modifications: string[]
   onlyBetweenQueryProteins: boolean
+  excludeSelfLoops: boolean
 }

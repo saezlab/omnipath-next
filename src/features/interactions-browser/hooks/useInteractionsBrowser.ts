@@ -42,6 +42,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
     const minReferences = searchParams.get('minReferences') ? Number(searchParams.get('minReferences')) : null
     const search = searchParams.get('search') || ''
     const onlyBetweenQueryProteins = searchParams.get('onlyBetweenQueryProteins') === 'true'
+    const excludeSelfLoops = searchParams.get('excludeSelfLoops') === 'true'
     
     return {
       interactionType,
@@ -53,6 +54,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
       minReferences,
       search,
       onlyBetweenQueryProteins,
+      excludeSelfLoops,
     }
   }, [searchParams])
   
@@ -94,6 +96,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
       direction: {},
       sign: {},
       onlyBetweenQueryProteins: { true: 0, false: 0 },
+      excludeSelfLoops: { true: 0, false: 0 },
     },
     [interactions, filters, query, queryProteins]
   )
@@ -147,6 +150,13 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
       } else {
         params.delete('onlyBetweenQueryProteins')
       }
+    } else if (key === "excludeSelfLoops") {
+      const boolValue = value as boolean
+      if (boolValue) {
+        params.set('excludeSelfLoops', 'true')
+      } else {
+        params.delete('excludeSelfLoops')
+      }
     } else {
       // All other filters are array-based
       const currentValues = filters[key] as string[]
@@ -178,6 +188,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
     params.delete('minReferences')
     params.delete('search')
     params.delete('onlyBetweenQueryProteins')
+    params.delete('excludeSelfLoops')
     
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])

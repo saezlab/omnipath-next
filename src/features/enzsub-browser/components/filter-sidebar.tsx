@@ -11,6 +11,7 @@ interface FilterCounts {
   residueTypes: Record<string, number>
   modifications: Record<string, number>
   onlyBetweenQueryProteins: { true: number; false: number }
+  excludeSelfLoops: { true: number; false: number }
 }
 
 interface EnzSubFilterSidebarProps {
@@ -29,7 +30,7 @@ export function EnzSubFilterSidebar({
   isMultiQuery = false,
 }: EnzSubFilterSidebarProps) {
   // Calculate active filter count
-  const activeFilterCount = Object.entries(filters).reduce((count, [, value]) => {
+  const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
     if (Array.isArray(value)) return count + value.length
     if (typeof value === 'boolean' && value) return count + 1
     return count
@@ -86,6 +87,27 @@ export function EnzSubFilterSidebar({
                     </Label>
                     <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">
                       {filterCounts.onlyBetweenQueryProteins.true}
+                    </SidebarMenuBadge>
+                  </div>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem>
+                  <div className="flex items-center justify-between w-full">
+                    <Label
+                      htmlFor="enzsub-exclude-self-loops"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                        filters.excludeSelfLoops ? "text-sidebar-primary font-medium" : ""
+                      }`}
+                    >
+                      <Checkbox
+                        id="enzsub-exclude-self-loops"
+                        checked={filters.excludeSelfLoops}
+                        onCheckedChange={(checked) => onFilterChange("excludeSelfLoops", !!checked)}
+                        className={filters.excludeSelfLoops ? "border-sidebar-primary" : ""}
+                      />
+                      <span>Exclude self-loops</span>
+                    </Label>
+                    <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">
+                      {filterCounts.excludeSelfLoops.false}
                     </SidebarMenuBadge>
                   </div>
                 </SidebarMenuSubItem>

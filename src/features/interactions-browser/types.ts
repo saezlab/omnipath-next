@@ -8,4 +8,5 @@ export interface InteractionsFilters {
   minReferences: number | null
   search: string
   onlyBetweenQueryProteins: boolean
+  excludeSelfLoops: boolean
 }

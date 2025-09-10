@@ -22,6 +22,7 @@ interface FilterSidebarProps {
     direction: Record<string, number>
     sign: Record<string, number>
     onlyBetweenQueryProteins: { true: number; false: number }
+    excludeSelfLoops: { true: number; false: number }
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void
@@ -96,6 +97,7 @@ export function FilterSidebar({
     if (key === 'minReferences' && value === 0) return count
     if (key === 'search' && !value) return count
     if (key === 'onlyBetweenQueryProteins' && !value) return count
+    if (key === 'excludeSelfLoops' && !value) return count
     if (Array.isArray(value)) return count + value.length
     if (value !== null) return count + 1
     return count
@@ -168,6 +170,27 @@ export function FilterSidebar({
                     </Label>
                     <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">
                       {filterCounts.onlyBetweenQueryProteins.true}
+                    </SidebarMenuBadge>
+                  </div>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem>
+                  <div className="flex items-center justify-between w-full">
+                    <Label
+                      htmlFor="exclude-self-loops"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                        filters.excludeSelfLoops ? "text-sidebar-primary font-medium" : ""
+                      }`}
+                    >
+                      <Checkbox
+                        id="exclude-self-loops"
+                        checked={filters.excludeSelfLoops}
+                        onCheckedChange={(checked) => onFilterChange("excludeSelfLoops", !!checked)}
+                        className={filters.excludeSelfLoops ? "border-sidebar-primary" : ""}
+                      />
+                      <span>Exclude self-loops</span>
+                    </Label>
+                    <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">
+                      {filterCounts.excludeSelfLoops.false}
                     </SidebarMenuBadge>
                   </div>
                 </SidebarMenuSubItem>

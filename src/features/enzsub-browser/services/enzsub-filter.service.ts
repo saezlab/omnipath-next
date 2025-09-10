@@ -5,6 +5,7 @@ interface FilterCounts {
   residueTypes: Record<string, number>
   modifications: Record<string, number>
   onlyBetweenQueryProteins: { true: number; false: number }
+  excludeSelfLoops: { true: number; false: number }
 }
 
 export class EnzSubFilterService {
@@ -20,6 +21,32 @@ export class EnzSubFilterService {
                              queryUpperSet.has(entry.substrateGenesymbol?.toUpperCase() || '')
     
     return enzymeInQuery && substrateInQuery
+  }
+
+  static isSelfLoop(entry: EnzSubEntry): boolean {
+    // Check if enzyme and substrate are the same protein using both accession and gene symbol
+    const enzymeAccession = entry.enzyme?.toUpperCase()
+    const substrateAccession = entry.substrate?.toUpperCase()
+    const enzymeSymbol = entry.enzymeGenesymbol?.toUpperCase()
+    const substrateSymbol = entry.substrateGenesymbol?.toUpperCase()
+    
+    // Same if accessions match (and both exist)
+    if (enzymeAccession && substrateAccession && enzymeAccession === substrateAccession) {
+      return true
+    }
+    
+    // Same if gene symbols match (and both exist)
+    if (enzymeSymbol && substrateSymbol && enzymeSymbol === substrateSymbol) {
+      return true
+    }
+    
+    // Cross-check: enzyme accession matches substrate symbol or vice versa
+    if ((enzymeAccession && substrateSymbol && enzymeAccession === substrateSymbol) ||
+        (enzymeSymbol && substrateAccession && enzymeSymbol === substrateAccession)) {
+      return true
+    }
+    
+    return false
   }
 
   static filterData(data: EnzSubEntry[], filters: EnzSubFilters, queryProteins?: string[]): EnzSubEntry[] {
@@ -49,6 +76,11 @@ export class EnzSubFilterService {
       // Filter by onlyBetweenQueryProteins
       if (filters.onlyBetweenQueryProteins && queryProteins) {
         if (!this.isBetweenQueryProteins(entry, queryProteins)) return false
+      }
+
+      // Filter by excludeSelfLoops
+      if (filters.excludeSelfLoops) {
+        if (this.isSelfLoop(entry)) return false
       }
 
       return true
@@ -88,6 +120,11 @@ export class EnzSubFilterService {
       if (!this.isBetweenQueryProteins(entry, queryProteins)) return false
     }
 
+    // Check excludeSelfLoops filter (if not excluded)
+    if (!excluded.includes('excludeSelfLoops') && filters.excludeSelfLoops) {
+      if (this.isSelfLoop(entry)) return false
+    }
+
     return true
   }
 
@@ -97,6 +134,7 @@ export class EnzSubFilterService {
       residueTypes: {},
       modifications: {},
       onlyBetweenQueryProteins: { true: 0, false: 0 },
+      excludeSelfLoops: { true: 0, false: 0 },
     }
 
     data.forEach(entry => {
@@ -125,6 +163,15 @@ export class EnzSubFilterService {
           counts.onlyBetweenQueryProteins.true += 1
         } else {
           counts.onlyBetweenQueryProteins.false += 1
+        }
+      }
+      
+      // Count for excludeSelfLoops filter (excluding excludeSelfLoops filter)
+      if (this.passesFiltersExcept(entry, filters, ['excludeSelfLoops'], queryProteins)) {
+        if (this.isSelfLoop(entry)) {
+          counts.excludeSelfLoops.false += 1  // false count = self-loops (would be excluded)
+        } else {
+          counts.excludeSelfLoops.true += 1   // true count = non-self-loops (would be included)
         }
       }
     })
