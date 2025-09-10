@@ -1,13 +1,6 @@
-import { searchMultipleIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
 import { getIntercellData } from "@/features/intercell-browser/api/queries"
+import { resolveIdentifiers } from "@/lib/search-utils"
 import { NextRequest, NextResponse } from "next/server"
-
-function parseQueries(queryString: string): string[] {
-  return queryString
-    .split(/[,;]/)
-    .map(q => q.trim())
-    .filter(q => q.length > 0)
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,22 +12,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ intercellEntries: [] })
     }
 
-    // First resolve identifiers
-    const proteins = parseQueries(query)
-    const results = await searchMultipleIdentifiers(proteins, 1, species)
-    
-    // Group results by protein
-    const identifierResults: Record<string, SearchIdentifiersResponse> = {}
-    proteins.forEach((protein) => {
-      const proteinResults = results.filter(result => 
-        result.identifierValue.toLowerCase().includes(protein.trim().toLowerCase()) ||
-        protein.trim().toLowerCase().includes(result.identifierValue.toLowerCase())
-      )
-      identifierResults[protein] = proteinResults
-    })
-
-    // Create flattened list
-    const resolvedIdentifiers = Object.values(identifierResults).flat()
+    // Resolve identifiers using utility function
+    const { resolvedIdentifiers } = await resolveIdentifiers(query, species)
     
     if (resolvedIdentifiers.length === 0) {
       return NextResponse.json({ intercellEntries: [] })

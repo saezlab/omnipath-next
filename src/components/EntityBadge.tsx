@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 interface EntityBadgeProps {
   geneSymbol?: string;
   uniprotId?: string;
+  entityType?: string | null;  // Entity type from database (protein, complex, mirna, etc.)
   maxChars?: number;    // Maximum characters before truncation
   maxWidth?: string;    // Maximum width (e.g., "w-32", "max-w-xs")
 }
@@ -13,6 +14,7 @@ interface EntityBadgeProps {
 export const EntityBadge: React.FC<EntityBadgeProps> = ({ 
   geneSymbol, 
   uniprotId,
+  entityType,
   maxChars = 12, // Default to 12 characters
   maxWidth = "max-w-[120px]", // Default max width
 }) => {
@@ -28,7 +30,19 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
     const currentQuery = searchParams.get('q') || '';
     const currentTab = searchParams.get('tab') || 'interactions';
     const currentSpecies = searchParams.get('species') || '9606';
-    const entityToAdd = name || identifier;
+    // Determine how to add the entity based on entity type
+    const isProteinOrGene = !entityType || entityType.toLowerCase().includes('protein') || entityType.toLowerCase().includes('gene');
+    
+    let entityToAdd: string;
+    if (isProteinOrGene) {
+      // For proteins/genes, use normal search (no prefix)
+      entityToAdd = name || identifier;
+    } else {
+      // For other entity types, use entity type prefix
+      const prefix = entityType?.toLowerCase() || 'unknown';
+      const value = name || identifier;
+      entityToAdd = `${prefix}:${value}`;
+    }
     
     // Parse existing queries and add the new entity
     const existingQueries = currentQuery

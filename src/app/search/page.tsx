@@ -1,4 +1,4 @@
-import { searchMultipleIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
+import { SearchIdentifiersResponse } from "@/db/queries"
 import { searchProteinNeighbors } from "@/features/interactions-browser/api/queries"
 import { getProteinAnnotations } from "@/features/annotations-browser/api/queries"
 import { getIntercellData } from "@/features/intercell-browser/api/queries"
@@ -6,13 +6,7 @@ import { getComplexesData } from "@/features/complexes-browser/api/queries"
 import { getEnzSubData } from "@/features/enzsub-browser/api/queries"
 import { SearchHeader } from "@/features/search/components/search-header"
 import { SearchTabs } from "@/features/search/components/search-tabs"
-
-function parseQueries(queryString: string): string[] {
-  return queryString
-    .split(/[,;]/)
-    .map(q => q.trim())
-    .filter(q => q.length > 0)
-}
+import { resolveIdentifiers } from "@/lib/search-utils"
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -33,21 +27,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   if (query) {
     try {
-      // Fetch identifier results for all queries
-      const proteins = parseQueries(query)
-      const results = await searchMultipleIdentifiers(proteins, 1, selectedSpecies)
+      // Resolve identifiers using utility function
+      const { identifierResults: resolvedIdentifierResults, resolvedIdentifiers } = await resolveIdentifiers(query, selectedSpecies)
       
-      // Group results by protein
-      proteins.forEach((protein) => {
-        const proteinResults = results.filter(result => 
-          result.identifierValue.toLowerCase().includes(protein.trim().toLowerCase()) ||
-          protein.trim().toLowerCase().includes(result.identifierValue.toLowerCase())
-        )
-        identifierResults[protein] = proteinResults
-      })
-
-      // Create flattened list for initial tab data fetching
-      const resolvedIdentifiers = Object.values(identifierResults).flat()
+      // Copy results to local variable
+      Object.assign(identifierResults, resolvedIdentifierResults)
 
       if (resolvedIdentifiers.length > 0) {
         // Fetch initial tab data on server
@@ -71,11 +55,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       }
     } catch (error) {
       console.error('Error fetching initial data:', error)
-      // Fallback to empty results
-      const proteins = parseQueries(query)
-      proteins.forEach(protein => {
-        identifierResults[protein] = []
-      })
+      // Fallback to empty results - no need to parse queries manually
     }
   }
 

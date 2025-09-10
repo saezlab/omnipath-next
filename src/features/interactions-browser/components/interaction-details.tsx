@@ -23,6 +23,7 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
               <EntityBadge 
                 geneSymbol={selectedInteraction.sourceGenesymbol || ''} 
                 uniprotId={selectedInteraction.source || ''} 
+                entityType={selectedInteraction.entityTypeSource}
               />
               
               <TooltipProvider>
@@ -41,6 +42,7 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
               <EntityBadge 
                 geneSymbol={selectedInteraction.targetGenesymbol || ''} 
                 uniprotId={selectedInteraction.target || ''} 
+                entityType={selectedInteraction.entityTypeTarget}
               />
             </div>
 

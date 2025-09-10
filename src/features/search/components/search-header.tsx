@@ -137,15 +137,21 @@ export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "
     <div className="flex flex-col gap-4">
       {/* Search Bar and Protein Card Row */}
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full">
-        {/* Protein Card - only for single queries */}
-        {currentQuery && parseQueries(currentQuery).length === 1 && (
-          <div className="flex-shrink-0 flex sm:justify-start justify-center">
-            <ProteinSummaryCard 
-              geneSymbol={parseQueries(currentQuery)[0]}
-              identifierResults={identifierResults[parseQueries(currentQuery)[0]] || []}
-            />
-          </div>
-        )}
+        {/* Entity Card - only for single queries and only for proteins/genes */}
+        {currentQuery && parseQueries(currentQuery).length === 1 && (() => {
+          const singleQuery = parseQueries(currentQuery)[0]
+          const isEntityTypePrefixed = singleQuery.includes(':')
+          const isProteinOrGene = !isEntityTypePrefixed
+          
+          return isProteinOrGene && (
+            <div className="flex-shrink-0 flex sm:justify-start justify-center">
+              <ProteinSummaryCard 
+                geneSymbol={singleQuery}
+                identifierResults={identifierResults[singleQuery] || []}
+              />
+            </div>
+          )
+        })()}
 
         {/* Search Bar */}
         <div className="flex-1">
@@ -197,31 +203,40 @@ export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "
           </div>
           
           {/* Multi-query protein cards */}
-          {currentQuery && parseQueries(currentQuery).length > 1 && (
-            <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-              {parseQueries(currentQuery).map((term, index) => (
-                <ProteinSummaryCard
-                  key={index}
-                  geneSymbol={term}
-                  identifierResults={identifierResults[term] || []}
-                  onRemove={() => {
-                    const remaining = parseQueries(currentQuery).filter((_, i) => i !== index)
-                    const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
-                    setQuery(newQuery)
-                    
-                    const params = new URLSearchParams(searchParams.toString())
-                    if (remaining.length > 0) {
-                      params.set('q', remaining.join(', ') + ', ')
-                    } else {
-                      params.delete('q')
-                    }
-                    params.set('tab', activeTab)
-                    router.push(`/search?${params.toString()}`)
-                  }}
-                />
-              ))}
-            </div>
-          )}
+          {currentQuery && parseQueries(currentQuery).length > 1 && (() => {
+            const queries = parseQueries(currentQuery)
+            const proteinQueries = queries.filter(term => !term.includes(':')) // Only show cards for proteins/genes
+            
+            return proteinQueries.length > 0 && (
+              <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                {queries.map((term, index) => {
+                  const isProteinOrGene = !term.includes(':')
+                  
+                  return isProteinOrGene ? (
+                    <ProteinSummaryCard
+                      key={index}
+                      geneSymbol={term}
+                      identifierResults={identifierResults[term] || []}
+                      onRemove={() => {
+                        const remaining = queries.filter((_, i) => i !== index)
+                        const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
+                        setQuery(newQuery)
+                        
+                        const params = new URLSearchParams(searchParams.toString())
+                        if (remaining.length > 0) {
+                          params.set('q', remaining.join(', ') + ', ')
+                        } else {
+                          params.delete('q')
+                        }
+                        params.set('tab', activeTab)
+                        router.push(`/search?${params.toString()}`)
+                      }}
+                    />
+                  ) : null
+                })}
+              </div>
+            )
+          })()}
         </div>
       </div>
 

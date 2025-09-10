@@ -71,6 +71,7 @@ export function InteractionResultsTable({
               <EntityBadge
                 geneSymbol={row.sourceGenesymbol || ''}
                 uniprotId={row.source || ''}
+                entityType={row.entityTypeSource}
                 maxChars={10}
               />
             </div>
@@ -107,6 +108,7 @@ export function InteractionResultsTable({
               <EntityBadge
                 geneSymbol={row.targetGenesymbol || ''}
                 uniprotId={row.target || ''}
+                entityType={row.entityTypeTarget}
                 maxChars={10}
               />
             </div>
