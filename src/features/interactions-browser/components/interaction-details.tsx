@@ -4,6 +4,7 @@ import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/
 import { EntityBadge } from "@/components/EntityBadge"
 import { cn } from "@/lib/utils"
 import { getInteractionColor, getInteractionColorMeaning } from "@/features/interactions-browser/constants/interaction-colors"
+import { getInteractionSymbol } from "@/features/interactions-browser/utils/interaction-symbols"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface InteractionDetailsProps {
@@ -28,11 +29,7 @@ export function InteractionDetails({ selectedInteraction }: InteractionDetailsPr
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className={cn("flex items-center", getInteractionColor(selectedInteraction))}>
-                      {selectedInteraction.isDirected ? (
-                        <ArrowRight className="h-6 w-6" />
-                      ) : (
-                        <Minus className="h-6 w-6" />
-                      )}
+                      {getInteractionSymbol(selectedInteraction)}
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>

@@ -18,11 +18,21 @@ export const getInteractionColor = (interaction: {
   consensusStimulation?: boolean | null;
   consensusInhibition?: boolean | null;
 }): string => {
-  let color: string = INTERACTION_COLORS.GREY;
-  if (interaction.isInhibition || interaction.isStimulation) color = INTERACTION_COLORS.ORANGE;
-  if (interaction.consensusStimulation) color = INTERACTION_COLORS.GREEN;
-  if (interaction.consensusInhibition) color = INTERACTION_COLORS.RED;
-  return color;
+  // Consensus takes priority
+  if (interaction.consensusStimulation) return INTERACTION_COLORS.GREEN;
+  if (interaction.consensusInhibition) return INTERACTION_COLORS.RED;
+  
+  // Only inhibition (no stimulation) - treat as consensus inhibition
+  if (interaction.isInhibition && !interaction.isStimulation) return INTERACTION_COLORS.RED;
+  
+  // Only stimulation (no inhibition) - treat as consensus stimulation  
+  if (interaction.isStimulation && !interaction.isInhibition) return INTERACTION_COLORS.GREEN;
+  
+  // Both inhibition and stimulation (conflicting) - show as uncertain
+  if (interaction.isInhibition && interaction.isStimulation) return INTERACTION_COLORS.ORANGE;
+  
+  // Neither - unknown/neutral
+  return INTERACTION_COLORS.GREY;
 };
 
 export const getInteractionColorMeaning = (color: string) => {

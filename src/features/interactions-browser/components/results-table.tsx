@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Minus, HeartHandshake } from "lucide-react";
+import { getInteractionSymbol } from "@/features/interactions-browser/utils/interaction-symbols";
 import { INTERACTION_TYPE_ICONS } from "@/features/interactions-browser/constants/interaction-icons";
 import { getInteractionColor, getInteractionColorMeaning } from "@/features/interactions-browser/constants/interaction-colors";
 import React from 'react';
@@ -92,11 +93,7 @@ export function InteractionResultsTable({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className={cn("flex items-center", getInteractionColor(row))}>
-                      {row.isDirected ? (
-                        <ArrowRight className="h-6 w-6" />
-                      ) : (
-                        <Minus className="h-6 w-6" />
-                      )}
+                      {getInteractionSymbol(row)}
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
