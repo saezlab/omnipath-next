@@ -1,11 +1,11 @@
-import { Badge } from "@/components/ui/badge"
-import { FileText, Search, ArrowRight, Minus } from "lucide-react"
-import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { EntityBadge } from "@/components/EntityBadge"
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { SearchProteinNeighborsResponse } from "@/features/interactions-browser/api/queries"
 import { getInteractionColor, getInteractionColorMeaning } from "@/features/interactions-browser/constants/interaction-colors"
 import { getInteractionSymbol } from "@/features/interactions-browser/utils/interaction-symbols"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import { FileText, Search } from "lucide-react"
 
 interface InteractionDetailsProps {
   selectedInteraction: SearchProteinNeighborsResponse['interactions'][number] | null
