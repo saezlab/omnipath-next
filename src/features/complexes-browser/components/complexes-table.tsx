@@ -13,9 +13,9 @@ interface ComplexesTableProps {
 }
 
 function parseComplexData(complex: ComplexEntry): ParsedComplex {
-  const parsedComponents = complex.components?.split(/[;,]/).map(c => c.trim()).filter(Boolean) || []
-  const parsedGeneSymbols = complex.componentsGenesymbols?.split(/[;,]/).map(g => g.trim()).filter(Boolean) || []
-  const parsedSources = complex.sources?.split(/[;,]/).map(s => s.trim()).filter(Boolean) || []
+  const parsedComponents = complex.components?.split("_").map(c => c.trim()).filter(Boolean) || []
+  const parsedGeneSymbols = complex.componentsGenesymbols?.split("_").map(g => g.trim()).filter(Boolean) || []
+  const parsedSources = complex.sources?.split("_").map(s => s.trim()).filter(Boolean) || []
   
   return {
     ...complex,
