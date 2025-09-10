@@ -179,10 +179,10 @@ export function Chat({
   const editingIndex = editingMessageId ? messages.findIndex(m => m.id === editingMessageId) : -1;
 
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-dvh overflow-hidden">
       {messages.length <= 1 ? (
         <div className="h-full flex items-center justify-center">
-          <div className="max-w-2xl w-full px-4 space-y-4">
+          <div className="max-w-2xl w-full px-4 px-safe space-y-4">
             {messages.map((message) => (
               <div key={message.id}>
                 <PreviewMessage
@@ -216,7 +216,7 @@ export function Chat({
       ) : (
         <div className="h-full w-full flex flex-col">
           <div
-            className="p-4 space-y-4 w-full overflow-auto flex-1 pb-24"
+            className="p-4 pt-safe space-y-4 w-full overflow-auto flex-1 pb-20"
           >
             <div className="max-w-2xl mx-auto">
               {messages.map((message, index) => (
@@ -259,7 +259,7 @@ export function Chat({
 
       {messages.length > 1 && (
         <div ref={inputAreaRef} className="absolute bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm">
-          <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 pb-4 md:px-0">
+          <div className="relative w-full flex flex-col gap-4 max-w-2xl mx-auto px-4 px-safe pb-4 pb-safe md:px-0">
             <ChatInput
               input={input}
               setInput={setInput}
