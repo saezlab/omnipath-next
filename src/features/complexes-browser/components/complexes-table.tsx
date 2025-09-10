@@ -30,13 +30,19 @@ const formatStoichiometry = (stoichiometry: string | null) => {
   if (!stoichiometry) return "-"
   // Parse stoichiometry like "2:1:1" or other formats
   const parts = stoichiometry.split(/[;,:]/).map(s => s.trim()).filter(Boolean)
+  const maxVisible = 3
   return (
     <div className="flex gap-1 flex-wrap">
-      {parts.map((part, index) => (
+      {parts.slice(0, maxVisible).map((part, index) => (
         <Badge key={index} variant="outline" className="text-xs">
           {part}
         </Badge>
       ))}
+      {parts.length > maxVisible && (
+        <Badge variant="outline" className="text-xs">
+          +{parts.length - maxVisible} more
+        </Badge>
+      )}
     </div>
   )
 }

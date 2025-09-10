@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AutocompleteInput } from "@/components/ui/autocomplete-input"
 import { searchIdentifiers, SearchIdentifiersResponse } from "@/db/queries"
 import { Search } from "lucide-react"
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useSearchStore } from "@/store/search-store"
@@ -32,8 +32,16 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
   const searchParams = useSearchParams()
   const { addToSearchHistory } = useSearchStore()
   
-  const [query, setQuery] = useState(initialQuery)
+  // Use URL as source of truth for query
+  const currentQuery = searchParams.get('q') || ''
+  const [query, setQuery] = useState(currentQuery)
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Sync local state with URL changes
+  useEffect(() => {
+    const urlQuery = searchParams.get('q') || ''
+    setQuery(urlQuery)
+  }, [searchParams])
 
 
   const handleSearch = async (searchQuery: string, displayTerm?: string) => {
@@ -101,7 +109,7 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
     if (e.key === "Enter") {
       handleEnterPress()
     }
-  }, [])
+  }, [handleEnterPress])
 
   const handleTabChange = (newTab: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -131,11 +139,11 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
       {/* Search Bar and Protein Card Row */}
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full">
         {/* Protein Card - only for single queries */}
-        {initialQuery && parseQueries(initialQuery).length === 1 && (
+        {currentQuery && parseQueries(currentQuery).length === 1 && (
           <div className="flex-shrink-0 flex sm:justify-start justify-center">
             <ProteinSummaryCard 
-              geneSymbol={parseQueries(initialQuery)[0]}
-              identifierResults={identifierResults[parseQueries(initialQuery)[0]] || []}
+              geneSymbol={parseQueries(currentQuery)[0]}
+              identifierResults={identifierResults[parseQueries(currentQuery)[0]] || []}
             />
           </div>
         )}
@@ -157,7 +165,7 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
             <div className="absolute right-20 top-1/2 -translate-y-1/2 z-10">
               <Select value={selectedSpecies} onValueChange={(value) => {
                 // Update URL with new species
-                const params = new URLSearchParams(window.location.search)
+                const params = new URLSearchParams(searchParams.toString())
                 params.set('species', value)
                 if (query) params.set('q', query)
                 params.set('tab', activeTab)
@@ -190,22 +198,26 @@ export function SearchHeader({ initialQuery, identifierResults, activeTab, selec
           </div>
           
           {/* Multi-query protein cards */}
-          {initialQuery && parseQueries(initialQuery).length > 1 && (
+          {currentQuery && parseQueries(currentQuery).length > 1 && (
             <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-              {parseQueries(initialQuery).map((term, index) => (
+              {parseQueries(currentQuery).map((term, index) => (
                 <ProteinSummaryCard
                   key={index}
                   geneSymbol={term}
                   identifierResults={identifierResults[term] || []}
                   onRemove={() => {
-                    const remaining = parseQueries(initialQuery).filter((_, i) => i !== index)
+                    const remaining = parseQueries(currentQuery).filter((_, i) => i !== index)
                     const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
                     setQuery(newQuery)
+                    
+                    const params = new URLSearchParams(searchParams.toString())
                     if (remaining.length > 0) {
-                      router.push(`/search?q=${encodeURIComponent(remaining.join(', '))}&tab=${activeTab}`)
+                      params.set('q', remaining.join(', ') + ', ')
                     } else {
-                      router.push(`/search?tab=${activeTab}`)
+                      params.delete('q')
                     }
+                    params.set('tab', activeTab)
+                    router.push(`/search?${params.toString()}`)
                   }}
                 />
               ))}

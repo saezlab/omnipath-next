@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef } from 'react';
-import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 interface EntityBadgeProps {
@@ -16,11 +16,42 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   maxChars = 12, // Default to 12 characters
   maxWidth = "max-w-[120px]", // Default max width
 }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const name = geneSymbol || '';
   const identifier = uniprotId || '';
   
-  // Create the search URL with the gene symbol
-  const searchUrl = `/search?q=${encodeURIComponent(name || identifier)}&tab=interactions`;
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const currentQuery = searchParams.get('q') || '';
+    const currentTab = searchParams.get('tab') || 'interactions';
+    const currentSpecies = searchParams.get('species') || '9606';
+    const entityToAdd = name || identifier;
+    
+    // Parse existing queries and add the new entity
+    const existingQueries = currentQuery
+      .split(/[,;]/)
+      .map(q => q.trim())
+      .filter(q => q.length > 0);
+    
+    // Check if entity is already in the query
+    const entityLower = entityToAdd.toLowerCase();
+    const alreadyExists = existingQueries.some(q => q.toLowerCase() === entityLower);
+    
+    if (!alreadyExists) {
+      existingQueries.push(entityToAdd);
+    }
+    
+    // Create new search URL with comma after for autocomplete consistency
+    const params = new URLSearchParams();
+    params.set('q', existingQueries.join(', ') + ', ');
+    params.set('tab', currentTab);
+    params.set('species', currentSpecies);
+    
+    router.push(`/search?${params.toString()}`);
+  };
 
   // Helper function to truncate text
   const truncateText = (text: string, maxLength: number) => {
@@ -35,7 +66,7 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
   const identifierRef = useRef<HTMLSpanElement>(null);
 
   const content = (
-    <Link href={searchUrl} className={`block relative ${maxWidth}`}>
+    <div onClick={handleClick} className={`block relative ${maxWidth} cursor-pointer`}>
       <div 
         className="relative bg-gradient-to-br from-slate-50/80 to-slate-100/80 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-md px-2 py-1 shadow-sm min-w-[80px] w-full transition-all duration-200 cursor-pointer hover:bg-gradient-to-br hover:from-slate-100 hover:to-slate-200 dark:hover:from-slate-700 dark:hover:to-slate-800 hover:shadow-md hover:scale-105"
       >
@@ -104,7 +135,7 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 
   return content;
