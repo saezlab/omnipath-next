@@ -48,14 +48,14 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
     const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false)
     const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
     const inputRef = useRef<HTMLInputElement>(null)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     // Debounced suggestion fetching
     const debouncedFetchSuggestions = useCallback(
       (() => {
-        let timeoutId: NodeJS.Timeout
         return (searchTerm: string) => {
-          clearTimeout(timeoutId)
-          timeoutId = setTimeout(async () => {
+          if (timeoutRef.current) clearTimeout(timeoutRef.current)
+          timeoutRef.current = setTimeout(async () => {
             if (searchTerm.length < 2) {
               setSuggestions([])
               setShowSuggestions(false)
@@ -115,6 +115,7 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
       
       onChange(newValue)
       setShowSuggestions(false)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
       setSuggestions([])
       setSelectedSuggestionIndex(-1)
       
@@ -166,6 +167,7 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
           const baseValue = selectedItems.length > 0 ? selectedItems.join(', ') + ', ' : ''
           const newValue = baseValue + currentInput.trim() + ', '
           
+          if (timeoutRef.current) clearTimeout(timeoutRef.current)
           onChange(newValue)
           
           // Trigger search immediately after adding the selection
