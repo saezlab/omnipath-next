@@ -83,7 +83,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="grid grid-rows-[auto_1fr] h-screen max-w-7xl mx-auto px-2 sm:px-4 pb-6 pt-4 gap-4">
       <div className="sticky top-0 bg-background z-10">
         <SearchHeader 
-          initialQuery={query}
           identifierResults={identifierResults}
           activeTab={activeTab}
           selectedSpecies={selectedSpecies}

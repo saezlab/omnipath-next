@@ -21,13 +21,12 @@ function parseQueries(queryString: string): string[] {
 
 
 interface SearchHeaderProps {
-  initialQuery: string
   identifierResults: Record<string, SearchIdentifiersResponse>
   activeTab: string
   selectedSpecies?: string
 }
 
-export function SearchHeader({ initialQuery, identifierResults, activeTab, selectedSpecies = "9606" }: SearchHeaderProps) {
+export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "9606" }: SearchHeaderProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { addToSearchHistory } = useSearchStore()
