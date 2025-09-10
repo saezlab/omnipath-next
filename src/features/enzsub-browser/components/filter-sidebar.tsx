@@ -30,7 +30,7 @@ export function EnzSubFilterSidebar({
   isMultiQuery = false,
 }: EnzSubFilterSidebarProps) {
   // Calculate active filter count
-  const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
+  const activeFilterCount = Object.entries(filters).reduce((count, [, value]) => {
     if (Array.isArray(value)) return count + value.length
     if (typeof value === 'boolean' && value) return count + 1
     return count
