@@ -100,7 +100,7 @@ export default function ChatPage() {
 
   if (!chatIdToUse) {
     return (
-      <div className="h-screen overflow-hidden animate-pulse">
+      <div className="h-dvh overflow-hidden animate-pulse">
         <div className="h-full flex items-center justify-center">
           <div className="max-w-2xl w-full px-4 space-y-4">
             {/* AI Welcome Message Skeleton */}
