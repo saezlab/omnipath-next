@@ -18,6 +18,7 @@ interface InteractionFilterProps {
     topology: Record<string, number>
     direction: Record<string, number>
     sign: Record<string, number>
+    onlyBetweenQueryProteins: { true: number; false: number }
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void
@@ -70,9 +71,11 @@ interface EnzSubFilterProps {
     sources: Record<string, number>
     residueTypes: Record<string, number>
     modifications: Record<string, number>
+    onlyBetweenQueryProteins: { true: number; false: number }
   }
-  onFilterChange: (type: keyof EnzSubFilters, value: string) => void
+  onFilterChange: (type: keyof EnzSubFilters, value: string | boolean) => void
   onClearFilters: () => void
+  isMultiQuery?: boolean
 }
 
 type FilterContextValue = InteractionFilterProps | AnnotationFilterProps | IntercellFilterProps | ComplexesFilterProps | EnzSubFilterProps | null

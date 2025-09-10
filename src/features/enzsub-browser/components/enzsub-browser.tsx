@@ -60,8 +60,9 @@ export function EnzSubBrowser({ data, isLoading = false }: EnzSubBrowserProps) {
       filterCounts,
       onFilterChange: updateFilter,
       onClearFilters: clearFilters,
+      isMultiQuery: isMultiQuery(enzSubQuery),
     } : null
-  }, [enzSubQuery, filters, filterCounts])
+  }, [enzSubQuery, filters, filterCounts, updateFilter, clearFilters])
 
   // Update filter context only when memoized value changes
   useEffect(() => {

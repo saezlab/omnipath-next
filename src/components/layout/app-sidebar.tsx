@@ -24,7 +24,6 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
   SidebarRail,
-  SidebarTrigger,
   useSidebar
 } from "@/components/ui/sidebar"
 import { 
@@ -360,6 +359,7 @@ export function AppSidebar() {
                       filterCounts={filterData.filterCounts}
                       onFilterChange={filterData.onFilterChange}
                       onClearFilters={filterData.onClearFilters}
+                      isMultiQuery={filterData.isMultiQuery}
                     />
                   )}
                 </div>
@@ -405,10 +405,6 @@ export function AppSidebar() {
         </div>
       </SidebarFooter>
       <SidebarRail/>
-      {/* Floating Sidebar Trigger - shows when sidebar is collapsed */}
-      <div className="group-data-[state=collapsed]:block hidden">
-        <SidebarTrigger className="fixed left-4 bottom-4 z-50 shadow-lg bg-primary text-primary-foreground" />
-      </div>
     </Sidebar>
   )
 }

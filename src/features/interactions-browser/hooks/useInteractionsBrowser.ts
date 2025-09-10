@@ -41,6 +41,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
     const sign = searchParams.get('sign')?.split(',').filter(Boolean) || []
     const minReferences = searchParams.get('minReferences') ? Number(searchParams.get('minReferences')) : null
     const search = searchParams.get('search') || ''
+    const onlyBetweenQueryProteins = searchParams.get('onlyBetweenQueryProteins') === 'true'
     
     return {
       interactionType,
@@ -51,6 +52,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
       sign,
       minReferences,
       search,
+      onlyBetweenQueryProteins,
     }
   }, [searchParams])
   
@@ -70,23 +72,30 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
     [data]
   )
   
+  // Extract query proteins list for filtering
+  const queryProteins = useMemo(() => 
+    query ? parseQueries(query) : [],
+    [query]
+  )
+
   // Filter data using service
   const filteredInteractions = useMemo(() => 
-    query ? InteractionsFilterService.filterData(interactions, filters, query) : [],
-    [interactions, filters, query]
+    query ? InteractionsFilterService.filterData(interactions, filters, query, queryProteins) : [],
+    [interactions, filters, query, queryProteins]
   )
   
   // Calculate filter counts
   const filterCounts = useMemo(() => 
-    query ? InteractionsFilterService.calculateCounts(interactions, filters, query) : {
+    query ? InteractionsFilterService.calculateCounts(interactions, filters, query, queryProteins) : {
       interactionType: {},
       entityTypeSource: {},
       entityTypeTarget: {},
       topology: {},
       direction: {},
       sign: {},
+      onlyBetweenQueryProteins: { true: 0, false: 0 },
     },
-    [interactions, filters, query]
+    [interactions, filters, query, queryProteins]
   )
   
   // Sorted interactions
@@ -131,6 +140,13 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
       } else {
         params.delete('search')
       }
+    } else if (key === "onlyBetweenQueryProteins") {
+      const boolValue = value as boolean
+      if (boolValue) {
+        params.set('onlyBetweenQueryProteins', 'true')
+      } else {
+        params.delete('onlyBetweenQueryProteins')
+      }
     } else {
       // All other filters are array-based
       const currentValues = filters[key] as string[]
@@ -161,6 +177,7 @@ export function useInteractionsBrowser(data?: SearchProteinNeighborsResponse) {
     params.delete('sign')
     params.delete('minReferences')
     params.delete('search')
+    params.delete('onlyBetweenQueryProteins')
     
     router.push(`?${params.toString()}`, { scroll: false })
   }, [searchParams, router])

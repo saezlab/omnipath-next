@@ -7,4 +7,5 @@ export interface InteractionsFilters {
   sign: string[]
   minReferences: number | null
   search: string
+  onlyBetweenQueryProteins: boolean
 }

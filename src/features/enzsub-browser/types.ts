@@ -19,4 +19,5 @@ export interface EnzSubFilters {
   sources: string[]
   residueTypes: string[]
   modifications: string[]
+  onlyBetweenQueryProteins: boolean
 }

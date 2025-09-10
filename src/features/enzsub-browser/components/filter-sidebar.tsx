@@ -10,13 +10,15 @@ interface FilterCounts {
   sources: Record<string, number>
   residueTypes: Record<string, number>
   modifications: Record<string, number>
+  onlyBetweenQueryProteins: { true: number; false: number }
 }
 
 interface EnzSubFilterSidebarProps {
   filters: EnzSubFilters
-  onFilterChange: (type: keyof EnzSubFilters, value: string) => void
+  onFilterChange: (type: keyof EnzSubFilters, value: string | boolean) => void
   filterCounts: FilterCounts
   onClearFilters: () => void
+  isMultiQuery?: boolean
 }
 
 export function EnzSubFilterSidebar({
@@ -24,10 +26,12 @@ export function EnzSubFilterSidebar({
   onFilterChange,
   filterCounts,
   onClearFilters,
+  isMultiQuery = false,
 }: EnzSubFilterSidebarProps) {
   // Calculate active filter count
   const activeFilterCount = Object.entries(filters).reduce((count, [, value]) => {
     if (Array.isArray(value)) return count + value.length
+    if (typeof value === 'boolean' && value) return count + 1
     return count
   }, 0)
 
@@ -57,6 +61,38 @@ export function EnzSubFilterSidebar({
       {/* All Filters */}
       {hasData && (
         <SidebarMenu className="space-y-2">
+          {/* Scope Filter - only show for multi-query */}
+          {isMultiQuery && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Scope">
+                <span>Scope</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                <SidebarMenuSubItem>
+                  <div className="flex items-center justify-between w-full">
+                    <Label
+                      htmlFor="enzsub-only-between-query-proteins"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                        filters.onlyBetweenQueryProteins ? "text-sidebar-primary font-medium" : ""
+                      }`}
+                    >
+                      <Checkbox
+                        id="enzsub-only-between-query-proteins"
+                        checked={filters.onlyBetweenQueryProteins}
+                        onCheckedChange={(checked) => onFilterChange("onlyBetweenQueryProteins", !!checked)}
+                        className={filters.onlyBetweenQueryProteins ? "border-sidebar-primary" : ""}
+                      />
+                      <span>Within query set only</span>
+                    </Label>
+                    <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">
+                      {filterCounts.onlyBetweenQueryProteins.true}
+                    </SidebarMenuBadge>
+                  </div>
+                </SidebarMenuSubItem>
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
+          
           {/* Sources */}
           <SidebarMenuItem>
             <SidebarMenuButton className="pointer-events-none" tooltip="Data Sources">

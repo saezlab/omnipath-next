@@ -21,6 +21,7 @@ interface FilterSidebarProps {
     topology: Record<string, number>
     direction: Record<string, number>
     sign: Record<string, number>
+    onlyBetweenQueryProteins: { true: number; false: number }
   }
   onFilterChange: (type: keyof InteractionsFilters, value: string | boolean | null | number) => void
   onClearFilters: () => void
@@ -94,6 +95,7 @@ export function FilterSidebar({
   const activeFilterCount = Object.entries(filters).reduce((count, [key, value]) => {
     if (key === 'minReferences' && value === 0) return count
     if (key === 'search' && !value) return count
+    if (key === 'onlyBetweenQueryProteins' && !value) return count
     if (Array.isArray(value)) return count + value.length
     if (value !== null) return count + 1
     return count
@@ -141,6 +143,37 @@ export function FilterSidebar({
               </SidebarMenuSubItem>
             </SidebarMenuSub>
           </SidebarMenuItem>
+          {/* Scope Filter - only show for multi-query */}
+          {isMultiQuery && (
+            <SidebarMenuItem>
+              <SidebarMenuButton className="pointer-events-none" tooltip="Scope">
+                <span>Scope</span>
+              </SidebarMenuButton>
+              <SidebarMenuSub className="space-y-1">
+                <SidebarMenuSubItem>
+                  <div className="flex items-center justify-between w-full">
+                    <Label
+                      htmlFor="only-between-query-proteins"
+                      className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                        filters.onlyBetweenQueryProteins ? "text-sidebar-primary font-medium" : ""
+                      }`}
+                    >
+                      <Checkbox
+                        id="only-between-query-proteins"
+                        checked={filters.onlyBetweenQueryProteins}
+                        onCheckedChange={(checked) => onFilterChange("onlyBetweenQueryProteins", !!checked)}
+                        className={filters.onlyBetweenQueryProteins ? "border-sidebar-primary" : ""}
+                      />
+                      <span>Within query set only</span>
+                    </Label>
+                    <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">
+                      {filterCounts.onlyBetweenQueryProteins.true}
+                    </SidebarMenuBadge>
+                  </div>
+                </SidebarMenuSubItem>
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+          )}
           {topologyOptions.length > 0 && (
             <SidebarMenuItem>
               <SidebarMenuButton className="pointer-events-none" tooltip="Topology">
