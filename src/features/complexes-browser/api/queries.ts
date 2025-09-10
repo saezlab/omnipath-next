@@ -36,8 +36,8 @@ export async function getComplexesData(identifierResults: SearchIdentifiersRespo
   // Filter complexes that contain any of the searched proteins
   const matchingComplexes = allComplexes.filter(complex => {
     // Parse components and gene symbols
-    const componentsList = complex.components?.split(/[;,]/).map(c => c.trim()) || [];
-    const geneSymbolsList = complex.componentsGenesymbols?.split(/[;,]/).map(g => g.trim().toUpperCase()) || [];
+    const componentsList = complex.components?.split("_").map(c => c.trim()) || [];
+    const geneSymbolsList = complex.componentsGenesymbols?.split("_").map(g => g.trim().toUpperCase()) || [];
     
     // Check if any searched protein is in this complex
     const hasMatchingUniprot = uniprotAccessions.some(acc => 

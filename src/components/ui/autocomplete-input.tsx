@@ -59,6 +59,7 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
             if (searchTerm.length < 2) {
               setSuggestions([])
               setShowSuggestions(false)
+              setSelectedSuggestionIndex(-1)
               return
             }
 
@@ -79,10 +80,12 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
               
               setSuggestions(deduplicatedResults)
               setShowSuggestions(true)
+              setSelectedSuggestionIndex(deduplicatedResults.length > 0 ? 0 : -1)
             } catch (error) {
               console.error("Error fetching suggestions:", error)
               setSuggestions([])
               setShowSuggestions(false)
+              setSelectedSuggestionIndex(-1)
             }
             setIsFetchingSuggestions(false)
           }, 300)
@@ -99,6 +102,7 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
       } else {
         setSuggestions([])
         setShowSuggestions(false)
+        setSelectedSuggestionIndex(-1)
       }
     }, [currentInput, debouncedFetchSuggestions])
 
@@ -155,11 +159,10 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
       }
       
       if (e.key === "Enter") {
-        // If there are suggestions, select the first one, otherwise add current input as badge
-        if (showSuggestions && suggestions.length > 0) {
+        // If there are suggestions and one is selected, use it
+        if (showSuggestions && suggestions.length > 0 && selectedSuggestionIndex >= 0) {
           e.preventDefault()
-          const suggestionToSelect = selectedSuggestionIndex >= 0 ? suggestions[selectedSuggestionIndex] : suggestions[0]
-          handleSuggestionSelect(suggestionToSelect)
+          handleSuggestionSelect(suggestions[selectedSuggestionIndex])
           return
         } else if (currentInput.trim()) {
           // No suggestions but there's current input, add it as selected
@@ -232,9 +235,9 @@ export const AutocompleteInput = forwardRef<HTMLInputElement, AutocompleteInputP
                         key={`${suggestion.uniprotAccession}-${suggestion.identifierValue}-${index}`}
                         value={suggestion.identifierValue}
                         onSelect={() => handleSuggestionSelect(suggestion)}
-                        className={`cursor-pointer px-3 py-2 hover:bg-muted hover:text-foreground dark:hover:bg-secondary dark:hover:text-secondary-foreground transition-colors ${
+                        className={`cursor-pointer px-3 py-2 transition-colors ${
                           index === selectedSuggestionIndex 
-                            ? 'bg-muted text-foreground dark:bg-secondary dark:text-secondary-foreground' 
+                            ? 'bg-accent text-accent-foreground dark:bg-secondary dark:text-secondary-foreground' 
                             : 'text-popover-foreground'
                         }`}
                       >
