@@ -27,8 +27,8 @@ export default function RootLayout({
             <SidebarProvider>
               <AppSidebar />
               <SidebarInset>
-                <main className="relative">
-                  <SidebarTrigger className="md:hidden absolute bottom-28 right-4 z-50 bg-primary text-primary-foreground shadow-md" />
+                <main>
+                  <SidebarTrigger className="md:hidden fixed bottom-28 right-4 z-50 bg-primary text-primary-foreground shadow-md" />
                   {children}
                 </main>
               </SidebarInset>
