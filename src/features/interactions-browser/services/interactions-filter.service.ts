@@ -19,14 +19,12 @@ export class InteractionsFilterService {
     return interaction.references ? interaction.references.split(';').length : 0
   }
 
-  static isUpstreamInteraction(interaction: Interaction, queryUpper: string): boolean {
-    return interaction.isDirected === true && 
-      (interaction.target === queryUpper || interaction.targetGenesymbol === queryUpper)
+  static isUpstreamInteraction(interaction: Interaction, query: string): boolean {
+    return interaction.isDirected === true && interaction.targetGenesymbol === query
   }
 
-  static isDownstreamInteraction(interaction: Interaction, queryUpper: string): boolean {
-    return interaction.isDirected === true && 
-      (interaction.source === queryUpper || interaction.sourceGenesymbol === queryUpper)
+  static isDownstreamInteraction(interaction: Interaction, query: string): boolean {
+    return interaction.isDirected === true && interaction.sourceGenesymbol === query
   }
 
   static isBetweenQueryProteins(interaction: Interaction, queryProteins: string[]): boolean {
@@ -69,38 +67,61 @@ export class InteractionsFilterService {
     return false
   }
 
+  static evaluateAllFilters(
+    interaction: Interaction,
+    filters: InteractionsFilters,
+    query: string,
+    queryProteins?: string[]
+  ): Record<keyof InteractionsFilters, boolean> {
+    return {
+      interactionType: this.applyFilter(interaction, 'interactionType', filters.interactionType, query, queryProteins),
+      entityTypeSource: this.applyFilter(interaction, 'entityTypeSource', filters.entityTypeSource, query, queryProteins),
+      entityTypeTarget: this.applyFilter(interaction, 'entityTypeTarget', filters.entityTypeTarget, query, queryProteins),
+      topology: this.applyFilter(interaction, 'topology', filters.topology, query, queryProteins),
+      direction: this.applyFilter(interaction, 'direction', filters.direction, query, queryProteins),
+      sign: this.applyFilter(interaction, 'sign', filters.sign, query, queryProteins),
+      minReferences: this.applyFilter(interaction, 'minReferences', filters.minReferences, query, queryProteins),
+      search: this.applyFilter(interaction, 'search', filters.search, query, queryProteins),
+      onlyBetweenQueryProteins: this.applyFilter(interaction, 'onlyBetweenQueryProteins', filters.onlyBetweenQueryProteins, query, queryProteins),
+      excludeSelfLoops: this.applyFilter(interaction, 'excludeSelfLoops', filters.excludeSelfLoops, query, queryProteins),
+    }
+  }
+
   static applyFilter(
     interaction: Interaction,
     filterType: keyof InteractionsFilters,
     filterValue: string[] | number | string | boolean | null,
-    queryUpper: string,
+    query: string,
     queryProteins?: string[]
   ): boolean {
     switch (filterType) {
       case 'interactionType':
-        return Array.isArray(filterValue) && (filterValue.length === 0 || filterValue.includes(interaction.type || ""))
+        if (!Array.isArray(filterValue)) return false
+        if (filterValue.length === 0) return true
+        return filterValue.includes(interaction.type || "")
       case 'entityTypeSource':
-        return Array.isArray(filterValue) && (filterValue.length === 0 || filterValue.includes(interaction.entityTypeSource || ""))
+        if (!Array.isArray(filterValue)) return false
+        if (filterValue.length === 0) return true
+        return filterValue.includes(interaction.entityTypeSource || "")
       case 'entityTypeTarget':
-        return Array.isArray(filterValue) && (filterValue.length === 0 || filterValue.includes(interaction.entityTypeTarget || ""))
+        if (!Array.isArray(filterValue)) return false
+        if (filterValue.length === 0) return true
+        return filterValue.includes(interaction.entityTypeTarget || "")
       case 'topology':
         if (!Array.isArray(filterValue) || filterValue.length === 0) return true
-        const topologyMatches = []
-        if (filterValue.includes('directed') && interaction.isDirected === true) topologyMatches.push(true)
-        if (filterValue.includes('undirected') && interaction.isDirected === false) topologyMatches.push(true)
-        return topologyMatches.length > 0
+        if (filterValue.includes('directed') && interaction.isDirected === true) return true
+        if (filterValue.includes('undirected') && interaction.isDirected === false) return true
+        return false
       case 'direction':
         if (!Array.isArray(filterValue) || filterValue.length === 0) return true
-        const directionMatches = []
-        if (filterValue.includes('upstream') && this.isUpstreamInteraction(interaction, queryUpper)) directionMatches.push(true)
-        if (filterValue.includes('downstream') && this.isDownstreamInteraction(interaction, queryUpper)) directionMatches.push(true)
-        return directionMatches.length > 0
+        if (filterValue.includes('upstream') && this.isUpstreamInteraction(interaction, query)) return true
+        if (filterValue.includes('downstream') && this.isDownstreamInteraction(interaction, query)) return true
+        return false
       case 'sign':
         if (!Array.isArray(filterValue) || filterValue.length === 0) return true
-        const signMatches = []
-        if (filterValue.includes('stimulation') && interaction.consensusStimulation === true) signMatches.push(true)
-        if (filterValue.includes('inhibition') && interaction.consensusInhibition === true) signMatches.push(true)
-        return signMatches.length > 0
+        if (filterValue.includes('stimulation') && interaction.consensusStimulation === true) return true
+        if (filterValue.includes('inhibition') && interaction.consensusInhibition === true) return true
+        return false
       case 'minReferences':
         return filterValue === null || (typeof filterValue === 'number' && this.getReferenceCount(interaction) >= filterValue)
       case 'search':
@@ -131,9 +152,8 @@ export class InteractionsFilterService {
     query: string,
     queryProteins?: string[]
   ): boolean {
-    const queryUpper = query.toUpperCase()
     return Object.entries(filters).every(([key, value]) => 
-      this.applyFilter(interaction, key as keyof InteractionsFilters, value, queryUpper, queryProteins)
+      this.applyFilter(interaction, key as keyof InteractionsFilters, value, query, queryProteins)
     )
   }
 
@@ -144,10 +164,9 @@ export class InteractionsFilterService {
     excluded: (keyof InteractionsFilters)[],
     queryProteins?: string[]
   ): boolean {
-    const queryUpper = query.toUpperCase()
     return Object.entries(filters).every(([key, value]) => {
       if (excluded.includes(key as keyof InteractionsFilters)) return true
-      return this.applyFilter(interaction, key as keyof InteractionsFilters, value, queryUpper, queryProteins)
+      return this.applyFilter(interaction, key as keyof InteractionsFilters, value, query, queryProteins)
     })
   }
 
@@ -179,21 +198,33 @@ export class InteractionsFilterService {
       excludeSelfLoops: { true: 0, false: 0 },
     }
 
-    const queryUpper = query.toUpperCase()
+    const isMultiQuery = query.split(/[,;]/).filter(q => q.trim().length > 0).length > 1
+
     interactions.forEach((interaction) => {
-      // Count for array-based filters (excluding the filter being counted)
-      if (this.passesFiltersExcept(interaction, filters, query, ['interactionType'], queryProteins) && interaction.type) {
+      // Evaluate all filters once for this interaction
+      const filterResults = this.evaluateAllFilters(interaction, filters, query, queryProteins)
+      
+      // Count for interactionType (excluding interactionType filter)
+      if (interaction.type && Object.entries(filterResults).every(([key, passes]) => 
+        key === 'interactionType' || passes)) {
         counts.interactionType[interaction.type] = (counts.interactionType[interaction.type] || 0) + 1
       }
-      if (this.passesFiltersExcept(interaction, filters, query, ['entityTypeSource'], queryProteins) && interaction.entityTypeSource) {
+      
+      // Count for entityTypeSource (excluding entityTypeSource filter)
+      if (interaction.entityTypeSource && Object.entries(filterResults).every(([key, passes]) => 
+        key === 'entityTypeSource' || passes)) {
         counts.entityTypeSource[interaction.entityTypeSource] = (counts.entityTypeSource[interaction.entityTypeSource] || 0) + 1
       }
-      if (this.passesFiltersExcept(interaction, filters, query, ['entityTypeTarget'], queryProteins) && interaction.entityTypeTarget) {
+      
+      // Count for entityTypeTarget (excluding entityTypeTarget filter)
+      if (interaction.entityTypeTarget && Object.entries(filterResults).every(([key, passes]) => 
+        key === 'entityTypeTarget' || passes)) {
         counts.entityTypeTarget[interaction.entityTypeTarget] = (counts.entityTypeTarget[interaction.entityTypeTarget] || 0) + 1
       }
       
-      // Count for topology filters
-      if (this.passesFiltersExcept(interaction, filters, query, ['topology'], queryProteins)) {
+      // Count for topology (excluding topology filter)
+      if (Object.entries(filterResults).every(([key, passes]) => 
+        key === 'topology' || passes)) {
         if (interaction.isDirected === true) {
           counts.topology['directed'] = (counts.topology['directed'] || 0) + 1
         } else if (interaction.isDirected === false) {
@@ -202,10 +233,10 @@ export class InteractionsFilterService {
       }
       
       // Count for direction filters - only for single protein queries
-      const isMultiQuery = query.split(/[,;]/).filter(q => q.trim().length > 0).length > 1
-      if (!isMultiQuery && this.passesFiltersExcept(interaction, filters, query, ['direction'], queryProteins)) {
-        const upstream = this.isUpstreamInteraction(interaction, queryUpper)
-        const downstream = this.isDownstreamInteraction(interaction, queryUpper)
+      if (!isMultiQuery && Object.entries(filterResults).every(([key, passes]) => 
+        key === 'direction' || passes)) {
+        const upstream = this.isUpstreamInteraction(interaction, query)
+        const downstream = this.isDownstreamInteraction(interaction, query)
         if (upstream) {
           counts.direction['upstream'] = (counts.direction['upstream'] || 0) + 1
         }
@@ -214,8 +245,9 @@ export class InteractionsFilterService {
         }
       }
       
-      // Count for sign filters
-      if (this.passesFiltersExcept(interaction, filters, query, ['sign'], queryProteins)) {
+      // Count for sign filters (excluding sign filter)
+      if (Object.entries(filterResults).every(([key, passes]) => 
+        key === 'sign' || passes)) {
         if (interaction.consensusStimulation === true) {
           counts.sign['stimulation'] = (counts.sign['stimulation'] || 0) + 1
         }
@@ -224,8 +256,9 @@ export class InteractionsFilterService {
         }
       }
       
-      // Count for onlyBetweenQueryProteins filter
-      if (this.passesFiltersExcept(interaction, filters, query, ['onlyBetweenQueryProteins'], queryProteins)) {
+      // Count for onlyBetweenQueryProteins filter (excluding onlyBetweenQueryProteins filter)
+      if (Object.entries(filterResults).every(([key, passes]) => 
+        key === 'onlyBetweenQueryProteins' || passes)) {
         if (queryProteins && this.isBetweenQueryProteins(interaction, queryProteins)) {
           counts.onlyBetweenQueryProteins.true += 1
         } else {
@@ -233,8 +266,9 @@ export class InteractionsFilterService {
         }
       }
       
-      // Count for excludeSelfLoops filter
-      if (this.passesFiltersExcept(interaction, filters, query, ['excludeSelfLoops'], queryProteins)) {
+      // Count for excludeSelfLoops filter (excluding excludeSelfLoops filter)
+      if (Object.entries(filterResults).every(([key, passes]) => 
+        key === 'excludeSelfLoops' || passes)) {
         if (this.isSelfLoop(interaction)) {
           counts.excludeSelfLoops.false += 1  // false count = self-loops (would be excluded)
         } else {
