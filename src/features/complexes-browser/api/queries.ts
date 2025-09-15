@@ -17,7 +17,7 @@ type CachedComplex = {
   identifiers: string | null;
 };
 
-let memoryCache: {
+const memoryCache: {
   data: CachedComplex[] | null;
 } = {
   data: null,
