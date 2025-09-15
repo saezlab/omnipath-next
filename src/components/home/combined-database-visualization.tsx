@@ -92,7 +92,7 @@ const CHART_COLORS = {
 
 
 export default function CombinedDatabaseVisualization({
-  width = 1200,
+  width = 800,
   height = 1270,
 }: CombinedVisualizationProps) {
   const svgRef = useRef<SVGSVGElement>(null);
