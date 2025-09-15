@@ -5,6 +5,51 @@ import { complexes } from "@/db/drizzle/schema";
 import { SearchIdentifiersResponse } from "@/db/queries";
 import { ComplexEntry } from "../types";
 
+// In-memory cache for fast access within the same process
+type CachedComplex = {
+  id: number;
+  name: string | null;
+  components: string | null;
+  componentsGenesymbols: string | null;
+  stoichiometry: string | null;
+  sources: string | null;
+  references: string | null;
+  identifiers: string | null;
+};
+
+let memoryCache: {
+  data: CachedComplex[] | null;
+} = {
+  data: null,
+};
+
+// Get all complexes with permanent in-memory caching
+async function getCachedAllComplexes() {
+  // Return cached data if available
+  if (memoryCache.data) {
+    return memoryCache.data;
+  }
+  
+  // Fetch fresh data from database
+  const allComplexes = await db
+    .select({
+      id: complexes.id,
+      name: complexes.name,
+      components: complexes.components,
+      componentsGenesymbols: complexes.componentsGenesymbols,
+      stoichiometry: complexes.stoichiometry,
+      sources: complexes.sources,
+      references: complexes.references,
+      identifiers: complexes.identifiers,
+    })
+    .from(complexes);
+  
+  // Update cache
+  memoryCache.data = allComplexes;
+  
+  return allComplexes;
+}
+
 export async function getComplexesData(identifierResults: SearchIdentifiersResponse) {
   if (identifierResults.length === 0) {
     return {
@@ -19,19 +64,8 @@ export async function getComplexesData(identifierResults: SearchIdentifiersRespo
     .map(r => r.identifierValue.toUpperCase())
   )];
   
-  // Get all complexes since we need to check components field client-side
-  const allComplexes = await db
-    .select({
-      id: complexes.id,
-      name: complexes.name,
-      components: complexes.components,
-      componentsGenesymbols: complexes.componentsGenesymbols,
-      stoichiometry: complexes.stoichiometry,
-      sources: complexes.sources,
-      references: complexes.references,
-      identifiers: complexes.identifiers,
-    })
-    .from(complexes);
+  // Get all complexes from cache
+  const allComplexes = await getCachedAllComplexes();
   
   // Filter complexes that contain any of the searched proteins
   const matchingComplexes = allComplexes.filter(complex => {
