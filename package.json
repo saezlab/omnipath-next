@@ -10,7 +10,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:pull": "drizzle-kit pull",
+    "db:pull:metabo": "drizzle-kit pull --config ./drizzle.metabo.config.ts",
     "db:studio": "drizzle-kit studio",
+    "db:studio:metabo": "drizzle-kit studio --config ./drizzle.metabo.config.ts",
     "db:stats": "tsx scripts/generate-db-stats.ts"
   },
   "dependencies": {
