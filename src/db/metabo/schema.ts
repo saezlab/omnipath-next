@@ -1,14 +1,21 @@
-import { pgTable, pgSchema, index, unique, bigserial, text, doublePrecision, integer, timestamp, foreignKey, bigint, varchar, serial, boolean, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, pgSchema, index, unique, bigserial, text, doublePrecision, integer, timestamp, foreignKey, bigint, varchar, serial, boolean, primaryKey, customType } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const gold = pgSchema("gold");
+
+// Custom type for PostgreSQL mol type (RDKit)
+const mol = customType<{ data: string; notNull: false; default: false }>({
+  dataType() {
+    return "mol";
+  },
+});
 
 
 export const canonicalStructuresInGold = gold.table("canonical_structures", {
 	canonicalId: bigserial("canonical_id", { mode: "bigint" }).primaryKey().notNull(),
 	canonicalSmiles: text("canonical_smiles").notNull(),
-	// TODO: failed to parse database type 'mol'
-	mol: unknown("mol").notNull(),
+	// RDKit mol type for chemical structures
+	mol: mol("mol").notNull(),
 	inchi: text(),
 	inchikey: text(),
 	formula: text(),
