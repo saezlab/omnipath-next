@@ -277,6 +277,10 @@ export async function searchCompoundsBySubstructure(
 
     const results = await metaboClient.unsafe(query, params);
 
+    // Get identifiers for all compounds
+    const canonicalIds = results.map((row: any) => row.canonical_id.toString());
+    const identifierMap = await getCompoundIdentifiers(canonicalIds);
+
     return results.map((row: any) => ({
       canonicalId: row.canonical_id.toString(),
       canonicalSmiles: row.canonical_smiles,
@@ -291,6 +295,7 @@ export async function searchCompoundsBySubstructure(
       isDrug: row.is_drug,
       isLipid: row.is_lipid,
       isMetabolite: row.is_metabolite,
+      identifiers: identifierMap.get(row.canonical_id.toString()) || [],
     }));
   } catch (error) {
     console.error('Substructure search error:', error);
@@ -398,6 +403,10 @@ export async function searchCompoundsBySimilarity(
 
     const results = await metaboClient.unsafe(query, params);
 
+    // Get identifiers for all compounds
+    const canonicalIds = results.map((row: any) => row.canonical_id.toString());
+    const identifierMap = await getCompoundIdentifiers(canonicalIds);
+
     return results.map((row: any) => ({
       canonicalId: row.canonical_id.toString(),
       canonicalSmiles: row.canonical_smiles,
@@ -413,6 +422,7 @@ export async function searchCompoundsBySimilarity(
       isLipid: row.is_lipid,
       isMetabolite: row.is_metabolite,
       similarity: row.similarity,
+      identifiers: identifierMap.get(row.canonical_id.toString()) || [],
     }));
   } catch (error) {
     console.error('Similarity search error:', error);
@@ -420,6 +430,43 @@ export async function searchCompoundsBySimilarity(
     const fallbackResults = await searchCompounds(smiles, limit, offset, filters);
     return fallbackResults.map(result => ({ ...result, similarity: 0 }));
   }
+}
+
+async function getCompoundIdentifiers(canonicalIds: string[]): Promise<Map<string, Array<{ type: string; value: string }>>> {
+  if (canonicalIds.length === 0) return new Map();
+
+  // Use raw SQL for better performance with IN clause
+  const query = `
+    SELECT
+      c.canonical_id,
+      ci.identifier_type,
+      ci.identifier_value
+    FROM gold.compound_identifiers ci
+    LEFT JOIN gold.compounds c ON ci.compound_id = c.compound_id
+    WHERE c.canonical_id = ANY($1)
+    ORDER BY c.canonical_id, ci.identifier_type, ci.identifier_value
+  `;
+
+  const results = await metaboClient.unsafe(query, [canonicalIds.map(id => Number(id))]);
+
+  // Group identifiers by canonical ID
+  const identifierMap = new Map<string, Array<{ type: string; value: string }>>();
+
+  for (const row of results) {
+    const canonicalId = row.canonical_id?.toString();
+    if (!canonicalId) continue;
+
+    if (!identifierMap.has(canonicalId)) {
+      identifierMap.set(canonicalId, []);
+    }
+
+    identifierMap.get(canonicalId)!.push({
+      type: row.identifier_type,
+      value: row.identifier_value,
+    });
+  }
+
+  return identifierMap;
 }
 
 export async function getCompoundAutocomplete(

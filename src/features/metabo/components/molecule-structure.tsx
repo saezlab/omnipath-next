@@ -121,7 +121,7 @@ export function MoleculeStructure({
   return (
     <div
       ref={containerRef}
-      className={`border rounded-lg bg-white ${className}`}
+      className={`${className}`}
       style={{ width, height }}
     />
   );

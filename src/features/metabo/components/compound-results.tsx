@@ -110,60 +110,123 @@ function CompoundCard({ compound }: { compound: CompoundSearchResult }) {
     return typeof value === 'number' ? value.toFixed(2) : value;
   };
 
+  // Extract primary name and organize identifiers
+  const getPrimaryName = (identifiers?: Array<{ type: string; value: string }>) => {
+    if (!identifiers || identifiers.length === 0) return null;
+
+    // Priority order for primary names - include more variations
+    const nameTypes = ['NAME', 'Name', 'Preferred Name', 'Common Name', 'IUPAC Name', 'Synonym'];
+
+    for (const nameType of nameTypes) {
+      const match = identifiers.find(id => id.type.toLowerCase() === nameType.toLowerCase());
+      if (match) return match.value;
+    }
+
+    return null;
+  };
+
+  const organizeIdentifiers = (identifiers?: Array<{ type: string; value: string }>) => {
+    if (!identifiers || identifiers.length === 0) return { synonyms: [], dbIds: [] };
+
+    const nameTypes = ['NAME', 'Name', 'Synonym', 'IUPAC Name', 'Common Name', 'Preferred Name'];
+
+    // Get all names/synonyms except the primary one
+    const allNames = identifiers.filter(id =>
+      nameTypes.some(nameType => id.type.toLowerCase() === nameType.toLowerCase())
+    );
+    const synonyms = allNames.filter(name => name.value !== primaryName);
+
+    // Database IDs exclude all name types
+    const dbIds = identifiers.filter(id =>
+      !nameTypes.some(nameType => id.type.toLowerCase() === nameType.toLowerCase())
+    );
+
+    return { synonyms, dbIds };
+  };
+
+  const primaryName = getPrimaryName(compound.identifiers);
+  const { synonyms, dbIds } = organizeIdentifiers(compound.identifiers);
+
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <Card className="hover:shadow-sm transition-shadow">
+      <CardContent className="p-4 md:p-6">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[180px_minmax(0,1fr)200px] lg:gap-6 items-start">
           {/* Molecule Structure Visualization */}
-          <div className="md:col-span-1">
-            <MoleculeStructure
-              smiles={compound.canonicalSmiles}
-              width={250}
-              height={250}
-              className="w-full"
-            />
+          <div className="lg:col-auto flex flex-col">
+            <div className="flex items-center justify-center">
+              <MoleculeStructure
+                smiles={compound.canonicalSmiles}
+                width={180}
+                height={180}
+                className="w-[180px] h-[180px] max-w-full"
+              />
+            </div>
           </div>
 
-          {/* Compound Information */}
-          <div className="md:col-span-2 space-y-4">
-            {/* Header */}
-            <div>
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="font-semibold text-lg">Compound {compound.canonicalId}</h3>
-                <div className="flex gap-1">
+          {/* Main Compound Information */}
+          <div className="space-y-3 min-w-0">
+            {/* Header with Name and Badges */}
+            <div className="space-y-3">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-xl text-gray-900 break-words">
+                    {primaryName || `Compound ${compound.canonicalId}`}
+                  </h3>
+                  {primaryName && (
+                    <p className="text-sm text-muted-foreground mt-1">Compound {compound.canonicalId}</p>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2 flex-shrink-0">
                   {compound.isDrug && (
-                    <Badge variant="secondary">Drug</Badge>
+                    <Badge variant="default" className="bg-blue-100 text-blue-800 border-blue-200">Drug</Badge>
                   )}
                   {compound.isLipid && (
-                    <Badge variant="outline">Lipid</Badge>
+                    <Badge variant="outline" className="border-purple-200 text-purple-700">Lipid</Badge>
                   )}
                   {compound.isMetabolite && (
-                    <Badge variant="outline">Metabolite</Badge>
+                    <Badge variant="outline" className="border-green-200 text-green-700">Metabolite</Badge>
                   )}
                 </div>
               </div>
 
-              {compound.inchikey && (
-                <div className="text-sm text-muted-foreground mb-1">
-                  <span className="font-medium">InChI Key:</span> {compound.inchikey}
+              {/* Synonyms - Horizontal Scrollable */}
+              {synonyms.length > 0 && (
+                <div className="space-y-1.5">
+                  <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Synonyms</h4>
+                  <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto pr-1">
+                    {synonyms.map((synonym, index) => (
+                      <Badge key={index} variant="outline" className="text-xs whitespace-nowrap flex-shrink-0 bg-gray-50 hover:bg-gray-100 transition-colors">
+                        {synonym.value}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {compound.formula && (
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">Formula:</span> {compound.formula}
-                </div>
-              )}
+              {/* Basic Info */}
+              <div className="space-y-1.5 text-sm">
+                {compound.formula && (
+                  <div>
+                    <span className="font-medium text-muted-foreground">Formula:</span> {compound.formula}
+                  </div>
+                )}
+                {compound.inchikey && (
+                  <div>
+                    <span className="font-medium text-muted-foreground">InChI Key:</span>
+                    <span className="font-mono ml-1">{compound.inchikey}</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* SMILES */}
-            <div className="bg-muted p-3 rounded-lg">
-              <div className="text-sm font-medium mb-1">SMILES</div>
-              <code className="text-sm break-all">{compound.canonicalSmiles}</code>
+            <div className="bg-muted p-3 rounded-lg border border-border/40">
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">SMILES</div>
+              <code className="text-sm break-all font-mono leading-relaxed">{compound.canonicalSmiles}</code>
             </div>
 
             {/* Properties Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 text-sm">
               <div>
                 <div className="font-medium text-muted-foreground">Molecular Weight</div>
                 <div>{formatValue(compound.molecularWeight)} Da</div>
@@ -195,7 +258,7 @@ function CompoundCard({ compound }: { compound: CompoundSearchResult }) {
              compound.logp !== null &&
              compound.hbd !== null &&
              compound.hba !== null && (
-              <div className="pt-2">
+              <div className="pt-1">
                 {compound.molecularWeight <= 500 &&
                  compound.logp <= 5 &&
                  compound.hbd <= 5 &&
@@ -210,6 +273,28 @@ function CompoundCard({ compound }: { compound: CompoundSearchResult }) {
                 )}
               </div>
             )}
+
+          </div>
+
+          {/* Database IDs - Right Column - Vertical Scrollable */}
+          <div className="lg:col-auto w-full">
+            <div className="lg:sticky lg:top-4 space-y-3">
+              <h4 className="font-semibold text-sm text-gray-700 border-b border-border pb-2">Database IDs</h4>
+              {dbIds.length > 0 ? (
+                <div className="max-h-[280px] overflow-y-auto pr-1.5 space-y-2">
+                  {dbIds.map((id, index) => (
+                    <div key={index} className="bg-gray-50 p-2 rounded-md border border-gray-100">
+                      <div className="font-semibold text-xs text-gray-600 uppercase tracking-wide mb-0.5">{id.type}</div>
+                      <div className="font-mono text-xs text-gray-900 break-all leading-tight">{id.value}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground italic bg-gray-50 p-3 rounded-lg text-center">
+                  No database IDs available
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
