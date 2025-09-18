@@ -107,7 +107,7 @@ export function MetaboSearchBar({
 
 return (
   <div className="flex flex-col gap-3">
-    <div className="rounded-lg border bg-background shadow-sm">
+    <div className="rounded-lg border bg-background">
       <Tabs
         value={searchMode}
         onValueChange={(value) => setSearchMode(value as SearchMode)}
@@ -161,7 +161,7 @@ return (
                   onChange={(e) => onQueryChange(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={getPlaceholderText()}
-                  className="h-10 border-0 bg-transparent px-0 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-10 border-0 bg-transparent px-0 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                 />
               )}
             </div>
@@ -171,7 +171,7 @@ return (
           <Button
             onClick={() => handleSearch()}
             disabled={isSearching || !query.trim() || smilesValidationError !== null}
-            className="rounded-r-lg h-12 shrink-0 px-6 text-xs font-semibold uppercase tracking-[0.14em] shadow-none hover:bg-primary/90 disabled:opacity-50"
+            className="rounded-r-lg h-12 shrink-0 px-6 text-xs font-semibold uppercase tracking-[0.14em] hover:bg-primary/90 disabled:opacity-50"
           >
             {isSearching ? (
               <>
