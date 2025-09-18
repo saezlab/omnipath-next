@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   searchCompounds,
+  searchCompoundByCanonicalId,
   searchCompoundsBySubstructure,
   searchCompoundsBySimilarity,
   SearchFilters
@@ -11,8 +12,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     const query = searchParams.get('q') || '';
+    const canonicalId = searchParams.get('canonicalId');
     const mode = searchParams.get('mode') || 'text'; // text, substructure, similarity
     const limit = parseInt(searchParams.get('limit') || '20');
+    const offset = parseInt(searchParams.get('offset') || '0');
     const threshold = parseFloat(searchParams.get('threshold') || '0.7'); // for similarity search
 
     // Parse filters
@@ -48,17 +51,22 @@ export async function GET(request: NextRequest) {
 
     let results;
 
-    switch (mode) {
-      case 'substructure':
-        results = await searchCompoundsBySubstructure(query, limit, filters);
-        break;
-      case 'similarity':
-        results = await searchCompoundsBySimilarity(query, threshold, limit, filters);
-        break;
-      case 'text':
-      default:
-        results = await searchCompounds(query, limit, filters);
-        break;
+    // Fast path: if we have canonicalId from autocomplete selection
+    if (canonicalId) {
+      results = await searchCompoundByCanonicalId(canonicalId);
+    } else {
+      switch (mode) {
+        case 'substructure':
+          results = await searchCompoundsBySubstructure(query, limit, offset, filters);
+          break;
+        case 'similarity':
+          results = await searchCompoundsBySimilarity(query, threshold, limit, offset, filters);
+          break;
+        case 'text':
+        default:
+          results = await searchCompounds(query, limit, offset, filters);
+          break;
+      }
     }
 
     return NextResponse.json(results);

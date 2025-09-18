@@ -27,44 +27,79 @@ export function MetaboSearchInterface() {
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<SearchFilters>({});
   const [similarityThreshold, setSimilarityThreshold] = useState(0.7);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const handleSearch = async (searchQuery: string, mode: SearchMode) => {
+  const performSearch = async (searchQuery: string, mode: SearchMode, offset: number = 0, canonicalId?: string): Promise<CompoundSearchResult[]> => {
+    const params = new URLSearchParams({
+      q: searchQuery,
+      mode,
+      limit: '20',
+      offset: offset.toString(),
+    });
+
+    // If we have a canonicalId from autocomplete selection, use fast path
+    if (canonicalId) {
+      params.set('canonicalId', canonicalId);
+    }
+
+    if (mode === 'similarity') {
+      params.set('threshold', similarityThreshold.toString());
+    }
+
+    // Add filters to params
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.set(key, value.toString());
+      }
+    });
+
+    const response = await fetch(`/api/metabo/search?${params}`);
+    if (!response.ok) {
+      throw new Error('Search failed');
+    }
+
+    return await response.json();
+  };
+
+  const handleSearch = async (searchQuery: string, mode: SearchMode, canonicalId?: string) => {
     if (!searchQuery.trim()) return;
 
     setIsSearching(true);
     setQuery(searchQuery);
     setSearchMode(mode);
+    setCurrentPage(0);
 
     try {
-      const params = new URLSearchParams({
-        q: searchQuery,
-        mode,
-        limit: '50',
-      });
-
-      if (mode === 'similarity') {
-        params.set('threshold', similarityThreshold.toString());
-      }
-
-      // Add filters to params
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          params.set(key, value.toString());
-        }
-      });
-
-      const response = await fetch(`/api/metabo/search?${params}`);
-      if (!response.ok) {
-        throw new Error('Search failed');
-      }
-
-      const data = await response.json();
+      const data = await performSearch(searchQuery, mode, 0, canonicalId);
       setResults(data);
+      setHasMore(data.length === 20); // If we got a full page, there might be more
     } catch (error) {
       console.error('Search error:', error);
       setResults([]);
+      setHasMore(false);
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const loadMore = async () => {
+    if (!query.trim() || isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      const nextPage = currentPage + 1;
+      const offset = nextPage * 20;
+      const newResults = await performSearch(query, searchMode, offset);
+
+      setResults(prev => [...prev, ...newResults]);
+      setCurrentPage(nextPage);
+      setHasMore(newResults.length === 20); // If we got a full page, there might be more
+    } catch (error) {
+      console.error('Load more error:', error);
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -107,6 +142,9 @@ export function MetaboSearchInterface() {
             isLoading={isSearching}
             query={query}
             searchMode={searchMode}
+            hasMore={hasMore}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={loadMore}
           />
         </div>
       </div>

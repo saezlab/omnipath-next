@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { CompoundSearchResult } from '@/db/metabo/queries';
 import { SearchMode } from './metabo-search-interface';
 import { Loader2 } from 'lucide-react';
@@ -12,9 +13,20 @@ interface CompoundResultsProps {
   isLoading: boolean;
   query: string;
   searchMode: SearchMode;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
-export function CompoundResults({ results, isLoading, query, searchMode }: CompoundResultsProps) {
+export function CompoundResults({
+  results,
+  isLoading,
+  query,
+  searchMode,
+  hasMore = false,
+  isLoadingMore = false,
+  onLoadMore
+}: CompoundResultsProps) {
   if (isLoading) {
     return (
       <Card>
@@ -67,6 +79,27 @@ export function CompoundResults({ results, isLoading, query, searchMode }: Compo
           <CompoundCard key={compound.canonicalId} compound={compound} />
         ))}
       </div>
+
+      {/* Load More Button */}
+      {(hasMore || isLoadingMore) && (
+        <div className="flex justify-center mt-6">
+          <Button
+            onClick={onLoadMore}
+            disabled={isLoadingMore}
+            variant="outline"
+            className="px-8"
+          >
+            {isLoadingMore ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Loading more...
+              </>
+            ) : (
+              'Load More Results'
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

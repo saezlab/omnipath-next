@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 interface CompoundAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect: (value: string) => void;
+  onSelect: (value: string, canonicalId?: string) => void;
   placeholder?: string;
   className?: string;
 }
@@ -17,6 +17,8 @@ interface AutocompleteResult {
   label: string;
   value: string;
   type: string;
+  compoundId: string;
+  canonicalId: string;
 }
 
 export function CompoundAutocomplete({
@@ -64,7 +66,7 @@ export function CompoundAutocomplete({
 
   const handleSelect = (suggestion: AutocompleteResult) => {
     onChange(suggestion.value);
-    onSelect(suggestion.value);
+    onSelect(suggestion.value, suggestion.canonicalId);
     setShowSuggestions(false);
   };
 

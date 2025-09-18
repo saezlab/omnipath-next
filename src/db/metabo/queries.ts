@@ -42,6 +42,39 @@ export interface SearchFilters {
 export async function searchCompounds(
   query: string,
   limit: number = 20,
+  offset: number = 0,
+  filters?: SearchFilters
+): Promise<CompoundSearchResult[]> {
+  // Always search identifiers first
+  const identifierMatches = await getCompoundAutocomplete(query, limit);
+
+  if (identifierMatches.length > 0) {
+    // Get compound details for all identifier matches
+    const results = [];
+    for (const match of identifierMatches) {
+      if (match.canonicalId) {
+        const compoundDetails = await getCompoundDetails(match.canonicalId);
+        if (compoundDetails) {
+          results.push(compoundDetails);
+        }
+      }
+    }
+    return results;
+  }
+
+  return [];
+}
+
+export async function searchCompoundByCanonicalId(canonicalId: string): Promise<CompoundSearchResult[]> {
+  // Fast direct lookup by canonical ID
+  const compoundDetails = await getCompoundDetails(canonicalId);
+  return compoundDetails ? [compoundDetails] : [];
+}
+
+export async function searchCompoundsByText(
+  query: string,
+  limit: number = 20,
+  offset: number = 0,
   filters?: SearchFilters
 ): Promise<CompoundSearchResult[]> {
   // Use raw SQL for better performance with complex joins and filtering
@@ -130,10 +163,10 @@ export async function searchCompounds(
     LEFT JOIN gold.compound_identifiers ci ON c.compound_id = ci.compound_id
     ${whereClause}
     ORDER BY cs.molecular_weight NULLS LAST
-    LIMIT $${paramIndex}
+    LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
   `;
 
-  params.push(limit);
+  params.push(limit, offset);
 
   const results = await metaboClient.unsafe(query_sql, params);
 
@@ -157,6 +190,7 @@ export async function searchCompounds(
 export async function searchCompoundsBySubstructure(
   smiles: string,
   limit: number = 20,
+  offset: number = 0,
   filters?: SearchFilters
 ): Promise<CompoundSearchResult[]> {
   try {
@@ -167,7 +201,7 @@ export async function searchCompoundsBySubstructure(
     if (!validationResult[0]?.valid) {
       console.warn(`Invalid SMILES pattern: ${smiles}`);
       // Fallback to text search for invalid SMILES
-      return searchCompounds(smiles, limit, filters);
+      return searchCompounds(smiles, limit, offset, filters);
     }
 
     // Use raw SQL for RDKit substructure search with proper casting
@@ -236,10 +270,10 @@ export async function searchCompoundsBySubstructure(
       LEFT JOIN gold.compounds c ON cs.canonical_id = c.canonical_id
       WHERE ${whereClause}
       ORDER BY cs.molecular_weight
-      LIMIT $${paramIndex}
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
 
-    params.push(limit);
+    params.push(limit, offset);
 
     const results = await metaboClient.unsafe(query, params);
 
@@ -261,7 +295,7 @@ export async function searchCompoundsBySubstructure(
   } catch (error) {
     console.error('Substructure search error:', error);
     // Fallback to text search if RDKit operations fail
-    return searchCompounds(smiles, limit, filters);
+    return searchCompounds(smiles, limit, offset, filters);
   }
 }
 
@@ -269,6 +303,7 @@ export async function searchCompoundsBySimilarity(
   smiles: string,
   threshold: number = 0.7,
   limit: number = 20,
+  offset: number = 0,
   filters?: SearchFilters
 ): Promise<(CompoundSearchResult & { similarity: number })[]> {
   try {
@@ -279,81 +314,87 @@ export async function searchCompoundsBySimilarity(
     if (!validationResult[0]?.valid) {
       console.warn(`Invalid SMILES pattern: ${smiles}`);
       // Fallback to text search for invalid SMILES
-      const fallbackResults = await searchCompounds(smiles, limit, filters);
+      const fallbackResults = await searchCompounds(smiles, limit, offset, filters);
       return fallbackResults.map(result => ({ ...result, similarity: 0 }));
     }
 
-    // Use raw SQL for RDKit similarity search with proper casting
-    let whereClause = `tanimoto_sml(cs.mol, mol_from_smiles($1)) > $2`;
+    // Build filter conditions for the CTE
+    let filterConditions = [];
     const params: any[] = [smiles, threshold];
     let paramIndex = 3;
 
-    // Add filters to WHERE clause
     if (filters) {
       if (filters.molecularWeightMin !== undefined) {
-        whereClause += ` AND cs.molecular_weight >= $${paramIndex}`;
+        filterConditions.push(`cs.molecular_weight >= $${paramIndex}`);
         params.push(filters.molecularWeightMin);
         paramIndex++;
       }
       if (filters.molecularWeightMax !== undefined) {
-        whereClause += ` AND cs.molecular_weight <= $${paramIndex}`;
+        filterConditions.push(`cs.molecular_weight <= $${paramIndex}`);
         params.push(filters.molecularWeightMax);
         paramIndex++;
       }
       if (filters.logpMin !== undefined) {
-        whereClause += ` AND cs.logp >= $${paramIndex}`;
+        filterConditions.push(`cs.logp >= $${paramIndex}`);
         params.push(filters.logpMin);
         paramIndex++;
       }
       if (filters.logpMax !== undefined) {
-        whereClause += ` AND cs.logp <= $${paramIndex}`;
+        filterConditions.push(`cs.logp <= $${paramIndex}`);
         params.push(filters.logpMax);
         paramIndex++;
       }
       if (filters.isDrug !== undefined) {
-        whereClause += ` AND c.is_drug = $${paramIndex}`;
+        filterConditions.push(`c.is_drug = $${paramIndex}`);
         params.push(filters.isDrug);
         paramIndex++;
       }
       if (filters.isLipid !== undefined) {
-        whereClause += ` AND c.is_lipid = $${paramIndex}`;
+        filterConditions.push(`c.is_lipid = $${paramIndex}`);
         params.push(filters.isLipid);
         paramIndex++;
       }
       if (filters.isMetabolite !== undefined) {
-        whereClause += ` AND c.is_metabolite = $${paramIndex}`;
+        filterConditions.push(`c.is_metabolite = $${paramIndex}`);
         params.push(filters.isMetabolite);
         paramIndex++;
       }
       if (filters.lipinskiCompliant) {
-        whereClause += ` AND cs.molecular_weight <= 500 AND cs.logp <= 5 AND cs.hbd <= 5 AND cs.hba <= 10`;
+        filterConditions.push(`cs.molecular_weight <= 500 AND cs.logp <= 5 AND cs.hbd <= 5 AND cs.hba <= 10`);
       }
     }
 
+    const additionalFilters = filterConditions.length > 0 ? ` AND ${filterConditions.join(' AND ')}` : '';
+
     const query = `
-      SELECT
-        cs.canonical_id,
-        cs.canonical_smiles,
-        cs.inchikey,
-        cs.formula,
-        cs.molecular_weight,
-        cs.exact_mass,
-        cs.logp,
-        cs.hbd,
-        cs.hba,
-        cs.tpsa,
-        c.is_drug,
-        c.is_lipid,
-        c.is_metabolite,
-        tanimoto_sml(cs.mol, mol_from_smiles($1)) as similarity
-      FROM gold.canonical_structures cs
-      LEFT JOIN gold.compounds c ON cs.canonical_id = c.canonical_id
-      WHERE ${whereClause}
-      ORDER BY tanimoto_sml(cs.mol, mol_from_smiles($1)) DESC
-      LIMIT $${paramIndex}
+      WITH similarity_calc AS (
+        SELECT
+          cs.canonical_id,
+          cs.canonical_smiles,
+          cs.inchikey,
+          cs.formula,
+          cs.molecular_weight,
+          cs.exact_mass,
+          cs.logp,
+          cs.hbd,
+          cs.hba,
+          cs.tpsa,
+          c.is_drug,
+          c.is_lipid,
+          c.is_metabolite,
+          tanimoto_sml(cs.morgan_fp, morganbv_fp(mol_from_smiles($1))) as similarity
+        FROM gold.canonical_structures cs
+        LEFT JOIN gold.compounds c ON cs.canonical_id = c.canonical_id
+        WHERE cs.mol IS NOT NULL${additionalFilters}
+      )
+      SELECT *
+      FROM similarity_calc
+      WHERE similarity > $2
+      ORDER BY similarity DESC
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
 
-    params.push(limit);
+    params.push(limit, offset);
 
     const results = await metaboClient.unsafe(query, params);
 
@@ -376,7 +417,7 @@ export async function searchCompoundsBySimilarity(
   } catch (error) {
     console.error('Similarity search error:', error);
     // Fallback to text search if RDKit operations fail
-    const fallbackResults = await searchCompounds(smiles, limit, filters);
+    const fallbackResults = await searchCompounds(smiles, limit, offset, filters);
     return fallbackResults.map(result => ({ ...result, similarity: 0 }));
   }
 }
@@ -384,12 +425,13 @@ export async function searchCompoundsBySimilarity(
 export async function getCompoundAutocomplete(
   query: string,
   limit: number = 10
-): Promise<Array<{ label: string; value: string; type: string }>> {
+): Promise<Array<{ label: string; value: string; type: string; compoundId: string; canonicalId: string }>> {
   // Search in compound identifiers for autocomplete
   const results = await metaboDB
     .select({
       identifierValue: compoundIdentifiersInGold.identifierValue,
       identifierType: compoundIdentifiersInGold.identifierType,
+      compoundId: compoundIdentifiersInGold.compoundId,
       canonicalId: compoundsInGold.canonicalId,
     })
     .from(compoundIdentifiersInGold)
@@ -402,6 +444,8 @@ export async function getCompoundAutocomplete(
     label: row.identifierValue,
     value: row.identifierValue,
     type: row.identifierType,
+    compoundId: row.compoundId.toString(),
+    canonicalId: row.canonicalId?.toString() || '',
   }));
 }
 
