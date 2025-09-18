@@ -158,7 +158,9 @@ function CompoundCard({ compound }: { compound: CompoundSearchResult }) {
                 smiles={compound.canonicalSmiles}
                 width={180}
                 height={180}
-                className="w-[180px] h-[180px] max-w-full"
+                canonicalId={compound.canonicalId}
+                compoundName={primaryName || `Compound ${compound.canonicalId}`}
+                className="rounded-md"
               />
             </div>
           </div>

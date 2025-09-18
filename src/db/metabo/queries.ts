@@ -5,7 +5,8 @@ import { metaboClient, metaboDB } from ".";
 import {
   canonicalStructuresInGold,
   compoundIdentifiersInGold,
-  compoundsInGold
+  compoundsInGold,
+  compoundPublicationsInGold
 } from "./schema";
 
 export interface CompoundSearchResult {
@@ -550,8 +551,22 @@ export async function getCompoundDetails(canonicalId: string): Promise<CompoundS
   };
 }
 
+export async function getCompoundPublications(canonicalId: string): Promise<string[]> {
+  const publications = await metaboDB
+    .select({
+      pmid: compoundPublicationsInGold.pmid,
+    })
+    .from(compoundPublicationsInGold)
+    .innerJoin(compoundsInGold, eq(compoundPublicationsInGold.compoundId, compoundsInGold.compoundId))
+    .where(eq(compoundsInGold.canonicalId, Number(canonicalId)))
+    .orderBy(compoundPublicationsInGold.pmid);
+
+  return publications.map(({ pmid }) => pmid.toString());
+}
+
 export type CompoundAutocompleteResponse = Awaited<ReturnType<typeof getCompoundAutocomplete>>;
 export type CompoundDetailsResponse = Awaited<ReturnType<typeof getCompoundDetails>>;
 export type CompoundSearchResponse = Awaited<ReturnType<typeof searchCompounds>>;
 export type SubstructureSearchResponse = Awaited<ReturnType<typeof searchCompoundsBySubstructure>>;
 export type SimilaritySearchResponse = Awaited<ReturnType<typeof searchCompoundsBySimilarity>>;
+export type CompoundPublicationsResponse = Awaited<ReturnType<typeof getCompoundPublications>>;
