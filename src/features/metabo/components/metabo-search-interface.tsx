@@ -1,35 +1,60 @@
 "use client"
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MetaboSearchBar } from './metabo-search-bar';
-import { PropertyFilters } from './property-filters';
 import { CompoundResults } from './compound-results';
 import { CompoundSearchResult } from '@/db/metabo/queries';
 import { Card } from '@/components/ui/card';
 
 export type SearchMode = 'text' | 'substructure' | 'similarity';
 
-export interface SearchFilters {
-  molecularWeightMin?: number;
-  molecularWeightMax?: number;
-  logpMin?: number;
-  logpMax?: number;
-  isDrug?: boolean;
-  isLipid?: boolean;
-  isMetabolite?: boolean;
-  lipinskiCompliant?: boolean;
-}
-
 export function MetaboSearchInterface() {
   const [results, setResults] = useState<CompoundSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchMode, setSearchMode] = useState<SearchMode>('text');
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState<SearchFilters>({});
+  const [queries, setQueries] = useState<Record<SearchMode, string>>({
+    text: '',
+    substructure: '',
+    similarity: '',
+  });
+  const [activeSearch, setActiveSearch] = useState<{ mode: SearchMode; query: string }>({
+    mode: 'text',
+    query: '',
+  });
   const [similarityThreshold, setSimilarityThreshold] = useState(0.7);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isBarVisible, setIsBarVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
+  const tickingRef = useRef(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+
+      window.requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+        const lastScrollY = lastScrollYRef.current;
+        const scrollDelta = currentScrollY - lastScrollY;
+
+        if (currentScrollY < 80) {
+          setIsBarVisible(true);
+        } else if (scrollDelta > 6) {
+          setIsBarVisible(false);
+        } else if (scrollDelta < -6) {
+          setIsBarVisible(true);
+        }
+
+        lastScrollYRef.current = currentScrollY;
+        tickingRef.current = false;
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const performSearch = async (searchQuery: string, mode: SearchMode, offset: number = 0, canonicalId?: string): Promise<CompoundSearchResult[]> => {
     const params = new URLSearchParams({
@@ -48,13 +73,6 @@ export function MetaboSearchInterface() {
       params.set('threshold', similarityThreshold.toString());
     }
 
-    // Add filters to params
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.set(key, value.toString());
-      }
-    });
-
     const response = await fetch(`/api/metabo/search?${params}`);
     if (!response.ok) {
       throw new Error('Search failed');
@@ -64,15 +82,17 @@ export function MetaboSearchInterface() {
   };
 
   const handleSearch = async (searchQuery: string, mode: SearchMode, canonicalId?: string) => {
-    if (!searchQuery.trim()) return;
+    const trimmedQuery = searchQuery.trim();
+    if (!trimmedQuery) return;
 
     setIsSearching(true);
-    setQuery(searchQuery);
     setSearchMode(mode);
+    setActiveSearch({ mode, query: trimmedQuery });
+    setQueries(prev => ({ ...prev, [mode]: trimmedQuery }));
     setCurrentPage(0);
 
     try {
-      const data = await performSearch(searchQuery, mode, 0, canonicalId);
+      const data = await performSearch(trimmedQuery, mode, 0, canonicalId);
       setResults(data);
       setHasMore(data.length === 20); // If we got a full page, there might be more
     } catch (error) {
@@ -85,13 +105,13 @@ export function MetaboSearchInterface() {
   };
 
   const loadMore = async () => {
-    if (!query.trim() || isLoadingMore || !hasMore) return;
+    if (!activeSearch.query.trim() || isLoadingMore || !hasMore) return;
 
     setIsLoadingMore(true);
     try {
       const nextPage = currentPage + 1;
       const offset = nextPage * 20;
-      const newResults = await performSearch(query, searchMode, offset);
+      const newResults = await performSearch(activeSearch.query, activeSearch.mode, offset);
 
       setResults(prev => [...prev, ...newResults]);
       setCurrentPage(nextPage);
@@ -103,51 +123,38 @@ export function MetaboSearchInterface() {
     }
   };
 
-  const handleFiltersChange = (newFilters: SearchFilters) => {
-    setFilters(newFilters);
-    // Re-run search if there's an active query
-    if (query.trim()) {
-      handleSearch(query, searchMode);
-    }
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 sm:space-y-10">
       {/* Search Bar */}
-      <Card className="p-6">
-        <MetaboSearchBar
-          onSearch={handleSearch}
-          isSearching={isSearching}
-          searchMode={searchMode}
-          setSearchMode={setSearchMode}
-          similarityThreshold={similarityThreshold}
-          setSimilarityThreshold={setSimilarityThreshold}
-        />
-      </Card>
-
-      {/* Filters and Results Container */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Filters Sidebar */}
-        <div className="lg:col-span-1">
-          <PropertyFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-          />
-        </div>
-
-        {/* Results */}
-        <div className="lg:col-span-3">
-          <CompoundResults
-            results={results}
-            isLoading={isSearching}
-            query={query}
+      <div
+        className={`sticky top-4 z-40 transition-all duration-500 ease-out ${
+          isBarVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+        }`}
+      >
+          <MetaboSearchBar
+            onSearch={handleSearch}
+            isSearching={isSearching}
             searchMode={searchMode}
-            hasMore={hasMore}
-            isLoadingMore={isLoadingMore}
-            onLoadMore={loadMore}
+            setSearchMode={setSearchMode}
+            similarityThreshold={similarityThreshold}
+            setSimilarityThreshold={setSimilarityThreshold}
+            query={queries[searchMode]}
+            onQueryChange={(value) =>
+              setQueries(prev => ({ ...prev, [searchMode]: value }))
+            }
           />
-        </div>
       </div>
+
+      {/* Results */}
+      <CompoundResults
+        results={results}
+        isLoading={isSearching}
+        query={activeSearch.query}
+        searchMode={activeSearch.mode}
+        hasMore={hasMore}
+        isLoadingMore={isLoadingMore}
+        onLoadMore={loadMore}
+      />
     </div>
   );
 }

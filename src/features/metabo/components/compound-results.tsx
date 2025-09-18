@@ -69,9 +69,6 @@ export function CompoundResults({
         <h2 className="text-lg font-semibold">
           {results.length} compound{results.length !== 1 ? 's' : ''} found
         </h2>
-        <div className="text-sm text-muted-foreground">
-          Search mode: <span className="capitalize">{searchMode}</span>
-        </div>
       </div>
 
       <div className="grid gap-4">

@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -19,6 +18,8 @@ interface MetaboSearchBarProps {
   setSearchMode: (mode: SearchMode) => void;
   similarityThreshold: number;
   setSimilarityThreshold: (threshold: number) => void;
+  query: string;
+  onQueryChange: (value: string) => void;
 }
 
 export function MetaboSearchBar({
@@ -28,8 +29,9 @@ export function MetaboSearchBar({
   setSearchMode,
   similarityThreshold,
   setSimilarityThreshold,
+  query,
+  onQueryChange,
 }: MetaboSearchBarProps) {
-  const [query, setQuery] = useState('');
   const [smilesValidationError, setSmilesValidationError] = useState<string | null>(null);
   const [isValidatingSmiles, setIsValidatingSmiles] = useState(false);
 
@@ -46,8 +48,10 @@ export function MetaboSearchBar({
       setSmilesValidationError(null);
     }
 
-    onSearch(query.trim(), searchMode, canonicalId);
-  }, [query, searchMode, onSearch]);
+    const trimmed = query.trim();
+    onQueryChange(trimmed);
+    onSearch(trimmed, searchMode, canonicalId);
+  }, [query, searchMode, onQueryChange, onSearch]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -75,7 +79,7 @@ export function MetaboSearchBar({
             const validation = await validateSmiles(query.trim());
             setSmilesValidationError(validation.isValid ? null : validation.error || 'Invalid SMILES pattern');
           }
-        } catch (error) {
+        } catch {
           setSmilesValidationError('Failed to validate SMILES pattern');
         } finally {
           setIsValidatingSmiles(false);
@@ -91,120 +95,134 @@ export function MetaboSearchBar({
   const getPlaceholderText = () => {
     switch (searchMode) {
       case 'text':
-        return 'Search by compound name, InChI key, or formula...';
+        return 'Compound name, formula, or InChI key';
       case 'substructure':
-        return 'Enter valid SMILES pattern (e.g., c1ccccc1, CCO, CC(=O)O)...';
+        return 'SMILES substructure e.g. c1ccccc1';
       case 'similarity':
-        return 'Enter reference SMILES structure (e.g., CCO, c1ccccc1)...';
+        return 'Reference SMILES e.g. CCO';
       default:
         return 'Search compounds...';
     }
   };
 
-  const getHelpText = () => {
-    switch (searchMode) {
-      case 'text':
-        return 'Search by compound names, identifiers, molecular formulas, or InChI keys';
-      case 'substructure':
-        return 'Find compounds containing the specified substructure pattern. Use valid SMILES notation (e.g., c1ccccc1 for benzene, CCO for ethanol)';
-      case 'similarity':
-        return 'Find compounds similar to the reference structure. Enter a valid SMILES string';
-      default:
-        return '';
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      {/* Search Mode Tabs */}
-      <div>
-        <Label className="text-sm font-medium mb-2 block">Search Mode</Label>
-        <Tabs value={searchMode} onValueChange={(value) => setSearchMode(value as SearchMode)}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="text">Text Search</TabsTrigger>
-            <TabsTrigger value="substructure">Substructure</TabsTrigger>
-            <TabsTrigger value="similarity">Similarity</TabsTrigger>
+return (
+  <div className="flex flex-col gap-3">
+    <div className="rounded-lg border bg-background shadow-sm">
+      <Tabs
+        value={searchMode}
+        onValueChange={(value) => setSearchMode(value as SearchMode)}
+        className="w-full"
+      >
+        {/* One bar, consistent height, automatic dividers */}
+        <div className="flex w-full flex-col items-stretch sm:flex-row divide-y divide-border/30 sm:divide-y-0 sm:divide-x">
+          {/* Tabs */}
+          <TabsList className="h-12 shrink-0 p-0 bg-muted/30 flex items-stretch rounded-tl-lg rounded-tr-lg sm:rounded-tl-lg sm:rounded-tr-none sm:rounded-bl-lg overflow-hidden">
+            <TabsTrigger
+              value="text"
+              className="h-full rounded-none px-4 text-[0.7rem] font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground"
+            >
+              Text
+            </TabsTrigger>
+            <TabsTrigger
+              value="substructure"
+              className="h-full rounded-none px-4 text-[0.7rem] font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground"
+            >
+              Substructure
+            </TabsTrigger>
+            <TabsTrigger
+              value="similarity"
+              className="h-full rounded-none px-4 text-[0.7rem] font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground"
+            >
+              Similarity
+            </TabsTrigger>
           </TabsList>
-        </Tabs>
-        <p className="text-sm text-muted-foreground mt-1">{getHelpText()}</p>
-      </div>
 
-      {/* Search Input */}
-      <div className="space-y-3">
-        <div className="flex gap-2">
-          {searchMode === 'text' ? (
-            <CompoundAutocomplete
-              value={query}
-              onChange={setQuery}
-              onSelect={(value, canonicalId) => {
-                setQuery(value);
-                onSearch(value, searchMode, canonicalId);
-              }}
-              placeholder={getPlaceholderText()}
-              className="flex-1"
-            />
-          ) : (
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={getPlaceholderText()}
-              className="flex-1"
-            />
-          )}
+          {/* Input area */}
+          <div className="relative flex h-12 flex-1 items-center gap-3 bg-background px-4">
+            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <div className="min-w-0 flex-1">
+              {searchMode === 'text' ? (
+                <CompoundAutocomplete
+                  value={query}
+                  onChange={onQueryChange}
+                  onSelect={(value, canonicalId) => {
+                    const sanitizedValue = value.trim();
+                    onQueryChange(sanitizedValue);
+                    onSearch(sanitizedValue, searchMode, canonicalId);
+                  }}
+                  placeholder={getPlaceholderText()}
+                  onKeyDown={handleKeyDown}
+                  className="h-10 bg-transparent px-0 text-sm text-foreground placeholder:text-muted-foreground/60 border-0 focus-visible:ring-0"
+                  overlayClassName="left-0 right-0 top-[calc(100%+0.35rem)] z-50"
+                />
+              ) : (
+                <Input
+                  value={query}
+                  onChange={(e) => onQueryChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={getPlaceholderText()}
+                  className="h-10 border-0 bg-transparent px-0 text-sm placeholder:text-muted-foreground/60 focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Search button */}
           <Button
             onClick={() => handleSearch()}
             disabled={isSearching || !query.trim() || smilesValidationError !== null}
-            className="px-6"
+            className="rounded-r-lg h-12 shrink-0 px-6 text-xs font-semibold uppercase tracking-[0.14em] shadow-none hover:bg-primary/90 disabled:opacity-50"
           >
             {isSearching ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Searching...
+              </>
             ) : (
-              <Search className="h-4 w-4" />
+              'Search'
             )}
-            {isSearching ? 'Searching...' : 'Search'}
           </Button>
         </div>
-
-        {/* SMILES Validation Error */}
-        {smilesValidationError && (searchMode === 'substructure' || searchMode === 'similarity') && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              {smilesValidationError}
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* SMILES Validation Loading */}
-        {isValidatingSmiles && (searchMode === 'substructure' || searchMode === 'similarity') && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-3 w-3 animate-spin" />
-            Validating SMILES pattern...
-          </div>
-        )}
-
-        {/* Similarity Threshold Slider */}
-        {searchMode === 'similarity' && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              Similarity Threshold: {similarityThreshold.toFixed(2)}
-            </Label>
-            <Slider
-              value={[similarityThreshold]}
-              onValueChange={(values) => setSimilarityThreshold(values[0])}
-              max={1.0}
-              min={0.3}
-              step={0.05}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>0.3 (loose)</span>
-              <span>1.0 (exact)</span>
-            </div>
-          </div>
-        )}
-      </div>
+      </Tabs>
     </div>
-  );
-}
+
+    {smilesValidationError && (searchMode === 'substructure' || searchMode === 'similarity') && (
+      <Alert variant="destructive" className="items-center rounded-md border-destructive/30 bg-destructive/10">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription className="text-sm text-destructive/90">
+          {smilesValidationError}
+        </AlertDescription>
+      </Alert>
+    )}
+
+    {isValidatingSmiles && (searchMode === 'substructure' || searchMode === 'similarity') && (
+      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+        <Loader2 className="h-3 w-3 animate-spin" />
+        Validating SMILES pattern...
+      </div>
+    )}
+
+    {searchMode === 'similarity' && (
+      <div className="rounded-md border border-border/70 bg-background px-3 py-3">
+        <div className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-muted-foreground/80">
+          Similarity threshold
+        </div>
+        <div className="mt-3">
+          <Slider
+            value={[similarityThreshold]}
+            onValueChange={(values) => setSimilarityThreshold(values[0])}
+            max={1.0}
+            min={0.3}
+            step={0.05}
+            className="w-full"
+            aria-label="Similarity threshold"
+          />
+        </div>
+        <div className="mt-2 flex justify-between text-[0.7rem] text-muted-foreground/70">
+          <span>0.3 (loose)</span>
+          <span>1.0 (exact)</span>
+        </div>
+      </div>
+    )}
+  </div>
+);}
