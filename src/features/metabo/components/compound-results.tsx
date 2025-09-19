@@ -559,23 +559,6 @@ function CompoundCard({
           {/* 3) Names & IDs */}
           <Panel title="Names & IDs" id={`ids-${compound.canonicalId}`}>
             <div className="space-y-0">
-              {synonyms.length > 0 && (
-                <ItemRow label="Synonyms">
-                  <div className="flex flex-wrap gap-2">
-                    {synonyms.map((synonym, i) => (
-                      <Badge
-                        key={`${synonym.value}-${i}`}
-                        variant="outline"
-                        className="text-xs whitespace-nowrap bg-background"
-                        title={synonym.type}
-                      >
-                        {synonym.value}
-                      </Badge>
-                    ))}
-                  </div>
-                </ItemRow>
-              )}
-
               <ItemRow label="Database IDs">
                 {dbIds.length > 0 ? (
                   <div className="space-y-2">
@@ -592,6 +575,23 @@ function CompoundCard({
                         </div>
                       </div>
                     ))}
+                                  {synonyms.length > 0 && (
+                <ItemRow label="Synonyms">
+                  <div className="flex flex-wrap gap-2">
+                    {synonyms.map((synonym, i) => (
+                      <Badge
+                        key={`${synonym.value}-${i}`}
+                        variant="outline"
+                        className="text-xs whitespace-nowrap bg-background"
+                        title={synonym.type}
+                      >
+                        {synonym.value}
+                      </Badge>
+                    ))}
+                  </div>
+                </ItemRow>
+              )}
+
                   </div>
                 ) : (
                   <span className="italic text-muted-foreground">No database IDs available</span>

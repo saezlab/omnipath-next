@@ -18,6 +18,8 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -33,7 +35,8 @@ import {
   Trash2,
   Home,
   Sun,
-  Moon
+  Moon,
+  FlaskConical
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -49,21 +52,37 @@ import { ComplexesFilterSidebar } from "@/features/complexes-browser/components/
 import { EnzSubFilterSidebar } from "@/features/enzsub-browser/components/filter-sidebar"
 import { FeedbackDialog } from "@/components/ui/feedback-dialog"
 
-const navigationItems = [
+const homeNavigationItem = {
+  title: "Home",
+  url: "/",
+  icon: Home,
+}
+
+const navigationSections = [
   {
-    title: "Home",
-    url: "/",
-    icon: Home,
+    title: "Omnipath",
+    items: [
+      {
+        title: "Search",
+        url: "/search",
+        icon: Search,
+      },
+      {
+        title: "Chat",
+        url: "/chat",
+        icon: MessageSquare,
+      },
+    ],
   },
   {
-    title: "Search",
-    url: "/search",
-    icon: Search,
-  },
-  {
-    title: "Chat",
-    url: "/chat", 
-    icon: MessageSquare,
+    title: "Metabo",
+    items: [
+      {
+        title: "Search",
+        url: "/metabo",
+        icon: FlaskConical,
+      },
+    ],
   },
 ]
 
@@ -228,20 +247,38 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="px-2">
           <SidebarMenu>
-            {navigationItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild isActive={pathname === item.url}>
-                  <Link href={item.url}>
-                    <item.icon className="h-5 w-5" />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={pathname === homeNavigationItem.url}>
+                <Link href={homeNavigationItem.url}>
+                  <homeNavigationItem.icon className="h-5 w-5" />
+                  <span>{homeNavigationItem.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
+
+        {navigationSections.map((section) => (
+          <SidebarGroup key={section.title} className="px-2">
+            <SidebarGroupLabel>{section.title}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {section.items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={pathname === item.url}>
+                      <Link href={item.url}>
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
 
 
         {pathname === '/chat' && (
