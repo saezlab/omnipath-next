@@ -134,18 +134,18 @@ export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 min-w-0">
       {/* Search Bar and Protein Card Row */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full overflow-hidden">
         {/* Entity Card - only for single queries and only for proteins/genes */}
         {currentQuery && parseQueries(currentQuery).length === 1 && (() => {
           const singleQuery = parseQueries(currentQuery)[0]
           const isEntityTypePrefixed = singleQuery.includes(':')
           const isProteinOrGene = !isEntityTypePrefixed
-          
+
           return isProteinOrGene && (
             <div className="flex-shrink-0 flex sm:justify-start justify-center">
-              <ProteinSummaryCard 
+              <ProteinSummaryCard
                 geneSymbol={singleQuery}
                 identifierResults={identifierResults[singleQuery] || []}
               />
@@ -154,7 +154,7 @@ export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "
         })()}
 
         {/* Search Bar */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="relative group">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary z-10" />
             <AutocompleteInput
@@ -206,34 +206,37 @@ export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "
           {currentQuery && parseQueries(currentQuery).length > 1 && (() => {
             const queries = parseQueries(currentQuery)
             const proteinQueries = queries.filter(term => !term.includes(':')) // Only show cards for proteins/genes
-            
+
             return proteinQueries.length > 0 && (
-              <div className="flex gap-3 mt-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-                {queries.map((term, index) => {
-                  const isProteinOrGene = !term.includes(':')
-                  
-                  return isProteinOrGene ? (
-                    <ProteinSummaryCard
-                      key={index}
-                      geneSymbol={term}
-                      identifierResults={identifierResults[term] || []}
-                      onRemove={() => {
-                        const remaining = queries.filter((_, i) => i !== index)
-                        const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
-                        setQuery(newQuery)
-                        
-                        const params = new URLSearchParams(searchParams.toString())
-                        if (remaining.length > 0) {
-                          params.set('q', remaining.join(', ') + ', ')
-                        } else {
-                          params.delete('q')
-                        }
-                        params.set('tab', activeTab)
-                        router.push(`/search?${params.toString()}`)
-                      }}
-                    />
-                  ) : null
-                })}
+              <div className="mt-3 w-full overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+                <div className="flex gap-3">
+                  {queries.map((term, index) => {
+                    const isProteinOrGene = !term.includes(':')
+
+                    return isProteinOrGene ? (
+                      <div key={index} className="shrink-0">
+                        <ProteinSummaryCard
+                          geneSymbol={term}
+                          identifierResults={identifierResults[term] || []}
+                          onRemove={() => {
+                            const remaining = queries.filter((_, i) => i !== index)
+                            const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
+                            setQuery(newQuery)
+
+                            const params = new URLSearchParams(searchParams.toString())
+                            if (remaining.length > 0) {
+                              params.set('q', remaining.join(', ') + ', ')
+                            } else {
+                              params.delete('q')
+                            }
+                            params.set('tab', activeTab)
+                            router.push(`/search?${params.toString()}`)
+                          }}
+                        />
+                      </div>
+                    ) : null
+                  })}
+                </div>
               </div>
             )
           })()}
