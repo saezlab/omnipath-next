@@ -45,6 +45,7 @@ interface IntercellFilterProps {
     sources: Record<string, number>
     databases: Record<string, number>
     scopes: Record<string, number>
+    parents: Record<string, number>
     transmitter: { true: number; false: number }
     receiver: { true: number; false: number }
     secreted: { true: number; false: number }
