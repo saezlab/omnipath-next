@@ -55,9 +55,15 @@ export function ComplexesTable({ entries, onSelectEntry }: ComplexesTableProps) 
       accessorKey: 'name',
       header: 'Complex Name',
       cell: ({ row }) => (
-        <span className="font-medium">
-          {row.name || <span className="text-muted-foreground">Unnamed complex</span>}
-        </span>
+        <div onClick={(e) => e.stopPropagation()}>
+          <EntityBadge
+            geneSymbol={row.name || row.componentsGenesymbols || 'Unknown'}
+            uniprotId={row.components || ''}
+            entityType="complex"
+            maxChars={35}
+            maxWidth="max-w-[200px]"
+          />
+        </div>
       ),
     },
     {
