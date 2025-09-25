@@ -5,6 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { GetProteinInformationResponse, getProteinInformation } from "@/features/annotations-browser/api/queries"
 import { SearchIdentifiersResponse } from "@/db/queries"
+import { getComplexesByComponentSignature, GetComplexesByComponentSignatureResponse } from "@/features/complexes-browser/api/queries"
+import { ComplexDetails } from "@/features/complexes-browser/components/complex-details"
 import {
   BookOpen,
   Dna,
@@ -19,7 +21,10 @@ import {
   Network,
   Tag,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Zap,
+  Pill,
+  Users
 } from "lucide-react"
 import { useState } from "react"
 
@@ -28,6 +33,8 @@ interface ProteinSummaryCardProps {
   identifierResults: SearchIdentifiersResponse
   onRemove?: () => void
   onClick?: () => void
+  entityType?: string
+  identifier?: string
 }
 
 const formatUniprotText = (text: string) => {
@@ -91,20 +98,69 @@ const formatUniprotText = (text: string) => {
   }).filter(item => item.text.length > 0)
 }
 
-export function ProteinSummaryCard({ 
-  geneSymbol, 
+export function ProteinSummaryCard({
+  geneSymbol,
   identifierResults,
-  onRemove, 
-  onClick 
+  onRemove,
+  onClick,
+  entityType,
+  identifier
 }: ProteinSummaryCardProps) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [proteinData, setProteinData] = useState<GetProteinInformationResponse | null>(null)
+  const [complexData, setComplexData] = useState<GetComplexesByComponentSignatureResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Determine entity properties
+  const isProtein = !entityType || entityType.toLowerCase().includes('protein') || entityType.toLowerCase().includes('gene')
+  const isMiRNA = entityType?.toLowerCase() === 'mirna'
+  const isSmallMolecule = entityType?.toLowerCase() === 'small_molecule'
+  const isComplex = entityType?.toLowerCase() === 'complex'
+
+  const getEntityConfig = () => {
+    if (isMiRNA) {
+      return {
+        icon: Zap,
+        label: 'miRNA',
+        colorClass: 'bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800/50',
+        externalUrl: identifier ? `https://mirbase.org/mature/${identifier}` : null,
+        tooltipText: 'View in miRBase'
+      }
+    }
+    if (isSmallMolecule) {
+      return {
+        icon: Pill,
+        label: 'Small Molecule',
+        colorClass: 'bg-green-100 hover:bg-green-200 text-green-800 border-green-300 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:text-green-300 dark:border-green-800/50',
+        externalUrl: identifier ? `https://pubchem.ncbi.nlm.nih.gov/compound/${identifier}` : null,
+        tooltipText: 'View in PubChem'
+      }
+    }
+    if (isComplex) {
+      return {
+        icon: Users,
+        label: 'Complex',
+        colorClass: 'bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/50',
+        externalUrl: null,
+        tooltipText: 'Show complex details'
+      }
+    }
+    // Default protein/gene
+    return {
+      icon: Dna,
+      label: 'Gene',
+      colorClass: 'bg-primary hover:bg-primary/90 text-primary-foreground',
+      externalUrl: null,
+      tooltipText: 'Show more info'
+    }
+  }
+
+  const entityConfig = getEntityConfig()
 
   // Fetch protein data when expanding from minimal mode or when not in minimal mode
   const fetchProteinData = async () => {
     if (!identifierResults || identifierResults.length === 0) return
-    
+
     setIsLoading(true)
     try {
       const proteinResponse = await getProteinInformation(identifierResults)
@@ -117,13 +173,35 @@ export function ProteinSummaryCard({
     }
   }
 
+  // Fetch complex data for complex entities
+  const fetchComplexData = async () => {
+    if (!identifier || !isComplex) return
+
+    setIsLoading(true)
+    try {
+      // Remove "COMPLEX:" prefix if present to get the actual component signature
+      const componentSignature = identifier.startsWith('COMPLEX:') ? identifier.substring(8) : identifier
+      const complexResponse = await getComplexesByComponentSignature(componentSignature)
+      setComplexData(complexResponse)
+    } catch (error) {
+      console.error("Error fetching complex information:", error)
+      setComplexData(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Note: Data is now fetched only when dialog opens, not automatically
 
   // Handle dialog open - fetch data when dialog opens if not already loaded
   const handleDialogOpen = (open: boolean) => {
     setDialogOpen(open)
-    if (open && !proteinData && !isLoading) {
-      fetchProteinData()
+    if (open && !isLoading) {
+      if (isComplex && !complexData) {
+        fetchComplexData()
+      } else if (isProtein && !proteinData) {
+        fetchProteinData()
+      }
     }
   }
 
@@ -258,16 +336,17 @@ export function ProteinSummaryCard({
   )
 
   // Check if identifier couldn't be resolved
-  const isUnresolved = !identifierResults || identifierResults.length === 0
+  // For non-protein entities, we don't expect identifierResults, so they're not "unresolved"
+  const isUnresolved = isProtein && (!identifierResults || identifierResults.length === 0)
 
   // Always render minimal card, regardless of fetchOnClick
   return (
     <Dialog open={dialogOpen} onOpenChange={handleDialogOpen}>
       {/* Integrated Badge with Icons */}
       <Badge className={`h-8 text-xs px-2 py-0.5 h-auto font-semibold flex items-center gap-1 ${
-        isUnresolved 
-          ? "bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/50" 
-          : "bg-primary hover:bg-primary/90 text-primary-foreground"
+        isUnresolved
+          ? "bg-orange-100 hover:bg-orange-200 text-orange-800 border-orange-300 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800/50"
+          : entityConfig.colorClass
       }`}>
         <TooltipProvider>
           <Tooltip>
@@ -279,14 +358,30 @@ export function ProteinSummaryCard({
                     {geneSymbol}
                   </span>
                 </div>
+              ) : entityConfig.externalUrl ? (
+                // For miRNA and small molecules, show external link button
+                <button
+                  className="flex items-center gap-1 hover:opacity-80 rounded px-1 py-0.5 -mx-1 -my-0.5"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    window.open(entityConfig.externalUrl!, '_blank')
+                    onClick?.()
+                  }}
+                >
+                  <entityConfig.icon className="h-4 w-4" />
+                  <ExternalLink className="h-4 w-4" />
+                  {geneSymbol}
+                </button>
               ) : (
+                // For proteins, show dialog trigger
                 <DialogTrigger asChild>
                   <button
                     className="flex items-center gap-1 hover:bg-primary/80 rounded px-1 py-0.5 -mx-1 -my-0.5"
                     onClick={() => onClick?.()}
                   >
                     <Info className="h-4 w-4" />
-                    <Dna className="h-4 w-4" />
+                    <entityConfig.icon className="h-4 w-4" />
                     {geneSymbol}
                   </button>
                 </DialogTrigger>
@@ -296,7 +391,7 @@ export function ProteinSummaryCard({
               {isUnresolved ? (
                 <p>Identifier &quot;{geneSymbol}&quot; could not be resolved</p>
               ) : (
-                <p>Show more info</p>
+                <p>{entityConfig.tooltipText}</p>
               )}
             </TooltipContent>
           </Tooltip>
@@ -323,12 +418,13 @@ export function ProteinSummaryCard({
         )}
       </Badge>
 
-      {/* Dialog Content */}
-      <DialogContent className="max-w-[95vw] sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-[85vw] max-h-[90vh] overflow-y-auto">
-        {isLoading ? (
+      {/* Dialog Content - show for proteins and complexes */}
+      {(isProtein || isComplex) && (
+        <DialogContent className="max-w-[95vw] sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-[85vw] max-h-[90vh] overflow-y-auto">
+          {isLoading ? (
           <>
             <DialogHeader>
-              <DialogTitle>Loading protein information...</DialogTitle>
+              <DialogTitle>Loading {isComplex ? 'complex' : 'protein'} information...</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 animate-pulse">
               <div className="flex items-center gap-2">
@@ -345,6 +441,20 @@ export function ProteinSummaryCard({
                 <div className="h-24 bg-muted-foreground/20 rounded"></div>
               </div>
             </div>
+          </>
+        ) : isComplex ? (
+          // Complex entity content
+          <>
+            <DialogHeader>
+              <DialogTitle>Complex Information</DialogTitle>
+            </DialogHeader>
+            {!complexData || complexData.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No complex data available</p>
+              </div>
+            ) : (
+              <ComplexDetails selectedEntry={complexData[0]} />
+            )}
           </>
         ) : !proteinData ? (
           <>
@@ -659,7 +769,8 @@ export function ProteinSummaryCard({
             </div>
           </>
         )}
-      </DialogContent>
+        </DialogContent>
+      )}
     </Dialog>
   )
 }

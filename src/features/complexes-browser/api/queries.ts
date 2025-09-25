@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { complexes } from "@/db/drizzle/schema";
 import { SearchIdentifiersResponse } from "@/db/queries";
 import { ComplexEntry } from "../types";
+import { eq } from "drizzle-orm";
 
 // In-memory cache for fast access within the same process
 type CachedComplex = {
@@ -92,4 +93,30 @@ export async function getComplexesData(identifierResults: SearchIdentifiersRespo
 
 export type GetComplexesDataResponse = Awaited<
   ReturnType<typeof getComplexesData>
+>;
+
+export async function getComplexesByComponentSignature(componentSignature: string) {
+  if (!componentSignature) {
+    return [] as ComplexEntry[];
+  }
+
+  const results = await db
+    .select({
+      id: complexes.id,
+      name: complexes.name,
+      components: complexes.components,
+      componentsGenesymbols: complexes.componentsGenesymbols,
+      stoichiometry: complexes.stoichiometry,
+      sources: complexes.sources,
+      references: complexes.references,
+      identifiers: complexes.identifiers,
+    })
+    .from(complexes)
+    .where(eq(complexes.components, componentSignature));
+
+  return results as ComplexEntry[];
+}
+
+export type GetComplexesByComponentSignatureResponse = Awaited<
+  ReturnType<typeof getComplexesByComponentSignature>
 >;

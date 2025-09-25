@@ -11,8 +11,8 @@ interface EntityBadgeProps {
   maxWidth?: string;    // Maximum width (e.g., "w-32", "max-w-xs")
 }
 
-export const EntityBadge: React.FC<EntityBadgeProps> = ({ 
-  geneSymbol, 
+export const EntityBadge: React.FC<EntityBadgeProps> = ({
+  geneSymbol,
   uniprotId,
   entityType,
   maxChars = 12, // Default to 12 characters
@@ -32,15 +32,22 @@ export const EntityBadge: React.FC<EntityBadgeProps> = ({
     const currentSpecies = searchParams.get('species') || '9606';
     // Determine how to add the entity based on entity type
     const isProteinOrGene = !entityType || entityType.toLowerCase().includes('protein') || entityType.toLowerCase().includes('gene');
-    
+    const isComplex = entityType?.toLowerCase() === 'complex';
+
     let entityToAdd: string;
     if (isProteinOrGene) {
       // For proteins/genes, use normal search (no prefix)
       entityToAdd = name || identifier;
+    } else if (isComplex && identifier) {
+      // For complexes, use complex:component_signature format
+      // Remove "COMPLEX:" prefix if present to avoid duplication
+      const componentSignature = identifier.startsWith('COMPLEX:') ? identifier.substring(8) : identifier;
+      entityToAdd = `complex:${componentSignature}`;
     } else {
       // For other entity types, use entity type prefix
       const prefix = entityType?.toLowerCase() || 'unknown';
-      const value = name || identifier;
+      // For miRNA and small molecules, prioritize identifier over name to get the proper ID
+      const value = (prefix === 'mirna' || prefix === 'small_molecule') ? (identifier || name) : (name || identifier);
       entityToAdd = `${prefix}:${value}`;
     }
     

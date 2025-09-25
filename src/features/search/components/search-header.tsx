@@ -19,7 +19,6 @@ function parseQueries(queryString: string): string[] {
     .filter(q => q.length > 0)
 }
 
-
 interface SearchHeaderProps {
   identifierResults: Record<string, SearchIdentifiersResponse>
   activeTab: string
@@ -137,20 +136,50 @@ export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "
     <div className="flex flex-col gap-4 min-w-0">
       {/* Search Bar and Protein Card Row */}
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-3 w-full overflow-hidden">
-        {/* Entity Card - only for single queries and only for proteins/genes */}
+        {/* Entity Card - for single queries */}
         {currentQuery && parseQueries(currentQuery).length === 1 && (() => {
           const singleQuery = parseQueries(currentQuery)[0]
           const isEntityTypePrefixed = singleQuery.includes(':')
-          const isProteinOrGene = !isEntityTypePrefixed
-          
-          return isProteinOrGene && (
-            <div className="flex-shrink-0 flex sm:justify-start justify-center">
-              <ProteinSummaryCard 
-                geneSymbol={singleQuery}
-                identifierResults={identifierResults[singleQuery] || []}
-              />
-            </div>
-          )
+
+          if (!isEntityTypePrefixed) {
+            // Protein/gene query
+            return (
+              <div className="flex-shrink-0 flex sm:justify-start justify-center">
+                <ProteinSummaryCard
+                  geneSymbol={singleQuery}
+                  identifierResults={identifierResults[singleQuery] || []}
+                />
+              </div>
+            )
+          }
+
+          // Handle entity type prefixed queries (e.g., mirna:identifier, small_molecule:identifier, complex:component_signature)
+          const [entityType, identifier] = singleQuery.split(':')
+          if (entityType.toLowerCase() === 'mirna' || entityType.toLowerCase() === 'small_molecule') {
+            return (
+              <div className="flex-shrink-0 flex sm:justify-start justify-center">
+                <ProteinSummaryCard
+                  geneSymbol={identifier}
+                  identifierResults={[]}
+                  entityType={entityType}
+                  identifier={identifier}
+                />
+              </div>
+            )
+          } else if (entityType.toLowerCase() === 'complex') {
+            return (
+              <div className="flex-shrink-0 flex sm:justify-start justify-center">
+                <ProteinSummaryCard
+                  geneSymbol={identifier.length > 20 ? `${identifier.substring(0, 20)}...` : identifier}
+                  identifierResults={[]}
+                  entityType={entityType}
+                  identifier={identifier}
+                />
+              </div>
+            )
+          }
+
+          return null
         })()}
 
         {/* Search Bar */}
@@ -202,39 +231,80 @@ export function SearchHeader({ identifierResults, activeTab, selectedSpecies = "
             </Button>
           </div>
           
-          {/* Multi-query protein cards */}
+          {/* Multi-query cards */}
           {currentQuery && parseQueries(currentQuery).length > 1 && (() => {
             const queries = parseQueries(currentQuery)
-            const proteinQueries = queries.filter(term => !term.includes(':')) // Only show cards for proteins/genes
-            
-            return proteinQueries.length > 0 && (
+            const hasDisplayableEntities = queries.some(term => {
+              if (!term.includes(':')) return true // protein/gene
+              const [entityType] = term.split(':')
+              return entityType.toLowerCase() === 'mirna' || entityType.toLowerCase() === 'small_molecule' || entityType.toLowerCase() === 'complex'
+            })
+
+            return hasDisplayableEntities && (
               <div className="mt-3 w-full overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                 <div className="flex gap-3">
                   {queries.map((term, index) => {
+                    const removeHandler = () => {
+                      const remaining = queries.filter((_, i) => i !== index)
+                      const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
+                      setQuery(newQuery)
+
+                      const params = new URLSearchParams(searchParams.toString())
+                      if (remaining.length > 0) {
+                        params.set('q', remaining.join(', ') + ', ')
+                      } else {
+                        params.delete('q')
+                      }
+                      params.set('tab', activeTab)
+                      router.push(`/search?${params.toString()}`)
+                    }
+
                     const isProteinOrGene = !term.includes(':')
 
-                    return isProteinOrGene ? (
-                      <div key={index} className="shrink-0">
-                        <ProteinSummaryCard
-                          geneSymbol={term}
-                          identifierResults={identifierResults[term] || []}
-                          onRemove={() => {
-                            const remaining = queries.filter((_, i) => i !== index)
-                            const newQuery = remaining.length > 0 ? remaining.join(', ') + ', ' : ''
-                            setQuery(newQuery)
+                    if (isProteinOrGene) {
+                      return (
+                        <div key={index} className="shrink-0">
+                          <ProteinSummaryCard
+                            geneSymbol={term}
+                            identifierResults={identifierResults[term] || []}
+                            onRemove={removeHandler}
+                          />
+                        </div>
+                      )
+                    }
 
-                            const params = new URLSearchParams(searchParams.toString())
-                            if (remaining.length > 0) {
-                              params.set('q', remaining.join(', ') + ', ')
-                            } else {
-                              params.delete('q')
-                            }
-                            params.set('tab', activeTab)
-                            router.push(`/search?${params.toString()}`)
-                          }}
-                        />
-                      </div>
-                    ) : null
+                    // Handle entity type prefixed queries
+                    if (term.includes(':')) {
+                      const [entityType, identifier] = term.split(':')
+
+                      if (entityType.toLowerCase() === 'mirna' || entityType.toLowerCase() === 'small_molecule') {
+                        return (
+                          <div key={index} className="shrink-0">
+                            <ProteinSummaryCard
+                              geneSymbol={identifier}
+                              identifierResults={[]}
+                              entityType={entityType}
+                              identifier={identifier}
+                              onRemove={removeHandler}
+                            />
+                          </div>
+                        )
+                      } else if (entityType.toLowerCase() === 'complex') {
+                        return (
+                          <div key={index} className="shrink-0">
+                            <ProteinSummaryCard
+                              geneSymbol={identifier.length > 20 ? `${identifier.substring(0, 20)}...` : identifier}
+                              identifierResults={[]}
+                              entityType={entityType}
+                              identifier={identifier}
+                              onRemove={removeHandler}
+                            />
+                          </div>
+                        )
+                      }
+                    }
+
+                    return null
                   })}
                 </div>
               </div>
