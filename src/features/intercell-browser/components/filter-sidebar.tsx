@@ -12,6 +12,7 @@ interface FilterCounts {
   sources: Record<string, number>
   databases: Record<string, number>
   scopes: Record<string, number>
+  parents: Record<string, number>
   transmitter: { true: number; false: number }
   receiver: { true: number; false: number }
   secreted: { true: number; false: number }
@@ -99,6 +100,36 @@ export function IntercellFilterSidebar({
                       checked={filters.aspects.includes(item.value)}
                       onCheckedChange={() => onFilterChange('aspects', item.value)}
                       className={filters.aspects.includes(item.value) ? "border-sidebar-primary" : ""}
+                    />
+                    {item.value}
+                  </Label>
+                  <SidebarMenuBadge className="bg-muted text-muted-foreground font-medium">{item.count}</SidebarMenuBadge>
+                </div>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </SidebarMenuItem>
+
+        {/* Parent Filter */}
+        <SidebarMenuItem>
+          <SidebarMenuButton className="pointer-events-none" tooltip="Parent">
+            <span>Parent</span>
+          </SidebarMenuButton>
+          <SidebarMenuSub className="space-y-1">
+            {getFilterItemsWithCounts('parents').map((item) => (
+              <SidebarMenuSubItem key={item.value}>
+                <div className="flex items-center justify-between w-full">
+                  <Label
+                    htmlFor={`parent-${item.value}`}
+                    className={`flex items-center gap-2 text-sm font-normal cursor-pointer ${
+                      filters.parents.includes(item.value) ? "text-sidebar-primary font-medium" : ""
+                    }`}
+                  >
+                    <Checkbox
+                      id={`parent-${item.value}`}
+                      checked={filters.parents.includes(item.value)}
+                      onCheckedChange={() => onFilterChange('parents', item.value)}
+                      className={filters.parents.includes(item.value) ? "border-sidebar-primary" : ""}
                     />
                     {item.value}
                   </Label>

@@ -19,6 +19,7 @@ export function useIntercellBrowser(data?: GetIntercellDataResponse) {
     const sources = searchParams.get('sources')?.split(',').filter(Boolean) || []
     const databases = searchParams.get('databases')?.split(',').filter(Boolean) || []
     const scopes = searchParams.get('scopes')?.split(',').filter(Boolean) || []
+    const parents = searchParams.get('parents')?.split(',').filter(Boolean) || []
     
     // Parse boolean params - convert string values to boolean or null
     const parseBooleanParam = (param: string | null): boolean | null => {
@@ -32,6 +33,7 @@ export function useIntercellBrowser(data?: GetIntercellDataResponse) {
       sources,
       databases,
       scopes,
+      parents,
       transmitter: parseBooleanParam(searchParams.get('transmitter')),
       receiver: parseBooleanParam(searchParams.get('receiver')),
       secreted: parseBooleanParam(searchParams.get('secreted')),
@@ -47,12 +49,13 @@ export function useIntercellBrowser(data?: GetIntercellDataResponse) {
   )
   
   // Calculate counts
-  const filterCounts = useMemo(() => 
+  const filterCounts = useMemo(() =>
     data ? IntercellFilterService.calculateCounts(data.intercellEntries) : {
       aspects: {},
       sources: {},
       databases: {},
       scopes: {},
+      parents: {},
       transmitter: { true: 0, false: 0 },
       receiver: { true: 0, false: 0 },
       secreted: { true: 0, false: 0 },
@@ -66,7 +69,7 @@ export function useIntercellBrowser(data?: GetIntercellDataResponse) {
   const updateFilter = useCallback((key: keyof IntercellFilters, value: string | boolean | null) => {
     const params = new URLSearchParams(searchParams.toString())
     
-    if (key === 'aspects' || key === 'sources' || key === 'databases' || key === 'scopes') {
+    if (key === 'aspects' || key === 'sources' || key === 'databases' || key === 'scopes' || key === 'parents') {
       // Handle array filters
       const currentValues = filters[key] as string[]
       if (typeof value === 'string') {
@@ -99,6 +102,7 @@ export function useIntercellBrowser(data?: GetIntercellDataResponse) {
     params.delete('sources')
     params.delete('databases')
     params.delete('scopes')
+    params.delete('parents')
     params.delete('transmitter')
     params.delete('receiver')
     params.delete('secreted')

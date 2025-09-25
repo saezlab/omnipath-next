@@ -23,6 +23,7 @@ export interface IntercellFilters {
   sources: string[]
   databases: string[]
   scopes: string[]
+  parents: string[]
   transmitter: boolean | null
   receiver: boolean | null
   secreted: boolean | null

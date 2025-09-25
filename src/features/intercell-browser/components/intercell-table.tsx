@@ -24,11 +24,20 @@ export function IntercellTable({ entries }: IntercellTableProps) {
       accessorKey: 'protein',
       header: 'Protein',
       cell: ({ row }) => (
-        <EntityBadge 
-          geneSymbol={row.genesymbol || ""} 
-          uniprotId={row.uniprot || ""} 
+        <EntityBadge
+          geneSymbol={row.genesymbol || ""}
+          uniprotId={row.uniprot || ""}
         />
       ),
+    },
+    {
+      accessorKey: 'parent',
+      header: 'Parent',
+      cell: ({ row }) => row.parent ? (
+        <Badge variant="outline" className="bg-slate-50 text-slate-700">
+          {row.parent}
+        </Badge>
+      ) : "-",
     },
     {
       accessorKey: 'category',
@@ -40,19 +49,12 @@ export function IntercellTable({ entries }: IntercellTableProps) {
       ) : "-",
     },
     {
-      accessorKey: 'database',
-      header: 'Database',
-      cell: ({ row }) => (
-        <Badge variant="outline">{row.database || "-"}</Badge>
-      ),
-    },
-    {
       accessorKey: 'aspect',
       header: 'Aspect',
       cell: ({ row }) => row.aspect ? (
         <Badge variant="outline" className={
-          row.aspect === "functional" ? "bg-green-50 text-green-700" : 
-          row.aspect === "locational" ? "bg-blue-50 text-blue-700" : 
+          row.aspect === "functional" ? "bg-green-50 text-green-700" :
+          row.aspect === "locational" ? "bg-blue-50 text-blue-700" :
           ""
         }>
           {row.aspect}
@@ -63,24 +65,6 @@ export function IntercellTable({ entries }: IntercellTableProps) {
       accessorKey: 'scope',
       header: 'Scope',
       cell: ({ row }) => row.scope || "-",
-    },
-    {
-      accessorKey: 'causality',
-      header: 'Causality',
-      cell: ({ row }) => (
-        <div className="flex gap-1">
-          {row.transmitter && (
-            <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs">
-              Transmitter
-            </Badge>
-          )}
-          {row.receiver && (
-            <Badge variant="secondary" className="bg-purple-100 text-purple-800 text-xs">
-              Receiver
-            </Badge>
-          )}
-        </div>
-      ),
     },
     {
       accessorKey: 'location',
@@ -106,9 +90,34 @@ export function IntercellTable({ entries }: IntercellTableProps) {
       ),
     },
     {
+      accessorKey: 'causality',
+      header: 'Causality',
+      cell: ({ row }) => (
+        <div className="flex gap-1">
+          {row.transmitter && (
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800 text-xs">
+              Transmitter
+            </Badge>
+          )}
+          {row.receiver && (
+            <Badge variant="secondary" className="bg-purple-100 text-purple-800 text-xs">
+              Receiver
+            </Badge>
+          )}
+        </div>
+      ),
+    },
+    {
       accessorKey: 'consensusScore',
       header: 'Score',
       cell: ({ row }) => row.consensusScore !== null ? row.consensusScore : "-",
+    },
+    {
+      accessorKey: 'database',
+      header: 'Database',
+      cell: ({ row }) => (
+        <Badge variant="outline">{row.database || "-"}</Badge>
+      ),
     },
   ];
 

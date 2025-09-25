@@ -5,6 +5,7 @@ interface FilterCounts {
   sources: Record<string, number>
   databases: Record<string, number>
   scopes: Record<string, number>
+  parents: Record<string, number>
   transmitter: { true: number; false: number }
   receiver: { true: number; false: number }
   secreted: { true: number; false: number }
@@ -44,10 +45,18 @@ export class IntercellFilterService {
 
       // Filter by scopes
       if (filters.scopes.length > 0 && entry.scope) {
-        const scopeMatch = filters.scopes.some(filterScope => 
+        const scopeMatch = filters.scopes.some(filterScope =>
           filterScope.toLowerCase() === entry.scope?.toLowerCase()
         )
         if (!scopeMatch) return false
+      }
+
+      // Filter by parents
+      if (filters.parents.length > 0 && entry.parent) {
+        const parentMatch = filters.parents.some(filterParent =>
+          filterParent.toLowerCase() === entry.parent?.toLowerCase()
+        )
+        if (!parentMatch) return false
       }
 
       // Filter by boolean fields
@@ -81,6 +90,7 @@ export class IntercellFilterService {
       sources: {},
       databases: {},
       scopes: {},
+      parents: {},
       transmitter: { true: 0, false: 0 },
       receiver: { true: 0, false: 0 },
       secreted: { true: 0, false: 0 },
@@ -107,6 +117,11 @@ export class IntercellFilterService {
       // Count scopes
       if (entry.scope) {
         counts.scopes[entry.scope] = (counts.scopes[entry.scope] || 0) + 1
+      }
+
+      // Count parents
+      if (entry.parent) {
+        counts.parents[entry.parent] = (counts.parents[entry.parent] || 0) + 1
       }
 
       // Count boolean fields
