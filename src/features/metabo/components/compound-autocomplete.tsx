@@ -8,7 +8,7 @@ import { Loader2 } from 'lucide-react';
 interface CompoundAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect: (value: string, canonicalId?: string) => void;
+  onSelect: (value: string, entityId?: string) => void;
   placeholder?: string;
   className?: string;
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
@@ -19,8 +19,7 @@ interface AutocompleteResult {
   label: string;
   value: string;
   type: string;
-  compoundId: string;
-  canonicalId: string;
+  entityId: string;
 }
 
 /** Simple debounce hook for primitives/strings */
@@ -117,7 +116,7 @@ export function CompoundAutocomplete({
   const handleSelect = (suggestion: AutocompleteResult) => {
     openedByTypingRef.current = false;
     onChange(suggestion.value);
-    onSelect(suggestion.value, suggestion.canonicalId);
+    onSelect(suggestion.value, suggestion.entityId);
     setShowSuggestions(false);
     setSuggestions([]);
   };

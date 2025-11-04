@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   searchCompounds,
-  searchCompoundByCanonicalId,
+  searchCompoundByEntityId,
   searchCompoundsBySubstructure,
   searchCompoundsBySimilarity,
   SearchFilters
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     const query = searchParams.get('q') || '';
-    const canonicalId = searchParams.get('canonicalId');
+    const entityId = searchParams.get('entityId');
     const mode = searchParams.get('mode') || 'text'; // text, substructure, similarity
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -33,15 +33,6 @@ export async function GET(request: NextRequest) {
     const logpMax = searchParams.get('logpMax');
     if (logpMax) filters.logpMax = parseFloat(logpMax);
 
-    const isDrug = searchParams.get('isDrug');
-    if (isDrug) filters.isDrug = isDrug === 'true';
-
-    const isLipid = searchParams.get('isLipid');
-    if (isLipid) filters.isLipid = isLipid === 'true';
-
-    const isMetabolite = searchParams.get('isMetabolite');
-    if (isMetabolite) filters.isMetabolite = isMetabolite === 'true';
-
     const lipinskiCompliant = searchParams.get('lipinskiCompliant');
     if (lipinskiCompliant) filters.lipinskiCompliant = lipinskiCompliant === 'true';
 
@@ -51,9 +42,9 @@ export async function GET(request: NextRequest) {
 
     let results;
 
-    // Fast path: if we have canonicalId from autocomplete selection
-    if (canonicalId) {
-      results = await searchCompoundByCanonicalId(canonicalId);
+    // Fast path: if we have entityId from autocomplete selection
+    if (entityId) {
+      results = await searchCompoundByEntityId(entityId);
     } else {
       switch (mode) {
         case 'substructure':

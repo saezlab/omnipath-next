@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCompoundDetails } from '@/db/metabo/queries';
+import { getCompoundByEntityId } from '@/db/metabo/queries';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: Props) {
       );
     }
 
-    const compound = await getCompoundDetails(id);
+    const compound = await getCompoundByEntityId(id);
 
     if (!compound) {
       return NextResponse.json(

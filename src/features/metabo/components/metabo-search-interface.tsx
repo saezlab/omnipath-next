@@ -56,7 +56,7 @@ export function MetaboSearchInterface() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const performSearch = async (searchQuery: string, mode: SearchMode, offset: number = 0, canonicalId?: string): Promise<CompoundSearchResult[]> => {
+  const performSearch = async (searchQuery: string, mode: SearchMode, offset: number = 0, entityId?: string): Promise<CompoundSearchResult[]> => {
     const params = new URLSearchParams({
       q: searchQuery,
       mode,
@@ -64,9 +64,9 @@ export function MetaboSearchInterface() {
       offset: offset.toString(),
     });
 
-    // If we have a canonicalId from autocomplete selection, use fast path
-    if (canonicalId) {
-      params.set('canonicalId', canonicalId);
+    // If we have an entityId from autocomplete selection, use fast path
+    if (entityId) {
+      params.set('entityId', entityId);
     }
 
     if (mode === 'similarity') {
@@ -81,7 +81,7 @@ export function MetaboSearchInterface() {
     return await response.json();
   };
 
-  const handleSearch = async (searchQuery: string, mode: SearchMode, canonicalId?: string) => {
+  const handleSearch = async (searchQuery: string, mode: SearchMode, entityId?: string) => {
     const trimmedQuery = searchQuery.trim();
     if (!trimmedQuery) return;
 
@@ -92,7 +92,7 @@ export function MetaboSearchInterface() {
     setCurrentPage(0);
 
     try {
-      const data = await performSearch(trimmedQuery, mode, 0, canonicalId);
+      const data = await performSearch(trimmedQuery, mode, 0, entityId);
       setResults(data);
       setHasMore(data.length === 20); // If we got a full page, there might be more
     } catch (error) {

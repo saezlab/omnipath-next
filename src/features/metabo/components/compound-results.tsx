@@ -147,7 +147,7 @@ export function CompoundResults({
       <div className="grid gap-4">
         {results.map((compound) => (
           <CompoundCard
-            key={compound.canonicalId}
+            key={compound.entityId}
             compound={compound}
             onShowLiterature={onShowLiterature}
           />
@@ -208,12 +208,27 @@ function CompoundCard({
       "IUPAC Name",
       "Synonym",
     ];
+
+    // First try to find a name WITHOUT :: separator
+    for (const nameType of nameTypes) {
+      const match = identifiers.find(
+        (id) => id.type.toLowerCase() === nameType.toLowerCase() && !id.value.includes('::')
+      );
+      if (match) return match.value;
+    }
+
+    // Fallback: if all names have ::, take the first part of the first match
     for (const nameType of nameTypes) {
       const match = identifiers.find(
         (id) => id.type.toLowerCase() === nameType.toLowerCase()
       );
-      if (match) return match.value;
+      if (match) {
+        return match.value.includes('::')
+          ? match.value.split('::')[0].trim()
+          : match.value;
+      }
     }
+
     return null;
   };
 
@@ -229,19 +244,41 @@ function CompoundCard({
       "Preferred Name",
     ];
 
-    const allNames = identifiers.filter((id) =>
-      nameTypes.some((nameType) => id.type.toLowerCase() === nameType.toLowerCase())
-    );
+    // Collect all name-type identifiers, expanding :: separated values
+    const allNames: Array<{ type: string; value: string }> = [];
+    identifiers
+      .filter((id) =>
+        nameTypes.some((nameType) => id.type.toLowerCase() === nameType.toLowerCase())
+      )
+      .forEach((id) => {
+        if (id.value.includes('::')) {
+          // Split :: separated values into individual names
+          const parts = id.value.split('::').map(p => p.trim()).filter(Boolean);
+          parts.forEach(part => {
+            allNames.push({ type: id.type, value: part });
+          });
+        } else {
+          allNames.push(id);
+        }
+      });
+
+    // Filter out the primary name from synonyms
     const syns = allNames.filter((n) => n.value !== primary);
+
     const db = identifiers.filter(
-      (id) => !nameTypes.some((nameType) => id.type.toLowerCase() === nameType.toLowerCase())
+      (id) =>
+        !nameTypes.some((nameType) => id.type.toLowerCase() === nameType.toLowerCase())
     );
 
-    return { primaryName: primary, synonyms: syns, dbIds: db };
+    return {
+      primaryName: primary,
+      synonyms: syns,
+      dbIds: db,
+    };
   }, [compound.identifiers]);
 
   const loadLiterature = useCallback(async () => {
-    if (!compound.canonicalId) {
+    if (!compound.entityId) {
       setLiteratureError('Unable to locate literature for this compound');
       setPubmedIds([]);
       setPublications([]);
@@ -253,7 +290,7 @@ function CompoundCard({
       setLiteratureError(null);
       setPublications(null);
 
-      const response = await fetch(`/api/metabo/compound/${compound.canonicalId}/publications`, {
+      const response = await fetch(`/api/metabo/compound/${compound.entityId}/publications`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -295,7 +332,7 @@ function CompoundCard({
     } finally {
       setIsLoadingLiterature(false);
     }
-  }, [compound.canonicalId]);
+  }, [compound.entityId]);
 
   const handleLiteratureOpenChange = useCallback(
     (open: boolean) => {
@@ -334,18 +371,10 @@ function CompoundCard({
           <div className="min-w-0">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h3 className="font-bold text-xl truncate">
-                {primaryName || `Compound ${compound.canonicalId}`}
+                {primaryName || `Compound ${compound.entityId}`}
               </h3>
-              <span className="text-xs text-muted-foreground">ID: {compound.canonicalId}</span>
+              <span className="text-xs text-muted-foreground">ID: {compound.entityId}</span>
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {compound.isDrug && <Badge variant="secondary">Drug</Badge>}
-            {compound.isLipid && <Badge variant="secondary">Lipid</Badge>}
-            {compound.isMetabolite && (
-              <Badge variant="secondary">Metabolite</Badge>
-            )}
           </div>
 
           <div className="flex justify-start md:justify-end">
@@ -354,7 +383,7 @@ function CompoundCard({
                 <Button
                   size="sm"
                   variant="outline"
-                  aria-label={`Show literature for ${primaryName || compound.canonicalId}`}
+                  aria-label={`Show literature for ${primaryName || compound.entityId}`}
                 >
                   {isLoadingLiterature && pubmedIds === null ? (
                     <>
@@ -493,17 +522,19 @@ function CompoundCard({
           {/* 1) Structure + identifiers */}
           <Panel
             title="Structure & Identifiers"
-            id={`structure-${compound.canonicalId}`}
+            id={`structure-${compound.id}`}
           >
             <div className="flex flex-col items-center gap-4">
-              <MoleculeStructure
-                smiles={compound.canonicalSmiles}
-                width={220}
-                height={220}
-                canonicalId={compound.canonicalId}
-                compoundName={primaryName || `Compound ${compound.canonicalId}`}
-                className="rounded-md"
-              />
+              {compound.canonicalSmiles && (
+                <MoleculeStructure
+                  smiles={compound.canonicalSmiles}
+                  width={220}
+                  height={220}
+                  canonicalId={compound.id}
+                  compoundName={primaryName || `Compound ${compound.id}`}
+                  className="rounded-md"
+                />
+              )}
 
               <div className="w-full">
                 <ItemRow label="SMILES" mono>
@@ -514,9 +545,9 @@ function CompoundCard({
                     {compound.formula}
                   </ItemRow>
                 )}
-                {compound.inchikey && (
-                  <ItemRow label="InChI Key" mono>
-                    {compound.inchikey}
+                {compound.inchi && (
+                  <ItemRow label="InChI" mono>
+                    {compound.inchi}
                   </ItemRow>
                 )}
               </div>
@@ -524,7 +555,7 @@ function CompoundCard({
           </Panel>
 
           {/* 2) Properties (one item per row) */}
-          <Panel title="Properties" id={`props-${compound.canonicalId}`}>
+          <Panel title="Properties" id={`props-${compound.id}`}>
             <div className="space-y-0">
               <ItemRow label="Molecular Weight">
                 {formatValue(compound.molecularWeight)} Da
@@ -536,6 +567,15 @@ function CompoundCard({
               </ItemRow>
               <ItemRow label="H-Bond Donors">{compound.hbd ?? "N/A"}</ItemRow>
               <ItemRow label="H-Bond Acceptors">{compound.hba ?? "N/A"}</ItemRow>
+              {compound.rotatableBonds !== null && compound.rotatableBonds !== undefined && (
+                <ItemRow label="Rotatable Bonds">{compound.rotatableBonds}</ItemRow>
+              )}
+              {compound.aromaticRings !== null && compound.aromaticRings !== undefined && (
+                <ItemRow label="Aromatic Rings">{compound.aromaticRings}</ItemRow>
+              )}
+              {compound.heavyAtoms !== null && compound.heavyAtoms !== undefined && (
+                <ItemRow label="Heavy Atoms">{compound.heavyAtoms}</ItemRow>
+              )}
               {compound.molecularWeight !== null &&
                 compound.logp !== null &&
                 compound.hbd !== null &&
@@ -556,8 +596,8 @@ function CompoundCard({
             </div>
           </Panel>
 
-          {/* 3) Names & IDs */}
-          <Panel title="Names & IDs" id={`ids-${compound.canonicalId}`}>
+          {/* 2) Names & IDs */}
+          <Panel title="Names & IDs" id={`ids-${compound.entityId}`}>
             <div className="space-y-0">
               <ItemRow label="Database IDs">
                 {dbIds.length > 0 ? (

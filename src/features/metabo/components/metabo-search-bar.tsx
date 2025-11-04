@@ -12,7 +12,7 @@ import { CompoundAutocomplete } from './compound-autocomplete';
 import { validateSmiles, validateSmilesSync } from '../lib/smiles-validation';
 
 interface MetaboSearchBarProps {
-  onSearch: (query: string, mode: SearchMode, canonicalId?: string) => void;
+  onSearch: (query: string, mode: SearchMode, entityId?: string) => void;
   isSearching: boolean;
   searchMode: SearchMode;
   setSearchMode: (mode: SearchMode) => void;
@@ -35,11 +35,11 @@ export function MetaboSearchBar({
   const [smilesValidationError, setSmilesValidationError] = useState<string | null>(null);
   const [isValidatingSmiles, setIsValidatingSmiles] = useState(false);
 
-  const handleSearch = useCallback(async (canonicalId?: string) => {
+  const handleSearch = useCallback(async (entityId?: string) => {
     if (!query.trim()) return;
 
     // For SMILES-based searches, validate first
-    if ((searchMode === 'substructure' || searchMode === 'similarity') && !canonicalId) {
+    if ((searchMode === 'substructure' || searchMode === 'similarity') && !entityId) {
       const validation = await validateSmiles(query.trim());
       if (!validation.isValid) {
         setSmilesValidationError(validation.error || 'Invalid SMILES pattern');
@@ -50,7 +50,7 @@ export function MetaboSearchBar({
 
     const trimmed = query.trim();
     onQueryChange(trimmed);
-    onSearch(trimmed, searchMode, canonicalId);
+    onSearch(trimmed, searchMode, entityId);
   }, [query, searchMode, onQueryChange, onSearch]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -145,10 +145,10 @@ return (
                 <CompoundAutocomplete
                   value={query}
                   onChange={onQueryChange}
-                  onSelect={(value, canonicalId) => {
+                  onSelect={(value, entityId) => {
                     const sanitizedValue = value.trim();
                     onQueryChange(sanitizedValue);
-                    onSearch(sanitizedValue, searchMode, canonicalId);
+                    onSearch(sanitizedValue, searchMode, entityId);
                   }}
                   placeholder={getPlaceholderText()}
                   onKeyDown={handleKeyDown}
