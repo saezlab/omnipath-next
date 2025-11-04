@@ -920,18 +920,25 @@ export async function getCompoundByEntityId(entityId: string): Promise<CompoundS
 }
 
 export async function getCompoundPublications(entityId: string): Promise<string[]> {
-  // Get references linked to entity evidence for this entity
+  // PubMed and PubMed Central reference type accessions
+  // These are stored directly in the references.type column
+  const pubmedAccessions = ['MI:0446', 'MI:1042']; // PUBMED and PUBMED_CENTRAL
+
+  // Get the entity_evidence_ids array from the entity table
+  // Then use those IDs to find references through the evidence_reference join table
+  // Note: "references" is a reserved keyword in PostgreSQL, so we need to quote it
   const query = `
     SELECT DISTINCT r.value
-    FROM references r
-    INNER JOIN evidence_reference er ON r.id = er.reference_id
-    INNER JOIN entity_evidence ee ON er.entity_evidence_id = ee.id
-    WHERE ee.entity_id = $1
-    AND r.type ILIKE '%pubmed%'
+    FROM entity e
+    CROSS JOIN LATERAL unnest(e.entity_evidence_ids) AS ee_id
+    INNER JOIN evidence_reference er ON er.entity_evidence_id = ee_id
+    INNER JOIN "references" r ON r.id = er.reference_id
+    WHERE e.entity_id = $1
+    AND r.type = ANY($2)
     ORDER BY r.value
   `;
 
-  const results = await metaboClient.unsafe(query, [Number(entityId)]);
+  const results = await metaboClient.unsafe(query, [Number(entityId), pubmedAccessions]);
   return results.map((row: any) => row.value?.toString() || '').filter(Boolean);
 }
 
