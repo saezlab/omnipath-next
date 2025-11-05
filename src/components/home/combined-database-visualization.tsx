@@ -92,7 +92,7 @@ const CHART_COLORS = {
 
 
 export default function CombinedDatabaseVisualization({
-  width = 800,
+  width = 1200,
   height = 1270,
 }: CombinedVisualizationProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -159,7 +159,7 @@ export default function CombinedDatabaseVisualization({
       dimensions: {
         width,
         height,
-        margin: { top: 60, right: 40, bottom: 40, left: 210 },
+        margin: { top: 60, right: 0, bottom: 40, left: 210 },
         gridGap: 0,
         minRowHeight: 30,
         maxRowHeight: 120,
@@ -633,9 +633,22 @@ export default function CombinedDatabaseVisualization({
             // Determine the text to show
             let labelText = '';
             let isMainCategory = false;
-            
+
             if (cell.category === 'Interactions') {
-              labelText = cell.subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+              // Format interaction type labels with line breaks for better readability
+              const formatted = cell.subcategory.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+              // Add line breaks for longer interaction types
+              if (formatted === 'Post Translational') {
+                labelText = 'Post\nTranslational';
+              } else if (formatted === 'Transcriptional') {
+                labelText = 'Transcriptional';
+              } else if (formatted === 'Mirna Target') {
+                labelText = 'miRNA\nTarget';
+              } else if (formatted === 'Ligand Receptor') {
+                labelText = 'Ligand-\nReceptor';
+              } else {
+                labelText = formatted;
+              }
             } else if (cell.category === 'Annotations') {
               labelText = this.shortenSubcategoryText(cell.subcategory);
             } else {
@@ -658,7 +671,7 @@ export default function CombinedDatabaseVisualization({
             } else if (cells.length > 1) {
               // Subcategories under multi-row categories (with rotated headers)
               indent = 55; // More space for rotated header + separator
-              fontSize = "11px"; // Reduced for subcategories to fit better
+              fontSize = "12px"; // Increased from 11px for better readability
               fontWeight = "600";
               textColor = isDarkMode ? "#e5e7eb" : "#111827";
             } else {

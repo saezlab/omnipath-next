@@ -4,7 +4,7 @@ import { FeatureCard } from "@/components/home/feature-card"
 import { HeroSection } from "@/components/home/hero-section"
 import { ResourcesTable } from "@/components/home/resources-table"
 import { Database, MessageSquare, Filter, Download, FileText, History, Code } from "lucide-react"
-// import CombinedDatabaseVisualization from '@/components/home/combined-database-visualization';
+import CombinedDatabaseVisualization from '@/components/home/combined-database-visualization';
 export function HomePage() {
   return (
     <>
@@ -64,15 +64,15 @@ export function HomePage() {
         </div>
 
 
-    
+
         {/* Combined Database Visualization Section */}
-        {/* <section className="mt-16">
+        <section className="mt-16">
           <div className="w-full overflow-x-auto">
             <div className="flex justify-center">
               <CombinedDatabaseVisualization />
             </div>
           </div>
-        </section> */}
+        </section>
 
         {/* Resources Table Section */}
         <section className="mt-16">
