@@ -1,6 +1,7 @@
 services:
   # PostgreSQL Database
   omnipath-next-postgres:
+    container_name: omnipath-next-postgres
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
@@ -19,6 +20,7 @@ services:
 
   # Next.js Application
   omnipath-nextjs:
+    container_name: omnipath-nextjs
     build:
       context: .
       dockerfile: Dockerfile
