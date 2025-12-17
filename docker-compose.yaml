@@ -1,9 +1,10 @@
 services:
   # PostgreSQL Database
   omnipath-next-postgres:
-    container_name: omnipath-next-postgres
     image: postgres:16-alpine
     restart: unless-stopped
+    networks:
+      - dokploy-network
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -20,7 +21,6 @@ services:
 
   # Next.js Application
   omnipath-nextjs:
-    container_name: omnipath-nextjs
     build:
       context: .
       dockerfile: Dockerfile
@@ -29,6 +29,8 @@ services:
         DATABASE_URL_PROD: ${DATABASE_URL_PROD}
         DATABASE_URL_DEV: ${DATABASE_URL_DEV}
     restart: unless-stopped
+    networks:
+      - dokploy-network
     environment:
       NODE_ENV: production
       # Database URLs from .env file
@@ -38,7 +40,12 @@ services:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       GROQ_API_KEY: ${GROQ_API_KEY}
     depends_on:
-      - omnipath-next-postgres
+      omnipath-next-postgres:
+        condition: service_healthy
+
+networks:
+  dokploy-network:
+    external: true
 
 volumes:
   omnipath-next-postgres-data:
