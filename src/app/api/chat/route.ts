@@ -1,4 +1,4 @@
-import {google} from "@ai-sdk/google"
+import { google } from "@ai-sdk/google"
 import { executeReadOnlyQuery } from '@/db/queries';
 import { smoothStream, streamText, stepCountIs } from "ai";
 import { z } from 'zod/v3';
@@ -31,10 +31,10 @@ const tools = {
     execute: async ({ sqlQuery }: { sqlQuery: string }) => {
       try {
         if (!validateSqlQuery(sqlQuery)) {
-           return { error: SQL_VALIDATION_ERROR };
+          return { error: SQL_VALIDATION_ERROR };
         }
         const results = await executeReadOnlyQuery(sqlQuery);
-        return { 
+        return {
           results: results,
           totalCount: results.length,
           limited: false
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { messages } = requestSchema.parse(body);
-    
+
     // Convert messages to UIMessage format
     const uiMessages = messages.map((msg, index) => ({
       id: msg.id || `msg-${index}`,
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         type: part.type as 'text' | 'image' | 'reasoning'
       }))
     }));
-    
+
     // Convert UIMessages to CoreMessages format
     const coreMessages = uiMessages.map(msg => {
       // Extract text content from parts
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         .filter(part => part.type === 'text')
         .map(part => part.text || '')
         .join('');
-      
+
       return {
         role: msg.role,
         content: textContent
@@ -102,11 +102,17 @@ export async function POST(req: Request) {
 
     return stream.toUIMessageStreamResponse({
       sendReasoning: true,
-      onError: () => {
-        return `An error occurred, please try again!`;
+      onError: (error) => {
+        const errorString = error instanceof Error ? error.message : String(error);
+
+        if (errorString.includes('429') || errorString.includes('Quota exceeded')) {
+          return "The shared free tier quota has been reached. Please try again later.";
+        }
+
+        return `An error occurred: ${errorString}`;
       },
     });
-    
+
   } catch (error: unknown) {
     console.error("Error in chat endpoint:", error);
     return new Response("Failed to process chat request", { status: 500 });

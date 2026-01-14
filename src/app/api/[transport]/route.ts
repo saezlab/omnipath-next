@@ -1,26 +1,27 @@
-import { createMcpHandler } from '@vercel/mcp-adapter';
-import { z } from 'zod/v3';
+// app/api/[transport]/route.ts
+import { createMcpHandler } from "mcp-handler";
+import { z } from "zod";
 import { executeReadOnlyQuery } from '@/db/queries';
 import { DATABASE_SCHEMA_DESCRIPTION, handleSqlError, validateSqlQuery, SQL_VALIDATION_ERROR } from '@/lib/api-constants';
 
 const handler = createMcpHandler(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (server: any) => {
-    server.tool(
-      'execute_sql_query_on_omnipath_db',
-      DATABASE_SCHEMA_DESCRIPTION,
+  (server) => {
+    server.registerTool(
+      "execute_sql_query_on_omnipath_db",
       {
-        sqlQuery: z.string().describe("The read-only SQL query (starting with SELECT) to execute.")
+        title: "Execute SQL Query on Omnipath DB",
+        description: DATABASE_SCHEMA_DESCRIPTION,
+        inputSchema: {
+          sqlQuery: z.string().describe("The read-only SQL query (starting with SELECT) to execute.")
+        },
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (params: any) => {
-        const sqlQuery = params.sqlQuery;
+      async ({ sqlQuery }) => {
         if (!sqlQuery || typeof sqlQuery !== 'string') {
           return {
             content: [{ type: 'text', text: 'Error: sqlQuery parameter is required and must be a string' }],
           };
         }
-        
+
         console.log(`Executing SQL query: ${sqlQuery}`);
         try {
           if (!validateSqlQuery(sqlQuery)) {
@@ -31,9 +32,9 @@ const handler = createMcpHandler(
           const results = await executeReadOnlyQuery(sqlQuery);
           console.log(`SQL query returned ${results.length} results.`);
           return {
-            content: [{ 
-              type: 'text', 
-              text: JSON.stringify({ 
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
                 results: results,
                 totalCount: results.length,
                 limited: false
@@ -49,15 +50,12 @@ const handler = createMcpHandler(
       }
     );
   },
+  {},
   {
-    // Optional server options
-  },
-  {
-    // You need these endpoints
-    basePath: '/api', // this needs to match where the [transport] is located.
+    basePath: "/api", // must match where [transport] is located
     maxDuration: 60,
     verboseLogs: true,
   }
 );
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };
