@@ -1,5 +1,6 @@
 // app/api/[transport]/route.ts
 import { createMcpHandler } from "mcp-handler";
+import { LATEST_PROTOCOL_VERSION, SUPPORTED_PROTOCOL_VERSIONS } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { executeReadOnlyQuery } from '@/db/queries';
 import { DATABASE_SCHEMA_DESCRIPTION, handleSqlError, validateSqlQuery, SQL_VALIDATION_ERROR } from '@/lib/api-constants';
@@ -58,4 +59,19 @@ const handler = createMcpHandler(
   }
 );
 
-export { handler as GET, handler as POST };
+// Some clients (Claude's connector among them) send an MCP-Protocol-Version
+// header newer than the SDK knows, and the SDK rejects every such request with
+// a 400. Answer those requests as the newest version we support instead.
+async function handleWithProtocolFallback(req: Request): Promise<Response> {
+  const version = req.headers.get("mcp-protocol-version");
+  if (version === null || SUPPORTED_PROTOCOL_VERSIONS.includes(version)) {
+    return handler(req);
+  }
+  console.log(`MCP request with unsupported protocol version ${version}, answered as ${LATEST_PROTOCOL_VERSION}`);
+  const headers = new Headers(req.headers);
+  headers.set("mcp-protocol-version", LATEST_PROTOCOL_VERSION);
+  const body = req.method === "GET" || req.method === "HEAD" ? undefined : await req.text();
+  return handler(new Request(req.url, { method: req.method, headers, body, signal: req.signal }));
+}
+
+export { handleWithProtocolFallback as GET, handleWithProtocolFallback as POST };

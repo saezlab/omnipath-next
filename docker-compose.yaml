@@ -12,7 +12,7 @@ services:
     volumes:
       - omnipath-next-postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Expose PostgreSQL on port 543
+      - "127.0.0.1:5432:5432"  # PostgreSQL only reachable from the server itself
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s

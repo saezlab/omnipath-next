@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     }
 
     const stream = streamText({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-3.6-flash"),
       messages: coreMessages,
       tools,
       toolChoice: "auto",
