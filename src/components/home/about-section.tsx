@@ -46,7 +46,7 @@ export function AboutSection() {
               <span>Intercellular communication roles (ligand, receptor, intercell)</span>
             </li>
           </ul>
-          <a href="https://www.embopress.org/doi/full/10.15252/msb.20209923" target="_blank" rel="noopener noreferrer">
+          <a href="https://academic.oup.com/nar/article/54/D1/D652/8326458" target="_blank" rel="noopener noreferrer">
             <Button className="mt-6 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90">
               Read Our Publication
             </Button>
